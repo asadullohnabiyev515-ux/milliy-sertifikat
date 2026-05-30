@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Milliy Sertifikat — Ariza</title>
+
+  <!-- Telegram Mini App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    /* ── Reset & asosiy ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--tg-theme-bg-color, #f4f6fb);
+      color: var(--tg-theme-text-color, #1a1a2e);
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    /* ── Karta ── */
+    .card {
+      background: var(--tg-theme-secondary-bg-color, #fff);
+      border-radius: 16px;
+      padding: 24px 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.08);
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* ── Sarlavha ── */
+    .logo { font-size: 40px; text-align: center; margin-bottom: 6px; }
+    h1 {
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--tg-theme-text-color, #1a1a2e);
+    }
+    .sub {
+      text-align: center;
+      font-size: .85rem;
+      color: var(--tg-theme-hint-color, #888);
+      margin-bottom: 24px;
+    }
+
+    /* ── Forma ── */
+    label {
+      display: block;
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--tg-theme-hint-color, #888);
+      margin-bottom: 6px;
+      margin-top: 16px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid #e0e4ef;
+      border-radius: 10px;
+      font-size: 1rem;
+      background: var(--tg-theme-bg-color, #f4f6fb);
+      color: var(--tg-theme-text-color, #1a1a2e);
+      outline: none;
+      transition: border-color .2s;
+    }
+    input:focus, select:focus { border-color: #4f6ef7; }
+
+    /* ── Yuborish tugmasi ── */
+    .btn-submit {
+      display: block;
+      width: 100%;
+      margin-top: 24px;
+      padding: 14px;
+      background: var(--tg-theme-button-color, #4f6ef7);
+      color: var(--tg-theme-button-text-color, #fff);
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      letter-spacing: .3px;
+      transition: opacity .2s, transform .1s;
+    }
+    .btn-submit:active  { transform: scale(.97); }
+    .btn-submit:disabled { opacity: .6; cursor: default; }
+
+    /* ── Xabar paneli ── */
+    #xabar {
+      display: none;
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      font-size: .95rem;
+      line-height: 1.5;
+      font-weight: 500;
+    }
+    #xabar.success {
+      background: #e8f8ee;
+      color: #1e7e34;
+      border: 1.5px solid #b2dfdb;
+    }
+    #xabar.error {
+      background: #fdecea;
+      color: #c0392b;
+      border: 1.5px solid #f5c6cb;
+    }
+
+    /* ── Spinner ── */
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid #fff;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">🎓</div>
+  <h1>Milliy Sertifikat</h1>
+  <p class="sub">Sertifikat olish uchun ma'lumotlarni to'ldiring</p>
+
+  <!-- ── Forma ── -->
+  <label for="ism">Ism</label>
+  <input id="ism" type="text" placeholder="Masalan: Alibek" autocomplete="given-name" />
+
+  <label for="familiya">Familiya</label>
+  <input id="familiya" type="text" placeholder="Masalan: Rahimov" autocomplete="family-name" />
+
+  <label for="telefon">Telefon raqam</label>
+  <input id="telefon" type="tel" placeholder="+998 90 123 45 67" autocomplete="tel" />
+
+  <label for="kurs">Kurs tanlang</label>
+  <select id="kurs">
+    <option value="" disabled selected>— Kursni tanlang —</option>
+    <option>Ingliz tili (A1–A2)</option>
+    <option>Ingliz tili (B1–B2)</option>
+    <option>Web dasturlash (HTML/CSS)</option>
+    <option>Python dasturlash</option>
+    <option>Kompyuter savodxonligi</option>
+    <option>Grafik dizayn</option>
+    <option>Boshqa</option>
+  </select>
+
+  <button class="btn-submit" id="yuborBtn" onclick="yuborish()">
+    📨 Ariza yuborish
+  </button>
+
+  <div id="xabar"></div>
+</div>
+
+<script>
+  // ══════════════════════════════════════════════════════
+  //  ⚙️  SOZLAMA — backend manzilini shu yerga yozing
+  // ══════════════════════════════════════════════════════
+  const API = 'https://milliy-sertifikat.onrender.com';
+  // ══════════════════════════════════════════════════════
+
+  // Telegram Mini App ob'ekti
+  const tg = window.Telegram?.WebApp;
+  if (tg) {
+    tg.ready();
+    tg.expand();
+  }
+
+  // Foydalanuvchi Telegram ID sini olish
+  const userId = tg?.initDataUnsafe?.user?.id ?? null;
+
+  // ── Yuborganingizda chaqiriladi ──────────────────────
+  async function yuborish() {
+    const ism      = document.getElementById('ism').value.trim();
+    const familiya = document.getElementById('familiya').value.trim();
+    const telefon  = document.getElementById('telefon').value.trim();
+    const kurs     = document.getElementById('kurs').value;
+
+    // Validatsiya
+    if (!ism || !familiya || !telefon || !kurs) {
+      xabarKorsat('error', '⚠️ Iltimos, barcha maydonlarni to\'ldiring!');
+      return;
+    }
+    if (!/^\+?[\d\s\-\(\)]{9,15}$/.test(telefon)) {
+      xabarKorsat('error', '📱 Telefon raqam noto\'g\'ri formatda!');
+      return;
+    }
+
+    const btn = document.getElementById('yuborBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Yuborilmoqda…';
+
+    try {
+      const javob = await fetch(`${API}/sertifikat/ariza`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ism, familiya, telefon, kurs, user_id: userId }),
+      });
+
+      const data = await javob.json();
+
+      if (javob.ok && data.success) {
+        xabarKorsat(
+          'success',
+          `🎉 Tabriklaymiz!\n\nArizangiz qabul qilindi.\n` +
+          `🆔 Ariza raqamingiz: #${data.sertifikat_id}\n\n` +
+          `Natija bot orqali yuboriladi.`
+        );
+        // Formani tozalash
+        ['ism','familiya','telefon'].forEach(id =>
+          document.getElementById(id).value = ''
+        );
+        document.getElementById('kurs').selectedIndex = 0;
+
+        // Telegram windowni 3 soniyadan keyin yopish (ixtiyoriy)
+        setTimeout(() => tg?.close?.(), 4000);
+      } else {
+        xabarKorsat('error', `❌ Xato: ${data.detail || 'Noma\'lum xato'}`);
+      }
+    } catch (e) {
+      xabarKorsat(
+        'error',
+        '🔌 Serverga ulanib bo\'lmadi.\nBackend ishlayanligini tekshiring.'
+      );
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '📨 Ariza yuborish';
+    }
+  }
+
+  // ── Xabar ko'rsatish ─────────────────────────────────
+  function xabarKorsat(tur, matn) {
+    const el = document.getElementById('xabar');
+    el.style.display  = 'block';
+    el.className      = tur;
+    el.textContent    = matn;
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+</script>
+</body>
+</html>
