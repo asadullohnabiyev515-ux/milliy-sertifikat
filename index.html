@@ -14,13 +14,14 @@ body{font-family:-apple-system,sans-serif;background:#f0f4ff;color:#1a1a2e;min-h
 h1{text-align:center;font-size:1.2rem;font-weight:700;margin-bottom:4px}
 .sub{text-align:center;font-size:.82rem;color:#666;margin-bottom:16px}
 label{display:block;font-size:.75rem;font-weight:600;color:#666;margin:12px 0 4px;text-transform:uppercase}
-input{width:100%;padding:11px 13px;border:1.5px solid #dde2f0;border-radius:10px;font-size:1rem;background:#f8f9ff;color:#1a1a2e;outline:none}
+input,select{width:100%;padding:11px 13px;border:1.5px solid #dde2f0;border-radius:10px;font-size:1rem;background:#f8f9ff;color:#1a1a2e;outline:none}
 input:focus{border-color:#3b5bdb}
 .btn{display:block;width:100%;padding:13px;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:12px}
 .btn-primary{background:#3b5bdb;color:#fff}
 .btn-success{background:#2f9e44;color:#fff}
 .btn-outline{background:transparent;border:2px solid #3b5bdb;color:#3b5bdb}
 .btn-ustoz{background:#7048e8;color:#fff}
+.btn-milliy{background:#e67700;color:#fff}
 .btn:disabled{opacity:.5}
 .tab-wrap{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
 .tab-btn{padding:11px;border:2px solid #dde2f0;border-radius:10px;background:#f8f9ff;font-size:.95rem;font-weight:600;cursor:pointer;text-align:center}
@@ -47,14 +48,19 @@ input:focus{border-color:#3b5bdb}
 .savol-grid{display:grid;gap:10px}
 .savol-item{background:#f8f9ff;border-radius:10px;padding:12px}
 .savol-num{font-size:.78rem;font-weight:700;color:#3b5bdb;margin-bottom:6px}
+.test-tur-card{padding:16px;border:2px solid #dde2f0;border-radius:12px;cursor:pointer;margin-bottom:10px;transition:all .15s}
+.test-tur-card:hover{border-color:#3b5bdb;background:#f0f4ff}
+.test-tur-title{font-size:1rem;font-weight:700;margin-bottom:4px}
+.test-tur-sub{font-size:.82rem;color:#666}
+.soni-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.soni-btn{padding:10px;border:2px solid #dde2f0;border-radius:10px;background:#fff;font-size:.95rem;font-weight:600;cursor:pointer;text-align:center}
+.soni-btn.tanlandi{border-color:#3b5bdb;background:#3b5bdb;color:#fff}
 </style>
 </head>
 <body>
 <div id="s-rol" class="sahifa aktiv">
 <div class="karta">
-<div class="logo">🎓</div>
-<h1>Milliy Imtihon</h1>
-<p class="sub">Rolingizni tanlang</p>
+<div class="logo">🎓</div><h1>Milliy Imtihon</h1><p class="sub">Rolingizni tanlang</p>
 <div class="tab-wrap">
 <button class="tab-btn" onclick="rolTanla('oquvchi')">👨‍🎓 Oquvchi</button>
 <button class="tab-btn" onclick="rolTanla('ustoz')">👨‍🏫 Ustoz</button>
@@ -63,9 +69,7 @@ input:focus{border-color:#3b5bdb}
 </div>
 <div id="s-kirish" class="sahifa">
 <div class="karta">
-<div class="logo">👨‍🎓</div>
-<h1>Testga kirish</h1>
-<p class="sub">Malumotlaringizni kiriting</p>
+<div class="logo">👨‍🎓</div><h1>Testga kirish</h1><p class="sub">Malumotlaringizni kiriting</p>
 <label>Ism</label><input id="ism" type="text" placeholder="Masalan: Alibek"/>
 <label>Familiya</label><input id="familiya" type="text" placeholder="Masalan: Rahimov"/>
 <label>Telefon</label><input id="telefon" type="tel" placeholder="+998 90 123 45 67"/>
@@ -76,7 +80,7 @@ input:focus{border-color:#3b5bdb}
 </div>
 <div id="s-test" class="sahifa">
 <div class="karta">
-<div class="progress-info"><span id="prog-matn">1 / 40</span><span id="prog-foiz">0%</span></div>
+<div class="progress-info"><span id="prog-matn">1/40</span><span id="prog-foiz">0%</span></div>
 <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
 <br/>
 <div style="font-size:.8rem;color:#666;margin-bottom:3px" id="savol-raqam">1-savol</div>
@@ -103,17 +107,40 @@ input:focus{border-color:#3b5bdb}
 </div>
 <div id="s-tamom" class="sahifa">
 <div class="karta" style="text-align:center;padding:40px 20px">
-<div style="font-size:64px;margin-bottom:16px">🎉</div>
-<h1>Barakalla!</h1>
+<div style="font-size:64px;margin-bottom:16px">🎉</div><h1>Barakalla!</h1>
 <p style="color:#666;margin-top:8px">Javoblaringiz yuborildi.<br>Natijangizni ustozingizdan bilib olasiz.</p>
+</div>
+</div>
+<div id="s-ustoz-tur" class="sahifa">
+<div class="karta">
+<div class="logo">👨‍🏫</div><h1>Test yaratish</h1><p class="sub">Qaysi turdagi test?</p>
+<div class="test-tur-card" onclick="ustozTurTanla('milliy')">
+<div class="test-tur-title">🏆 Milliy Sertifikat testi</div>
+<div class="test-tur-sub">40 savol | 1-32: ABCD | 33-35: ABCDEF | 36-40: ochiq | Ball: 75</div>
+</div>
+<div class="test-tur-card" onclick="ustozTurTanla('oddiy')">
+<div class="test-tur-title">📝 Oddiy test</div>
+<div class="test-tur-sub">Savollar soni tanlanadi | Faqat ABCD | Ball: 100</div>
+</div>
+</div>
+</div>
+<div id="s-ustoz-sozlama" class="sahifa">
+<div class="karta">
+<div class="logo">📝</div><h1>Oddiy test sozlash</h1>
+<label>Fan nomi</label><input id="u2-fan" type="text" placeholder="Masalan: Matematika"/>
+<label>Test kodi</label><input id="u2-kod" type="text" placeholder="Masalan: MAT10" style="text-transform:uppercase"/>
+<label>Savollar soni</label>
+<div class="soni-grid" id="soni-grid"></div>
+<button class="btn btn-ustoz" onclick="oddiyUstozKirish()" style="margin-top:14px">Javoblarni kiritish</button>
+<div id="u2-xabar" class="xabar"></div>
 </div>
 </div>
 <div id="s-ustoz" class="sahifa">
 <div class="karta">
-<div class="logo">👨‍🏫</div><h1>Test yaratish</h1><p class="sub">Fan va test kodini kiriting</p>
-<label>Fan nomi</label><input id="u-fan" type="text" placeholder="Masalan: Matematika"/>
-<label>Test kodi</label><input id="u-kod" type="text" placeholder="Masalan: MAT2024" style="text-transform:uppercase"/>
-<button class="btn btn-ustoz" onclick="ustozKirish()">Javoblarni kiritish</button>
+<div class="logo">🏆</div><h1>Milliy Sertifikat testi</h1>
+<label>Fan nomi</label><input id="u-fan" type="text" placeholder="Masalan: Kimyo"/>
+<label>Test kodi</label><input id="u-kod" type="text" placeholder="Masalan: KIM2024" style="text-transform:uppercase"/>
+<button class="btn btn-milliy" onclick="ustozKirish()">Javoblarni kiritish</button>
 <div id="ustoz-xabar" class="xabar"></div>
 </div>
 </div>
@@ -121,20 +148,28 @@ input:focus{border-color:#3b5bdb}
 <div class="karta">
 <div style="font-size:.85rem;color:#666;margin-bottom:12px" id="ustoz-fan-kod"></div>
 <h1 style="margin-bottom:16px">Togri javoblarni belgilang</h1>
-<div style="font-size:.8rem;font-weight:700;color:#3b5bdb;margin:8px 0 6px">1-32 savollar (A/B/C/D)</div>
+<div style="font-size:.8rem;font-weight:700;color:#3b5bdb;margin:8px 0 6px">1-32 (A/B/C/D)</div>
 <div id="blok-1-32" class="savol-grid"></div>
-<div style="font-size:.8rem;font-weight:700;color:#7048e8;margin:14px 0 6px">33-35 savollar (A/B/C/D/E/F)</div>
+<div style="font-size:.8rem;font-weight:700;color:#7048e8;margin:14px 0 6px">33-35 (A/B/C/D/E/F)</div>
 <div id="blok-33-35" class="savol-grid"></div>
-<div style="font-size:.8rem;font-weight:700;color:#2f9e44;margin:14px 0 6px">36-40 savollar (ochiq javob)</div>
+<div style="font-size:.8rem;font-weight:700;color:#2f9e44;margin:14px 0 6px">36-40 (ochiq javob)</div>
 <div id="blok-36-40" class="savol-grid"></div>
 <button class="btn btn-success" id="ustoz-saqlash-btn" onclick="ustozSaqlash()" style="margin-top:16px">Testni saqlash</button>
 <div id="ustoz-saqlash-xabar" class="xabar"></div>
 </div>
 </div>
+<div id="s-ustoz-oddiy-javob" class="sahifa">
+<div class="karta">
+<div style="font-size:.85rem;color:#666;margin-bottom:12px" id="u2-fan-kod"></div>
+<h1 style="margin-bottom:16px">Togri javoblarni belgilang</h1>
+<div id="blok-oddiy" class="savol-grid"></div>
+<button class="btn btn-success" id="u2-saqlash-btn" onclick="oddiyUstozSaqlash()" style="margin-top:16px">Testni saqlash</button>
+<div id="u2-saqlash-xabar" class="xabar"></div>
+</div>
+</div>
 <div id="s-ustoz-tamom" class="sahifa">
 <div class="karta" style="text-align:center;padding:40px 20px">
-<div style="font-size:64px;margin-bottom:16px">✅</div>
-<h1>Test saqlandi!</h1>
+<div style="font-size:64px;margin-bottom:16px">✅</div><h1>Test saqlandi!</h1>
 <p style="color:#666;margin-top:8px">Test kodi:</p>
 <div style="font-size:2rem;font-weight:700;color:#3b5bdb;margin:12px 0" id="yaratilgan-kod"></div>
 <p style="color:#666;font-size:.9rem">Bu kodni oquvchilarga yuboring!</p>
@@ -148,9 +183,19 @@ if(tg){tg.ready();tg.expand();}
 const userId=tg?.initDataUnsafe?.user?.id??null;
 const urlKod=new URLSearchParams(window.location.search).get('kod');
 if(urlKod)document.getElementById('test-kod').value=urlKod;
-let joriyAvol=1,javoblar={},userData={},ustozJavoblar={};
+let joriyAvol=1,javoblar={},userData={},ustozJavoblar={},tanlanganSoni=10;
+const sonilar=[10,15,20,25,30,35,40,50];
+window.onload=function(){
+const grid=document.getElementById('soni-grid');
+sonilar.forEach(s=>{
+const btn=document.createElement('button');
+btn.className='soni-btn'+(s===10?' tanlandi':'');
+btn.textContent=s;
+btn.onclick=()=>{tanlanganSoni=s;document.querySelectorAll('.soni-btn').forEach(b=>b.classList.remove('tanlandi'));btn.classList.add('tanlandi');};
+grid.appendChild(btn);});};
 function sahifaOch(id){document.querySelectorAll('.sahifa').forEach(s=>s.classList.remove('aktiv'));document.getElementById(id).classList.add('aktiv');window.scrollTo(0,0);}
-function rolTanla(rol){if(rol==='oquvchi')sahifaOch('s-kirish');else sahifaOch('s-ustoz');}
+function rolTanla(rol){if(rol==='oquvchi')sahifaOch('s-kirish');else sahifaOch('s-ustoz-tur');}
+function ustozTurTanla(tur){if(tur==='milliy')sahifaOch('s-ustoz');else sahifaOch('s-ustoz-sozlama');}
 async function kirish(){
 const ism=document.getElementById('ism').value.trim();
 const familiya=document.getElementById('familiya').value.trim();
@@ -163,42 +208,48 @@ const r=await fetch(`${API}/test/tekshir/${kod}`);
 const d=await r.json();
 if(!d.topildi){xabarKo('kirish-xabar','error','Test topilmadi!');return;}
 if(d.tugadi){xabarKo('kirish-xabar','error','Bu test yakunlangan!');return;}
-userData={ism,familiya,telefon,kod};joriyAvol=1;javoblar={};savolKorsat();sahifaOch('s-test');
+userData={ism,familiya,telefon,kod,tur:d.tur,savollar_soni:d.savollar_soni||40};
+joriyAvol=1;javoblar={};savolKorsat();sahifaOch('s-test');
 }catch(e){xabarKo('kirish-xabar','error','Serverga ulanib bolmadi!');}}
 function savolKorsat(){
 const n=joriyAvol;
+const jami=userData.savollar_soni||40;
+const tur=userData.tur||'milliy';
 document.getElementById('savol-raqam').textContent=`${n}-savol`;
-document.getElementById('prog-matn').textContent=`${n} / 40`;
-document.getElementById('prog-foiz').textContent=`${Math.round((n-1)/40*100)}%`;
-document.getElementById('prog-fill').style.width=`${(n-1)/40*100}%`;
+document.getElementById('prog-matn').textContent=`${n}/${jami}`;
+document.getElementById('prog-foiz').textContent=`${Math.round((n-1)/jami*100)}%`;
+document.getElementById('prog-fill').style.width=`${(n-1)/jami*100}%`;
 document.getElementById('btn-oldin').disabled=n===1;
-document.getElementById('btn-keyin').textContent=n===40?'Tekshirish':'Keyingi';
+document.getElementById('btn-keyin').textContent=n===jami?'Tekshirish':'Keyingi';
 const vBlok=document.getElementById('variantlar-blok');
 const oBlok=document.getElementById('ochiq-blok');
-if(n<=35){vBlok.style.display='grid';oBlok.style.display='none';
-const vs=n<=32?['A','B','C','D']:['A','B','C','D','E','F'];
-const cls=n<=32?'v-grid abcd':'v-grid abcdef';
-vBlok.className=cls;
-vBlok.innerHTML=vs.map(v=>`<button class="v-btn ${javoblar[n]===v?'tanlandi':''}" onclick="variant('${v}')">${v}</button>`).join('');
+let showOchiq=false;
+let variantlar=['A','B','C','D'];
+if(tur==='milliy'){if(n>=33&&n<=35)variantlar=['A','B','C','D','E','F'];if(n>=36)showOchiq=true;}
+if(!showOchiq){
+vBlok.style.display='grid';oBlok.style.display='none';
+vBlok.className=variantlar.length===4?'v-grid abcd':'v-grid abcdef';
+vBlok.innerHTML=variantlar.map(v=>`<button class="v-btn ${javoblar[n]===v?'tanlandi':''}" onclick="variant('${v}')">${v}</button>`).join('');
 }else{vBlok.style.display='none';oBlok.style.display='block';
 document.getElementById('savol-title').textContent='Javobingizni yozing:';
 document.getElementById('ochiq-input').value=javoblar[n]||'';}}
 function variant(v){javoblar[joriyAvol]=v;savolKorsat();}
 function keyingi(){
-const n=joriyAvol;
-if(n>35){const val=document.getElementById('ochiq-input').value.trim();if(val)javoblar[n]=val;}
-if(n===40){
+const n=joriyAvol;const jami=userData.savollar_soni||40;
+if(userData.tur==='milliy'&&n>=36){const val=document.getElementById('ochiq-input').value.trim();if(val)javoblar[n]=val;}
+if(n===jami){
 document.getElementById('sum-ism').textContent=`${userData.ism} ${userData.familiya}`;
 document.getElementById('sum-tel').textContent=userData.telefon;
 document.getElementById('sum-kod').textContent=userData.kod;
-document.getElementById('sum-toldirilgan').textContent=`${Object.keys(javoblar).length} / 40`;
+document.getElementById('sum-toldirilgan').textContent=`${Object.keys(javoblar).length}/${jami}`;
 sahifaOch('s-yuborish');return;}
 joriyAvol++;savolKorsat();}
 function oldinga(){if(joriyAvol>1){joriyAvol--;savolKorsat();}}
 async function yuborish(){
 const btn=document.getElementById('yuborish-btn');
 btn.disabled=true;btn.textContent='Yuborilmoqda...';
-for(let i=1;i<=40;i++){if(!javoblar[i])javoblar[i]='';}
+const jami=userData.savollar_soni||40;
+for(let i=1;i<=jami;i++){if(!javoblar[i])javoblar[i]='';}
 try{
 const r=await fetch(`${API}/natija/yuborish`,{method:'POST',headers:{'Content-Type':'application/json'},
 body:JSON.stringify({test_kod:userData.kod,ism:userData.ism,familiya:userData.familiya,telefon:userData.telefon,user_id:userId||0,javoblar})});
@@ -211,40 +262,60 @@ const fan=document.getElementById('u-fan').value.trim();
 const kod=document.getElementById('u-kod').value.trim().toUpperCase();
 if(!fan||!kod){xabarKo('ustoz-xabar','error','Fan va kodni kiriting!');return;}
 document.getElementById('ustoz-fan-kod').textContent=`Fan: ${fan} | Kod: ${kod}`;
-ustozJavoblar={fan,kod,javoblar:{}};
-ustozSavollarYarat();sahifaOch('s-ustoz-javob');}
-function ustozSavollarYarat(){
+ustozJavoblar={fan,kod,javoblar:{},tur:'milliy',savollar_soni:40};
 const b1=document.getElementById('blok-1-32');b1.innerHTML='';
-for(let i=1;i<=32;i++){
-const div=document.createElement('div');div.className='savol-item';
-div.innerHTML=`<div class="savol-num">${i}-savol</div><div class="v-grid abcd">${['A','B','C','D'].map(v=>`<button class="v-btn" id="u${i}_${v}" onclick="uVariant(${i},'${v}')">${v}</button>`).join('')}</div>`;
+for(let i=1;i<=32;i++){const div=document.createElement('div');div.className='savol-item';
+div.innerHTML=`<div class="savol-num">${i}-savol</div><div class="v-grid abcd">${['A','B','C','D'].map(v=>`<button class="v-btn" id="u${i}_${v}" onclick="uVariant(${i},'${v}','milliy')">${v}</button>`).join('')}</div>`;
 b1.appendChild(div);}
 const b2=document.getElementById('blok-33-35');b2.innerHTML='';
-for(let i=33;i<=35;i++){
-const div=document.createElement('div');div.className='savol-item';
-div.innerHTML=`<div class="savol-num">${i}-savol</div><div class="v-grid abcdef">${['A','B','C','D','E','F'].map(v=>`<button class="v-btn" id="u${i}_${v}" onclick="uVariant(${i},'${v}')">${v}</button>`).join('')}</div>`;
+for(let i=33;i<=35;i++){const div=document.createElement('div');div.className='savol-item';
+div.innerHTML=`<div class="savol-num">${i}-savol</div><div class="v-grid abcdef">${['A','B','C','D','E','F'].map(v=>`<button class="v-btn" id="u${i}_${v}" onclick="uVariant(${i},'${v}','milliy')">${v}</button>`).join('')}</div>`;
 b2.appendChild(div);}
 const b3=document.getElementById('blok-36-40');b3.innerHTML='';
-for(let i=36;i<=40;i++){
-const div=document.createElement('div');div.className='savol-item';
+for(let i=36;i<=40;i++){const div=document.createElement('div');div.className='savol-item';
 div.innerHTML=`<div class="savol-num">${i}-savol</div><input class="ochiq-input" id="u_ochiq_${i}" type="text" placeholder="Togri javob..." oninput="ustozJavoblar.javoblar['${i}']=this.value" style="margin-top:6px"/>`;
-b3.appendChild(div);}}
-function uVariant(savol,v){
-ustozJavoblar.javoblar[String(savol)]=v;
-const vs=savol<=32?['A','B','C','D']:['A','B','C','D','E','F'];
-vs.forEach(btn=>{const el=document.getElementById(`u${savol}_${btn}`);if(el)el.className='v-btn'+(btn===v?' tanlandi':'');});}
+b3.appendChild(div);}
+sahifaOch('s-ustoz-javob');}
 async function ustozSaqlash(){
 for(let i=36;i<=40;i++){const el=document.getElementById(`u_ochiq_${i}`);if(el&&el.value.trim())ustozJavoblar.javoblar[String(i)]=el.value.trim();}
 let kamida=0;for(let i=1;i<=40;i++)if(ustozJavoblar.javoblar[String(i)])kamida++;
-if(kamida<35){xabarKo('ustoz-saqlash-xabar','error',`Kamida 35 ta javob kiriting! (Hozir: ${kamida})`);return;}
+if(kamida<35){xabarKo('ustoz-saqlash-xabar','error',`Kamida 35 ta javob kiriting! (${kamida}/40)`);return;}
 const btn=document.getElementById('ustoz-saqlash-btn');btn.disabled=true;btn.textContent='Saqlanmoqda...';
 try{
 const r=await fetch(`${API}/test/yarat`,{method:'POST',headers:{'Content-Type':'application/json'},
-body:JSON.stringify({kod:ustozJavoblar.kod,fan:ustozJavoblar.fan,ustoz_id:userId||0,javoblar:ustozJavoblar.javoblar})});
+body:JSON.stringify({kod:ustozJavoblar.kod,fan:ustozJavoblar.fan,ustoz_id:userId||0,javoblar:ustozJavoblar.javoblar,tur:'milliy',savollar_soni:40})});
 const d=await r.json();
 if(r.ok&&d.success){document.getElementById('yaratilgan-kod').textContent=ustozJavoblar.kod;sahifaOch('s-ustoz-tamom');}
 else{xabarKo('ustoz-saqlash-xabar','error',d.detail||'Xato!');btn.disabled=false;btn.textContent='Testni saqlash';}
 }catch(e){xabarKo('ustoz-saqlash-xabar','error','Serverga ulanib bolmadi!');btn.disabled=false;btn.textContent='Testni saqlash';}}
+function oddiyUstozKirish(){
+const fan=document.getElementById('u2-fan').value.trim();
+const kod=document.getElementById('u2-kod').value.trim().toUpperCase();
+if(!fan||!kod){xabarKo('u2-xabar','error','Fan va kodni kiriting!');return;}
+document.getElementById('u2-fan-kod').textContent=`Fan: ${fan} | Kod: ${kod} | Savollar: ${tanlanganSoni}`;
+ustozJavoblar={fan,kod,javoblar:{},tur:'oddiy',savollar_soni:tanlanganSoni};
+const blok=document.getElementById('blok-oddiy');blok.innerHTML='';
+for(let i=1;i<=tanlanganSoni;i++){const div=document.createElement('div');div.className='savol-item';
+div.innerHTML=`<div class="savol-num">${i}-savol</div><div class="v-grid abcd">${['A','B','C','D'].map(v=>`<button class="v-btn" id="u2_${i}_${v}" onclick="uVariant(${i},'${v}','oddiy')">${v}</button>`).join('')}</div>`;
+blok.appendChild(div);}
+sahifaOch('s-ustoz-oddiy-javob');}
+async function oddiyUstozSaqlash(){
+let kamida=0;for(let i=1;i<=tanlanganSoni;i++)if(ustozJavoblar.javoblar[String(i)])kamida++;
+if(kamida<tanlanganSoni){xabarKo('u2-saqlash-xabar','error',`Barcha ${tanlanganSoni} ta javobni kiriting! (${kamida}/${tanlanganSoni})`);return;}
+const btn=document.getElementById('u2-saqlash-btn');btn.disabled=true;btn.textContent='Saqlanmoqda...';
+try{
+const r=await fetch(`${API}/test/yarat`,{method:'POST',headers:{'Content-Type':'application/json'},
+body:JSON.stringify({kod:ustozJavoblar.kod,fan:ustozJavoblar.fan,ustoz_id:userId||0,javoblar:ustozJavoblar.javoblar,tur:'oddiy',savollar_soni:tanlanganSoni})});
+const d=await r.json();
+if(r.ok&&d.success){document.getElementById('yaratilgan-kod').textContent=ustozJavoblar.kod;sahifaOch('s-ustoz-tamom');}
+else{xabarKo('u2-saqlash-xabar','error',d.detail||'Xato!');btn.disabled=false;btn.textContent='Testni saqlash';}
+}catch(e){xabarKo('u2-saqlash-xabar','error','Serverga ulanib bolmadi!');btn.disabled=false;btn.textContent='Testni saqlash';}}
+function uVariant(savol,v,tur){
+ustozJavoblar.javoblar[String(savol)]=v;
+const vs=savol>=33&&savol<=35?['A','B','C','D','E','F']:['A','B','C','D'];
+vs.forEach(b=>{
+const id=tur==='oddiy'?`u2_${savol}_${b}`:`u${savol}_${b}`;
+const el=document.getElementById(id);if(el)el.className='v-btn'+(b===v?' tanlandi':'');});}
 function xabarKo(id,tur,matn){const el=document.getElementById(id);el.style.display='block';el.className=`xabar ${tur}`;el.textContent=matn;}
 if(urlKod)rolTanla('oquvchi');
 </script>
