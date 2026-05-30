@@ -1,249 +1,252 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Milliy Sertifikat — Ariza</title>
-
-  <!-- Telegram Mini App SDK -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <style>
-    /* ── Reset & asosiy ── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--tg-theme-bg-color, #f4f6fb);
-      color: var(--tg-theme-text-color, #1a1a2e);
-      min-height: 100vh;
-      padding: 16px;
-    }
-
-    /* ── Karta ── */
-    .card {
-      background: var(--tg-theme-secondary-bg-color, #fff);
-      border-radius: 16px;
-      padding: 24px 20px;
-      box-shadow: 0 4px 20px rgba(0,0,0,.08);
-      max-width: 480px;
-      margin: 0 auto;
-    }
-
-    /* ── Sarlavha ── */
-    .logo { font-size: 40px; text-align: center; margin-bottom: 6px; }
-    h1 {
-      text-align: center;
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-bottom: 4px;
-      color: var(--tg-theme-text-color, #1a1a2e);
-    }
-    .sub {
-      text-align: center;
-      font-size: .85rem;
-      color: var(--tg-theme-hint-color, #888);
-      margin-bottom: 24px;
-    }
-
-    /* ── Forma ── */
-    label {
-      display: block;
-      font-size: .8rem;
-      font-weight: 600;
-      color: var(--tg-theme-hint-color, #888);
-      margin-bottom: 6px;
-      margin-top: 16px;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-    }
-    input, select {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1.5px solid #e0e4ef;
-      border-radius: 10px;
-      font-size: 1rem;
-      background: var(--tg-theme-bg-color, #f4f6fb);
-      color: var(--tg-theme-text-color, #1a1a2e);
-      outline: none;
-      transition: border-color .2s;
-    }
-    input:focus, select:focus { border-color: #4f6ef7; }
-
-    /* ── Yuborish tugmasi ── */
-    .btn-submit {
-      display: block;
-      width: 100%;
-      margin-top: 24px;
-      padding: 14px;
-      background: var(--tg-theme-button-color, #4f6ef7);
-      color: var(--tg-theme-button-text-color, #fff);
-      font-size: 1rem;
-      font-weight: 700;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      letter-spacing: .3px;
-      transition: opacity .2s, transform .1s;
-    }
-    .btn-submit:active  { transform: scale(.97); }
-    .btn-submit:disabled { opacity: .6; cursor: default; }
-
-    /* ── Xabar paneli ── */
-    #xabar {
-      display: none;
-      margin-top: 18px;
-      padding: 14px 16px;
-      border-radius: 12px;
-      font-size: .95rem;
-      line-height: 1.5;
-      font-weight: 500;
-    }
-    #xabar.success {
-      background: #e8f8ee;
-      color: #1e7e34;
-      border: 1.5px solid #b2dfdb;
-    }
-    #xabar.error {
-      background: #fdecea;
-      color: #c0392b;
-      border: 1.5px solid #f5c6cb;
-    }
-
-    /* ── Spinner ── */
-    .spinner {
-      display: inline-block;
-      width: 16px; height: 16px;
-      border: 2px solid #fff;
-      border-top-color: transparent;
-      border-radius: 50%;
-      animation: spin .6s linear infinite;
-      vertical-align: middle;
-      margin-right: 6px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Milliy Imtihon</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,sans-serif;background:#f0f4ff;color:#1a1a2e;min-height:100vh;padding:12px 12px 40px}
+.sahifa{display:none}.sahifa.aktiv{display:block}
+.karta{background:#fff;border-radius:14px;padding:20px 16px;box-shadow:0 4px 24px rgba(59,91,219,.10);margin-bottom:14px}
+.logo{font-size:32px;text-align:center;margin-bottom:4px}
+h1{text-align:center;font-size:1.2rem;font-weight:700;margin-bottom:4px}
+.sub{text-align:center;font-size:.82rem;color:#666;margin-bottom:16px}
+label{display:block;font-size:.75rem;font-weight:600;color:#666;margin:12px 0 4px;text-transform:uppercase}
+input{width:100%;padding:11px 13px;border:1.5px solid #dde2f0;border-radius:10px;font-size:1rem;background:#f8f9ff;color:#1a1a2e;outline:none}
+input:focus{border-color:#3b5bdb}
+.btn{display:block;width:100%;padding:13px;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:12px}
+.btn-primary{background:#3b5bdb;color:#fff}
+.btn-success{background:#2f9e44;color:#fff}
+.btn-outline{background:transparent;border:2px solid #3b5bdb;color:#3b5bdb}
+.btn-ustoz{background:#7048e8;color:#fff}
+.btn:disabled{opacity:.5}
+.tab-wrap{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.tab-btn{padding:11px;border:2px solid #dde2f0;border-radius:10px;background:#f8f9ff;font-size:.95rem;font-weight:600;cursor:pointer;text-align:center}
+.tab-btn.aktiv{border-color:#3b5bdb;background:#eef2ff;color:#3b5bdb}
+.progress-info{display:flex;justify-content:space-between;font-size:.82rem;color:#666;margin-bottom:5px}
+.progress-bar{height:7px;background:#e8ecff;border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;background:#3b5bdb;border-radius:99px;transition:width .3s}
+.v-grid{display:grid;gap:8px;margin-top:8px}
+.v-grid.abcd{grid-template-columns:1fr 1fr}
+.v-grid.abcdef{grid-template-columns:1fr 1fr 1fr}
+.v-btn{padding:12px 8px;border:2px solid #dde2f0;border-radius:10px;background:#fff;font-size:1rem;font-weight:600;cursor:pointer;text-align:center;transition:all .15s}
+.v-btn.tanlandi{border-color:#3b5bdb;background:#3b5bdb;color:#fff}
+.ochiq-input{width:100%;padding:13px;border:2px solid #dde2f0;border-radius:10px;font-size:1.1rem;text-align:center;outline:none;background:#f8f9ff;margin-top:8px}
+.ochiq-input:focus{border-color:#3b5bdb}
+.nav-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.nav-btns .btn{margin-top:0}
+.xabar{padding:12px 14px;border-radius:10px;font-size:.92rem;font-weight:500;margin-top:12px;display:none}
+.xabar.success{background:#d3f9d8;color:#1e6b2e}
+.xabar.error{background:#ffe3e3;color:#c92a2a}
+.xabar.info{background:#e7f5ff;color:#1864ab}
+.info-qator{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #dde2f0;font-size:.92rem}
+.info-qator:last-child{border:none}
+.info-label{color:#666}
+.savol-grid{display:grid;gap:10px}
+.savol-item{background:#f8f9ff;border-radius:10px;padding:12px}
+.savol-num{font-size:.78rem;font-weight:700;color:#3b5bdb;margin-bottom:6px}
+</style>
 </head>
 <body>
-
-<div class="card">
-  <div class="logo">🎓</div>
-  <h1>Milliy Sertifikat</h1>
-  <p class="sub">Sertifikat olish uchun ma'lumotlarni to'ldiring</p>
-
-  <!-- ── Forma ── -->
-  <label for="ism">Ism</label>
-  <input id="ism" type="text" placeholder="Masalan: Alibek" autocomplete="given-name" />
-
-  <label for="familiya">Familiya</label>
-  <input id="familiya" type="text" placeholder="Masalan: Rahimov" autocomplete="family-name" />
-
-  <label for="telefon">Telefon raqam</label>
-  <input id="telefon" type="tel" placeholder="+998 90 123 45 67" autocomplete="tel" />
-
-  <label for="kurs">Kurs tanlang</label>
-  <select id="kurs">
-    <option value="" disabled selected>— Kursni tanlang —</option>
-    <option>Ingliz tili (A1–A2)</option>
-    <option>Ingliz tili (B1–B2)</option>
-    <option>Web dasturlash (HTML/CSS)</option>
-    <option>Python dasturlash</option>
-    <option>Kompyuter savodxonligi</option>
-    <option>Grafik dizayn</option>
-    <option>Boshqa</option>
-  </select>
-
-  <button class="btn-submit" id="yuborBtn" onclick="yuborish()">
-    📨 Ariza yuborish
-  </button>
-
-  <div id="xabar"></div>
+<div id="s-rol" class="sahifa aktiv">
+<div class="karta">
+<div class="logo">🎓</div>
+<h1>Milliy Imtihon</h1>
+<p class="sub">Rolingizni tanlang</p>
+<div class="tab-wrap">
+<button class="tab-btn" onclick="rolTanla('oquvchi')">👨‍🎓 Oquvchi</button>
+<button class="tab-btn" onclick="rolTanla('ustoz')">👨‍🏫 Ustoz</button>
 </div>
-
+</div>
+</div>
+<div id="s-kirish" class="sahifa">
+<div class="karta">
+<div class="logo">👨‍🎓</div>
+<h1>Testga kirish</h1>
+<p class="sub">Malumotlaringizni kiriting</p>
+<label>Ism</label><input id="ism" type="text" placeholder="Masalan: Alibek"/>
+<label>Familiya</label><input id="familiya" type="text" placeholder="Masalan: Rahimov"/>
+<label>Telefon</label><input id="telefon" type="tel" placeholder="+998 90 123 45 67"/>
+<label>Test kodi</label><input id="test-kod" type="text" placeholder="Masalan: MAT2024" style="text-transform:uppercase"/>
+<button class="btn btn-primary" onclick="kirish()">Testni boshlash</button>
+<div id="kirish-xabar" class="xabar"></div>
+</div>
+</div>
+<div id="s-test" class="sahifa">
+<div class="karta">
+<div class="progress-info"><span id="prog-matn">1 / 40</span><span id="prog-foiz">0%</span></div>
+<div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+<br/>
+<div style="font-size:.8rem;color:#666;margin-bottom:3px" id="savol-raqam">1-savol</div>
+<div id="savol-title" style="font-size:1rem;font-weight:600;margin-bottom:10px">Javobni tanlang:</div>
+<div id="variantlar-blok"></div>
+<div id="ochiq-blok" style="display:none"><input class="ochiq-input" id="ochiq-input" type="text" placeholder="Javobingizni yozing..."/></div>
+<div class="nav-btns">
+<button class="btn btn-outline" onclick="oldinga()" id="btn-oldin">Oldingi</button>
+<button class="btn btn-primary" onclick="keyingi()" id="btn-keyin">Keyingi</button>
+</div>
+</div>
+</div>
+<div id="s-yuborish" class="sahifa">
+<div class="karta">
+<div class="logo">📋</div><h1>Tekshirib koring</h1><p class="sub">Yuborishdan oldin tekshiring</p>
+<div class="info-qator"><span class="info-label">Ism Familiya</span><span id="sum-ism"></span></div>
+<div class="info-qator"><span class="info-label">Telefon</span><span id="sum-tel"></span></div>
+<div class="info-qator"><span class="info-label">Test kodi</span><span id="sum-kod"></span></div>
+<div class="info-qator"><span class="info-label">Toldirilgan</span><span id="sum-toldirilgan"></span></div>
+<button class="btn btn-success" id="yuborish-btn" onclick="yuborish()">Javoblarni yuborish</button>
+<button class="btn btn-outline" onclick="sahifaOch('s-test')" style="margin-top:8px">Qaytib ozgartirish</button>
+<div id="yuborish-xabar" class="xabar"></div>
+</div>
+</div>
+<div id="s-tamom" class="sahifa">
+<div class="karta" style="text-align:center;padding:40px 20px">
+<div style="font-size:64px;margin-bottom:16px">🎉</div>
+<h1>Barakalla!</h1>
+<p style="color:#666;margin-top:8px">Javoblaringiz yuborildi.<br>Natijangizni ustozingizdan bilib olasiz.</p>
+</div>
+</div>
+<div id="s-ustoz" class="sahifa">
+<div class="karta">
+<div class="logo">👨‍🏫</div><h1>Test yaratish</h1><p class="sub">Fan va test kodini kiriting</p>
+<label>Fan nomi</label><input id="u-fan" type="text" placeholder="Masalan: Matematika"/>
+<label>Test kodi</label><input id="u-kod" type="text" placeholder="Masalan: MAT2024" style="text-transform:uppercase"/>
+<button class="btn btn-ustoz" onclick="ustozKirish()">Javoblarni kiritish</button>
+<div id="ustoz-xabar" class="xabar"></div>
+</div>
+</div>
+<div id="s-ustoz-javob" class="sahifa">
+<div class="karta">
+<div style="font-size:.85rem;color:#666;margin-bottom:12px" id="ustoz-fan-kod"></div>
+<h1 style="margin-bottom:16px">Togri javoblarni belgilang</h1>
+<div style="font-size:.8rem;font-weight:700;color:#3b5bdb;margin:8px 0 6px">1-32 savollar (A/B/C/D)</div>
+<div id="blok-1-32" class="savol-grid"></div>
+<div style="font-size:.8rem;font-weight:700;color:#7048e8;margin:14px 0 6px">33-35 savollar (A/B/C/D/E/F)</div>
+<div id="blok-33-35" class="savol-grid"></div>
+<div style="font-size:.8rem;font-weight:700;color:#2f9e44;margin:14px 0 6px">36-40 savollar (ochiq javob)</div>
+<div id="blok-36-40" class="savol-grid"></div>
+<button class="btn btn-success" id="ustoz-saqlash-btn" onclick="ustozSaqlash()" style="margin-top:16px">Testni saqlash</button>
+<div id="ustoz-saqlash-xabar" class="xabar"></div>
+</div>
+</div>
+<div id="s-ustoz-tamom" class="sahifa">
+<div class="karta" style="text-align:center;padding:40px 20px">
+<div style="font-size:64px;margin-bottom:16px">✅</div>
+<h1>Test saqlandi!</h1>
+<p style="color:#666;margin-top:8px">Test kodi:</p>
+<div style="font-size:2rem;font-weight:700;color:#3b5bdb;margin:12px 0" id="yaratilgan-kod"></div>
+<p style="color:#666;font-size:.9rem">Bu kodni oquvchilarga yuboring!</p>
+<button class="btn btn-outline" onclick="sahifaOch('s-rol')" style="margin-top:16px">Yangi test</button>
+</div>
+</div>
 <script>
-  // ══════════════════════════════════════════════════════
-  //  ⚙️  SOZLAMA — backend manzilini shu yerga yozing
-  // ══════════════════════════════════════════════════════
-  const API = 'https://milliy-sertifikat.onrender.com';
-  // ══════════════════════════════════════════════════════
-
-  // Telegram Mini App ob'ekti
-  const tg = window.Telegram?.WebApp;
-  if (tg) {
-    tg.ready();
-    tg.expand();
-  }
-
-  // Foydalanuvchi Telegram ID sini olish
-  const userId = tg?.initDataUnsafe?.user?.id ?? null;
-
-  // ── Yuborganingizda chaqiriladi ──────────────────────
-  async function yuborish() {
-    const ism      = document.getElementById('ism').value.trim();
-    const familiya = document.getElementById('familiya').value.trim();
-    const telefon  = document.getElementById('telefon').value.trim();
-    const kurs     = document.getElementById('kurs').value;
-
-    // Validatsiya
-    if (!ism || !familiya || !telefon || !kurs) {
-      xabarKorsat('error', '⚠️ Iltimos, barcha maydonlarni to\'ldiring!');
-      return;
-    }
-    if (!/^\+?[\d\s\-\(\)]{9,15}$/.test(telefon)) {
-      xabarKorsat('error', '📱 Telefon raqam noto\'g\'ri formatda!');
-      return;
-    }
-
-    const btn = document.getElementById('yuborBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> Yuborilmoqda…';
-
-    try {
-      const javob = await fetch(`${API}/sertifikat/ariza`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ism, familiya, telefon, kurs, user_id: userId }),
-      });
-
-      const data = await javob.json();
-
-      if (javob.ok && data.success) {
-        xabarKorsat(
-          'success',
-          `🎉 Tabriklaymiz!\n\nArizangiz qabul qilindi.\n` +
-          `🆔 Ariza raqamingiz: #${data.sertifikat_id}\n\n` +
-          `Natija bot orqali yuboriladi.`
-        );
-        // Formani tozalash
-        ['ism','familiya','telefon'].forEach(id =>
-          document.getElementById(id).value = ''
-        );
-        document.getElementById('kurs').selectedIndex = 0;
-
-        // Telegram windowni 3 soniyadan keyin yopish (ixtiyoriy)
-        setTimeout(() => tg?.close?.(), 4000);
-      } else {
-        xabarKorsat('error', `❌ Xato: ${data.detail || 'Noma\'lum xato'}`);
-      }
-    } catch (e) {
-      xabarKorsat(
-        'error',
-        '🔌 Serverga ulanib bo\'lmadi.\nBackend ishlayanligini tekshiring.'
-      );
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = '📨 Ariza yuborish';
-    }
-  }
-
-  // ── Xabar ko'rsatish ─────────────────────────────────
-  function xabarKorsat(tur, matn) {
-    const el = document.getElementById('xabar');
-    el.style.display  = 'block';
-    el.className      = tur;
-    el.textContent    = matn;
-    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
+const API='http://localhost:8000';
+const tg=window.Telegram?.WebApp;
+if(tg){tg.ready();tg.expand();}
+const userId=tg?.initDataUnsafe?.user?.id??null;
+const urlKod=new URLSearchParams(window.location.search).get('kod');
+if(urlKod)document.getElementById('test-kod').value=urlKod;
+let joriyAvol=1,javoblar={},userData={},ustozJavoblar={};
+function sahifaOch(id){document.querySelectorAll('.sahifa').forEach(s=>s.classList.remove('aktiv'));document.getElementById(id).classList.add('aktiv');window.scrollTo(0,0);}
+function rolTanla(rol){if(rol==='oquvchi')sahifaOch('s-kirish');else sahifaOch('s-ustoz');}
+async function kirish(){
+const ism=document.getElementById('ism').value.trim();
+const familiya=document.getElementById('familiya').value.trim();
+const telefon=document.getElementById('telefon').value.trim();
+const kod=document.getElementById('test-kod').value.trim().toUpperCase();
+if(!ism||!familiya||!telefon||!kod){xabarKo('kirish-xabar','error','Barcha maydonlarni toldiring!');return;}
+xabarKo('kirish-xabar','info','Tekshirilmoqda...');
+try{
+const r=await fetch(`${API}/test/tekshir/${kod}`);
+const d=await r.json();
+if(!d.topildi){xabarKo('kirish-xabar','error','Test topilmadi!');return;}
+if(d.tugadi){xabarKo('kirish-xabar','error','Bu test yakunlangan!');return;}
+userData={ism,familiya,telefon,kod};joriyAvol=1;javoblar={};savolKorsat();sahifaOch('s-test');
+}catch(e){xabarKo('kirish-xabar','error','Serverga ulanib bolmadi!');}}
+function savolKorsat(){
+const n=joriyAvol;
+document.getElementById('savol-raqam').textContent=`${n}-savol`;
+document.getElementById('prog-matn').textContent=`${n} / 40`;
+document.getElementById('prog-foiz').textContent=`${Math.round((n-1)/40*100)}%`;
+document.getElementById('prog-fill').style.width=`${(n-1)/40*100}%`;
+document.getElementById('btn-oldin').disabled=n===1;
+document.getElementById('btn-keyin').textContent=n===40?'Tekshirish':'Keyingi';
+const vBlok=document.getElementById('variantlar-blok');
+const oBlok=document.getElementById('ochiq-blok');
+if(n<=35){vBlok.style.display='grid';oBlok.style.display='none';
+const vs=n<=32?['A','B','C','D']:['A','B','C','D','E','F'];
+const cls=n<=32?'v-grid abcd':'v-grid abcdef';
+vBlok.className=cls;
+vBlok.innerHTML=vs.map(v=>`<button class="v-btn ${javoblar[n]===v?'tanlandi':''}" onclick="variant('${v}')">${v}</button>`).join('');
+}else{vBlok.style.display='none';oBlok.style.display='block';
+document.getElementById('savol-title').textContent='Javobingizni yozing:';
+document.getElementById('ochiq-input').value=javoblar[n]||'';}}
+function variant(v){javoblar[joriyAvol]=v;savolKorsat();}
+function keyingi(){
+const n=joriyAvol;
+if(n>35){const val=document.getElementById('ochiq-input').value.trim();if(val)javoblar[n]=val;}
+if(n===40){
+document.getElementById('sum-ism').textContent=`${userData.ism} ${userData.familiya}`;
+document.getElementById('sum-tel').textContent=userData.telefon;
+document.getElementById('sum-kod').textContent=userData.kod;
+document.getElementById('sum-toldirilgan').textContent=`${Object.keys(javoblar).length} / 40`;
+sahifaOch('s-yuborish');return;}
+joriyAvol++;savolKorsat();}
+function oldinga(){if(joriyAvol>1){joriyAvol--;savolKorsat();}}
+async function yuborish(){
+const btn=document.getElementById('yuborish-btn');
+btn.disabled=true;btn.textContent='Yuborilmoqda...';
+for(let i=1;i<=40;i++){if(!javoblar[i])javoblar[i]='';}
+try{
+const r=await fetch(`${API}/natija/yuborish`,{method:'POST',headers:{'Content-Type':'application/json'},
+body:JSON.stringify({test_kod:userData.kod,ism:userData.ism,familiya:userData.familiya,telefon:userData.telefon,user_id:userId||0,javoblar})});
+const d=await r.json();
+if(r.ok&&d.success){sahifaOch('s-tamom');setTimeout(()=>tg?.close?.(),4000);}
+else{xabarKo('yuborish-xabar','error',d.detail||'Xato');btn.disabled=false;btn.textContent='Javoblarni yuborish';}
+}catch(e){xabarKo('yuborish-xabar','error','Serverga ulanib bolmadi!');btn.disabled=false;btn.textContent='Javoblarni yuborish';}}
+function ustozKirish(){
+const fan=document.getElementById('u-fan').value.trim();
+const kod=document.getElementById('u-kod').value.trim().toUpperCase();
+if(!fan||!kod){xabarKo('ustoz-xabar','error','Fan va kodni kiriting!');return;}
+document.getElementById('ustoz-fan-kod').textContent=`Fan: ${fan} | Kod: ${kod}`;
+ustozJavoblar={fan,kod,javoblar:{}};
+ustozSavollarYarat();sahifaOch('s-ustoz-javob');}
+function ustozSavollarYarat(){
+const b1=document.getElementById('blok-1-32');b1.innerHTML='';
+for(let i=1;i<=32;i++){
+const div=document.createElement('div');div.className='savol-item';
+div.innerHTML=`<div class="savol-num">${i}-savol</div><div class="v-grid abcd">${['A','B','C','D'].map(v=>`<button class="v-btn" id="u${i}_${v}" onclick="uVariant(${i},'${v}')">${v}</button>`).join('')}</div>`;
+b1.appendChild(div);}
+const b2=document.getElementById('blok-33-35');b2.innerHTML='';
+for(let i=33;i<=35;i++){
+const div=document.createElement('div');div.className='savol-item';
+div.innerHTML=`<div class="savol-num">${i}-savol</div><div class="v-grid abcdef">${['A','B','C','D','E','F'].map(v=>`<button class="v-btn" id="u${i}_${v}" onclick="uVariant(${i},'${v}')">${v}</button>`).join('')}</div>`;
+b2.appendChild(div);}
+const b3=document.getElementById('blok-36-40');b3.innerHTML='';
+for(let i=36;i<=40;i++){
+const div=document.createElement('div');div.className='savol-item';
+div.innerHTML=`<div class="savol-num">${i}-savol</div><input class="ochiq-input" id="u_ochiq_${i}" type="text" placeholder="Togri javob..." oninput="ustozJavoblar.javoblar['${i}']=this.value" style="margin-top:6px"/>`;
+b3.appendChild(div);}}
+function uVariant(savol,v){
+ustozJavoblar.javoblar[String(savol)]=v;
+const vs=savol<=32?['A','B','C','D']:['A','B','C','D','E','F'];
+vs.forEach(btn=>{const el=document.getElementById(`u${savol}_${btn}`);if(el)el.className='v-btn'+(btn===v?' tanlandi':'');});}
+async function ustozSaqlash(){
+for(let i=36;i<=40;i++){const el=document.getElementById(`u_ochiq_${i}`);if(el&&el.value.trim())ustozJavoblar.javoblar[String(i)]=el.value.trim();}
+let kamida=0;for(let i=1;i<=40;i++)if(ustozJavoblar.javoblar[String(i)])kamida++;
+if(kamida<35){xabarKo('ustoz-saqlash-xabar','error',`Kamida 35 ta javob kiriting! (Hozir: ${kamida})`);return;}
+const btn=document.getElementById('ustoz-saqlash-btn');btn.disabled=true;btn.textContent='Saqlanmoqda...';
+try{
+const r=await fetch(`${API}/test/yarat`,{method:'POST',headers:{'Content-Type':'application/json'},
+body:JSON.stringify({kod:ustozJavoblar.kod,fan:ustozJavoblar.fan,ustoz_id:userId||0,javoblar:ustozJavoblar.javoblar})});
+const d=await r.json();
+if(r.ok&&d.success){document.getElementById('yaratilgan-kod').textContent=ustozJavoblar.kod;sahifaOch('s-ustoz-tamom');}
+else{xabarKo('ustoz-saqlash-xabar','error',d.detail||'Xato!');btn.disabled=false;btn.textContent='Testni saqlash';}
+}catch(e){xabarKo('ustoz-saqlash-xabar','error','Serverga ulanib bolmadi!');btn.disabled=false;btn.textContent='Testni saqlash';}}
+function xabarKo(id,tur,matn){const el=document.getElementById(id);el.style.display='block';el.className=`xabar ${tur}`;el.textContent=matn;}
+if(urlKod)rolTanla('oquvchi');
 </script>
 </body>
 </html>
