@@ -5,209 +5,541 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Milliy Imtihon</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,sans-serif;background:#f0f4ff;color:#1a1a2e;min-height:100vh;padding:12px 12px 40px}
-.sahifa{display:none}.sahifa.aktiv{display:block}
-.karta{background:#fff;border-radius:14px;padding:20px 16px;box-shadow:0 4px 24px rgba(59,91,219,.10);margin-bottom:14px}
-.logo{font-size:32px;text-align:center;margin-bottom:4px}
-h1{text-align:center;font-size:1.2rem;font-weight:700;margin-bottom:4px}
-.sub{text-align:center;font-size:.82rem;color:#666;margin-bottom:16px}
-label{display:block;font-size:.75rem;font-weight:600;color:#666;margin:12px 0 4px;text-transform:uppercase}
-input{width:100%;padding:11px 13px;border:1.5px solid #dde2f0;border-radius:10px;font-size:1rem;background:#f8f9ff;color:#1a1a2e;outline:none}
-input:focus{border-color:#3b5bdb}
-.btn{display:block;width:100%;padding:13px;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:12px}
-.btn-primary{background:#3b5bdb;color:#fff}
-.btn-success{background:#2f9e44;color:#fff}
-.btn-outline{background:transparent;border:2px solid #3b5bdb;color:#3b5bdb}
-.btn-ustoz{background:#7048e8;color:#fff}
-.btn-milliy{background:#e67700;color:#fff}
-.btn:disabled{opacity:.5}
-.tab-wrap{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
-.tab-btn{padding:11px;border:2px solid #dde2f0;border-radius:10px;background:#f8f9ff;font-size:.95rem;font-weight:600;cursor:pointer;text-align:center}
-.tab-btn.aktiv{border-color:#3b5bdb;background:#eef2ff;color:#3b5bdb}
-.progress-info{display:flex;justify-content:space-between;font-size:.82rem;color:#666;margin-bottom:5px}
-.progress-bar{height:7px;background:#e8ecff;border-radius:99px;overflow:hidden}
-.progress-fill{height:100%;background:#3b5bdb;border-radius:99px;transition:width .3s}
-.v-grid{display:grid;gap:8px;margin-top:8px}
-.v-grid.abcd{grid-template-columns:1fr 1fr}
-.v-grid.abcdef{grid-template-columns:1fr 1fr 1fr}
-.v-btn{padding:12px 8px;border:2px solid #dde2f0;border-radius:10px;background:#fff;font-size:1rem;font-weight:600;cursor:pointer;text-align:center;transition:all .15s}
-.v-btn.tanlandi{border-color:#3b5bdb;background:#3b5bdb;color:#fff}
-.ochiq-input{width:100%;padding:13px;border:2px solid #dde2f0;border-radius:10px;font-size:1.1rem;text-align:center;outline:none;background:#f8f9ff;margin-top:8px}
-.ochiq-input:focus{border-color:#3b5bdb}
-.nav-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-.nav-btns .btn{margin-top:0}
-.xabar{padding:12px 14px;border-radius:10px;font-size:.92rem;font-weight:500;margin-top:12px;display:none}
-.xabar.success{background:#d3f9d8;color:#1e6b2e}
-.xabar.error{background:#ffe3e3;color:#c92a2a}
-.xabar.info{background:#e7f5ff;color:#1864ab}
-.info-qator{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #dde2f0;font-size:.92rem}
-.info-qator:last-child{border:none}
-.info-label{color:#666}
-.savol-grid{display:grid;gap:10px}
-.savol-item{background:#f8f9ff;border-radius:10px;padding:12px}
-.savol-num{font-size:.78rem;font-weight:700;color:#3b5bdb;margin-bottom:6px}
-.test-tur-card{padding:16px;border:2px solid #dde2f0;border-radius:12px;cursor:pointer;margin-bottom:10px;transition:all .15s}
-.test-tur-card:hover{border-color:#3b5bdb;background:#f0f4ff}
-.test-tur-title{font-size:1rem;font-weight:700;margin-bottom:4px}
-.test-tur-sub{font-size:.82rem;color:#666}
-.soni-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
-.soni-btn{padding:10px;border:2px solid #dde2f0;border-radius:10px;background:#fff;font-size:.95rem;font-weight:600;cursor:pointer;text-align:center}
-.soni-btn.tanlandi{border-color:#3b5bdb;background:#3b5bdb;color:#fff}
-.id-karta{background:linear-gradient(135deg,#3b5bdb,#7048e8);border-radius:16px;padding:24px;text-align:center;margin:16px 0}
-.id-raqam{font-size:3.5rem;font-weight:900;color:#fff;letter-spacing:6px;margin:8px 0}
-.id-label{font-size:.85rem;color:rgba(255,255,255,.8)}
-.id-eslatma{background:#fff3cd;border-radius:10px;padding:12px;font-size:.85rem;color:#856404;margin-top:12px}
+
+:root{
+  --bg:#0a0f1e;
+  --card:rgba(255,255,255,0.05);
+  --border:rgba(255,255,255,0.1);
+  --primary:#00d4aa;
+  --primary2:#00a8ff;
+  --accent:#ff6b35;
+  --text:#ffffff;
+  --muted:rgba(255,255,255,0.5);
+}
+
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── Animated background ── */
+.bg-animated{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 20%, rgba(0,212,170,0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 80%, rgba(0,168,255,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(255,107,53,0.08) 0%, transparent 60%);
+  animation:bgShift 8s ease-in-out infinite alternate;
+}
+@keyframes bgShift{
+  0%{opacity:1;transform:scale(1)}
+  100%{opacity:.7;transform:scale(1.1)}
+}
+
+/* Floating particles */
+.particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.particle{
+  position:absolute;width:2px;height:2px;border-radius:50%;
+  background:var(--primary);opacity:.4;
+  animation:float linear infinite;
+}
+@keyframes float{
+  0%{transform:translateY(100vh) translateX(0);opacity:0}
+  10%{opacity:.4}
+  90%{opacity:.4}
+  100%{transform:translateY(-100px) translateX(50px);opacity:0}
+}
+
+/* ── Sahifalar ── */
+.sahifa{display:none;position:relative;z-index:1;min-height:100vh}
+.sahifa.aktiv{display:flex;flex-direction:column}
+
+/* ── KIRISH SAHIFASI ── */
+#s-kirish{
+  align-items:center;justify-content:center;
+  padding:24px 20px;text-align:center;
+}
+
+.logo-wrap{
+  margin-bottom:32px;
+  animation:logoIn .8s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes logoIn{
+  0%{opacity:0;transform:scale(.5) rotate(-10deg)}
+  100%{opacity:1;transform:scale(1) rotate(0)}
+}
+.logo-icon{
+  width:90px;height:90px;border-radius:24px;
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:40px;margin:0 auto 16px;
+  box-shadow:0 0 40px rgba(0,212,170,.4);
+}
+.logo-title{
+  font-family:'Unbounded',sans-serif;
+  font-size:1.5rem;font-weight:900;
+  background:linear-gradient(90deg,var(--primary),var(--primary2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  line-height:1.2;margin-bottom:8px;
+}
+.logo-sub{font-size:.85rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+
+/* Kirish karta */
+.kirish-karta{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:32px 24px;
+  width:100%;max-width:380px;
+  backdrop-filter:blur(20px);
+  animation:cardIn .8s .3s both;
+}
+@keyframes cardIn{
+  0%{opacity:0;transform:translateY(30px)}
+  100%{opacity:1;transform:translateY(0)}
+}
+.kirish-karta h2{
+  font-family:'Unbounded',sans-serif;
+  font-size:1.1rem;font-weight:700;
+  margin-bottom:8px;
+}
+.kirish-karta p{
+  font-size:.85rem;color:var(--muted);
+  margin-bottom:28px;line-height:1.6;
+}
+
+/* Telegram button */
+.btn-telegram{
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  width:100%;padding:16px;border:none;border-radius:16px;
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  color:#fff;font-size:1rem;font-weight:600;
+  cursor:pointer;letter-spacing:.3px;
+  box-shadow:0 8px 32px rgba(0,212,170,.3);
+  transition:all .2s;position:relative;overflow:hidden;
+}
+.btn-telegram::before{
+  content:'';position:absolute;top:0;left:-100%;
+  width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);
+  animation:shimmer 2s infinite;
+}
+@keyframes shimmer{0%{left:-100%}100%{left:100%}}
+.btn-telegram:active{transform:scale(.97)}
+
+.btn-telegram svg{width:22px;height:22px;flex-shrink:0}
+
+/* Divider */
+.divider{
+  display:flex;align-items:center;gap:12px;
+  margin:20px 0;color:var(--muted);font-size:.8rem;
+}
+.divider::before,.divider::after{
+  content:'';flex:1;height:1px;
+  background:var(--border);
+}
+
+/* Features grid */
+.features{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:10px;margin-top:20px;
+}
+.feature-item{
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--border);
+  border-radius:14px;padding:14px 12px;
+  text-align:center;
+  transition:all .2s;cursor:default;
+}
+.feature-item:hover{
+  background:rgba(0,212,170,.08);
+  border-color:rgba(0,212,170,.3);
+}
+.feature-icon{font-size:1.5rem;margin-bottom:6px}
+.feature-label{font-size:.72rem;color:var(--muted);font-weight:500}
+
+/* Stats */
+.stats-row{
+  display:flex;gap:16px;
+  margin-top:20px;
+  animation:cardIn .8s .5s both;
+}
+.stat-card{
+  flex:1;background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;padding:16px 12px;
+  text-align:center;backdrop-filter:blur(10px);
+}
+.stat-num{
+  font-family:'Unbounded',sans-serif;
+  font-size:1.3rem;font-weight:900;
+  background:linear-gradient(90deg,var(--primary),var(--primary2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.stat-label{font-size:.7rem;color:var(--muted);margin-top:4px}
+
+/* ── BOsh sahifa ── */
+#s-bosh{padding:0 0 80px}
+
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px;
+  background:rgba(10,15,30,.8);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:10;
+}
+.topbar-logo{
+  font-family:'Unbounded',sans-serif;
+  font-size:.9rem;font-weight:700;
+  background:linear-gradient(90deg,var(--primary),var(--primary2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.topbar-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;font-weight:700;color:#fff;
+}
+
+.hero-section{
+  padding:24px 20px 16px;
+  background:linear-gradient(180deg,rgba(0,212,170,.08) 0%,transparent 100%);
+}
+.hero-greeting{font-size:.85rem;color:var(--muted);margin-bottom:4px}
+.hero-name{
+  font-family:'Unbounded',sans-serif;
+  font-size:1.4rem;font-weight:900;margin-bottom:16px;
+}
+
+/* Profile card */
+.profile-card{
+  background:linear-gradient(135deg,rgba(0,212,170,.15),rgba(0,168,255,.1));
+  border:1px solid rgba(0,212,170,.3);
+  border-radius:20px;padding:20px;
+  display:flex;align-items:center;gap:16px;
+  margin-bottom:16px;
+}
+.profile-avatar{
+  width:56px;height:56px;border-radius:16px;
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;font-weight:700;color:#fff;
+  flex-shrink:0;
+}
+.profile-info{flex:1}
+.profile-name{font-family:'Unbounded',sans-serif;font-size:.95rem;font-weight:700}
+.profile-id{font-size:.75rem;color:var(--muted);margin-top:2px}
+.profile-badge{
+  background:rgba(0,212,170,.2);
+  border:1px solid rgba(0,212,170,.4);
+  border-radius:8px;padding:4px 10px;
+  font-size:.7rem;color:var(--primary);font-weight:600;
+}
+
+/* Stats grid */
+.stats-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:12px;padding:0 20px 20px;
+}
+.stat-box{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;padding:16px;
+}
+.stat-box-icon{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;margin-bottom:10px;
+}
+.stat-box-num{
+  font-family:'Unbounded',sans-serif;
+  font-size:1.3rem;font-weight:900;
+}
+.stat-box-label{font-size:.7rem;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+
+/* Menu grid */
+.menu-section{padding:0 20px}
+.section-title{
+  font-family:'Unbounded',sans-serif;
+  font-size:.8rem;font-weight:700;
+  color:var(--muted);letter-spacing:1px;
+  text-transform:uppercase;margin-bottom:12px;
+}
+.menu-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.menu-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;padding:18px 16px;
+  cursor:pointer;transition:all .2s;
+  position:relative;overflow:hidden;
+}
+.menu-card::before{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:2px;
+  opacity:0;transition:opacity .2s;
+}
+.menu-card:active{transform:scale(.97)}
+.menu-card.green::before{background:linear-gradient(90deg,var(--primary),var(--primary2));opacity:1}
+.menu-card.orange::before{background:linear-gradient(90deg,#ff6b35,#ff9500);opacity:1}
+.menu-card.blue::before{background:linear-gradient(90deg,#0088ff,#00d4ff);opacity:1}
+.menu-card.purple::before{background:linear-gradient(90deg,#8b5cf6,#d946ef);opacity:1}
+
+.menu-icon{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;margin-bottom:12px;
+}
+.menu-icon.green{background:rgba(0,212,170,.15)}
+.menu-icon.orange{background:rgba(255,107,53,.15)}
+.menu-icon.blue{background:rgba(0,136,255,.15)}
+.menu-icon.purple{background:rgba(139,92,246,.15)}
+
+.menu-title{font-size:.9rem;font-weight:600;margin-bottom:2px}
+.menu-sub{font-size:.72rem;color:var(--muted)}
+
+/* Bottom nav */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:rgba(10,15,30,.95);
+  backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  display:flex;padding:8px 0 calc(8px + env(safe-area-inset-bottom));
+  z-index:100;
+}
+.nav-item{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;gap:4px;padding:8px 4px;
+  cursor:pointer;transition:all .2s;
+}
+.nav-item.aktiv .nav-icon{color:var(--primary)}
+.nav-item.aktiv .nav-label{color:var(--primary)}
+.nav-icon{font-size:1.3rem;color:var(--muted);transition:all .2s}
+.nav-label{font-size:.6rem;color:var(--muted);font-weight:500;transition:all .2s}
+
+/* ── Spinner ── */
+.spinner{
+  display:inline-block;width:20px;height:20px;
+  border:2px solid rgba(255,255,255,.3);
+  border-top-color:var(--primary);
+  border-radius:50%;animation:spin .6s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.loading-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:var(--bg);z-index:999;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:16px;
+}
+.loading-text{font-size:.85rem;color:var(--muted)}
 </style>
 </head>
 <body>
-<div id="s-rol" class="sahifa aktiv">
-<div class="karta">
-<div class="logo">🎓</div><h1>Milliy Imtihon</h1><p class="sub">Rolingizni tanlang</p>
-<div class="tab-wrap">
-<button class="tab-btn" onclick="rolTanla('oquvchi')">👨‍🎓 Oquvchi</button>
-<button class="tab-btn" onclick="rolTanla('ustoz')">👨‍🏫 Ustoz</button>
-</div>
-</div>
+
+<!-- Animated bg -->
+<div class="bg-animated"></div>
+<div class="particles" id="particles"></div>
+
+<!-- Loading -->
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <div class="loading-text">Yuklanmoqda...</div>
 </div>
 
+<!-- ══ KIRISH SAHIFASI ══ -->
 <div id="s-kirish" class="sahifa">
-<div class="karta">
-<div class="logo">👨‍🎓</div><h1>Testga kirish</h1><p class="sub">Malumotlaringizni kiriting</p>
-<label>Ism</label><input id="ism" type="text" placeholder="Masalan: Alibek"/>
-<label>Familiya</label><input id="familiya" type="text" placeholder="Masalan: Rahimov"/>
-<label>Telefon</label><input id="telefon" type="tel" placeholder="+998 90 123 45 67"/>
-<label>Test kodi</label><input id="test-kod" type="text" placeholder="Masalan: MAT2024" style="text-transform:uppercase"/>
-<button class="btn btn-primary" onclick="kirish()">Testni boshlash</button>
-<div id="kirish-xabar" class="xabar"></div>
-</div>
+  <div class="logo-wrap">
+    <div class="logo-icon">🎓</div>
+    <div class="logo-title">Milliy Imtihon</div>
+    <div class="logo-sub">Bilim — Kelajak</div>
+  </div>
+
+  <div class="kirish-karta">
+    <h2>Tizimga kirish</h2>
+    <p>Telegram orqali tezda ulaning — parol kerak emas</p>
+
+    <button class="btn-telegram" onclick="telegramKirish()">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.17 13.67l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.978.889z"/>
+      </svg>
+      Telegram orqali kirish
+    </button>
+
+    <div class="divider">ICHKARIDA SIZNI NIMA KUTMOQDA</div>
+
+    <div class="features">
+      <div class="feature-item">
+        <div class="feature-icon">📝</div>
+        <div class="feature-label">Testlar</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📚</div>
+        <div class="feature-label">Kitoblar</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🏆</div>
+        <div class="feature-label">Reyting</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📊</div>
+        <div class="feature-label">RASh model</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-num" id="stat-foydalanuvchi">—</div>
+      <div class="stat-label">O'quvchilar</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-testlar">—</div>
+      <div class="stat-label">Testlar</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-kitoblar">—</div>
+      <div class="stat-label">Kitoblar</div>
+    </div>
+  </div>
 </div>
 
-<!-- VARAQ ID SAHIFASI -->
-<div id="s-varaq-id" class="sahifa">
-<div class="karta">
-<div class="logo">🎫</div>
-<h1>Sizning varaq ID ingiz</h1>
-<p class="sub">Bu raqamni varaqga yozing!</p>
-<div class="id-karta">
-  <div class="id-label">VARAQ ID</div>
-  <div class="id-raqam" id="id-raqam">---</div>
-  <div class="id-label" id="id-fan"></div>
-</div>
-<div class="id-eslatma">
-  ⚠️ Bu raqamni javoblar varag'ining <strong>"Savollar kitobi raqami"</strong> qismiga yozing!
-</div>
-<button class="btn btn-primary" onclick="testBoshlash()" style="margin-top:16px">▶ Testni boshlash</button>
-</div>
+<!-- ══ BOSH SAHIFA ══ -->
+<div id="s-bosh" class="sahifa">
+  <div class="topbar">
+    <div class="topbar-logo">Milliy Imtihon</div>
+    <div class="topbar-avatar" id="top-avatar">A</div>
+  </div>
+
+  <div class="hero-section">
+    <div class="hero-greeting">Xush kelibsiz 👋</div>
+    <div class="hero-name" id="hero-name">Foydalanuvchi</div>
+
+    <div class="profile-card">
+      <div class="profile-avatar" id="profile-avatar">A</div>
+      <div class="profile-info">
+        <div class="profile-name" id="profile-name">—</div>
+        <div class="profile-id" id="profile-id">ID: —</div>
+      </div>
+      <div class="profile-badge">O'quvchi</div>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-box">
+      <div class="stat-box-icon green">📝</div>
+      <div class="stat-box-num" id="stat-testlar-soni">0</div>
+      <div class="stat-box-label">Testlar</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-box-icon orange" style="background:rgba(255,107,53,.15)">🏆</div>
+      <div class="stat-box-num" id="stat-ball">0</div>
+      <div class="stat-box-label">O'rtacha ball</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-box-icon blue" style="background:rgba(0,136,255,.15)">📚</div>
+      <div class="stat-box-num" id="stat-kitob-soni">0</div>
+      <div class="stat-box-label">Kitoblar</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-box-icon purple" style="background:rgba(139,92,246,.15)">🎯</div>
+      <div class="stat-box-num" id="stat-orin">—</div>
+      <div class="stat-box-label">Reyting</div>
+    </div>
+  </div>
+
+  <div class="menu-section">
+    <div class="section-title">Asosiy bo'limlar</div>
+    <div class="menu-grid">
+      <div class="menu-card green" onclick="sahifaOch('s-testlar')">
+        <div class="menu-icon green">📝</div>
+        <div class="menu-title">Testlar</div>
+        <div class="menu-sub">Test ishlash</div>
+      </div>
+      <div class="menu-card orange" onclick="sahifaOch('s-kitoblar')">
+        <div class="menu-icon orange">📚</div>
+        <div class="menu-title">Kitoblar</div>
+        <div class="menu-sub">Fanlar bo'yicha</div>
+      </div>
+      <div class="menu-card blue" onclick="sahifaOch('s-reyting')">
+        <div class="menu-icon blue">🏆</div>
+        <div class="menu-title">Reyting</div>
+        <div class="menu-sub">Top o'quvchilar</div>
+      </div>
+      <div class="menu-card purple" onclick="sahifaOch('s-profil')">
+        <div class="menu-icon purple">👤</div>
+        <div class="menu-title">Profil</div>
+        <div class="menu-sub">Natijalarim</div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div id="s-test" class="sahifa">
-<div class="karta">
-<div class="progress-info"><span id="prog-matn">1/40</span><span id="prog-foiz">0%</span></div>
-<div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
-<br/>
-<div style="font-size:.8rem;color:#666;margin-bottom:3px" id="savol-raqam">1-savol</div>
-<div id="savol-title" style="font-size:1rem;font-weight:600;margin-bottom:10px">Javobni tanlang:</div>
-<div id="variantlar-blok"></div>
-<div id="ochiq-blok" style="display:none"><input class="ochiq-input" id="ochiq-input" type="text" placeholder="Javobingizni yozing..."/></div>
-<div class="nav-btns">
-<button class="btn btn-outline" onclick="oldinga()" id="btn-oldin">Oldingi</button>
-<button class="btn btn-primary" onclick="keyingi()" id="btn-keyin">Keyingi</button>
-</div>
-</div>
-</div>
-
-<div id="s-yuborish" class="sahifa">
-<div class="karta">
-<div class="logo">📋</div><h1>Tekshirib koring</h1><p class="sub">Yuborishdan oldin tekshiring</p>
-<div class="info-qator"><span class="info-label">Ism Familiya</span><span id="sum-ism"></span></div>
-<div class="info-qator"><span class="info-label">Telefon</span><span id="sum-tel"></span></div>
-<div class="info-qator"><span class="info-label">Test kodi</span><span id="sum-kod"></span></div>
-<div class="info-qator"><span class="info-label">Varaq ID</span><span id="sum-vid"></span></div>
-<div class="info-qator"><span class="info-label">Toldirilgan</span><span id="sum-toldirilgan"></span></div>
-<button class="btn btn-success" id="yuborish-btn" onclick="yuborish()">Javoblarni yuborish</button>
-<button class="btn btn-outline" onclick="sahifaOch('s-test')" style="margin-top:8px">Qaytib ozgartirish</button>
-<div id="yuborish-xabar" class="xabar"></div>
-</div>
+<!-- Bottom nav (bosh sahifadan keyin) -->
+<div class="bottom-nav" id="bottom-nav" style="display:none">
+  <div class="nav-item aktiv" onclick="navBos('s-bosh',this)">
+    <div class="nav-icon">🏠</div>
+    <div class="nav-label">Bosh</div>
+  </div>
+  <div class="nav-item" onclick="navBos('s-testlar',this)">
+    <div class="nav-icon">📝</div>
+    <div class="nav-label">Testlar</div>
+  </div>
+  <div class="nav-item" onclick="navBos('s-kitoblar',this)">
+    <div class="nav-icon">📚</div>
+    <div class="nav-label">Kitoblar</div>
+  </div>
+  <div class="nav-item" onclick="navBos('s-reyting',this)">
+    <div class="nav-icon">🏆</div>
+    <div class="nav-label">Reyting</div>
+  </div>
+  <div class="nav-item" onclick="navBos('s-profil',this)">
+    <div class="nav-icon">👤</div>
+    <div class="nav-label">Profil</div>
+  </div>
 </div>
 
-<div id="s-tamom" class="sahifa">
-<div class="karta" style="text-align:center;padding:40px 20px">
-<div style="font-size:64px;margin-bottom:16px">🎉</div><h1>Barakalla!</h1>
-<p style="color:#666;margin-top:8px">Javoblaringiz yuborildi.<br>Natijangizni ustozingizdan bilib olasiz.</p>
-</div>
-</div>
-
-<div id="s-ustoz-tur" class="sahifa">
-<div class="karta">
-<div class="logo">👨‍🏫</div><h1>Test yaratish</h1><p class="sub">Qaysi turdagi test?</p>
-<div class="test-tur-card" onclick="ustozTurTanla('milliy')">
-<div class="test-tur-title">🏆 Milliy Sertifikat testi</div>
-<div class="test-tur-sub">40 savol | 1-32: ABCD | 33-35: ABCDEF | 36-40: ochiq | Ball: 75</div>
-</div>
-<div class="test-tur-card" onclick="ustozTurTanla('oddiy')">
-<div class="test-tur-title">📝 Oddiy test</div>
-<div class="test-tur-sub">Savollar soni tanlanadi | Faqat ABCD | Ball: 100</div>
-</div>
-</div>
+<!-- Placeholder sahifalar -->
+<div id="s-testlar" class="sahifa" style="padding:20px;align-items:center;justify-content:center">
+  <div style="text-align:center;color:var(--muted)">
+    <div style="font-size:3rem;margin-bottom:16px">📝</div>
+    <div style="font-family:'Unbounded',sans-serif;font-size:1rem">Testlar bo'limi</div>
+    <div style="font-size:.85rem;margin-top:8px">Tez kunda...</div>
+  </div>
 </div>
 
-<div id="s-ustoz-sozlama" class="sahifa">
-<div class="karta">
-<div class="logo">📝</div><h1>Oddiy test sozlash</h1>
-<label>Fan nomi</label><input id="u2-fan" type="text" placeholder="Masalan: Matematika"/>
-<label>Test kodi</label><input id="u2-kod" type="text" placeholder="Masalan: MAT10" style="text-transform:uppercase"/>
-<label>Savollar soni</label>
-<div class="soni-grid" id="soni-grid"></div>
-<button class="btn btn-ustoz" onclick="oddiyUstozKirish()" style="margin-top:14px">Javoblarni kiritish</button>
-<div id="u2-xabar" class="xabar"></div>
-</div>
+<div id="s-kitoblar" class="sahifa" style="padding:20px;align-items:center;justify-content:center">
+  <div style="text-align:center;color:var(--muted)">
+    <div style="font-size:3rem;margin-bottom:16px">📚</div>
+    <div style="font-family:'Unbounded',sans-serif;font-size:1rem">Kitoblar bo'limi</div>
+    <div style="font-size:.85rem;margin-top:8px">Tez kunda...</div>
+  </div>
 </div>
 
-<div id="s-ustoz" class="sahifa">
-<div class="karta">
-<div class="logo">🏆</div><h1>Milliy Sertifikat testi</h1>
-<label>Fan nomi</label><input id="u-fan" type="text" placeholder="Masalan: Kimyo"/>
-<label>Test kodi</label><input id="u-kod" type="text" placeholder="Masalan: KIM2024" style="text-transform:uppercase"/>
-<button class="btn btn-milliy" onclick="ustozKirish()">Javoblarni kiritish</button>
-<div id="ustoz-xabar" class="xabar"></div>
-</div>
+<div id="s-reyting" class="sahifa" style="padding:20px;align-items:center;justify-content:center">
+  <div style="text-align:center;color:var(--muted)">
+    <div style="font-size:3rem;margin-bottom:16px">🏆</div>
+    <div style="font-family:'Unbounded',sans-serif;font-size:1rem">Reyting bo'limi</div>
+    <div style="font-size:.85rem;margin-top:8px">Tez kunda...</div>
+  </div>
 </div>
 
-<div id="s-ustoz-javob" class="sahifa">
-<div class="karta">
-<div style="font-size:.85rem;color:#666;margin-bottom:12px" id="ustoz-fan-kod"></div>
-<h1 style="margin-bottom:16px">Togri javoblarni belgilang</h1>
-<div style="font-size:.8rem;font-weight:700;color:#3b5bdb;margin:8px 0 6px">1-32 (A/B/C/D)</div>
-<div id="blok-1-32" class="savol-grid"></div>
-<div style="font-size:.8rem;font-weight:700;color:#7048e8;margin:14px 0 6px">33-35 (A/B/C/D/E/F)</div>
-<div id="blok-33-35" class="savol-grid"></div>
-<div style="font-size:.8rem;font-weight:700;color:#2f9e44;margin:14px 0 6px">36-40 (ochiq javob)</div>
-<div id="blok-36-40" class="savol-grid"></div>
-<button class="btn btn-success" id="ustoz-saqlash-btn" onclick="ustozSaqlash()" style="margin-top:16px">Testni saqlash</button>
-<div id="ustoz-saqlash-xabar" class="xabar"></div>
-</div>
-</div>
-
-<div id="s-ustoz-oddiy-javob" class="sahifa">
-<div class="karta">
-<div style="font-size:.85rem;color:#666;margin-bottom:12px" id="u2-fan-kod"></div>
-<h1 style="margin-bottom:16px">Togri javoblarni belgilang</h1>
-<div id="blok-oddiy" class="savol-grid"></div>
-<button class="btn btn-success" id="u2-saqlash-btn" onclick="oddiyUstozSaqlash()" style="margin-top:16px">Testni saqlash</button>
-<div id="u2-saqlash-xabar" class="xabar"></div>
-</div>
-</div>
-
-<div id="s-ustoz-tamom" class="sahifa">
-<div class="karta" style="text-align:center;padding:40px 20px">
-<div style="font-size:64px;margin-bottom:16px">✅</div><h1>Test saqlandi!</h1>
-<p style="color:#666;margin-top:8px">Test kodi:</p>
-<div style="font-size:2rem;font-weight:700;color:#3b5bdb;margin:12px 0" id="yaratilgan-kod"></div>
-<p style="color:#666;font-size:.9rem">Bu kodni oquvchilarga yuboring!</p>
-<button class="btn btn-outline" onclick="sahifaOch('s-rol')" style="margin-top:16px">Yangi test</button>
-</div>
+<div id="s-profil" class="sahifa" style="padding:20px;align-items:center;justify-content:center">
+  <div style="text-align:center;color:var(--muted)">
+    <div style="font-size:3rem;margin-bottom:16px">👤</div>
+    <div style="font-family:'Unbounded',sans-serif;font-size:1rem">Profil bo'limi</div>
+    <div style="font-size:.85rem;margin-top:8px">Tez kunda...</div>
+  </div>
 </div>
 
 <script>
@@ -215,167 +547,79 @@ const API='https://milliy-imtihon.onrender.com';
 const tg=window.Telegram?.WebApp;
 if(tg){tg.ready();tg.expand();}
 const userId=tg?.initDataUnsafe?.user?.id??null;
-const urlKod=new URLSearchParams(window.location.search).get('kod');
-if(urlKod)document.getElementById('test-kod').value=urlKod;
-let joriyAvol=1,javoblar={},userData={},ustozJavoblar={},tanlanganSoni=10;
-const sonilar=[10,15,20,25,30,35,40,50];
-window.onload=function(){
-const grid=document.getElementById('soni-grid');
-sonilar.forEach(s=>{
-const btn=document.createElement('button');
-btn.className='soni-btn'+(s===10?' tanlandi':'');
-btn.textContent=s;
-btn.onclick=()=>{tanlanganSoni=s;document.querySelectorAll('.soni-btn').forEach(b=>b.classList.remove('tanlandi'));btn.classList.add('tanlandi');};
-grid.appendChild(btn);});};
-function sahifaOch(id){document.querySelectorAll('.sahifa').forEach(s=>s.classList.remove('aktiv'));document.getElementById(id).classList.add('aktiv');window.scrollTo(0,0);}
-function rolTanla(rol){if(rol==='oquvchi')sahifaOch('s-kirish');else sahifaOch('s-ustoz-tur');}
-function ustozTurTanla(tur){if(tur==='milliy')sahifaOch('s-ustoz');else sahifaOch('s-ustoz-sozlama');}
+const userName=tg?.initDataUnsafe?.user?.first_name??'Foydalanuvchi';
 
-async function kirish(){
-const ism=document.getElementById('ism').value.trim();
-const familiya=document.getElementById('familiya').value.trim();
-const telefon=document.getElementById('telefon').value.trim();
-const kod=document.getElementById('test-kod').value.trim().toUpperCase();
-if(!ism||!familiya||!telefon||!kod){xabarKo('kirish-xabar','error','Barcha maydonlarni toldiring!');return;}
-xabarKo('kirish-xabar','info','Tekshirilmoqda...');
-try{
-const r=await fetch(`${API}/test/tekshir/${kod}`);
-const d=await r.json();
-if(!d.topildi){xabarKo('kirish-xabar','error','Test topilmadi!');return;}
-if(d.tugadi){xabarKo('kirish-xabar','error','Bu test yakunlangan!');return;}
-
-// O'quvchini royxatdan otkazish va ID olish
-const rr=await fetch(`${API}/student/royxat`,{method:'POST',headers:{'Content-Type':'application/json'},
-body:JSON.stringify({test_kod:kod,ism,familiya,telefon,user_id:userId||0})});
-const rd=await rr.json();
-if(!rd.success){xabarKo('kirish-xabar','error',rd.detail||'Xato');return;}
-
-userData={ism,familiya,telefon,kod,fan:d.fan,tur:d.tur,savollar_soni:d.savollar_soni||40,varaq_id:rd.varaq_id};
-
-// ID sahifasini ko'rsatish
-document.getElementById('id-raqam').textContent=rd.varaq_id;
-document.getElementById('id-fan').textContent=d.fan;
-sahifaOch('s-varaq-id');
-}catch(e){xabarKo('kirish-xabar','error','Serverga ulanib bolmadi!');}}
-
-function testBoshlash(){
-joriyAvol=1;javoblar={};
-savolKorsat();
-sahifaOch('s-test');
+// Particles
+const pc=document.getElementById('particles');
+for(let i=0;i<20;i++){
+  const p=document.createElement('div');
+  p.className='particle';
+  p.style.left=Math.random()*100+'%';
+  p.style.animationDuration=(8+Math.random()*12)+'s';
+  p.style.animationDelay=Math.random()*10+'s';
+  p.style.opacity=Math.random()*.4;
+  pc.appendChild(p);
 }
 
-function savolKorsat(){
-const n=joriyAvol;
-const jami=userData.savollar_soni||40;
-const tur=userData.tur||'milliy';
-document.getElementById('savol-raqam').textContent=`${n}-savol`;
-document.getElementById('prog-matn').textContent=`${n}/${jami}`;
-document.getElementById('prog-foiz').textContent=`${Math.round((n-1)/jami*100)}%`;
-document.getElementById('prog-fill').style.width=`${(n-1)/jami*100}%`;
-document.getElementById('btn-oldin').disabled=n===1;
-document.getElementById('btn-keyin').textContent=n===jami?'Tekshirish':'Keyingi';
-const vBlok=document.getElementById('variantlar-blok');
-const oBlok=document.getElementById('ochiq-blok');
-let showOchiq=false;let variantlar=['A','B','C','D'];
-if(tur==='milliy'){if(n>=33&&n<=35)variantlar=['A','B','C','D','E','F'];if(n>=36)showOchiq=true;}
-if(!showOchiq){
-vBlok.style.display='grid';oBlok.style.display='none';
-vBlok.className=variantlar.length===4?'v-grid abcd':'v-grid abcdef';
-vBlok.innerHTML=variantlar.map(v=>`<button class="v-btn ${javoblar[n]===v?'tanlandi':''}" onclick="variant('${v}')">${v}</button>`).join('');
-}else{vBlok.style.display='none';oBlok.style.display='block';
-document.getElementById('savol-title').textContent='Javobingizni yozing:';
-document.getElementById('ochiq-input').value=javoblar[n]||'';}}
-function variant(v){javoblar[joriyAvol]=v;savolKorsat();}
-function keyingi(){
-const n=joriyAvol;const jami=userData.savollar_soni||40;
-if(userData.tur==='milliy'&&n>=36){const val=document.getElementById('ochiq-input').value.trim();if(val)javoblar[n]=val;}
-if(n===jami){
-document.getElementById('sum-ism').textContent=`${userData.ism} ${userData.familiya}`;
-document.getElementById('sum-tel').textContent=userData.telefon;
-document.getElementById('sum-kod').textContent=userData.kod;
-document.getElementById('sum-vid').textContent=userData.varaq_id||'-';
-document.getElementById('sum-toldirilgan').textContent=`${Object.keys(javoblar).length}/${jami}`;
-sahifaOch('s-yuborish');return;}
-joriyAvol++;savolKorsat();}
-function oldinga(){if(joriyAvol>1){joriyAvol--;savolKorsat();}}
-async function yuborish(){
-const btn=document.getElementById('yuborish-btn');
-btn.disabled=true;btn.textContent='Yuborilmoqda...';
-const jami=userData.savollar_soni||40;
-for(let i=1;i<=jami;i++){if(!javoblar[i])javoblar[i]='';}
-try{
-const r=await fetch(`${API}/natija/yuborish`,{method:'POST',headers:{'Content-Type':'application/json'},
-body:JSON.stringify({test_kod:userData.kod,ism:userData.ism,familiya:userData.familiya,
-telefon:userData.telefon,user_id:userId||0,javoblar,varaq_id:userData.varaq_id||''})});
-const d=await r.json();
-if(r.ok&&d.success){sahifaOch('s-tamom');setTimeout(()=>tg?.close?.(),4000);}
-else{xabarKo('yuborish-xabar','error',d.detail||'Xato');btn.disabled=false;btn.textContent='Javoblarni yuborish';}
-}catch(e){xabarKo('yuborish-xabar','error','Serverga ulanib bolmadi!');btn.disabled=false;btn.textContent='Javoblarni yuborish';}}
+function sahifaOch(id){
+  document.querySelectorAll('.sahifa').forEach(s=>s.classList.remove('aktiv'));
+  document.getElementById(id).classList.add('aktiv');
+  window.scrollTo(0,0);
+}
 
-function ustozKirish(){
-const fan=document.getElementById('u-fan').value.trim();
-const kod=document.getElementById('u-kod').value.trim().toUpperCase();
-if(!fan||!kod){xabarKo('ustoz-xabar','error','Fan va kodni kiriting!');return;}
-document.getElementById('ustoz-fan-kod').textContent=`Fan: ${fan} | Kod: ${kod}`;
-ustozJavoblar={fan,kod,javoblar:{},tur:'milliy',savollar_soni:40};
-const b1=document.getElementById('blok-1-32');b1.innerHTML='';
-for(let i=1;i<=32;i++){const div=document.createElement('div');div.className='savol-item';
-div.innerHTML=`<div class="savol-num">${i}-savol</div><div class="v-grid abcd">${['A','B','C','D'].map(v=>`<button class="v-btn" id="u${i}_${v}" onclick="uVariant(${i},'${v}','milliy')">${v}</button>`).join('')}</div>`;
-b1.appendChild(div);}
-const b2=document.getElementById('blok-33-35');b2.innerHTML='';
-for(let i=33;i<=35;i++){const div=document.createElement('div');div.className='savol-item';
-div.innerHTML=`<div class="savol-num">${i}-savol</div><div class="v-grid abcdef">${['A','B','C','D','E','F'].map(v=>`<button class="v-btn" id="u${i}_${v}" onclick="uVariant(${i},'${v}','milliy')">${v}</button>`).join('')}</div>`;
-b2.appendChild(div);}
-const b3=document.getElementById('blok-36-40');b3.innerHTML='';
-for(let i=36;i<=40;i++){const div=document.createElement('div');div.className='savol-item';
-div.innerHTML=`<div class="savol-num">${i}-savol</div><input class="ochiq-input" id="u_ochiq_${i}" type="text" placeholder="Togri javob..." oninput="ustozJavoblar.javoblar['${i}']=this.value" style="margin-top:6px"/>`;
-b3.appendChild(div);}
-sahifaOch('s-ustoz-javob');}
+function navBos(id,el){
+  sahifaOch(id);
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('aktiv'));
+  el.classList.add('aktiv');
+}
 
-async function ustozSaqlash(){
-for(let i=36;i<=40;i++){const el=document.getElementById(`u_ochiq_${i}`);if(el&&el.value.trim())ustozJavoblar.javoblar[String(i)]=el.value.trim();}
-let kamida=0;for(let i=1;i<=40;i++)if(ustozJavoblar.javoblar[String(i)])kamida++;
-if(kamida<35){xabarKo('ustoz-saqlash-xabar','error',`Kamida 35 ta javob kiriting! (${kamida}/40)`);return;}
-const btn=document.getElementById('ustoz-saqlash-btn');btn.disabled=true;btn.textContent='Saqlanmoqda...';
-try{
-const r=await fetch(`${API}/test/yarat`,{method:'POST',headers:{'Content-Type':'application/json'},
-body:JSON.stringify({kod:ustozJavoblar.kod,fan:ustozJavoblar.fan,ustoz_id:userId||0,javoblar:ustozJavoblar.javoblar,tur:'milliy',savollar_soni:40})});
-const d=await r.json();
-if(r.ok&&d.success){document.getElementById('yaratilgan-kod').textContent=ustozJavoblar.kod;sahifaOch('s-ustoz-tamom');}
-else{xabarKo('ustoz-saqlash-xabar','error',d.detail||'Xato!');btn.disabled=false;btn.textContent='Testni saqlash';}
-}catch(e){xabarKo('ustoz-saqlash-xabar','error','Serverga ulanib bolmadi!');btn.disabled=false;btn.textContent='Testni saqlash';}}
+async function telegramKirish(){
+  if(!userId){
+    // Demo rejim
+    kirishMuvaffaqiyat({first_name:'Demo', id:0});
+    return;
+  }
+  kirishMuvaffaqiyat({first_name:userName, id:userId});
+}
 
-function oddiyUstozKirish(){
-const fan=document.getElementById('u2-fan').value.trim();
-const kod=document.getElementById('u2-kod').value.trim().toUpperCase();
-if(!fan||!kod){xabarKo('u2-xabar','error','Fan va kodni kiriting!');return;}
-document.getElementById('u2-fan-kod').textContent=`Fan: ${fan} | Kod: ${kod} | Savollar: ${tanlanganSoni}`;
-ustozJavoblar={fan,kod,javoblar:{},tur:'oddiy',savollar_soni:tanlanganSoni};
-const blok=document.getElementById('blok-oddiy');blok.innerHTML='';
-for(let i=1;i<=tanlanganSoni;i++){const div=document.createElement('div');div.className='savol-item';
-div.innerHTML=`<div class="savol-num">${i}-savol</div><div class="v-grid abcd">${['A','B','C','D'].map(v=>`<button class="v-btn" id="u2_${i}_${v}" onclick="uVariant(${i},'${v}','oddiy')">${v}</button>`).join('')}</div>`;
-blok.appendChild(div);}
-sahifaOch('s-ustoz-oddiy-javob');}
+function kirishMuvaffaqiyat(user){
+  const initials=user.first_name.charAt(0).toUpperCase();
 
-async function oddiyUstozSaqlash(){
-let kamida=0;for(let i=1;i<=tanlanganSoni;i++)if(ustozJavoblar.javoblar[String(i)])kamida++;
-if(kamida<tanlanganSoni){xabarKo('u2-saqlash-xabar','error',`Barcha ${tanlanganSoni} ta javobni kiriting! (${kamida}/${tanlanganSoni})`);return;}
-const btn=document.getElementById('u2-saqlash-btn');btn.disabled=true;btn.textContent='Saqlanmoqda...';
-try{
-const r=await fetch(`${API}/test/yarat`,{method:'POST',headers:{'Content-Type':'application/json'},
-body:JSON.stringify({kod:ustozJavoblar.kod,fan:ustozJavoblar.fan,ustoz_id:userId||0,javoblar:ustozJavoblar.javoblar,tur:'oddiy',savollar_soni:tanlanganSoni})});
-const d=await r.json();
-if(r.ok&&d.success){document.getElementById('yaratilgan-kod').textContent=ustozJavoblar.kod;sahifaOch('s-ustoz-tamom');}
-else{xabarKo('u2-saqlash-xabar','error',d.detail||'Xato!');btn.disabled=false;btn.textContent='Testni saqlash';}
-}catch(e){xabarKo('u2-saqlash-xabar','error','Serverga ulanib bolmadi!');btn.disabled=false;btn.textContent='Testni saqlash';}}
+  // Avatar va ismlarni o'rnatish
+  document.getElementById('top-avatar').textContent=initials;
+  document.getElementById('profile-avatar').textContent=initials;
+  document.getElementById('hero-name').textContent=user.first_name+'!';
+  document.getElementById('profile-name').textContent=user.first_name;
+  document.getElementById('profile-id').textContent='ID: '+user.id;
 
-function uVariant(savol,v,tur){
-ustozJavoblar.javoblar[String(savol)]=v;
-const vs=savol>=33&&savol<=35?['A','B','C','D','E','F']:['A','B','C','D'];
-vs.forEach(b=>{const id=tur==='oddiy'?`u2_${savol}_${b}`:`u${savol}_${b}`;
-const el=document.getElementById(id);if(el)el.className='v-btn'+(b===v?' tanlandi':'');});}
-function xabarKo(id,tur,matn){const el=document.getElementById(id);el.style.display='block';el.className=`xabar ${tur}`;el.textContent=matn;}
-if(urlKod)rolTanla('oquvchi');
+  // Statistika yuklash
+  yuklaStat();
+
+  sahifaOch('s-bosh');
+  document.getElementById('bottom-nav').style.display='flex';
+}
+
+async function yuklaStat(){
+  try{
+    const r=await fetch(`${API}/kitob/fanlar`);
+    const d=await r.json();
+    document.getElementById('stat-kitob-soni').textContent=d.fanlar?.length||0;
+    document.getElementById('stat-kitoblar').textContent=d.fanlar?.length||0;
+  }catch(e){}
+}
+
+// Boshlash
+window.addEventListener('load',async()=>{
+  await new Promise(r=>setTimeout(r,800));
+  document.getElementById('loading').style.display='none';
+
+  if(userId){
+    // Allaqachon tizimda bo'lsa
+    kirishMuvaffaqiyat({first_name:userName,id:userId});
+  } else {
+    sahifaOch('s-kirish');
+  }
+});
 </script>
 </body>
 </html>
