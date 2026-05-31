@@ -571,6 +571,8 @@ function navBos(id,el){
   sahifaOch(id);
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('aktiv'));
   el.classList.add('aktiv');
+  if(id==='s-profil') yukladProfil();
+  if(id==='s-kitoblar') yukladFanlar();
 }
 
 async function telegramKirish(){
