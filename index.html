@@ -608,6 +608,31 @@ async function yuklaStat(){
   }catch(e){}
 }
 
+
+// ── PROFIL ──
+async function yukladProfil(){
+  if(!currentUser.id) return;
+  try{
+    const r=await fetch(API+"/profil/"+currentUser.id);
+    const d=await r.json();
+    document.getElementById("p-jami-test").textContent=d.jami_test||0;
+    document.getElementById("p-ortacha").textContent=d.ortacha_ball||"—";
+    document.getElementById("p-eng-yuqori").textContent=d.eng_yuqori||"—";
+    const list=document.getElementById("profil-natijalar-list");
+    if(!d.natijalar||!d.natijalar.length){
+      list.innerHTML="<div style='text-align:center;padding:20px;color:var(--muted)'>Hozircha natija yoq</div>";
+      return;
+    }
+    list.innerHTML=d.natijalar.map(function(n){
+      var ball=n.ball||0;
+      var rang=ball>=60?"var(--primary)":ball>=40?"#ff9500":"#ff6b6b";
+      return "<div class='natija-item'><div><div class='natija-kod'>"+n.test_kod+"</div><div class='natija-fan'>"+n.fan+"</div><div class='natija-vaqt'>"+n.vaqt+"</div></div><div class='natija-ball' style='color:"+rang+"'>"+( n.tugadi?ball+"b":"⏳")+"</div></div>";
+    }).join("");
+    document.getElementById("b-testlar").textContent=d.jami_test;
+    if(d.natijalar[0]&&d.natijalar[0].ball) document.getElementById("b-ball").textContent=d.natijalar[0].ball;
+  }catch(e){console.log("Profil xato:",e);}
+}
+
 // Boshlash
 window.addEventListener('load',async()=>{
   await new Promise(r=>setTimeout(r,800));
