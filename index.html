@@ -526,11 +526,23 @@ body{
   </div>
 </div>
 
-<div id="s-reyting" class="sahifa" style="padding:20px;align-items:center;justify-content:center">
-  <div style="text-align:center;color:var(--muted)">
-    <div style="font-size:3rem;margin-bottom:16px">🏆</div>
-    <div style="font-family:'Unbounded',sans-serif;font-size:1rem">Reyting bo'limi</div>
-    <div style="font-size:.85rem;margin-top:8px">Tez kunda...</div>
+<div id="s-reyting" class="sahifa">
+  <div class="topbar">
+    <div class="topbar-logo">Reyting</div>
+    <div class="topbar-avatar" id="top-avatar4">A</div>
+  </div>
+  <div style="display:flex;gap:8px;padding:12px 20px 0;overflow-x:auto">
+    <button class="tab-active" id="tab-umumiy" onclick="reytingTab('umumiy')" style="padding:8px 16px;border:none;border-radius:20px;background:var(--primary);color:#000;font-weight:600;font-size:.82rem;cursor:pointer;white-space:nowrap">🏆 Umumiy</button>
+    <button id="tab-oxirgi" onclick="reytingTab('oxirgi')" style="padding:8px 16px;border:1px solid var(--border);border-radius:20px;background:transparent;color:var(--muted);font-weight:600;font-size:.82rem;cursor:pointer;white-space:nowrap">📝 Oxirgi test</button>
+  </div>
+  <div style="padding:12px 20px 8px">
+    <div style="font-family:Unbounded,sans-serif;font-size:.75rem;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase" id="reyting-sarlavha">Umumiy reyting</div>
+  </div>
+  <div id="reyting-list" style="padding:0 20px">
+    <div style="text-align:center;padding:20px;color:var(--muted)">
+      <div style="display:inline-block;width:24px;height:24px;border:2px solid rgba(255,255,255,.1);border-top-color:var(--primary);border-radius:50%;animation:spin .6s linear infinite;margin-bottom:8px"></div>
+      <div style="font-size:.85rem">Yuklanmoqda...</div>
+    </div>
   </div>
 </div>
 
@@ -657,6 +669,51 @@ async function yukladProfil(){
     document.getElementById("b-testlar").textContent=d.jami_test;
     if(d.natijalar[0]&&d.natijalar[0].ball) document.getElementById("b-ball").textContent=d.natijalar[0].ball;
   }catch(e){console.log("Profil xato:",e);}
+}
+
+
+// ── REYTING ──
+async function yukladReyting(){
+  await reytingTabOch("umumiy");
+}
+
+async function reytingTabOch(tab){
+  const list=document.getElementById("reyting-list");
+  const s=document.getElementById("reyting-sarlavha");
+  const t1=document.getElementById("tab-umumiy");
+  const t2=document.getElementById("tab-oxirgi");
+  if(t1&&t2){
+    if(tab==="umumiy"){
+      t1.style.background="var(--primary)";t1.style.color="#000";
+      t2.style.background="transparent";t2.style.color="var(--muted)";
+      if(s) s.textContent="Umumiy reyting";
+    } else {
+      t2.style.background="var(--primary)";t2.style.color="#000";
+      t1.style.background="transparent";t1.style.color="var(--muted)";
+      if(s) s.textContent="Oxirgi test natijalari";
+    }
+  }
+  list.innerHTML="<div style='text-align:center;padding:20px;color:var(--muted)'><div style='display:inline-block;width:24px;height:24px;border:2px solid rgba(255,255,255,.1);border-top-color:var(--primary);border-radius:50%;animation:spin .6s linear infinite'></div></div>";
+  try{
+    const url=tab==="umumiy"?API+"/reyting/umumiy":API+"/reyting/oxirgi";
+    const r=await fetch(url);
+    const d=await r.json();
+    const reyting=tab==="umumiy"?d.reyting||[]:d.reyting||[];
+    if(tab==="oxirgi"&&d.fan&&s) s.textContent="Oxirgi: "+d.fan;
+    if(!reyting.length){list.innerHTML="<div style='text-align:center;padding:20px;color:var(--muted);font-size:.85rem'>Hozircha natija yoq</div>";return;}
+    list.innerHTML=reyting.map(function(n){
+      var ob=n.orin===1?"🥇":n.orin===2?"🥈":n.orin===3?"🥉":n.orin+".";
+      var ball=tab==="umumiy"?n.jami_ball:n.ball||0;
+      var rang=ball>=60?"var(--primary)":ball>=40?"#ff9500":"#ff6b6b";
+      var men=currentUser.id&&n.user_id===currentUser.id;
+      return "<div style='background:"+(men?"rgba(0,212,170,.1)":"var(--card)")+";border:1px solid "+(men?"rgba(0,212,170,.4)":"var(--border)")+";border-radius:16px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px'>"
+        +"<div style='font-size:1.2rem;min-width:32px;text-align:center'>"+ob+"</div>"
+        +"<div style='width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--primary2));display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0'>"+(n.ism?n.ism.charAt(0):"?")+"</div>"
+        +"<div style='flex:1'><div style='font-size:.9rem;font-weight:600'>"+n.ism+" "+(n.familiya||"")+"</div></div>"
+        +"<div style='font-family:Unbounded,sans-serif;font-size:.95rem;font-weight:900;color:"+rang+"'>"+ball+" b</div>"
+        +"</div>";
+    }).join("");
+  }catch(e){list.innerHTML="<div style='text-align:center;padding:20px;color:var(--muted)'>Xato: "+e+"</div>";}
 }
 
 // Boshlash
