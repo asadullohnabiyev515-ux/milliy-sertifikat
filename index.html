@@ -650,6 +650,15 @@ function xabar(id,tur,matn){
 }
 
 
+function ustozKirish2(){
+  if(ADMIN_IDS.includes(curUser.id||0)){
+    goPage('p-ustoz',-1);
+    ustozTab(1);
+  } else {
+    alert('Faqat ustoz uchun! ID: '+curUser.id);
+  }
+}
+
 // ── USTOZ PANEL ──
 const ADMIN_IDS = [5145005581];
 let ustozTur = 'milliy';
