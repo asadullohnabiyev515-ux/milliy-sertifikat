@@ -322,6 +322,15 @@ function kirish(){
   goPage('p-bosh',0);
   document.getElementById('bnav').classList.add('show');
   if(urlTab==='tester') setTimeout(function(){goPage('p-tester',4);},200);
+  // Ustoz uchun panel tugmasi qo'shish
+  if(ADMIN_IDS.includes(curUser.id)){
+    var bnav = document.getElementById('bnav');
+    var ustozBtn = document.createElement('div');
+    ustozBtn.className = 'bnav-item';
+    ustozBtn.innerHTML = '<div class="icon">👨‍🏫</div><div class="label">Ustoz</div>';
+    ustozBtn.onclick = function(){goPage('p-ustoz',-1);ustozTab(1);};
+    bnav.appendChild(ustozBtn);
+  }
 }
 
 async function statYukla(){
@@ -634,6 +643,293 @@ function xabar(id,tur,matn){
   el.textContent=matn;
 }
 
+
+// ── USTOZ PANEL ──
+const ADMIN_IDS = [5145005581];
+let ustozTur = 'milliy';
+let ustozSoni = 40;
+let ustozJavoblar = {};
+let usSavolTogri = '';
+
+function ustozKirish(){
+  if(ADMIN_IDS.includes(curUser.id)){
+    goPage('p-ustoz',-1);
+    ustozTab(1);
+    // Bottom navga ustoz tugmasi
+    var bnav = document.getElementById('bnav');
+    bnav.innerHTML += '<div class="bnav-item" id="bn-ustoz" onclick="goPage(\'p-ustoz\',-1)" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;cursor:pointer"><div class="icon" style="font-size:1.3rem;opacity:.5">👨‍🏫</div><div class="label" style="font-size:.58rem;opacity:.5;font-weight:500">Ustoz</div></div>';
+  } else {
+    alert('Ruxsat yoq!');
+  }
+}
+
+function ustozTab(n){
+  [1,2,3,4].forEach(function(i){
+    var tab = document.getElementById('utab'+i);
+    var blok = document.getElementById('ublok'+i);
+    if(tab) tab.className = 'tab-btn ' + (i===n?'active':'inactive');
+    if(blok) blok.style.display = i===n?'block':'none';
+  });
+  if(n===1) ustozTestlarYukla();
+  if(n===2) ustozSavollarYukla();
+  if(n===3) ustozKitoblarYukla();
+  if(n===4) ustozNatijalarYukla();
+}
+
+async function ustozTestlarYukla(){
+  var list = document.getElementById('ustoz-testlar-list');
+  list.innerHTML = '<div style="text-align:center;padding:20px"><div class="spinner" style="margin:0 auto"></div></div>';
+  try{
+    var r = await fetch(API+'/ustoz/testlar/'+curUser.id);
+    var d = await r.json();
+    var testlar = d.testlar||[];
+    if(!testlar.length){list.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Hozircha test yoq</div>';return;}
+    document.getElementById('u-jami-test').textContent = testlar.length;
+    var jami_oquvchi = testlar.reduce(function(s,t){return s+t.talabalar;},0);
+    document.getElementById('u-jami-oquvchi').textContent = jami_oquvchi;
+    list.innerHTML = testlar.map(function(t){
+      var holat = t.tugadi ? '<span style="color:#ff6b35;font-size:.72rem">✅ Tugagan</span>' : '<span style="color:#00d4aa;font-size:.72rem">🟢 Aktiv</span>';
+      return '<div class="ritem" style="flex-direction:column;align-items:flex-start;gap:8px"><div style="display:flex;justify-content:space-between;width:100%;align-items:center"><div style="font-family:Unbounded,sans-serif;font-size:.82rem;font-weight:700;color:#00d4aa">'+t.kod+'</div>'+holat+'</div><div style="font-size:.88rem;font-weight:500">'+t.fan+'</div><div style="display:flex;gap:12px"><span style="font-size:.72rem;color:rgba(255,255,255,.4)">👥 '+t.talabalar+' o'quvchi</span>'+(t.tugadi?'':'<button onclick="ustozTestYakunla(''+t.kod+'')" style="background:rgba(255,107,53,.15);border:1px solid rgba(255,107,53,.3);border-radius:8px;padding:3px 10px;font-size:.72rem;color:#ff6b35;cursor:pointer">🏁 Yakunlash</button>')+'</div></div>';
+    }).join('');
+  }catch(e){list.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Xato</div>';}
+}
+
+async function ustozTestYakunla(kod){
+  if(!confirm(kod+' testni yakunlashni tasdiqlaysizmi?')) return;
+  try{
+    var r = await fetch(API+'/test/yakunla',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({test_kod:kod,ustoz_id:curUser.id})});
+    var d = await r.json();
+    if(d.success){
+      alert('Test yakunlandi! Jami: '+d.jami+' o'quvchi');
+      ustozTestlarYukla();
+    } else {
+      alert('Xato: '+(d.detail||''));
+    }
+  }catch(e){alert('Xato: '+e);}
+}
+
+async function ustozSavollarYukla(){
+  var list = document.getElementById('ustoz-savollar-list');
+  list.innerHTML = '<div style="text-align:center;padding:20px"><div class="spinner" style="margin:0 auto"></div></div>';
+  try{
+    var r = await fetch(API+'/savol/fanlar');
+    var d = await r.json();
+    var fanlar = d.fanlar||[];
+    if(!fanlar.length){list.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Hozircha savollar yoq</div>';return;}
+    list.innerHTML = fanlar.map(function(f){
+      return '<div class="ritem" style="justify-content:space-between"><div><div style="font-size:.9rem;font-weight:600">'+f.fan+'</div><div style="font-size:.72rem;color:rgba(255,255,255,.4)">'+f.jami+' ta savol</div></div><div style="color:#00d4aa;font-size:.8rem;font-weight:600">'+f.mavzular.length+' mavzu</div></div>';
+    }).join('');
+  }catch(e){}
+}
+
+async function ustozKitoblarYukla(){
+  var list = document.getElementById('ustoz-kitoblar-list');
+  list.innerHTML = '<div style="text-align:center;padding:20px"><div class="spinner" style="margin:0 auto"></div></div>';
+  try{
+    var r = await fetch(API+'/kitob/fanlar');
+    var d = await r.json();
+    var fanlar = d.fanlar||[];
+    if(!fanlar.length){list.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Hozircha kitoblar yoq</div>';return;}
+    var html = '';
+    for(var i=0;i<fanlar.length;i++){
+      var fan = fanlar[i];
+      var r2 = await fetch(API+'/kitob/royxat/'+fan);
+      var d2 = await r2.json();
+      var kitoblar = d2.kitoblar||[];
+      kitoblar.forEach(function(k,idx){
+        html += '<div class="ritem" style="justify-content:space-between"><div><div style="font-size:.88rem;font-weight:600">'+k.nomi+'</div><div style="font-size:.72rem;color:rgba(255,255,255,.4)">'+fan+'</div></div><button onclick="kitobOchir(''+fan+'','+idx+')" style="background:rgba(255,59,48,.12);border:1px solid rgba(255,59,48,.25);border-radius:8px;padding:4px 10px;font-size:.72rem;color:#ff6b6b;cursor:pointer">🗑 O'chir</button></div>';
+      });
+    }
+    list.innerHTML = html || '<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Kitoblar yoq</div>';
+  }catch(e){}
+}
+
+async function kitobOchir(fan, idx){
+  if(!confirm('Kitobni o'chirishni tasdiqlaysizmi?')) return;
+  try{
+    var r = await fetch(API+'/kitob/ochir/'+fan+'/'+idx+'?ustoz_id='+curUser.id,{method:'DELETE'});
+    var d = await r.json();
+    if(d.success){alert('Kitob o'chirildi!');ustozKitoblarYukla();}
+    else alert('Xato: '+(d.detail||''));
+  }catch(e){alert('Xato: '+e);}
+}
+
+async function ustozNatijalarYukla(){
+  try{
+    var r = await fetch(API+'/ustoz/testlar/'+curUser.id);
+    var d = await r.json();
+    var testlar = d.testlar||[];
+    document.getElementById('u-jami-test').textContent = testlar.length;
+    var jami = testlar.reduce(function(s,t){return s+t.talabalar;},0);
+    document.getElementById('u-jami-oquvchi').textContent = jami;
+    var list = document.getElementById('ustoz-natijalar-list');
+    list.innerHTML = testlar.map(function(t){
+      return '<div class="ritem" style="justify-content:space-between"><div><div style="font-family:Unbounded,sans-serif;font-size:.8rem;font-weight:700;color:#00d4aa">'+t.kod+'</div><div style="font-size:.85rem;margin-top:2px">'+t.fan+'</div></div><div style="text-align:right"><div style="font-size:.72rem;color:rgba(255,255,255,.4)">'+t.talabalar+' o'quvchi</div><div style="font-size:.72rem;color:'+(t.tugadi?'#ff6b35':'#00d4aa')+';margin-top:2px">'+(t.tugadi?'Tugagan':'Aktiv')+'</div></div></div>';
+    }).join('') || '<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Natija yoq</div>';
+  }catch(e){}
+}
+
+// Test yaratish
+function ustozTurTanla(tur){
+  ustozTur = tur;
+  document.getElementById('tur-milliy').style.borderColor = tur==='milliy'?'#00d4aa':'rgba(255,255,255,.08)';
+  document.getElementById('tur-milliy').style.background = tur==='milliy'?'rgba(0,212,170,.08)':'rgba(255,255,255,.05)';
+  document.getElementById('tur-oddiy').style.borderColor = tur==='oddiy'?'#00d4aa':'rgba(255,255,255,.08)';
+  document.getElementById('tur-oddiy').style.background = tur==='oddiy'?'rgba(0,212,170,.08)':'rgba(255,255,255,.05)';
+  document.getElementById('ut-oddiy-soni').style.display = tur==='oddiy'?'block':'none';
+  if(tur==='oddiy'){
+    var grid = document.getElementById('ut-soni-grid');
+    var sonilar = [5,10,15,20,25,30,35,40];
+    grid.innerHTML = sonilar.map(function(s){
+      return '<button onclick="ustozSoniTanla('+s+')" id="usoni-'+s+'" class="vbtn'+(s===40?' sel':'')+'" style="justify-content:center;padding:10px">'+s+'</button>';
+    }).join('');
+    ustozSoni = 40;
+  }
+}
+
+function ustozSoniTanla(soni){
+  ustozSoni = soni;
+  [5,10,15,20,25,30,35,40].forEach(function(s){
+    var el = document.getElementById('usoni-'+s);
+    if(el) el.className = 'vbtn'+(s===soni?' sel':'');
+  });
+}
+
+function ustozTestJavoblargaO(){
+  var fan = document.getElementById('ut-fan').value.trim();
+  var kod = document.getElementById('ut-kod').value.trim().toUpperCase();
+  if(!fan||!kod){xabar('ut-xabar','err','Fan va kodni kiriting!');return;}
+  var jami = ustozTur==='milliy'?40:ustozSoni;
+  ustozJavoblar = {};
+  document.getElementById('uj-title').textContent = fan+' ('+kod+')';
+  var list = document.getElementById('uj-savol-list');
+  var html = '';
+  for(var i=0;i<jami;i++){
+    var n = i+1;
+    var harflar = ustozTur==='milliy'&&n>=33&&n<=35?['A','B','C','D','E','F']:['A','B','C','D'];
+    var ochiq = ustozTur==='milliy'&&n>=36;
+    html += '<div class="card" style="margin-bottom:10px"><div style="font-size:.8rem;color:#00d4aa;font-weight:700;margin-bottom:8px">'+n+'-savol</div>';
+    if(!ochiq){
+      html += '<div style="display:grid;grid-template-columns:repeat('+(harflar.length===4?4:3)+',1fr);gap:6px">';
+      harflar.forEach(function(h){
+        html += '<button onclick="ujTanla('+n+',''+h+'')" id="uj-'+n+'-'+h+'" class="vbtn" style="justify-content:center;padding:10px"><span class="vbadge">'+h+'</span></button>';
+      });
+      html += '</div>';
+    } else {
+      html += '<input class="input" id="uj-ochiq-'+n+'" type="text" placeholder="Javob yozing..." onchange="ustozJavoblar[''+n+'']=this.value"/>';
+    }
+    html += '</div>';
+  }
+  list.innerHTML = html;
+  goPage('p-ustoz-javoblar',-1);
+}
+
+function ujTanla(savol, harf){
+  ustozJavoblar[String(savol)] = harf;
+  var jami = ustozTur==='milliy'?40:ustozSoni;
+  var harflar = ustozTur==='milliy'&&savol>=33&&savol<=35?['A','B','C','D','E','F']:['A','B','C','D'];
+  harflar.forEach(function(h){
+    var el = document.getElementById('uj-'+savol+'-'+h);
+    if(el) el.className = 'vbtn'+(h===harf?' sel':'');
+    if(el){
+      var badge = el.querySelector('.vbadge');
+      if(badge) badge.style.background = h===harf?'#00d4aa':'rgba(255,255,255,.08)';
+      if(badge) badge.style.color = h===harf?'#000':'#fff';
+    }
+  });
+}
+
+async function ustozTestSaqla(){
+  var fan = document.getElementById('ut-fan').value.trim();
+  var kod = document.getElementById('ut-kod').value.trim().toUpperCase();
+  var jami = ustozTur==='milliy'?40:ustozSoni;
+  // Ochiq javoblarni olish
+  for(var i=36;i<=40;i++){
+    var el = document.getElementById('uj-ochiq-'+i);
+    if(el&&el.value.trim()) ustozJavoblar[String(i)] = el.value.trim();
+  }
+  var kiritilgan = Object.keys(ustozJavoblar).length;
+  var min_kerak = ustozTur==='milliy'?35:jami;
+  if(kiritilgan < min_kerak){
+    xabar('uj-xabar','err','Kamida '+min_kerak+' ta javob kiriting! (Hozir: '+kiritilgan+')');
+    return;
+  }
+  var btn = document.getElementById('uj-saqlash-btn');
+  btn.disabled = true; btn.textContent = 'Saqlanmoqda...';
+  try{
+    var r = await fetch(API+'/test/yarat',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({kod:kod,fan:fan,ustoz_id:curUser.id,javoblar:ustozJavoblar,tur:ustozTur,savollar_soni:jami})});
+    var d = await r.json();
+    if(d.success){
+      alert('Test yaratildi! Kod: '+kod);
+      goPage('p-ustoz',-1);
+      ustozTab(1);
+    } else {
+      xabar('uj-xabar','err',d.detail||'Xato');
+      btn.disabled=false;btn.textContent='Testni saqlash';
+    }
+  }catch(e){xabar('uj-xabar','err','Xato: '+e);btn.disabled=false;btn.textContent='Testni saqlash';}
+}
+
+// Savol qo'shish
+function usTogriTanla(harf){
+  usSavolTogri = harf;
+  ['A','B','C','D'].forEach(function(h){
+    var el = document.getElementById('us-togri-'+h);
+    if(el){
+      el.className = 'vbtn'+(h===harf?' sel':'');
+      var badge = el.querySelector('.vbadge');
+      if(badge){badge.style.background=h===harf?'#00d4aa':'rgba(255,255,255,.08)';badge.style.color=h===harf?'#000':'#fff';}
+    }
+  });
+}
+
+async function ustozSavolSaqla(){
+  var fan = document.getElementById('us-fan').value.trim();
+  var mavzu = document.getElementById('us-mavzu').value.trim();
+  var savol = document.getElementById('us-savol').value.trim();
+  var a = document.getElementById('us-a').value.trim();
+  var b = document.getElementById('us-b').value.trim();
+  var c = document.getElementById('us-c').value.trim();
+  var d = document.getElementById('us-d').value.trim();
+  if(!fan||!mavzu||!savol||!a||!b||!c||!d||!usSavolTogri){
+    xabar('us-xabar','err','Barcha maydonlarni toldiring!');return;
+  }
+  try{
+    var r = await fetch(API+'/savol/qosh',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({fan:fan,mavzu:mavzu,savol:savol,variantlar:{A:a,B:b,C:c,D:d},togri_javob:usSavolTogri,qiyinlik:'orta',ustoz_id:curUser.id})});
+    var res = await r.json();
+    if(res.success){
+      xabar('us-xabar','ok','Savol saqlandi!');
+      document.getElementById('us-savol').value='';
+      document.getElementById('us-a').value='';
+      document.getElementById('us-b').value='';
+      document.getElementById('us-c').value='';
+      document.getElementById('us-d').value='';
+      usSavolTogri='';
+      ['A','B','C','D'].forEach(function(h){
+        var el=document.getElementById('us-togri-'+h);
+        if(el){el.className='vbtn';var badge=el.querySelector('.vbadge');if(badge){badge.style.background='rgba(255,255,255,.08)';badge.style.color='#fff';}}
+      });
+    } else {
+      xabar('us-xabar','err',res.detail||'Xato');
+    }
+  }catch(e){xabar('us-xabar','err','Xato: '+e);}
+}
+
+function ukBotYubor(){
+  var fan = document.getElementById('uk-fan').value.trim();
+  var nomi = document.getElementById('uk-nomi').value.trim();
+  if(!fan||!nomi){xabar('uk-xabar','err','Fan va kitob nomini kiriting!');return;}
+  if(tg){
+    tg.sendData(JSON.stringify({action:'kitob_info',fan:fan,nomi:nomi}));
+    xabar('uk-xabar','info','Botga yuboring: /start → Ustoz paneli → Kitob qoshish');
+  } else {
+    xabar('uk-xabar','info','Bot orqali: Ustoz paneli → Kitob qoshish');
+  }
+}
+
 window.addEventListener('load',async function(){
   await new Promise(function(r){setTimeout(r,600);});
   document.getElementById('loading').style.display='none';
@@ -651,3 +947,151 @@ window.addEventListener('load',async function(){
 </script>
 </body>
 </html>
+<!-- USTOZ PANEL -->
+<div class="page" id="p-ustoz">
+  <div class="topbar"><div class="logo">Ustoz paneli</div><div class="avatar" id="av8">U</div></div>
+  <div class="tab-btns">
+    <button class="tab-btn active" id="utab1" onclick="ustozTab(1)">📝 Testlar</button>
+    <button class="tab-btn inactive" id="utab2" onclick="ustozTab(2)">❓ Savollar</button>
+    <button class="tab-btn inactive" id="utab3" onclick="ustozTab(3)">📚 Kitoblar</button>
+    <button class="tab-btn inactive" id="utab4" onclick="ustozTab(4)">📊 Natijalar</button>
+  </div>
+
+  <!-- Testlar -->
+  <div id="ublok1" style="padding:16px 20px">
+    <button class="btn btn-primary" onclick="goPage('p-ustoz-test-yarat',-1)" style="margin-bottom:16px">➕ Yangi test yaratish</button>
+    <div class="section-title">Mening testlarim</div>
+    <div id="ustoz-testlar-list"><div style="text-align:center;padding:20px"><div class="spinner" style="margin:0 auto"></div></div></div>
+  </div>
+
+  <!-- Savollar -->
+  <div id="ublok2" style="display:none;padding:16px 20px">
+    <button class="btn btn-primary" onclick="goPage('p-ustoz-savol-yarat',-1)" style="margin-bottom:16px">➕ Yangi savol qo'shish</button>
+    <div class="section-title">Savollar bazasi</div>
+    <div id="ustoz-savollar-list"><div style="text-align:center;padding:20px"><div class="spinner" style="margin:0 auto"></div></div></div>
+  </div>
+
+  <!-- Kitoblar -->
+  <div id="ublok3" style="display:none;padding:16px 20px">
+    <button class="btn btn-primary" onclick="goPage('p-ustoz-kitob-yarat',-1)" style="margin-bottom:16px">➕ Kitob qo'shish</button>
+    <div class="section-title">Kitoblar</div>
+    <div id="ustoz-kitoblar-list"><div style="text-align:center;padding:20px"><div class="spinner" style="margin:0 auto"></div></div></div>
+  </div>
+
+  <!-- Natijalar -->
+  <div id="ublok4" style="display:none;padding:16px 20px">
+    <div class="section-title">Umumiy statistika</div>
+    <div class="grid2" style="margin-bottom:16px">
+      <div class="stat-box"><div class="stat-num" id="u-jami-test">0</div><div class="stat-label">Testlar</div></div>
+      <div class="stat-box"><div class="stat-num" id="u-jami-oquvchi">0</div><div class="stat-label">O'quvchilar</div></div>
+    </div>
+    <div class="section-title">So'nggi testlar natijalari</div>
+    <div id="ustoz-natijalar-list"></div>
+  </div>
+</div>
+
+<!-- USTOZ TEST YARATISH -->
+<div class="page" id="p-ustoz-test-yarat">
+  <div class="topbar">
+    <button onclick="goPage('p-ustoz',-1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+    <div class="logo">Test yaratish</div>
+    <div style="width:34px"></div>
+  </div>
+  <div style="padding:16px 20px">
+    <div class="card">
+      <div class="section-title">Test turi</div>
+      <div class="grid2" style="margin-bottom:16px">
+        <div id="tur-milliy" onclick="ustozTurTanla('milliy')" class="menu-card" style="text-align:center;border-color:#00d4aa;background:rgba(0,212,170,.08)">
+          <div style="font-size:1.5rem;margin-bottom:6px">🏆</div>
+          <div class="menu-title">Milliy</div>
+          <div class="menu-sub">40 savol, 75 ball</div>
+        </div>
+        <div id="tur-oddiy" onclick="ustozTurTanla('oddiy')" class="menu-card" style="text-align:center">
+          <div style="font-size:1.5rem;margin-bottom:6px">📝</div>
+          <div class="menu-title">Oddiy</div>
+          <div class="menu-sub">Savollar soni tanlanadi</div>
+        </div>
+      </div>
+      <label style="font-size:.8rem;color:rgba(255,255,255,.4);display:block;margin-bottom:4px">Fan nomi</label>
+      <input class="input" id="ut-fan" type="text" placeholder="Masalan: Kimyo" style="margin-bottom:12px"/>
+      <label style="font-size:.8rem;color:rgba(255,255,255,.4);display:block;margin-bottom:4px">Test kodi</label>
+      <input class="input" id="ut-kod" type="text" placeholder="Masalan: KIM2024" style="text-transform:uppercase;margin-bottom:12px"/>
+      <div id="ut-oddiy-soni" style="display:none;margin-bottom:12px">
+        <label style="font-size:.8rem;color:rgba(255,255,255,.4);display:block;margin-bottom:4px">Savollar soni</label>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px" id="ut-soni-grid"></div>
+      </div>
+      <button class="btn btn-primary" onclick="ustozTestJavoblargaO()">Javoblarni kiritish →</button>
+      <div class="xabar" id="ut-xabar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- USTOZ JAVOBLAR -->
+<div class="page" id="p-ustoz-javoblar">
+  <div class="topbar">
+    <button onclick="goPage('p-ustoz-test-yarat',-1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+    <div class="logo" id="uj-title">Javoblar</div>
+    <div style="width:34px"></div>
+  </div>
+  <div style="padding:16px 20px">
+    <div id="uj-savol-list"></div>
+    <button class="btn btn-primary" onclick="ustozTestSaqla()" id="uj-saqlash-btn" style="margin-top:16px">💾 Testni saqlash</button>
+    <div class="xabar" id="uj-xabar"></div>
+  </div>
+</div>
+
+<!-- USTOZ SAVOL YARATISH -->
+<div class="page" id="p-ustoz-savol-yarat">
+  <div class="topbar">
+    <button onclick="goPage('p-ustoz',-1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+    <div class="logo">Savol qo'shish</div>
+    <div style="width:34px"></div>
+  </div>
+  <div style="padding:16px 20px">
+    <div class="card">
+      <label style="font-size:.8rem;color:rgba(255,255,255,.4);display:block;margin-bottom:4px">Fan</label>
+      <input class="input" id="us-fan" type="text" placeholder="Masalan: Kimyo" style="margin-bottom:12px"/>
+      <label style="font-size:.8rem;color:rgba(255,255,255,.4);display:block;margin-bottom:4px">Mavzu</label>
+      <input class="input" id="us-mavzu" type="text" placeholder="Masalan: Kimyoviy reaksiyalar" style="margin-bottom:12px"/>
+      <label style="font-size:.8rem;color:rgba(255,255,255,.4);display:block;margin-bottom:4px">Savol matni</label>
+      <input class="input" id="us-savol" type="text" placeholder="Savol yozing..." style="margin-bottom:12px"/>
+      <label style="font-size:.8rem;color:rgba(255,255,255,.4);display:block;margin-bottom:4px">A varianti</label>
+      <input class="input" id="us-a" type="text" placeholder="A javob" style="margin-bottom:8px"/>
+      <label style="font-size:.8rem;color:rgba(255,255,255,.4);display:block;margin-bottom:4px">B varianti</label>
+      <input class="input" id="us-b" type="text" placeholder="B javob" style="margin-bottom:8px"/>
+      <label style="font-size:.8rem;color:rgba(255,255,255,.4);display:block;margin-bottom:4px">C varianti</label>
+      <input class="input" id="us-c" type="text" placeholder="C javob" style="margin-bottom:8px"/>
+      <label style="font-size:.8rem;color:rgba(255,255,255,.4);display:block;margin-bottom:4px">D varianti</label>
+      <input class="input" id="us-d" type="text" placeholder="D javob" style="margin-bottom:12px"/>
+      <label style="font-size:.8rem;color:rgba(255,255,255,.4);display:block;margin-bottom:8px">To'g'ri javob</label>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px">
+        <button onclick="usTogriTanla('A')" id="us-togri-A" class="vbtn" style="justify-content:center"><span class="vbadge">A</span></button>
+        <button onclick="usTogriTanla('B')" id="us-togri-B" class="vbtn" style="justify-content:center"><span class="vbadge">B</span></button>
+        <button onclick="usTogriTanla('C')" id="us-togri-C" class="vbtn" style="justify-content:center"><span class="vbadge">C</span></button>
+        <button onclick="usTogriTanla('D')" id="us-togri-D" class="vbtn" style="justify-content:center"><span class="vbadge">D</span></button>
+      </div>
+      <button class="btn btn-primary" onclick="ustozSavolSaqla()">✅ Savolni saqlash</button>
+      <div class="xabar" id="us-xabar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- USTOZ KITOB YUKLASH -->
+<div class="page" id="p-ustoz-kitob-yarat">
+  <div class="topbar">
+    <button onclick="goPage('p-ustoz',-1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+    <div class="logo">Kitob qo'shish</div>
+    <div style="width:34px"></div>
+  </div>
+  <div style="padding:16px 20px">
+    <div class="card">
+      <div style="font-size:.85rem;color:rgba(255,255,255,.4);margin-bottom:16px;line-height:1.5">Kitob faylini botga yuboring. Bot orqali yuklash eng ishonchli usul.</div>
+      <label style="font-size:.8rem;color:rgba(255,255,255,.4);display:block;margin-bottom:4px">Fan nomi</label>
+      <input class="input" id="uk-fan" type="text" placeholder="Masalan: Kimyo" style="margin-bottom:12px"/>
+      <label style="font-size:.8rem;color:rgba(255,255,255,.4);display:block;margin-bottom:4px">Kitob nomi</label>
+      <input class="input" id="uk-nomi" type="text" placeholder="Masalan: Kimyo 9-sinf" style="margin-bottom:16px"/>
+      <button class="btn btn-primary" onclick="ukBotYubor()">📤 Bot orqali yuklash</button>
+      <div class="xabar" id="uk-xabar"></div>
+    </div>
+  </div>
+</div>
