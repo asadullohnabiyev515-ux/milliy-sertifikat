@@ -705,13 +705,14 @@ for(let i=0;i<20;i++){
 }
 
 function sahifaOch(id){
-  document.querySelectorAll('.sahifa').forEach(s=>{
-    s.classList.remove('aktiv');
-    s.style.display='none';
-  });
+  var barcha=document.querySelectorAll('.sahifa');
+  for(var i=0;i<barcha.length;i++){
+    barcha[i].style.cssText='display:none !important';
+    barcha[i].classList.remove('aktiv');
+  }
   var el=document.getElementById(id);
   if(el){
-    el.style.display='';
+    el.style.cssText='';
     el.classList.add('aktiv');
   }
   window.scrollTo(0,0);
