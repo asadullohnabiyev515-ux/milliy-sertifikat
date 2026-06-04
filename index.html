@@ -58,8 +58,8 @@ body{
 }
 
 /* ── Sahifalar ── */
-.sahifa{display:none !important;position:relative;z-index:1;min-height:100vh}
-.sahifa.aktiv{display:flex !important;flex-direction:column}
+.sahifa{display:none;position:relative;z-index:1;min-height:100vh}
+.sahifa.aktiv{display:flex;flex-direction:column}
 
 /* ── KIRISH SAHIFASI ── */
 #s-kirish{
@@ -352,7 +352,7 @@ body{
 <div class="particles" id="particles"></div>
 
 <!-- Loading -->
-<div class="loading-overlay" id="loading" style="display:flex">
+<div class="loading-overlay" id="loading">
   <div class="spinner"></div>
   <div class="loading-text">Yuklanmoqda...</div>
 </div>
@@ -486,109 +486,6 @@ body{
 </div>
 
 <!-- Bottom nav (bosh sahifadan keyin) -->
-
-<!-- TESTER -->
-<div id="s-tester" class="sahifa">
-  <div class="topbar">
-    <div class="topbar-logo">Tester</div>
-    <div class="topbar-avatar" id="top-avatar6">A</div>
-  </div>
-  <div style="display:flex;gap:8px;padding:12px 20px 0;overflow-x:auto">
-    <button id="tt-1" onclick="testerTab(1)" style="padding:8px 16px;border:none;border-radius:20px;background:var(--primary);color:#000;font-weight:600;font-size:.82rem;cursor:pointer;white-space:nowrap">📚 Tayyor</button>
-    <button id="tt-2" onclick="testerTab(2)" style="padding:8px 16px;border:1px solid var(--border);border-radius:20px;background:transparent;color:var(--muted);font-weight:600;font-size:.82rem;cursor:pointer;white-space:nowrap">👥 Dost bilan</button>
-    <button id="tt-3" onclick="testerTab(3)" style="padding:8px 16px;border:1px solid var(--border);border-radius:20px;background:transparent;color:var(--muted);font-weight:600;font-size:.82rem;cursor:pointer;white-space:nowrap">🔄 Trening</button>
-  </div>
-  <div id="tt-blok-1" style="padding:16px 20px">
-    <div id="tt-fanlar-wrap">
-      <div style="font-family:Unbounded,sans-serif;font-size:.8rem;font-weight:700;color:var(--muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">Fanni tanlang</div>
-      <div id="tt-fanlar-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div style="text-align:center;padding:20px;color:var(--muted);grid-column:span 2;font-size:.85rem">Yuklanmoqda...</div></div>
-    </div>
-    <div id="tt-mavzular-wrap" style="display:none">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-        <button onclick="ttFanlarKo()" style="background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer">←</button>
-        <div style="font-family:Unbounded,sans-serif;font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px" id="tt-fan-title">Fan</div>
-      </div>
-      <div id="tt-mavzular-list"></div>
-    </div>
-  </div>
-  <div id="tt-blok-2" style="display:none;padding:16px 20px">
-    <div style="background:linear-gradient(135deg,rgba(0,212,170,.15),rgba(0,168,255,.1));border:1px solid rgba(0,212,170,.3);border-radius:20px;padding:20px;margin-bottom:16px">
-      <div style="font-family:Unbounded,sans-serif;font-size:.95rem;font-weight:700;margin-bottom:8px">👥 Dost bilan test</div>
-      <select id="dost-fan" style="width:100%;padding:12px;background:rgba(255,255,255,.05);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-size:.9rem;margin-bottom:10px"><option value="">Fan tanlang...</option></select>
-      <select id="dost-soni" style="width:100%;padding:12px;background:rgba(255,255,255,.05);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-size:.9rem;margin-bottom:12px">
-        <option value="5">5 ta savol</option><option value="10" selected>10 ta savol</option>
-        <option value="15">15 ta savol</option><option value="20">20 ta savol</option>
-      </select>
-      <button onclick="dostTestYarat()" style="width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;font-size:.95rem;font-weight:600;cursor:pointer">🎯 Test yaratish</button>
-    </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px">
-      <div style="font-family:Unbounded,sans-serif;font-size:.95rem;font-weight:700;margin-bottom:8px">🔑 Kod orqali kirish</div>
-      <input id="dost-kod" type="text" placeholder="Masalan: DOST_ABC123" style="width:100%;padding:12px;background:rgba(255,255,255,.05);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-size:.9rem;margin-bottom:10px;text-transform:uppercase"/>
-      <button onclick="dostTestKirish()" style="width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,#8b5cf6,#d946ef);color:#fff;font-size:.95rem;font-weight:600;cursor:pointer">▶ Testga kirish</button>
-    </div>
-    <div id="dost-xabar" style="margin-top:12px;display:none;padding:12px;border-radius:12px;font-size:.88rem;font-weight:500"></div>
-  </div>
-  <div id="tt-blok-3" style="display:none;padding:16px 20px">
-    <div style="background:linear-gradient(135deg,rgba(255,107,53,.15),rgba(255,149,0,.1));border:1px solid rgba(255,107,53,.3);border-radius:20px;padding:20px">
-      <div style="font-family:Unbounded,sans-serif;font-size:.95rem;font-weight:700;margin-bottom:8px">🔄 Trening rejimi</div>
-      <div style="font-size:.82rem;color:var(--muted);margin-bottom:16px;line-height:1.5">Oldingi testlardagi xato savollarni qayta ishlang!</div>
-      <div id="trening-xato-soni" style="font-family:Unbounded,sans-serif;font-size:1.5rem;font-weight:900;color:#ff6b35;text-align:center;margin-bottom:8px">0</div>
-      <div style="font-size:.8rem;color:var(--muted);text-align:center;margin-bottom:16px">ta xato savol</div>
-      <button onclick="treningBoshlash()" style="width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,#ff6b35,#ff9500);color:#fff;font-size:.95rem;font-weight:600;cursor:pointer">🚀 Treningni boshlash</button>
-    </div>
-  </div>
-</div>
-
-<div id="s-tester-test" class="sahifa">
-  <div class="topbar">
-    <button onclick="sahifaOch('s-tester')" style="background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;padding:4px 8px">✕</button>
-    <div class="topbar-logo" id="tt-test-sarlavha">Test</div>
-    <div style="width:36px"></div>
-  </div>
-  <div style="padding:16px 20px">
-    <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-      <span style="font-size:.82rem;color:var(--muted)" id="tt-prog-matn">1 / 10</span>
-      <span style="font-family:Unbounded,sans-serif;font-size:.9rem;font-weight:700;color:var(--primary)" id="tt-prog-foiz">0%</span>
-    </div>
-    <div style="height:6px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden">
-      <div style="height:100%;background:linear-gradient(90deg,var(--primary),var(--primary2));border-radius:99px;transition:width .3s" id="tt-prog-fill"></div>
-    </div>
-  </div>
-  <div style="padding:0 20px 16px">
-    <div style="font-size:.8rem;color:var(--muted);margin-bottom:6px" id="tt-savol-num">1-savol</div>
-    <div style="font-size:1rem;font-weight:600;margin-bottom:16px;line-height:1.5" id="tt-savol-text">Savol...</div>
-    <div id="tt-variantlar" style="display:grid;gap:10px"></div>
-  </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px 20px">
-    <button onclick="ttOldinga()" id="tt-btn-oldin" style="padding:13px;border:1.5px solid var(--border);border-radius:14px;background:transparent;color:var(--text);font-size:.9rem;font-weight:600;cursor:pointer">← Oldingi</button>
-    <button onclick="ttKeyingi()" id="tt-btn-keyin" style="padding:13px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;font-size:.9rem;font-weight:600;cursor:pointer">Keyingi →</button>
-  </div>
-</div>
-
-<div id="s-tester-natija" class="sahifa" style="padding:20px">
-  <div style="text-align:center;padding:30px 0 20px">
-    <div style="font-size:4rem;margin-bottom:12px" id="tt-nat-emoji">🎉</div>
-    <div style="font-family:Unbounded,sans-serif;font-size:1.3rem;font-weight:900;margin-bottom:8px" id="tt-nat-ball">0%</div>
-    <div style="font-size:.9rem;color:var(--muted)" id="tt-nat-sub">Natija</div>
-  </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center">
-      <div style="font-family:Unbounded,sans-serif;font-size:1.1rem;font-weight:900;color:var(--primary)" id="tt-nat-togri">0</div>
-      <div style="font-size:.65rem;color:var(--muted);margin-top:4px">TOGRI</div>
-    </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center">
-      <div style="font-family:Unbounded,sans-serif;font-size:1.1rem;font-weight:900;color:#ff6b6b" id="tt-nat-xato">0</div>
-      <div style="font-size:.65rem;color:var(--muted);margin-top:4px">XATO</div>
-    </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center">
-      <div style="font-family:Unbounded,sans-serif;font-size:1.1rem;font-weight:900;color:#ff9500" id="tt-nat-jami">0</div>
-      <div style="font-size:.65rem;color:var(--muted);margin-top:4px">JAMI</div>
-    </div>
-  </div>
-  <div id="tt-nat-xatolar" style="margin-bottom:20px"></div>
-  <button onclick="navBos('s-tester',4)" style="width:100%;padding:13px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;font-size:.95rem;font-weight:600;cursor:pointer">🔄 Qayta urinish</button>
-</div>
-
 <div class="bottom-nav" id="bottom-nav" style="display:none">
   <div class="nav-item aktiv" onclick="navBos('s-bosh',this)">
     <div class="nav-icon">🏠</div>
@@ -605,10 +502,6 @@ body{
   <div class="nav-item" onclick="navBos('s-reyting',this)">
     <div class="nav-icon">🏆</div>
     <div class="nav-label">Reyting</div>
-  </div>
-  <div class="nav-item" onclick="navBos('s-tester',this)">
-    <div class="nav-icon">🎯</div>
-    <div class="nav-label">Tester</div>
   </div>
   <div class="nav-item" onclick="navBos('s-profil',this)">
     <div class="nav-icon">👤</div>
@@ -633,55 +526,19 @@ body{
   </div>
 </div>
 
-<div id="s-reyting" class="sahifa">
-  <div class="topbar">
-    <div class="topbar-logo">Reyting</div>
-    <div class="topbar-avatar" id="top-avatar4">A</div>
-  </div>
-  <div style="display:flex;gap:8px;padding:12px 20px 0;overflow-x:auto">
-    <button class="tab-active" id="tab-umumiy" onclick="reytingTab('umumiy')" style="padding:8px 16px;border:none;border-radius:20px;background:var(--primary);color:#000;font-weight:600;font-size:.82rem;cursor:pointer;white-space:nowrap">🏆 Umumiy</button>
-    <button id="tab-oxirgi" onclick="reytingTab('oxirgi')" style="padding:8px 16px;border:1px solid var(--border);border-radius:20px;background:transparent;color:var(--muted);font-weight:600;font-size:.82rem;cursor:pointer;white-space:nowrap">📝 Oxirgi test</button>
-  </div>
-  <div style="padding:12px 20px 8px">
-    <div style="font-family:Unbounded,sans-serif;font-size:.75rem;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase" id="reyting-sarlavha">Umumiy reyting</div>
-  </div>
-  <div id="reyting-list" style="padding:0 20px">
-    <div style="text-align:center;padding:20px;color:var(--muted)">
-      <div style="display:inline-block;width:24px;height:24px;border:2px solid rgba(255,255,255,.1);border-top-color:var(--primary);border-radius:50%;animation:spin .6s linear infinite;margin-bottom:8px"></div>
-      <div style="font-size:.85rem">Yuklanmoqda...</div>
-    </div>
+<div id="s-reyting" class="sahifa" style="padding:20px;align-items:center;justify-content:center">
+  <div style="text-align:center;color:var(--muted)">
+    <div style="font-size:3rem;margin-bottom:16px">🏆</div>
+    <div style="font-family:'Unbounded',sans-serif;font-size:1rem">Reyting bo'limi</div>
+    <div style="font-size:.85rem;margin-top:8px">Tez kunda...</div>
   </div>
 </div>
 
-<div id="s-profil" class="sahifa">
-  <div class="topbar">
-    <div class="topbar-logo">Profil</div>
-    <div class="topbar-avatar" id="top-avatar5">A</div>
-  </div>
-  <div style="padding:24px 20px;text-align:center;background:linear-gradient(180deg,rgba(0,212,170,.1) 0%,transparent 100%)">
-    <div style="width:80px;height:80px;border-radius:24px;background:linear-gradient(135deg,var(--primary),var(--primary2));display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:#fff;margin:0 auto 12px" id="p-avatar">A</div>
-    <div style="font-family:Unbounded,sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:4px" id="p-ism">—</div>
-    <div style="font-size:.8rem;color:var(--muted)" id="p-id">Telegram ID: —</div>
-  </div>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 20px 20px">
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center">
-      <div style="font-family:Unbounded,sans-serif;font-size:1.1rem;font-weight:900;color:var(--primary)" id="p-jami-test">0</div>
-      <div style="font-size:.65rem;color:var(--muted);margin-top:4px;text-transform:uppercase">Testlar</div>
-    </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center">
-      <div style="font-family:Unbounded,sans-serif;font-size:1.1rem;font-weight:900;color:var(--primary)" id="p-ortacha">—</div>
-      <div style="font-size:.65rem;color:var(--muted);margin-top:4px;text-transform:uppercase">Ortacha</div>
-    </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center">
-      <div style="font-family:Unbounded,sans-serif;font-size:1.1rem;font-weight:900;color:var(--primary)" id="p-eng-yuqori">—</div>
-      <div style="font-size:.65rem;color:var(--muted);margin-top:4px;text-transform:uppercase">Eng yuqori</div>
-    </div>
-  </div>
-  <div style="padding:0 20px">
-    <div style="font-family:Unbounded,sans-serif;font-size:.8rem;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">Songi natijalar</div>
-    <div id="profil-natijalar-list">
-      <div style="text-align:center;padding:20px;color:var(--muted);font-size:.85rem">Yuklanmoqda...</div>
-    </div>
+<div id="s-profil" class="sahifa" style="padding:20px;align-items:center;justify-content:center">
+  <div style="text-align:center;color:var(--muted)">
+    <div style="font-size:3rem;margin-bottom:16px">👤</div>
+    <div style="font-family:'Unbounded',sans-serif;font-size:1rem">Profil bo'limi</div>
+    <div style="font-size:.85rem;margin-top:8px">Tez kunda...</div>
   </div>
 </div>
 
@@ -705,16 +562,8 @@ for(let i=0;i<20;i++){
 }
 
 function sahifaOch(id){
-  var barcha=document.querySelectorAll('.sahifa');
-  for(var i=0;i<barcha.length;i++){
-    barcha[i].style.cssText='display:none !important';
-    barcha[i].classList.remove('aktiv');
-  }
-  var el=document.getElementById(id);
-  if(el){
-    el.style.cssText='';
-    el.classList.add('aktiv');
-  }
+  document.querySelectorAll('.sahifa').forEach(s=>s.classList.remove('aktiv'));
+  document.getElementById(id).classList.add('aktiv');
   window.scrollTo(0,0);
 }
 
@@ -722,9 +571,6 @@ function navBos(id,el){
   sahifaOch(id);
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('aktiv'));
   el.classList.add('aktiv');
-  if(id==='s-profil') yukladProfil();
-  if(id==='s-kitoblar') yukladFanlar();
-  if(id==='s-tester') testerTab(1);
 }
 
 async function telegramKirish(){
@@ -762,285 +608,6 @@ async function yuklaStat(){
   }catch(e){}
 }
 
-
-// ── PROFIL ──
-async function yukladProfil(){
-  if(!currentUser.id) return;
-  try{
-    const r=await fetch(API+"/profil/"+currentUser.id);
-    const d=await r.json();
-    document.getElementById("p-jami-test").textContent=d.jami_test||0;
-    document.getElementById("p-ortacha").textContent=d.ortacha_ball||"—";
-    document.getElementById("p-eng-yuqori").textContent=d.eng_yuqori||"—";
-    const list=document.getElementById("profil-natijalar-list");
-    if(!d.natijalar||!d.natijalar.length){
-      list.innerHTML="<div style='text-align:center;padding:20px;color:var(--muted)'>Hozircha natija yoq</div>";
-      return;
-    }
-    list.innerHTML=d.natijalar.map(function(n){
-      var ball=n.ball||0;
-      var rang=ball>=60?"var(--primary)":ball>=40?"#ff9500":"#ff6b6b";
-      return "<div class='natija-item'><div><div class='natija-kod'>"+n.test_kod+"</div><div class='natija-fan'>"+n.fan+"</div><div class='natija-vaqt'>"+n.vaqt+"</div></div><div class='natija-ball' style='color:"+rang+"'>"+( n.tugadi?ball+"b":"⏳")+"</div></div>";
-    }).join("");
-    document.getElementById("b-testlar").textContent=d.jami_test;
-    if(d.natijalar[0]&&d.natijalar[0].ball) document.getElementById("b-ball").textContent=d.natijalar[0].ball;
-  }catch(e){console.log("Profil xato:",e);}
-}
-
-
-// ── REYTING ──
-async function yukladReyting(){
-  await reytingTabOch("umumiy");
-}
-
-async function reytingTabOch(tab){
-  const list=document.getElementById("reyting-list");
-  const s=document.getElementById("reyting-sarlavha");
-  const t1=document.getElementById("tab-umumiy");
-  const t2=document.getElementById("tab-oxirgi");
-  if(t1&&t2){
-    if(tab==="umumiy"){
-      t1.style.background="var(--primary)";t1.style.color="#000";
-      t2.style.background="transparent";t2.style.color="var(--muted)";
-      if(s) s.textContent="Umumiy reyting";
-    } else {
-      t2.style.background="var(--primary)";t2.style.color="#000";
-      t1.style.background="transparent";t1.style.color="var(--muted)";
-      if(s) s.textContent="Oxirgi test natijalari";
-    }
-  }
-  list.innerHTML="<div style='text-align:center;padding:20px;color:var(--muted)'><div style='display:inline-block;width:24px;height:24px;border:2px solid rgba(255,255,255,.1);border-top-color:var(--primary);border-radius:50%;animation:spin .6s linear infinite'></div></div>";
-  try{
-    const url=tab==="umumiy"?API+"/reyting/umumiy":API+"/reyting/oxirgi";
-    const r=await fetch(url);
-    const d=await r.json();
-    const reyting=tab==="umumiy"?d.reyting||[]:d.reyting||[];
-    if(tab==="oxirgi"&&d.fan&&s) s.textContent="Oxirgi: "+d.fan;
-    if(!reyting.length){list.innerHTML="<div style='text-align:center;padding:20px;color:var(--muted);font-size:.85rem'>Hozircha natija yoq</div>";return;}
-    list.innerHTML=reyting.map(function(n){
-      var ob=n.orin===1?"🥇":n.orin===2?"🥈":n.orin===3?"🥉":n.orin+".";
-      var ball=tab==="umumiy"?n.jami_ball:n.ball||0;
-      var rang=ball>=60?"var(--primary)":ball>=40?"#ff9500":"#ff6b6b";
-      var men=currentUser.id&&n.user_id===currentUser.id;
-      return "<div style='background:"+(men?"rgba(0,212,170,.1)":"var(--card)")+";border:1px solid "+(men?"rgba(0,212,170,.4)":"var(--border)")+";border-radius:16px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px'>"
-        +"<div style='font-size:1.2rem;min-width:32px;text-align:center'>"+ob+"</div>"
-        +"<div style='width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--primary2));display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0'>"+(n.ism?n.ism.charAt(0):"?")+"</div>"
-        +"<div style='flex:1'><div style='font-size:.9rem;font-weight:600'>"+n.ism+" "+(n.familiya||"")+"</div></div>"
-        +"<div style='font-family:Unbounded,sans-serif;font-size:.95rem;font-weight:900;color:"+rang+"'>"+ball+" b</div>"
-        +"</div>";
-    }).join("");
-  }catch(e){list.innerHTML="<div style='text-align:center;padding:20px;color:var(--muted)'>Xato: "+e+"</div>";}
-}
-
-
-// ── TESTER ──
-let ttSavollar=[], ttJavoblar={}, ttJoriy=0, ttFan="", ttMavzu="";
-
-function testerTab(n){
-  [1,2,3].forEach(function(i){
-    var el=document.getElementById("tt-"+i);
-    var blok=document.getElementById("tt-blok-"+i);
-    if(el&&blok){
-      if(i===n){
-        el.style.background="var(--primary)";el.style.color="#000";
-        blok.style.display="block";
-      } else {
-        el.style.background="transparent";el.style.color="var(--muted)";
-        blok.style.display="none";
-      }
-    }
-  });
-  if(n===1) ttFanlarYukla();
-  if(n===2) ttDostFanlarYukla();
-  if(n===3) ttTreningYukla();
-}
-
-async function ttFanlarYukla(){
-  try{
-    var r=await fetch(API+"/savol/fanlar");
-    var d=await r.json();
-    var fanlar=d.fanlar||[];
-    var grid=document.getElementById("tt-fanlar-grid");
-    if(!fanlar.length){
-      grid.innerHTML="<div style='text-align:center;padding:20px;color:var(--muted);grid-column:span 2;font-size:.85rem'>Hozircha savollar yoq</div>";
-      return;
-    }
-    grid.innerHTML=fanlar.map(function(f){
-      return "<div onclick='ttFanTanla(""+f.fan+"")' style='background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px 16px;cursor:pointer;text-align:center'>"
-        +"<div style='font-size:2rem;margin-bottom:10px'>📚</div>"
-        +"<div style='font-size:.9rem;font-weight:600;margin-bottom:4px'>"+f.fan+"</div>"
-        +"<div style='font-size:.75rem;color:var(--muted)'>"+f.jami+" ta savol</div>"
-        +"</div>";
-    }).join("");
-  }catch(e){console.log("Fan yukla xato:",e);}
-}
-
-async function ttFanTanla(fan){
-  ttFan=fan;
-  document.getElementById("tt-fan-title").textContent=fan;
-  document.getElementById("tt-fanlar-wrap").style.display="none";
-  document.getElementById("tt-mavzular-wrap").style.display="block";
-  try{
-    var r=await fetch(API+"/savol/mavzular/"+fan);
-    var d=await r.json();
-    var mavzular=d.mavzular||[];
-    var list=document.getElementById("tt-mavzular-list");
-    if(!mavzular.length){
-      list.innerHTML="<div style='text-align:center;padding:20px;color:var(--muted)'>Mavzular yoq</div>";
-      return;
-    }
-    list.innerHTML=mavzular.map(function(m){
-      return "<div onclick='ttMavzuTanla(""+m.mavzu+"")' style='background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:10px;cursor:pointer;display:flex;justify-content:space-between;align-items:center'>"
-        +"<div><div style='font-size:.9rem;font-weight:600'>"+m.mavzu+"</div>"
-        +"<div style='font-size:.75rem;color:var(--muted);margin-top:2px'>"+m.soni+" ta savol</div></div>"
-        +"<div style='color:var(--primary);font-size:1.2rem'>→</div>"
-        +"</div>";
-    }).join("");
-  }catch(e){console.log("Mavzu xato:",e);}
-}
-
-function ttFanlarKo(){
-  document.getElementById("tt-fanlar-wrap").style.display="block";
-  document.getElementById("tt-mavzular-wrap").style.display="none";
-}
-
-async function ttMavzuTanla(mavzu){
-  ttMavzu=mavzu;
-  try{
-    var r=await fetch(API+"/savol/olish/"+ttFan+"/"+mavzu+"?soni=10");
-    var d=await r.json();
-    ttSavollar=d.savollar||[];
-    if(!ttSavollar.length){alert("Savollar yoq!");return;}
-    ttJavoblar={};ttJoriy=0;
-    document.getElementById("tt-test-sarlavha").textContent=ttFan+" - "+mavzu;
-    ttSavolKorsat();
-    sahifaOch("s-tester-test");
-  }catch(e){alert("Xato: "+e);}
-}
-
-function ttSavolKorsat(){
-  var n=ttJoriy;
-  var jami=ttSavollar.length;
-  var s=ttSavollar[n];
-  document.getElementById("tt-savol-num").textContent=(n+1)+"-savol";
-  document.getElementById("tt-savol-text").textContent=s.savol;
-  document.getElementById("tt-prog-matn").textContent=(n+1)+" / "+jami;
-  document.getElementById("tt-prog-foiz").textContent=Math.round(n/jami*100)+"%";
-  document.getElementById("tt-prog-fill").style.width=(n/jami*100)+"%";
-  document.getElementById("tt-btn-oldin").disabled=n===0;
-  document.getElementById("tt-btn-keyin").textContent=n===jami-1?"✅ Natija":"Keyingi →";
-  
-  var vBlok=document.getElementById("tt-variantlar");
-  var variantlar=s.variantlar||{};
-  vBlok.innerHTML=Object.keys(variantlar).map(function(harf){
-    var tanlandi=ttJavoblar[s.id]===harf;
-    return "<button onclick='ttVariant(""+harf+"")' style='padding:14px 16px;background:"+(tanlandi?"rgba(0,212,170,.12)":"rgba(255,255,255,.04)")+";border:1.5px solid "+(tanlandi?"var(--primary)":"var(--border)")+";border-radius:14px;color:var(--text);font-size:.95rem;cursor:pointer;text-align:left;display:flex;align-items:center;gap:12px'>"
-      +"<span style='width:30px;height:30px;border-radius:8px;background:"+(tanlandi?"var(--primary)":"rgba(255,255,255,.08)")+";display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0;color:"+(tanlandi?"#000":"var(--text)")+"'>"+harf+"</span>"
-      +"<span>"+variantlar[harf]+"</span></button>";
-  }).join("");
-}
-
-function ttVariant(harf){
-  var s=ttSavollar[ttJoriy];
-  ttJavoblar[s.id]=harf;
-  ttSavolKorsat();
-}
-
-function ttKeyingi(){
-  if(ttJoriy===ttSavollar.length-1){
-    ttNatijaKorsat();
-  } else {
-    ttJoriy++;ttSavolKorsat();
-  }
-}
-
-function ttOldinga(){
-  if(ttJoriy>0){ttJoriy--;ttSavolKorsat();}
-}
-
-async function ttNatijaKorsat(){
-  try{
-    var javoblarStr=JSON.stringify(ttJavoblar);
-    var r=await fetch(API+"/savol/tekshir?fan="+ttFan+"&mavzu="+ttMavzu,{
-      method:"POST",headers:{"Content-Type":"application/json"},body:javoblarStr
-    });
-    var d=await r.json();
-    var ball=d.ball||0;
-    document.getElementById("tt-nat-ball").textContent=ball+"%";
-    document.getElementById("tt-nat-togri").textContent=d.togri||0;
-    document.getElementById("tt-nat-xato").textContent=(d.jami||0)-(d.togri||0);
-    document.getElementById("tt-nat-jami").textContent=d.jami||0;
-    document.getElementById("tt-nat-emoji").textContent=ball>=80?"🏆":ball>=60?"🎉":ball>=40?"👍":"💪";
-    document.getElementById("tt-nat-sub").textContent=ball>=80?"Ajoyib!":ball>=60?"Yaxshi!":ball>=40?"Davom eting!":"Qayta mashq qiling!";
-    
-    var xatolar=d.notogri||[];
-    var xBlok=document.getElementById("tt-nat-xatolar");
-    if(xatolar.length){
-      xBlok.innerHTML="<div style='font-family:Unbounded,sans-serif;font-size:.8rem;font-weight:700;color:var(--muted);margin-bottom:10px;text-transform:uppercase'>Xato javoblar</div>"
-        +xatolar.map(function(x){
-          return "<div style='background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.3);border-radius:12px;padding:12px;margin-bottom:8px'>"
-            +"<div style='font-size:.8rem;color:var(--muted);margin-bottom:4px'>Savol #"+x.savol_id+"</div>"
-            +"<div style='font-size:.85rem'>Sizning javob: <span style='color:#ff6b6b;font-weight:600'>"+x.berilgan+"</span></div>"
-            +"<div style='font-size:.85rem'>Togri javob: <span style='color:var(--primary);font-weight:600'>"+x.togri+"</span></div>"
-            +"</div>";
-        }).join("");
-    } else {
-      xBlok.innerHTML="";
-    }
-    sahifaOch("s-tester-natija");
-  }catch(e){alert("Natija xato: "+e);}
-}
-
-async function ttDostFanlarYukla(){
-  try{
-    var r=await fetch(API+"/savol/fanlar");
-    var d=await r.json();
-    var fanlar=d.fanlar||[];
-    var sel=document.getElementById("dost-fan");
-    sel.innerHTML="<option value=''>Fan tanlang...</option>"
-      +fanlar.map(function(f){return "<option value='"+f.fan+"'>"+f.fan+"</option>";}).join("");
-  }catch(e){}
-}
-
-async function dostTestYarat(){
-  var fan=document.getElementById("dost-fan").value;
-  var soni=document.getElementById("dost-soni").value;
-  if(!fan){alert("Fan tanlang!");return;}
-  try{
-    var r=await fetch(API+"/dost/yarat",{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({yaratuvchi_id:currentUser.id||0,fan:fan,savollar_soni:parseInt(soni)})});
-    var d=await r.json();
-    if(d.success){
-      var el=document.getElementById("dost-xabar");
-      el.style.display="block";
-      el.style.background="rgba(0,212,170,.15)";
-      el.style.border="1px solid rgba(0,212,170,.3)";
-      el.style.color="var(--primary)";
-      el.textContent="Test yaratildi! Kod: "+d.kod+" - Dostingizga yuboring!";
-    }
-  }catch(e){alert("Xato: "+e);}
-}
-
-async function dostTestKirish(){
-  var kod=document.getElementById("dost-kod").value.trim().toUpperCase();
-  if(!kod){alert("Kodni kiriting!");return;}
-  alert("Dost testi: "+kod+" - Tez kunda ishga tushadi!");
-}
-
-async function ttTreningYukla(){
-  if(!currentUser.id) return;
-  try{
-    var r=await fetch(API+"/trening/"+currentUser.id);
-    var d=await r.json();
-    var el=document.getElementById("trening-xato-soni");
-    if(el) el.textContent=d.xato_soni||0;
-  }catch(e){}
-}
-
-function treningBoshlash(){
-  alert("Trening rejimi tez kunda!");
-}
-
 // Boshlash
 window.addEventListener('load',async()=>{
   await new Promise(r=>setTimeout(r,800));
@@ -1056,5 +623,3 @@ window.addEventListener('load',async()=>{
 </script>
 </body>
 </html>
-
-<!-- v4 -->
