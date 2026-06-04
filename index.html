@@ -946,17 +946,14 @@ function ukBotYubor(){
 }
 
 window.addEventListener('load',async function(){
-  await new Promise(function(r){setTimeout(r,600);});
+  await new Promise(function(r){setTimeout(r,500);});
   document.getElementById('loading').style.display='none';
   document.querySelectorAll('.page').forEach(function(p){p.style.display='none';});
   if(userId){
     kirish();
   }else{
     var kp=document.getElementById('p-kirish');
-    kp.style.display='flex';
-    kp.style.flexDirection='column';
-    kp.style.alignItems='center';
-    kp.style.justifyContent='center';
+    kp.style.cssText='display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px 20px;text-align:center';
   }
 });
 </script>
