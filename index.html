@@ -58,8 +58,8 @@ body{
 }
 
 /* ── Sahifalar ── */
-.sahifa{display:none;position:relative;z-index:1;min-height:100vh}
-.sahifa.aktiv{display:flex;flex-direction:column}
+.sahifa{display:none !important;position:relative;z-index:1;min-height:100vh}
+.sahifa.aktiv{display:flex !important;flex-direction:column}
 
 /* ── KIRISH SAHIFASI ── */
 #s-kirish{
@@ -352,7 +352,7 @@ body{
 <div class="particles" id="particles"></div>
 
 <!-- Loading -->
-<div class="loading-overlay" id="loading">
+<div class="loading-overlay" id="loading" style="display:flex">
   <div class="spinner"></div>
   <div class="loading-text">Yuklanmoqda...</div>
 </div>
