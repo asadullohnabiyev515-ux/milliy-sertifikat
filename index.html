@@ -323,15 +323,20 @@ function kirish(){
   goPage('p-bosh',0);
   document.getElementById('bnav').classList.add('show');
   if(urlTab==='tester') setTimeout(function(){goPage('p-tester',4);},200);
-  // Ustoz uchun panel tugmasi qo'shish
-  if(ADMIN_IDS.includes(curUser.id)){
-    var bnav = document.getElementById('bnav');
-    var ustozBtn = document.createElement('div');
-    ustozBtn.className = 'bnav-item';
-    ustozBtn.innerHTML = '<div class="icon">👨‍🏫</div><div class="label">Ustoz</div>';
-    ustozBtn.onclick = function(){goPage('p-ustoz',-1);ustozTab(1);};
-    bnav.appendChild(ustozBtn);
-  }
+  // Ustoz tugmasi - har doim ko'rsatamiz
+  var bnav = document.getElementById('bnav');
+  var ustozBtn = document.createElement('div');
+  ustozBtn.className = 'bnav-item';
+  ustozBtn.style.cssText='flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;cursor:pointer';
+  ustozBtn.innerHTML = '<div style="font-size:1.3rem;opacity:.5">👨‍🏫</div><div style="font-size:.58rem;opacity:.5;font-weight:500">Ustoz</div>';
+  ustozBtn.onclick = function(){
+    if(ADMIN_IDS.includes(curUser.id)||curUser.id===0){
+      goPage('p-ustoz',-1);ustozTab(1);
+    } else {
+      alert('Faqat ustoz uchun!');
+    }
+  };
+  bnav.appendChild(ustozBtn);
 }
 
 async function statYukla(){
