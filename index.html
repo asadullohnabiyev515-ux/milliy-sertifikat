@@ -148,7 +148,7 @@ body{font-family:'Inter',sans-serif;background:#0a0f1e;color:#fff;min-height:100
   <div style="font-size:5rem;margin-bottom:16px">🎉</div>
   <div style="font-family:'Unbounded',sans-serif;font-size:1.2rem;font-weight:900;margin-bottom:8px">Barakalla!</div>
   <div style="font-size:.88rem;color:rgba(255,255,255,.4)">Javoblaringiz yuborildi.</div>
-  <button class="btn btn-primary" onclick="goPage('p-bosh',0)" style="margin-top:24px;max-width:200px">Bosh sahifa</button>
+  <button class="btn btn-primary" onclick="document.querySelectorAll('.page').forEach(function(p){p.style.display='none'});document.getElementById('p-bosh').style.display='block';document.getElementById('bnav').classList.add('show')" style="margin-top:24px;max-width:200px">Bosh sahifa</button>
 </div>
 <div class="page" id="p-kitob">
   <div class="topbar"><div class="logo" id="kitob-title">Kitoblar</div><div class="avatar" id="av4">A</div></div>
