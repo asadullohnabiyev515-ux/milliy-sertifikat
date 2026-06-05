@@ -68,7 +68,7 @@ body{font-family:'Inter',sans-serif;background:#0a0f1e;color:#fff;min-height:100
   <div class="card" style="width:100%;max-width:380px">
     <div style="font-family:'Unbounded',sans-serif;font-size:1rem;font-weight:700;margin-bottom:6px">Tizimga kirish</div>
     <div style="font-size:.82rem;color:rgba(255,255,255,.4);margin-bottom:20px">Telegram orqali tezda ulaning</div>
-    <button class="btn btn-primary" onclick="alert('test');kirish()">Telegram orqali kirish</button>
+    <button class="btn btn-primary" onclick="kirish()">Telegram orqali kirish</button>
   </div>
 </div>
 <div class="page" id="p-bosh">
@@ -307,6 +307,7 @@ function goPage(id,navIdx){
 
 function kirish(){
   try{
+  alert('kirish boshlandi');
   var user={id:userId||5145005581,first_name:userName||'Asadulloh'};
   curUser=user;
   var ini=user.first_name.charAt(0).toUpperCase();
@@ -317,8 +318,9 @@ function kirish(){
   document.getElementById('p-ism').textContent=user.first_name;
   document.getElementById('p-id').textContent='ID: '+user.id;
   if(urlKod) document.getElementById('tk-input').value=urlKod;
-  // statYukla();
+  alert('goPage chaqirilmoqda');
   goPage('p-bosh',0);
+  alert('bnav show');
   document.getElementById('bnav').classList.add('show');
   if(urlTab==='tester') setTimeout(function(){goPage('p-tester',4);},200);
   // Ustoz tugmasi - har doim ko'rsatamiz
