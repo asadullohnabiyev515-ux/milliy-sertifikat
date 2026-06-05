@@ -947,7 +947,14 @@ window.addEventListener('load',function(){
     var loading = document.getElementById('loading');
     if(loading) loading.style.cssText = 'display:none !important';
     document.querySelectorAll('.page').forEach(function(p){p.style.display='none';});
-    kirish();
+    if(userId){
+      // Telegram ichida - avtomatik kirish
+      kirish();
+    } else {
+      // Brauzerda - kirish sahifasini ko'rsat
+      var kp = document.getElementById('p-kirish');
+      if(kp) kp.style.display='flex';
+    }
   }, 300);
 });
 </script>
