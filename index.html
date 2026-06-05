@@ -335,6 +335,7 @@ function kirish(){
     }
   };
   bnav.appendChild(ustozBtn);
+  }catch(e){alert('Kirish xato: '+e);}
 }
 
 async function statYukla(){
@@ -364,8 +365,6 @@ async function testStart(){
     goPage('p-test-ish',1);
     document.getElementById('tk-xabar').style.display='none';
   }catch(e){xabar('tk-xabar','err','Serverga ulanib bolmadi!');}
-
-  }catch(e){alert('Kirish xato: '+e);}
 }
 function tSavolKor(){
   var n=tJoriy,jami=tUserData.savollar_soni||40,tur=tUserData.tur||'milliy';
