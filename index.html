@@ -292,7 +292,11 @@ let curUser={},tJavoblar={},tUserData={},tJoriy=0;
 let ttSavollar=[],ttJavoblar={},ttJoriy=0,ttFan='',ttMavzu='';
 
 function goPage(id,navIdx){
-  document.querySelectorAll('.page').forEach(function(p){p.style.display='none';});
+  var pages=['p-bosh','p-test','p-test-ish','p-test-yubor','p-test-tamom','p-kitob','p-reyting','p-tester','p-tester-test','p-tester-natija','p-profil','p-ustoz','p-ustoz-test-yarat','p-ustoz-javoblar','p-ustoz-savol-yarat','p-ustoz-kitob-yarat'];
+  pages.forEach(function(pid){
+    var p=document.getElementById(pid);
+    if(p) p.style.display='none';
+  });
   var el=document.getElementById(id);
   if(el) el.style.display='block';
   window.scrollTo(0,0);
