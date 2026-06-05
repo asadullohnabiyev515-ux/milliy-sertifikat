@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Milliy Imtihon</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+<div id="p0" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:#0a0f1e;color:#fff;text-align:center;padding:24px">
+<div style="font-size:3rem;margin-bottom:16px">🎓</div>
+<div style="font-size:1.4rem;font-weight:800;color:#00d4aa;margin-bottom:8px">Milliy Imtihon</div>
+<button id="kbtn" style="padding:14px 28px;background:linear-gradient(135deg,#00d4aa,#00a8ff);border:none;border-radius:14px;color:#fff;font-size:1rem;font-weight:700;cursor:pointer;margin-top:20px">Kirish</button>
+</div>
+<script>
+var tg=window.Telegram&&window.Telegram.WebApp?window.Telegram.WebApp:null;
+if(tg){tg.ready();tg.expand();}
+document.getElementById('kbtn').onclick=function(){alert('Ishlayapti!');};
+if(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user){
+  document.getElementById('kbtn').click();
+}
+</script>
+</body>
+</html>
