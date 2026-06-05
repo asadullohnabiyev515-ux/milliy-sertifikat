@@ -309,6 +309,9 @@ function goPage(id,navIdx){
 
 function kirish(){
   try{
+  // p-kirish ni yashiramiz
+  var pk=document.getElementById('p-kirish');
+  if(pk) pk.style.display='none';
   var user={id:userId||5145005581,first_name:userName||'Asadulloh'};
   curUser=user;
   var ini=user.first_name.charAt(0).toUpperCase();
