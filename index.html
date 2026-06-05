@@ -296,10 +296,12 @@ let curUser={},tJavoblar={},tUserData={},tJoriy=0;
 let ttSavollar=[],ttJavoblar={},ttJoriy=0,ttFan='',ttMavzu='';
 
 function goPage(id,navIdx){
-  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+  document.querySelectorAll('.page').forEach(function(p){p.style.display='none';});
   var el=document.getElementById(id);
   if(el) el.style.display='block';
   window.scrollTo(0,0);
+  var bnav=document.getElementById('bnav');
+  if(bnav) bnav.classList.add('show');
   if(navIdx>=0){
     document.querySelectorAll('.bnav-item').forEach(function(b,i){b.classList.toggle('active',i===navIdx);});
   }
