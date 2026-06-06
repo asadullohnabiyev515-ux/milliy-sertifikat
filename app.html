@@ -391,7 +391,8 @@ function kirish(){
     ni.className='ni';ni.innerHTML='<span>👨‍🏫</span><span>Ustoz</span>';
     ni.onclick=function(){go('p9',6);};nav.appendChild(ni);
   }
-  document.getElementById('p0').style.display='none';
+  var p0=document.getElementById('p0');
+  if(p0){p0.style.display='none';p0.style.visibility='hidden';p0.style.zIndex='-1';}
   document.getElementById('nav').style.display='flex';
   go('p1',0);
   if(urltab==='tester')setTimeout(function(){go('p7',4);},200);
