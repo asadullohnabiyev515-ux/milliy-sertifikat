@@ -554,6 +554,25 @@ async function tYubor(){
       var e2=document.getElementById('p3c-ball');if(e2)e2.textContent=d.ball+' / '+d.maks_ball+' ball';
       var e3=document.getElementById('p3c-foiz');if(e3)e3.textContent=d.foiz+'% ('+d.togri_soni+'/'+d.jami+')';
       var e4=document.getElementById('p3c-sub');if(e4)e4.textContent=sub;
+      var xblok=document.getElementById('p3c-xatolar');
+      if(xblok){
+        var barcha=d.barcha||[];
+        var html='<div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Barcha savollar natijalari</div>';
+        barcha.forEach(function(s){
+          if(s.xato){
+            html+='<div style="background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.2);border-radius:10px;padding:10px;margin-bottom:6px;display:flex;align-items:center;gap:8px">'+
+            '<div style="font-size:.75rem;color:rgba(255,255,255,.4);min-width:24px">'+s.savol+'</div>'+
+            '<div style="flex:1;font-size:.82rem">Sizniki: <span style="color:#ff6b6b;font-weight:600">'+s.berilgan+'</span> → <span style="color:#00d4aa;font-weight:600">'+s.togri+'</span></div>'+
+            '<span style="color:#ff6b6b">✗</span></div>';
+          }else{
+            html+='<div style="background:rgba(0,212,170,.06);border:1px solid rgba(0,212,170,.15);border-radius:10px;padding:10px;margin-bottom:6px;display:flex;align-items:center;gap:8px">'+
+            '<div style="font-size:.75rem;color:rgba(255,255,255,.4);min-width:24px">'+s.savol+'</div>'+
+            '<div style="flex:1;font-size:.82rem;color:#00d4aa;font-weight:600">'+s.berilgan+'</div>'+
+            '<span style="color:#00d4aa">✓</span></div>';
+          }
+        });
+        xblok.innerHTML=html;
+      }
       document.getElementById('nav').style.display='none';
       go('p3c',-1);
     }else{xb('yxb','err',d.detail||'Xato');btn.disabled=false;btn.textContent='📨 Yuborish';}
