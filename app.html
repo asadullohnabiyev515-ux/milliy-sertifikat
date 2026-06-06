@@ -55,7 +55,7 @@ body{font-family:sans-serif;background:#0a0f1e;color:#fff;min-height:100vh}
 <div id="app">
 
 <!-- KIRISH -->
-<div id="p0" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px 20px;text-align:center;background:#0a0f1e;position:fixed;top:0;left:0;right:0;bottom:0;z-index:200">
+<div id="p0" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px 20px;text-align:center;background:#0a0f1e;position:fixed;top:0;left:0;right:0;bottom:0;z-index:200">
   <div style="width:80px;height:80px;border-radius:22px;background:linear-gradient(135deg,#00d4aa,#00a8ff);display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 16px">🎓</div>
   <div style="font-size:1.4rem;font-weight:800;background:linear-gradient(90deg,#00d4aa,#00a8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px">Milliy Imtihon</div>
   <div style="font-size:.82rem;color:rgba(255,255,255,.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:28px">Bilim — Kelajak</div>
@@ -67,7 +67,7 @@ body{font-family:sans-serif;background:#0a0f1e;color:#fff;min-height:100vh}
 </div>
 
 <!-- BOSH -->
-<div id="p1" class="page" style="padding-bottom:80px;display:block">
+<div id="p1" class="page" style="padding-bottom:80px">
   <div class="top"><div class="tlogo">Milliy Imtihon</div><div class="av" id="av">A</div></div>
   <div style="padding:16px 16px 0">
     <div style="font-size:.82rem;color:rgba(255,255,255,.4);margin-bottom:3px">Xush kelibsiz 👋</div>
@@ -147,15 +147,11 @@ body{font-family:sans-serif;background:#0a0f1e;color:#fff;min-height:100vh}
 </div>
 
 <!-- TEST TAMOM -->
-<div id="p3c" class="page" style="padding:20px 16px 80px">
-  <div style="text-align:center;padding:24px 0 16px">
-    <div style="font-size:4rem;margin-bottom:12px" id="p3c-emoji">🎉</div>
-    <div style="font-family:sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:4px" id="p3c-ball">— ball</div>
-    <div style="font-size:1rem;color:#00d4aa;font-weight:600;margin-bottom:4px" id="p3c-foiz">—%</div>
-    <div style="font-size:.88rem;color:rgba(255,255,255,.4)" id="p3c-sub">Natija</div>
-  </div>
-  <div id="p3c-xatolar" style="margin-bottom:16px"></div>
-  <button class="btn btn-g" onclick="location.reload()" style="margin-top:8px">🏠 Bosh sahifa</button>
+<div id="p3c" class="page" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:40px 20px">
+  <div style="font-size:5rem;margin-bottom:16px">🎉</div>
+  <div style="font-size:1.2rem;font-weight:800;margin-bottom:8px">Barakalla!</div>
+  <div style="font-size:.88rem;color:rgba(255,255,255,.4)">Javoblaringiz yuborildi.</div>
+  <button class="btn btn-green" id="boshbtn" style="margin-top:24px;max-width:200px">🏠 Bosh sahifa</button>
 </div>
 
 <!-- KITOBLAR -->
@@ -300,8 +296,7 @@ body{font-family:sans-serif;background:#0a0f1e;color:#fff;min-height:100vh}
     <button class="tb off" id="ut3" onclick="uTab(3)">📚 Kitoblar</button>
   </div>
   <div id="ub1" style="padding:16px">
-    <button class="btn btn-green" onclick="go('p9b',-1)" style="margin-bottom:10px">➕ Yangi test yaratish</button>
-    <button class="btn" onclick="arxivTest()" style="background:linear-gradient(135deg,#8b5cf6,#d946ef);color:#fff;margin-bottom:14px">🔄 Arxivdan sessiya yaratish</button>
+    <button class="btn btn-green" onclick="go('p9b',-1)" style="margin-bottom:14px">➕ Yangi test yaratish</button>
     <div id="utlist"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
   </div>
   <div id="ub2" style="display:none;padding:16px">
@@ -441,7 +436,6 @@ var sTogri='';
 
 // GO - sahifa almashtirish
 function go(id,nav){
-  var p0=document.getElementById('p0');if(p0)p0.style.display='none';
   var all=['p1','p2','p3','p3b','p3c','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e'];
   all.forEach(function(x){var e=document.getElementById(x);if(e)e.style.display='none';});
   var el=document.getElementById(id);
@@ -468,15 +462,12 @@ function kirish(){
   if(urlkod)document.getElementById('tkod').value=urlkod;
   // Ustoz uchun nav
   if(ADMINS.indexOf(CU.id)>=0){
-    if(!document.getElementById('nav-ustoz')){
     var nav=document.getElementById('nav');
     var ni=document.createElement('div');
-    ni.id='nav-ustoz';
-    ni.className='ni';
+    ni.className='nitem';
     ni.innerHTML='<span>👨‍🏫</span><span>Ustoz</span>';
     ni.onclick=function(){go('p9',6);};
     nav.appendChild(ni);
-    }
   }
   // p0 yashir
   document.getElementById('p0').style.display='none';
@@ -491,7 +482,7 @@ document.getElementById('kirish-btn').onclick=kirish;
 document.getElementById('boshbtn').onclick=function(){go('p1',0);document.getElementById('nav').style.display='flex';};
 
 // Agar Telegram da bo'lsa avtomatik kirish
-setTimeout(kirish,300);
+if(uid)setTimeout(kirish,300);
 
 // TEST
 async function testBoshlash(){
@@ -557,31 +548,8 @@ async function tYubor(){
       var sub=d.foiz>=80?'Ajoyib!':d.foiz>=60?'Yaxshi!':d.foiz>=40?'Davom eting!':'Qayta urining!';
       var e1=document.getElementById('p3c-emoji');if(e1)e1.textContent=em;
       var e2=document.getElementById('p3c-ball');if(e2)e2.textContent=d.ball+' / '+d.maks_ball+' ball';
-      var e3=document.getElementById('p3c-foiz');if(e3)e3.textContent=d.foiz+'% ('+d.togri_soni+'/'+d.jami+' togri)';
+      var e3=document.getElementById('p3c-foiz');if(e3)e3.textContent=d.foiz+'% ('+d.togri_soni+'/'+d.jami+')';
       var e4=document.getElementById('p3c-sub');if(e4)e4.textContent=sub;
-      var xblok=document.getElementById('p3c-xatolar');
-      if(xblok){
-        var xl=d.notogri||[];
-        var jami=d.jami||40;
-        // Barcha savollar natijasini ko'rsatamiz
-        var xato_map={};
-        xl.forEach(function(x){xato_map[x.savol]=x;});
-        var html='<div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Barcha savollar natijalari</div>';
-        for(var i=1;i<=jami;i++){
-          if(xato_map[i]){
-            html+='<div style="background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.2);border-radius:10px;padding:10px;margin-bottom:6px;display:flex;align-items:center;gap:10px">'+
-            '<div style="font-size:.75rem;color:rgba(255,255,255,.4);min-width:30px">'+i+'</div>'+
-            '<div style="flex:1;font-size:.85rem">Sizniki: <span style="color:#ff6b6b;font-weight:600">'+xato_map[i].berilgan+'</span> → Togri: <span style="color:#00d4aa;font-weight:600">'+xato_map[i].togri+'</span></div>'+
-            '<div style="color:#ff6b6b;font-size:1rem">✗</div></div>';
-          } else {
-            html+='<div style="background:rgba(0,212,170,.06);border:1px solid rgba(0,212,170,.15);border-radius:10px;padding:10px;margin-bottom:6px;display:flex;align-items:center;gap:10px">'+
-            '<div style="font-size:.75rem;color:rgba(255,255,255,.4);min-width:30px">'+i+'</div>'+
-            '<div style="flex:1;font-size:.85rem;color:#00d4aa;font-weight:600">Togri</div>'+
-            '<div style="color:#00d4aa;font-size:1rem">✓</div></div>';
-          }
-        }
-        xblok.innerHTML=html;
-      }
       document.getElementById('nav').style.display='none';
       go('p3c',-1);
     }else{xb('yxb','err',d.detail||'Xato');btn.disabled=false;btn.textContent='📨 Yuborish';}
@@ -766,76 +734,7 @@ async function pLoad(){
     }).join('');
     document.getElementById('bs1').textContent=d.jami_test;
     if(d.natijalar[0]&&d.natijalar[0].ball)document.getElementById('bs2').textContent=d.natijalar[0].ball;
-    
-    // Ball tarixi
-    try{
-      var r2=await fetch(API+'/ball/tarix/'+CU.id);
-      var d2=await r2.json();
-      var pnat=document.getElementById('pnat');
-      var ballhtml='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">'+
-        '<div style="background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.3);border-radius:14px;padding:14px;text-align:center">'+
-        '<div style="font-size:1.3rem;font-weight:800;color:#00d4aa">'+(d2.jami||0)+'</div>'+
-        '<div style="font-size:.68rem;color:rgba(255,255,255,.4);margin-top:3px;text-transform:uppercase">Jami ball</div></div>'+
-        '<div style="background:rgba(255,149,0,.1);border:1px solid rgba(255,149,0,.3);border-radius:14px;padding:14px;text-align:center">'+
-        '<div style="font-size:1.3rem;font-weight:800;color:#ff9500">'+(d2.oy_ball||0)+'</div>'+
-        '<div style="font-size:.68rem;color:rgba(255,255,255,.4);margin-top:3px;text-transform:uppercase">Oy balli</div></div></div>'+
-        '<div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Ball tarixi</div>'+
-        (d2.tarix&&d2.tarix.length?d2.tarix.map(function(t){
-          return '<div class="ri" style="justify-content:space-between">'+
-          '<div><div style="font-size:.88rem;font-weight:600">'+t.sabab+'</div>'+
-          '<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:2px">'+t.vaqt+'</div></div>'+
-          '<div style="font-size:1rem;font-weight:800;color:#00d4aa">+'+t.miqdor+' b</div></div>';
-        }).join(''):'<div style="text-align:center;padding:16px;color:rgba(255,255,255,.4)">Ball tarixi yoq</div>');
-      pnat.innerHTML=ballhtml+pnat.innerHTML;
-    }catch(e2){}
   }catch(e){}
-}
-
-// ARXIV TEST
-async function arxivTest(){
-  try{
-    var r=await fetch(API+'/ustoz/testlar/'+CU.id);
-    var d=await r.json();
-    var testlar=d.testlar||[];
-    if(!testlar.length){alert('Testlar yoq!');return;}
-    var html='<div style="font-size:.9rem;font-weight:700;margin-bottom:12px">Qaysi testdan sessiya yaratish?</div>';
-    testlar.forEach(function(t){
-      html+='<div onclick="arxivSessiya(''+t.kod+'',''+t.fan+'')" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px;margin-bottom:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center">'+
-      '<div><div style="font-size:.85rem;font-weight:700;color:#00d4aa">'+t.kod+'</div>'+
-      '<div style="font-size:.8rem;margin-top:2px">'+t.fan+'</div>'+
-      '<div style="font-size:.7rem;color:rgba(255,255,255,.4);margin-top:2px">'+t.talabalar+' oquvchi</div></div>'+
-      '<div style="color:#8b5cf6;font-size:1.2rem">→</div></div>';
-    });
-    // Modal ko'rsatamiz
-    var modal=document.getElementById('arxiv-modal');
-    if(!modal){
-      modal=document.createElement('div');
-      modal.id='arxiv-modal';
-      modal.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);z-index:500;display:flex;align-items:flex-end';
-      modal.innerHTML='<div style="background:#0a0f1e;border-radius:20px 20px 0 0;padding:20px;width:100%;max-height:70vh;overflow-y:auto"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div style="font-family:sans-serif;font-size:1rem;font-weight:700">Sessiya yaratish</div><button onclick="document.getElementById('arxiv-modal').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.3rem;cursor:pointer">✕</button></div><div id="arxiv-list"></div></div>';
-      document.body.appendChild(modal);
-    }
-    document.getElementById('arxiv-list').innerHTML=html;
-    modal.style.display='flex';
-  }catch(e){alert('Xato: '+e);}
-}
-
-async function arxivSessiya(kod, fan){
-  document.getElementById('arxiv-modal').style.display='none';
-  try{
-    var r=await fetch(API+'/test/tekshir/'+kod);
-    var d=await r.json();
-    if(!d.topildi){alert('Test topilmadi!');return;}
-    var r2=await fetch(API+'/test/yarat',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({kod:kod,fan:fan,ustoz_id:CU.id,javoblar:d.javoblar,tur:d.tur||'milliy',savollar_soni:d.savollar_soni||40})});
-    var d2=await r2.json();
-    if(d2.success){
-      alert('Yangi sessiya yaratildi!\nKod: '+d2.kod+(d2.sessiya>1?' (Sessiya '+d2.sessiya+')':''));
-      uLoad();
-    }else{
-      alert('Xato: '+(d2.detail||''));
-    }
-  }catch(e){alert('Xato: '+e);}
 }
 
 // USTOZ
@@ -976,12 +875,7 @@ async function uTestSaqla(){
     var r=await fetch(API+'/test/yarat',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({kod:kod,fan:fan,ustoz_id:CU.id,javoblar:uJavoblar,tur:uTurVal==='m'?'milliy':'oddiy',savollar_soni:jami})});
     var d=await r.json();
-    if(d.success){
-      var xabar='Test yaratildi! Kod: '+d.kod;
-      if(d.sessiya>1) xabar+=' (Sessiya '+d.sessiya+')';
-      alert(xabar);
-      go('p9',6);uTab(1);
-    }
+    if(d.success){alert('Test yaratildi! Kod: '+kod);go('p9',6);uTab(1);}
     else{xb('ujxb','err',d.detail||'Xato');btn.disabled=false;btn.textContent='💾 Saqlash';}
   }catch(e){xb('ujxb','err','Xato');btn.disabled=false;btn.textContent='💾 Saqlash';}
 }
