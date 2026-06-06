@@ -924,7 +924,12 @@ async function uTestSaqla(){
     var r=await fetch(API+'/test/yarat',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({kod:kod,fan:fan,ustoz_id:CU.id,javoblar:uJavoblar,tur:uTurVal==='m'?'milliy':'oddiy',savollar_soni:jami})});
     var d=await r.json();
-    if(d.success){alert('Test yaratildi! Kod: '+kod);go('p9',6);uTab(1);}
+    if(d.success){
+      var xabar='Test yaratildi! Kod: '+d.kod;
+      if(d.sessiya>1) xabar+=' (Sessiya '+d.sessiya+')';
+      alert(xabar);
+      go('p9',6);uTab(1);
+    }
     else{xb('ujxb','err',d.detail||'Xato');btn.disabled=false;btn.textContent='💾 Saqlash';}
   }catch(e){xb('ujxb','err','Xato');btn.disabled=false;btn.textContent='💾 Saqlash';}
 }
