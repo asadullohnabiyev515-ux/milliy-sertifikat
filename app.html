@@ -441,6 +441,7 @@ var sTogri='';
 
 // GO - sahifa almashtirish
 function go(id,nav){
+  var p0=document.getElementById('p0');if(p0)p0.style.display='none';
   var all=['p1','p2','p3','p3b','p3c','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e'];
   all.forEach(function(x){var e=document.getElementById(x);if(e)e.style.display='none';});
   var el=document.getElementById(id);
