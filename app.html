@@ -487,10 +487,12 @@ function kirish(){
 }
 
 document.getElementById('kirish-btn').onclick=kirish;
+setTimeout(kirish,400);
 document.getElementById('boshbtn').onclick=function(){go('p1',0);document.getElementById('nav').style.display='flex';};
 
 // Agar Telegram da bo'lsa avtomatik kirish
 if(uid)setTimeout(kirish,300);
+else setTimeout(kirish,400);
 
 // TEST
 async function testBoshlash(){
