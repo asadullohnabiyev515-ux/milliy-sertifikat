@@ -467,12 +467,15 @@ function kirish(){
   if(urlkod)document.getElementById('tkod').value=urlkod;
   // Ustoz uchun nav
   if(ADMINS.indexOf(CU.id)>=0){
+    if(!document.getElementById('nav-ustoz')){
     var nav=document.getElementById('nav');
     var ni=document.createElement('div');
-    ni.className='nitem';
+    ni.id='nav-ustoz';
+    ni.className='ni';
     ni.innerHTML='<span>👨‍🏫</span><span>Ustoz</span>';
     ni.onclick=function(){go('p9',6);};
     nav.appendChild(ni);
+    }
   }
   // p0 yashir
   document.getElementById('p0').style.display='none';
