@@ -400,7 +400,10 @@ function kirish(){
 
 document.getElementById('kbtn').onclick=kirish;
 if(uid)setTimeout(kirish,300);
-else setTimeout(kirish,500);
+else setTimeout(function(){
+  kirish();
+  document.getElementById('nav').style.display='flex';
+},500);
 
 async function testB(){
   var kod=document.getElementById('tkod').value.trim().toUpperCase();
