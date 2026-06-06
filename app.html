@@ -557,17 +557,25 @@ async function tYubor(){
       var xblok=document.getElementById('p3c-xatolar');
       if(xblok){
         var xl=d.notogri||[];
-        if(xl.length){
-          xblok.innerHTML='<div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Xato javoblar</div>'+
-          xl.map(function(x){
-            return '<div style="background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.2);border-radius:12px;padding:12px;margin-bottom:8px">'+
-            '<div style="font-size:.78rem;color:rgba(255,255,255,.4)">'+x.savol+'-savol</div>'+
-            '<div style="font-size:.85rem;margin-top:4px">Sizniki: <span style="color:#ff6b6b;font-weight:600">'+x.berilgan+'</span></div>'+
-            '<div style="font-size:.85rem">Togri: <span style="color:#00d4aa;font-weight:600">'+x.togri+'</span></div></div>';
-          }).join('');
-        }else{
-          xblok.innerHTML='<div style="text-align:center;padding:16px;color:#00d4aa;font-size:1rem;font-weight:600">🎉 Hammasi togri!</div>';
+        var jami=d.jami||40;
+        // Barcha savollar natijasini ko'rsatamiz
+        var xato_map={};
+        xl.forEach(function(x){xato_map[x.savol]=x;});
+        var html='<div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Barcha savollar natijalari</div>';
+        for(var i=1;i<=jami;i++){
+          if(xato_map[i]){
+            html+='<div style="background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.2);border-radius:10px;padding:10px;margin-bottom:6px;display:flex;align-items:center;gap:10px">'+
+            '<div style="font-size:.75rem;color:rgba(255,255,255,.4);min-width:30px">'+i+'</div>'+
+            '<div style="flex:1;font-size:.85rem">Sizniki: <span style="color:#ff6b6b;font-weight:600">'+xato_map[i].berilgan+'</span> → Togri: <span style="color:#00d4aa;font-weight:600">'+xato_map[i].togri+'</span></div>'+
+            '<div style="color:#ff6b6b;font-size:1rem">✗</div></div>';
+          } else {
+            html+='<div style="background:rgba(0,212,170,.06);border:1px solid rgba(0,212,170,.15);border-radius:10px;padding:10px;margin-bottom:6px;display:flex;align-items:center;gap:10px">'+
+            '<div style="font-size:.75rem;color:rgba(255,255,255,.4);min-width:30px">'+i+'</div>'+
+            '<div style="flex:1;font-size:.85rem;color:#00d4aa;font-weight:600">Togri</div>'+
+            '<div style="color:#00d4aa;font-size:1rem">✓</div></div>';
+          }
         }
+        xblok.innerHTML=html;
       }
       document.getElementById('nav').style.display='none';
       go('p3c',-1);
