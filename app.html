@@ -147,15 +147,11 @@ body{font-family:sans-serif;background:#0a0f1e;color:#fff;min-height:100vh}
 </div>
 
 <!-- TEST TAMOM -->
-<div id="p3c" class="page" style="padding:20px 16px 80px">
-  <div style="text-align:center;padding:24px 0 16px">
-    <div style="font-size:4rem;margin-bottom:12px" id="p3c-emoji">🎉</div>
-    <div style="font-size:1.3rem;font-weight:800;margin-bottom:4px" id="p3c-ball">— ball</div>
-    <div style="font-size:1rem;color:#00d4aa;font-weight:600;margin-bottom:4px" id="p3c-foiz">—%</div>
-    <div style="font-size:.88rem;color:rgba(255,255,255,.4)" id="p3c-sub">Natija</div>
-  </div>
-  <div id="p3c-xatolar" style="margin-bottom:16px"></div>
-  <button class="btn btn-g" onclick="location.reload()">🏠 Bosh sahifa</button>
+<div id="p3c" class="page" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:40px 20px">
+  <div style="font-size:5rem;margin-bottom:16px">🎉</div>
+  <div style="font-size:1.2rem;font-weight:800;margin-bottom:8px">Barakalla!</div>
+  <div style="font-size:.88rem;color:rgba(255,255,255,.4)">Javoblaringiz yuborildi.</div>
+  <button class="btn btn-green" id="boshbtn" style="margin-top:24px;max-width:200px">🏠 Bosh sahifa</button>
 </div>
 
 <!-- KITOBLAR -->
@@ -554,25 +550,6 @@ async function tYubor(){
       var e2=document.getElementById('p3c-ball');if(e2)e2.textContent=d.ball+' / '+d.maks_ball+' ball';
       var e3=document.getElementById('p3c-foiz');if(e3)e3.textContent=d.foiz+'% ('+d.togri_soni+'/'+d.jami+')';
       var e4=document.getElementById('p3c-sub');if(e4)e4.textContent=sub;
-      var xblok=document.getElementById('p3c-xatolar');
-      if(xblok){
-        var barcha=d.barcha||[];
-        var html='<div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Barcha savollar natijalari</div>';
-        barcha.forEach(function(s){
-          if(s.xato){
-            html+='<div style="background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.2);border-radius:10px;padding:10px;margin-bottom:6px;display:flex;align-items:center;gap:8px">'+
-            '<div style="font-size:.75rem;color:rgba(255,255,255,.4);min-width:24px">'+s.savol+'</div>'+
-            '<div style="flex:1;font-size:.82rem">Sizniki: <span style="color:#ff6b6b;font-weight:600">'+s.berilgan+'</span> → <span style="color:#00d4aa;font-weight:600">'+s.togri+'</span></div>'+
-            '<span style="color:#ff6b6b">✗</span></div>';
-          }else{
-            html+='<div style="background:rgba(0,212,170,.06);border:1px solid rgba(0,212,170,.15);border-radius:10px;padding:10px;margin-bottom:6px;display:flex;align-items:center;gap:8px">'+
-            '<div style="font-size:.75rem;color:rgba(255,255,255,.4);min-width:24px">'+s.savol+'</div>'+
-            '<div style="flex:1;font-size:.82rem;color:#00d4aa;font-weight:600">'+s.berilgan+'</div>'+
-            '<span style="color:#00d4aa">✓</span></div>';
-          }
-        });
-        xblok.innerHTML=html;
-      }
       document.getElementById('nav').style.display='none';
       go('p3c',-1);
     }else{xb('yxb','err',d.detail||'Xato');btn.disabled=false;btn.textContent='📨 Yuborish';}
@@ -654,7 +631,7 @@ async function ttFanLoad(){
     g.innerHTML=fl.map(function(f){return '<div onclick="ttFan(\''+f.fan+'\')" class="mc" style="text-align:center"><div style="font-size:2rem;margin-bottom:8px">'+(ic[f.fan]||'📚')+'</div><div class="mt">'+f.fan+'</div><div class="ms">'+f.jami+' savol</div></div>';}).join('');
   }catch(e){document.getElementById('tfgrid').innerHTML='<div style="grid-column:span 2;text-align:center;padding:20px;color:rgba(255,255,255,.4)">Server bilan ulanib bo\'lmadi</div>';}
 }
-async async function ttFan(fan){
+async function ttFan(fan){
   ttF=fan;
   document.getElementById('tfnom').textContent=fan;
   document.getElementById('tfanwrap').style.display='none';
@@ -667,15 +644,13 @@ async async function ttFan(fan){
       var ml=d.mavzular||[];
       if(!ml.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Mavzular yo\'q</div>';return;}
       li.innerHTML=ml.map(function(m){return '<div onclick="ttMav(\''+m.mavzu+'\')" class="ri" style="cursor:pointer"><div style="flex:1"><div style="font-size:.9rem;font-weight:600">'+m.mavzu+'</div><div style="font-size:.72rem;color:rgba(255,255,255,.4)">'+m.soni+' savol</div></div><div style="color:#00d4aa">→</div></div>';}).join('');
-    })
-    .catch(function(){});
+    }).catch(function(){});
 }
 function tFanBack(){document.getElementById('tfanwrap').style.display='block';document.getElementById('tmavwrap').style.display='none';}
 function ttMav(mav){
   ttM=mav;
-  // Savol soni tanlash
   var li=document.getElementById('tmavlist');
-  li.innerHTML='<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><button onclick="ttFan(ttF)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.2rem;cursor:pointer">←</button><div style="font-size:.85rem;font-weight:700">'+mav+'</div></div>'+
+  li.innerHTML='<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><button onclick="tFanBack()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.2rem;cursor:pointer">←</button><div style="font-size:.85rem;font-weight:700">'+mav+'</div></div>'+
     '<div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:12px">Nechta savol ishlaysiz?</div>'+
     '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">'+
     '<button onclick="ttBoshla(10)" class="mc" style="text-align:center;padding:20px 10px"><div style="font-size:1.5rem;font-weight:800;color:#00d4aa">10</div><div style="font-size:.7rem;color:rgba(255,255,255,.4)">savol</div></button>'+
@@ -770,27 +745,6 @@ async function pLoad(){
     }).join('');
     document.getElementById('bs1').textContent=d.jami_test;
     if(d.natijalar[0]&&d.natijalar[0].ball)document.getElementById('bs2').textContent=d.natijalar[0].ball;
-    // Ball tarixi
-    try{
-      var r2=await fetch(API+'/ball/tarix/'+CU.id);
-      var d2=await r2.json();
-      var pnat=document.getElementById('pnat');
-      var ballhtml='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">'+
-        '<div style="background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.3);border-radius:14px;padding:14px;text-align:center">'+
-        '<div style="font-size:1.3rem;font-weight:800;color:#00d4aa">'+(d2.jami||0)+'</div>'+
-        '<div style="font-size:.68rem;color:rgba(255,255,255,.4);margin-top:3px;text-transform:uppercase">Jami ball</div></div>'+
-        '<div style="background:rgba(255,149,0,.1);border:1px solid rgba(255,149,0,.3);border-radius:14px;padding:14px;text-align:center">'+
-        '<div style="font-size:1.3rem;font-weight:800;color:#ff9500">'+(d2.oy_ball||0)+'</div>'+
-        '<div style="font-size:.68rem;color:rgba(255,255,255,.4);margin-top:3px;text-transform:uppercase">Oy balli</div></div></div>'+
-        '<div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Ball tarixi</div>'+
-        (d2.tarix&&d2.tarix.length?d2.tarix.map(function(t){
-          return '<div class="ri" style="justify-content:space-between">'+
-          '<div><div style="font-size:.88rem;font-weight:600">'+t.sabab+'</div>'+
-          '<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:2px">'+t.vaqt+'</div></div>'+
-          '<div style="font-size:1rem;font-weight:800;color:#00d4aa">+'+t.miqdor+' b</div></div>';
-        }).join(''):'<div style="text-align:center;padding:16px;color:rgba(255,255,255,.4)">Ball tarixi yoq</div>');
-      pnat.innerHTML=ballhtml+pnat.innerHTML;
-    }catch(e2){}
   }catch(e){}
 }
 
