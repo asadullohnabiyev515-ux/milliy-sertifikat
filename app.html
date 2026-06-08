@@ -415,6 +415,14 @@ body{font-family:sans-serif;background:#0a0f1e;color:#fff;min-height:100vh}
   <div class="nitem" id="n3" onclick="go('p6',3)"><span>🏆</span><span>Reyting</span></div>
   <div class="nitem" id="n4" onclick="go('p7',4)"><span>🎯</span><span>Tester</span></div>
   <div class="nitem" id="n5" onclick="go('p8',5)"><span>👤</span><span>Profil</span></div>
+  <div class="nitem" onclick="go('p-elon',-1)"><span>📢</span><span>E'lon</span></div>
+</div>
+
+<div id="p-elon" class="page" style="padding-bottom:80px">
+  <div class="top"><div class="tl">E'lonlar</div></div>
+  <div id="elon-list" style="padding:16px">
+    <div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>
+  </div>
 </div>
 
 </div><!-- /app -->
@@ -954,6 +962,25 @@ async function elonLoad(){
     }).catch(function(){
       li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Xato</div>';
     });
+}
+
+// E'LONLAR
+function elonLoad(){
+  var li=document.getElementById('elon-list');
+  li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
+  fetch(API+'/elon/royxat')
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var el=d.elonlar||[];
+      if(!el.length){li.innerHTML='<div style="text-align:center;padding:40px;color:rgba(255,255,255,.4)">Hozircha e\'lonlar yo\'q</div>';return;}
+      li.innerHTML=el.map(function(e){
+        return '<div class="ri" style="flex-direction:column;align-items:flex-start;gap:6px;margin-bottom:10px">'+
+          '<div style="display:flex;justify-content:space-between;width:100%;align-items:center">'+
+          '<div style="font-size:.9rem;font-weight:700;color:#00d4aa">'+e.sarlavha+'</div>'+
+          '<div style="font-size:.7rem;color:rgba(255,255,255,.4)">'+e.vaqt+'</div></div>'+
+          '<div style="font-size:.85rem;line-height:1.5">'+e.matn+'</div></div>';
+      }).join('');
+    }).catch(function(){});
 }
 
 // HELPER
