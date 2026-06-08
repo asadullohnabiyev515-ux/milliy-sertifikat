@@ -436,7 +436,7 @@ var sTogri='';
 
 // GO - sahifa almashtirish
 function go(id,nav){
-  var all=['p1','p2','p3','p3b','p3c','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e'];
+  var all=['p1','p2','p3','p3b','p3c','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e','p-elon'];
   all.forEach(function(x){var e=document.getElementById(x);if(e)e.style.display='none';});
   var el=document.getElementById(id);
   if(el)el.style.display='block';
@@ -929,6 +929,31 @@ function kBotYubor(){
   var nom=document.getElementById('knominp').value.trim();
   if(!fan||!nom){xb('kxb','err','Fan va nomni kiriting!');return;}
   xb('kxb','inf','Bot orqali: Ustoz paneli → Kitob qo\'shish');
+}
+
+// E'LONLAR
+async function elonLoad(){
+  var li=document.getElementById('elon-list');
+  li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
+  fetch(API+'/elon/royxat')
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var el=d.elonlar||[];
+      if(!el.length){
+        li.innerHTML='<div style="text-align:center;padding:40px;color:rgba(255,255,255,.4)">Hozircha e\'lonlar yo\'q</div>';
+        return;
+      }
+      li.innerHTML=el.map(function(e){
+        return '<div class="ri" style="flex-direction:column;align-items:flex-start;gap:6px;margin-bottom:10px">'+
+          '<div style="display:flex;justify-content:space-between;width:100%;align-items:center">'+
+          '<div style="font-size:.9rem;font-weight:700;color:#00d4aa">'+e.sarlavha+'</div>'+
+          '<div style="font-size:.7rem;color:rgba(255,255,255,.4)">'+e.vaqt+'</div></div>'+
+          '<div style="font-size:.85rem;line-height:1.5;color:rgba(255,255,255,.85)">'+e.matn+'</div>'+
+          '</div>';
+      }).join('');
+    }).catch(function(){
+      li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Xato</div>';
+    });
 }
 
 // HELPER
