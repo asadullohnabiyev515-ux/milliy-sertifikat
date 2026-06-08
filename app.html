@@ -670,15 +670,27 @@ async function ttFan(fan){
   }catch(e){}
 }
 function tFanBack(){document.getElementById('tfanwrap').style.display='block';document.getElementById('tmavwrap').style.display='none';}
-async function ttMav(mav){
+function ttMav(mav){
   ttM=mav;
+  // Savol soni tanlash
+  var li=document.getElementById('tml');
+  li.innerHTML='<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><button onclick="ttFan(ttF)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.2rem;cursor:pointer">←</button><div style="font-size:.85rem;font-weight:700">'+mav+'</div></div>'+
+    '<div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:12px">Nechta savol ishlaysiz?</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">'+
+    '<button onclick="ttBoshla(10)" class="mc" style="text-align:center;padding:20px 10px"><div style="font-size:1.5rem;font-weight:800;color:#00d4aa">10</div><div style="font-size:.7rem;color:rgba(255,255,255,.4)">savol</div></button>'+
+    '<button onclick="ttBoshla(15)" class="mc" style="text-align:center;padding:20px 10px"><div style="font-size:1.5rem;font-weight:800;color:#ff9500">15</div><div style="font-size:.7rem;color:rgba(255,255,255,.4)">savol</div></button>'+
+    '<button onclick="ttBoshla(20)" class="mc" style="text-align:center;padding:20px 10px"><div style="font-size:1.5rem;font-weight:800;color:#4da6ff">20</div><div style="font-size:.7rem;color:rgba(255,255,255,.4)">savol</div></button>'+
+    '</div>';
+}
+
+async function ttBoshla(soni){
   try{
-    var r=await fetch(API+'/savol/olish/'+ttF+'/'+mav+'?soni=10');
+    var r=await fetch(API+'/savol/olish/'+ttF+'/'+ttM+'?soni='+soni);
     var d=await r.json();
     ttS=d.savollar||[];
     if(!ttS.length){alert('Savollar yo\'q!');return;}
     ttJav={};ttJ=0;
-    document.getElementById('ttitle').textContent=ttF+' - '+mav;
+    document.getElementById('ttitle').textContent=ttF+' - '+ttM;
     ttKor();go('p7b',-1);
   }catch(e){alert('Xato: '+e);}
 }
