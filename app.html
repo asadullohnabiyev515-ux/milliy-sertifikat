@@ -654,20 +654,21 @@ async function ttFanLoad(){
     g.innerHTML=fl.map(function(f){return '<div onclick="ttFan(\''+f.fan+'\')" class="mc" style="text-align:center"><div style="font-size:2rem;margin-bottom:8px">'+(ic[f.fan]||'📚')+'</div><div class="mt">'+f.fan+'</div><div class="ms">'+f.jami+' savol</div></div>';}).join('');
   }catch(e){document.getElementById('tfgrid').innerHTML='<div style="grid-column:span 2;text-align:center;padding:20px;color:rgba(255,255,255,.4)">Server bilan ulanib bo\'lmadi</div>';}
 }
-async function ttFan(fan){
+async async function ttFan(fan){
   ttF=fan;
   document.getElementById('tfnom').textContent=fan;
   document.getElementById('tfanwrap').style.display='none';
   document.getElementById('tmavwrap').style.display='block';
   var li=document.getElementById('tmavlist');
   li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
-  try{
-    var r=await fetch(API+'/savol/mavzular/'+fan);
-    var d=await r.json();
-    var ml=d.mavzular||[];
-    if(!ml.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Mavzular yo\'q</div>';return;}
-    li.innerHTML=ml.map(function(m){return '<div onclick="ttMav(\''+m.mavzu+'\')" class="ri" style="cursor:pointer"><div style="flex:1"><div style="font-size:.9rem;font-weight:600">'+m.mavzu+'</div><div style="font-size:.72rem;color:rgba(255,255,255,.4)">'+m.soni+' savol</div></div><div style="color:#00d4aa">→</div></div>';}).join('');
-  }catch(e){}
+  fetch(API+'/savol/mavzular/'+fan)
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var ml=d.mavzular||[];
+      if(!ml.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Mavzular yo\'q</div>';return;}
+      li.innerHTML=ml.map(function(m){return '<div onclick="ttMav(\''+m.mavzu+'\')" class="ri" style="cursor:pointer"><div style="flex:1"><div style="font-size:.9rem;font-weight:600">'+m.mavzu+'</div><div style="font-size:.72rem;color:rgba(255,255,255,.4)">'+m.soni+' savol</div></div><div style="color:#00d4aa">→</div></div>';}).join('');
+    })
+    .catch(function(){});
 }
 function tFanBack(){document.getElementById('tfanwrap').style.display='block';document.getElementById('tmavwrap').style.display='none';}
 function ttMav(mav){
