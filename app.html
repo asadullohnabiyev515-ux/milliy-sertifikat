@@ -654,7 +654,7 @@ async function ttFanLoad(){
     g.innerHTML=fl.map(function(f){return '<div onclick="ttFan(\''+f.fan+'\')" class="mc" style="text-align:center"><div style="font-size:2rem;margin-bottom:8px">'+(ic[f.fan]||'📚')+'</div><div class="mt">'+f.fan+'</div><div class="ms">'+f.jami+' savol</div></div>';}).join('');
   }catch(e){document.getElementById('tfgrid').innerHTML='<div style="grid-column:span 2;text-align:center;padding:20px;color:rgba(255,255,255,.4)">Server bilan ulanib bo\'lmadi</div>';}
 }
-async async function ttFan(fan){
+async function ttFan(fan){
   ttF=fan;
   document.getElementById('tfnom').textContent=fan;
   document.getElementById('tfanwrap').style.display='none';
