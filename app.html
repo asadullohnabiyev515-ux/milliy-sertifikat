@@ -186,7 +186,7 @@ body{font-family:sans-serif;background:#0a0f1e;color:#fff;min-height:100vh}
   <div class="top"><div class="tlogo">Tester</div><div class="av" id="av7">A</div></div>
   <div class="tbtns">
     <button class="tb on" id="tt1" onclick="tTab(1)">📚 Tayyor</button>
-    <button class="tb off" id="tt2" onclick="tTab(2)">👥 Do'st</button>
+    <button class="tb off" id="tt2" style="display:none" onclick="tTab(2)">👥 Do'st</button>
     <button class="tb off" id="tt3" onclick="tTab(3)">🔄 Trening</button>
   </div>
   <div id="tb1" style="padding:16px">
@@ -202,23 +202,7 @@ body{font-family:sans-serif;background:#0a0f1e;color:#fff;min-height:100vh}
       <div id="tmavlist"></div>
     </div>
   </div>
-  <div id="tb2" style="display:none;padding:16px">
-    <div class="card" style="margin-bottom:12px">
-      <div style="font-weight:700;margin-bottom:8px">👥 Do'st bilan test</div>
-      <select id="dfan" class="inp"><option value="">Fan tanlang...</option></select>
-      <select id="dsoni" class="inp" style="margin-top:8px">
-        <option value="5">5 ta</option><option value="10" selected>10 ta</option>
-        <option value="15">15 ta</option><option value="20">20 ta</option>
-      </select>
-      <button class="btn btn-green" onclick="dYarat()" style="margin-top:10px">🎯 Test yaratish</button>
-      <div class="xb" id="dxb"></div>
-    </div>
-    <div class="card">
-      <div style="font-weight:700;margin-bottom:8px">🔑 Kod orqali kirish</div>
-      <input class="inp" id="dkod" type="text" placeholder="DOST_ABC123" style="text-transform:uppercase;margin-top:8px"/>
-      <button class="btn" onclick="dostKirish()" style="background:linear-gradient(135deg,#8b5cf6,#d946ef);color:#fff;margin-top:10px">▶ Kirish</button>
-    </div>
-  </div>
+  <div <div id="tb2" style="display:none"></div>
   <div id="tb3" style="display:none;padding:16px">
     <div class="card">
       <div style="font-weight:700;margin-bottom:8px">🔄 Trening</div>
