@@ -744,9 +744,17 @@ async function dostKirish(){
     var rr=await fetch(API+'/student/royxat',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({test_kod:kod,ism:CU.name,familiya:'',telefon:'',user_id:CU.id||0})});
     var rd=await rr.json();
-    tUD={ism:CU.name,kod:kod,fan:d.fan,tur:d.tur||'dost',soni:d.savollar_soni||10,vid:rd.varaq_id||''};
-    document.getElementById('tfan').textContent=d.fan+' (Do\'st testi)';
-    tJav={};tJ=0;tKor();go('p3',1);
+    // Do'st testi uchun savollarni to'g'ridan ishlatamiz
+    if(d.savollar&&d.savollar.length){
+      ttS=d.savollar;ttJav={};ttJ=0;
+      ttF=d.fan;ttM='dost';
+      document.getElementById('ttitle').textContent=d.fan+' (Do\'st testi)';
+      ttKor();go('p7b',-1);
+    } else {
+      tUD={ism:CU.name,kod:kod,fan:d.fan,tur:'dost',soni:d.savollar_soni||10,vid:rd.varaq_id||''};
+      document.getElementById('tfan').textContent=d.fan+' (Do\'st testi)';
+      tJav={};tJ=0;tKor();go('p3',1);
+    }
   }catch(e){alert('Xato: '+e);}
 }
 async function ttTrLoad(){
