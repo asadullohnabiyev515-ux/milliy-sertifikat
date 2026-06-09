@@ -186,7 +186,7 @@ body{font-family:sans-serif;background:#0a0f1e;color:#fff;min-height:100vh}
   <div class="top"><div class="tlogo">Tester</div><div class="av" id="av7">A</div></div>
   <div class="tbtns">
     <button class="tb on" id="tt1" onclick="tTab(1)">📚 Tayyor</button>
-    <button class="tb off" id="tt2" style="display:none" onclick="tTab(2)">👥 Do'st</button>
+    <button class="tb off" id="tt2" onclick="tTab(2)">👥 Do'st</button>
     <button class="tb off" id="tt3" onclick="tTab(3)">🔄 Trening</button>
   </div>
   <div id="tb1" style="padding:16px">
@@ -202,18 +202,34 @@ body{font-family:sans-serif;background:#0a0f1e;color:#fff;min-height:100vh}
       <div id="tmavlist"></div>
     </div>
   </div>
-  <div <div id="tb2" style="display:none"></div>
+  <div id="tb2" style="display:none;padding:16px">
+    <div class="card" style="margin-bottom:12px">
+      <div style="font-weight:700;margin-bottom:8px">👥 Do'st bilan test</div>
+      <select id="dfan" class="inp"><option value="">Fan tanlang...</option></select>
+      <select id="dsoni" class="inp" style="margin-top:8px">
+        <option value="5">5 ta</option><option value="10" selected>10 ta</option>
+        <option value="15">15 ta</option><option value="20">20 ta</option>
+      </select>
+      <button class="btn btn-green" onclick="dYarat()" style="margin-top:10px">🎯 Test yaratish</button>
+      <div class="xb" id="dxb"></div>
+    </div>
+    <div class="card">
+      <div style="font-weight:700;margin-bottom:8px">🔑 Kod orqali kirish</div>
+      <input class="inp" id="dkod" type="text" placeholder="DOST_ABC123" style="text-transform:uppercase;margin-top:8px"/>
+      <button class="btn" onclick="alert('Tez kunda!')" style="background:linear-gradient(135deg,#8b5cf6,#d946ef);color:#fff;margin-top:10px">▶ Kirish</button>
+    </div>
+  </div>
   <div id="tb3" style="display:none;padding:16px">
     <div class="card">
       <div style="font-weight:700;margin-bottom:8px">🔄 Trening</div>
-      <div style="font-size:.85rem;color:rgba(255,255,255,.4);margin-bottom:14px">Bazadagi savollardan random test</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
-        <button onclick="treningBoshla(10)" class="mc" style="text-align:center;padding:16px 8px"><div style="font-size:1.3rem;font-weight:800;color:#00d4aa">10</div><div style="font-size:.7rem;color:rgba(255,255,255,.4)">savol</div></button>
-        <button onclick="treningBoshla(15)" class="mc" style="text-align:center;padding:16px 8px"><div style="font-size:1.3rem;font-weight:800;color:#ff9500">15</div><div style="font-size:.7rem;color:rgba(255,255,255,.4)">savol</div></button>
-        <button onclick="treningBoshla(20)" class="mc" style="text-align:center;padding:16px 8px"><div style="font-size:1.3rem;font-weight:800;color:#4da6ff">20</div><div style="font-size:.7rem;color:rgba(255,255,255,.4)">savol</div></button>
-      </div>
+      <div style="font-size:2rem;font-weight:800;color:#ff6b35;text-align:center;margin:12px 0" id="trsoni">0</div>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);text-align:center;margin-bottom:14px">ta xato savol</div>
+      <button class="btn" onclick="alert('Tez kunda!')" style="background:linear-gradient(135deg,#ff6b35,#ff9500);color:#fff">🚀 Boshlash</button>
     </div>
   </div>
+</div>
+
+<!-- TESTER TEST -->
 <div id="p7b" class="page" style="padding-bottom:80px">
   <div class="top">
     <button onclick="go('p7',4)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">✕</button>
@@ -709,37 +725,8 @@ async function dYarat(){
   try{
     var r=await fetch(API+'/dost/yarat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({yaratuvchi_id:CU.id||0,fan:fan,savollar_soni:parseInt(soni)})});
     var d=await r.json();
-    if(d.success){
-      var e=document.getElementById('dxb');
-      e.style.display='block';e.className='xb ok';
-      e.textContent='Test kodi: '+d.kod+' — Do\'stingizga yuboring!';
-    }
+    if(d.success){var e=document.getElementById('dxb');e.style.display='block';e.className='xb ok';e.textContent='Kod: '+d.kod;}
   }catch(e){alert('Xato');}
-}
-
-async function dostKirish(){
-  var kod=document.getElementById('dkod').value.trim().toUpperCase();
-  if(!kod){alert('Kodni kiriting!');return;}
-  try{
-    var r=await fetch(API+'/test/tekshir/'+kod);
-    var d=await r.json();
-    if(!d.topildi){alert('Test topilmadi!');return;}
-    if(d.tugadi){alert('Bu test yakunlangan!');return;}
-    var rr=await fetch(API+'/student/royxat',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({test_kod:kod,ism:CU.name,familiya:'',telefon:'',user_id:CU.id||0})});
-    var rd=await rr.json();
-    // Do'st testi uchun savollarni to'g'ridan ishlatamiz
-    if(d.savollar&&d.savollar.length){
-      ttS=d.savollar;ttJav={};ttJ=0;
-      ttF=d.fan;ttM='dost';
-      document.getElementById('ttitle').textContent=d.fan+' (Do\'st testi)';
-      ttKor();go('p7b',-1);
-    } else {
-      tUD={ism:CU.name,kod:kod,fan:d.fan,tur:'dost',soni:d.savollar_soni||10,vid:rd.varaq_id||''};
-      document.getElementById('tfan').textContent=d.fan+' (Do\'st testi)';
-      tJav={};tJ=0;tKor();go('p3',1);
-    }
-  }catch(e){alert('Xato: '+e);}
 }
 async function ttTrLoad(){
   if(!CU.id)return;
@@ -1024,22 +1011,6 @@ async function savolOchir(fan,mavzu){
     var d=await r.json();
     if(d.success){alert('Savollar o\'chirildi!');uSLoad();}
     else alert('Xato: '+(d.detail||''));
-  }catch(e){alert('Xato: '+e);}
-}
-
-// TRENING
-async function treningBoshla(soni){
-  try{
-    var r=await fetch(API+'/trening/'+CU.id);
-    var d=await r.json();
-    var savollar=d.savollar||[];
-    if(!savollar.length){alert('Savollar yoq! Avval testlarni ishlang.');return;}
-    // Random soni ta savol tanlash
-    var tanlangan=savollar.slice(0,soni);
-    ttS=tanlangan;ttJav={};ttJ=0;
-    ttF='Trening';ttM='trening';
-    document.getElementById('ttitle').textContent='Trening ('+soni+' savol)';
-    ttKor();go('p7b',-1);
   }catch(e){alert('Xato: '+e);}
 }
 
