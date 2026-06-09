@@ -725,8 +725,29 @@ async function dYarat(){
   try{
     var r=await fetch(API+'/dost/yarat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({yaratuvchi_id:CU.id||0,fan:fan,savollar_soni:parseInt(soni)})});
     var d=await r.json();
-    if(d.success){var e=document.getElementById('dxb');e.style.display='block';e.className='xb ok';e.textContent='Kod: '+d.kod;}
+    if(d.success){
+      var e=document.getElementById('dxb');
+      e.style.display='block';e.className='xb ok';
+      e.textContent='Test kodi: '+d.kod+' — Do\'stingizga yuboring!';
+    }
   }catch(e){alert('Xato');}
+}
+
+async function dostKirish(){
+  var kod=document.getElementById('dkod').value.trim().toUpperCase();
+  if(!kod){alert('Kodni kiriting!');return;}
+  try{
+    var r=await fetch(API+'/test/tekshir/'+kod);
+    var d=await r.json();
+    if(!d.topildi){alert('Test topilmadi!');return;}
+    if(d.tugadi){alert('Bu test yakunlangan!');return;}
+    var rr=await fetch(API+'/student/royxat',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({test_kod:kod,ism:CU.name,familiya:'',telefon:'',user_id:CU.id||0})});
+    var rd=await rr.json();
+    tUD={ism:CU.name,kod:kod,fan:d.fan,tur:d.tur||'dost',soni:d.savollar_soni||10,vid:rd.varaq_id||''};
+    document.getElementById('tfan').textContent=d.fan+' (Do\'st testi)';
+    tJav={};tJ=0;tKor();go('p3',1);
+  }catch(e){alert('Xato: '+e);}
 }
 async function ttTrLoad(){
   if(!CU.id)return;
