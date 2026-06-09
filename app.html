@@ -1027,6 +1027,22 @@ async function savolOchir(fan,mavzu){
   }catch(e){alert('Xato: '+e);}
 }
 
+// TRENING
+async function treningBoshla(soni){
+  try{
+    var r=await fetch(API+'/trening/'+CU.id);
+    var d=await r.json();
+    var savollar=d.savollar||[];
+    if(!savollar.length){alert('Savollar yoq! Avval testlarni ishlang.');return;}
+    // Random soni ta savol tanlash
+    var tanlangan=savollar.slice(0,soni);
+    ttS=tanlangan;ttJav={};ttJ=0;
+    ttF='Trening';ttM='trening';
+    document.getElementById('ttitle').textContent='Trening ('+soni+' savol)';
+    ttKor();go('p7b',-1);
+  }catch(e){alert('Xato: '+e);}
+}
+
 // HELPER
 function xb(id,cls,txt){var e=document.getElementById(id);if(!e)return;e.style.display=txt?'block':'none';e.className='xb '+cls;e.textContent=txt;}
 </script>
