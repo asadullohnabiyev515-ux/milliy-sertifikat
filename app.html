@@ -1152,8 +1152,12 @@ async function bSaqla(){
       var r=await fetch(API+'/savol/pdf',{method:'POST',body:fd});
       var d=await r.json();
       if(d.success){
-        xb('bxb','ok','✅ '+d.qoshildi+' ta savol qo\'shildi!');
-        pdfinp.value='';document.getElementById('bpdfnom').textContent='PDF faylni tanlang';
+        if(d.qoshildi===0&&d.preview){
+          xb('bxb','err','0 ta savol topildi. Fayl tarkibi:\n\n'+d.preview+'\n\nFormat to\'g\'ri emasligini tekshiring.');
+        }else{
+          xb('bxb','ok','✅ '+d.qoshildi+' ta savol qo\'shildi!');
+          pdfinp.value='';document.getElementById('bpdfnom').textContent='PDF yoki Word faylni tanlang';
+        }
       }else{xb('bxb','err',d.detail||'Xato');}
     }else{
       var matn=document.getElementById('bmatn').value.trim();
