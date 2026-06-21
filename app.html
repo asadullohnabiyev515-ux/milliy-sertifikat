@@ -467,20 +467,32 @@ body[data-tema="yorug"] #tema-tog{background:rgba(0,0,0,.06);border-color:rgba(0
       <input class="inp" id="bfan" type="text" placeholder="Masalan: Kimyo" style="margin-bottom:10px"/>
       <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">Mavzu</div>
       <input class="inp" id="bmavzu" type="text" placeholder="Masalan: Kimyoviy reaksiyalar" style="margin-bottom:10px"/>
-      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">Savollar (quyidagi formatda)</div>
-      <textarea class="inp" id="bmatn" rows="10" placeholder="Savol: Suvning formulasi?&#10;A) H2O&#10;B) CO2&#10;C) O2&#10;D) NaCl&#10;Togri: A&#10;&#10;Savol: Mis elementining belgisi?&#10;A) Fe&#10;B) Cu&#10;C) Al&#10;D) Na&#10;Togri: B" style="resize:vertical;min-height:180px;font-size:.82rem;line-height:1.6"></textarea>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <button id="btab1" onclick="bTab(1)" class="tb on">📝 Matn</button>
+        <button id="btab2" onclick="bTab(2)" class="tb off">📄 PDF fayl</button>
+      </div>
+      <div id="bmatnwrap">
+        <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">Savollar (quyidagi formatda)</div>
+        <textarea class="inp" id="bmatn" rows="10" placeholder="Savol: Suvning formulasi?&#10;A) H2O&#10;B) CO2&#10;C) O2&#10;D) NaCl&#10;Togri: A&#10;&#10;Savol: Mis elementining belgisi?&#10;A) Fe&#10;B) Cu&#10;C) Al&#10;D) Na&#10;Togri: B" style="resize:vertical;min-height:180px;font-size:.82rem;line-height:1.6"></textarea>
+      </div>
+      <div id="bpdfwrap" style="display:none">
+        <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:8px">PDF kitob yoki savol to'plami</div>
+        <label style="display:block;border:2px dashed rgba(0,212,170,.4);border-radius:12px;padding:24px;text-align:center;cursor:pointer;background:rgba(0,212,170,.04)">
+          <div style="font-size:2rem;margin-bottom:6px">📄</div>
+          <div style="font-size:.85rem;font-weight:600;color:#00d4aa" id="bpdfnom">PDF faylni tanlang</div>
+          <div style="font-size:.75rem;color:rgba(255,255,255,.4);margin-top:4px">maksimal 20 MB</div>
+          <input type="file" accept=".pdf" id="bpdfinp" style="display:none" onchange="bPdfTanla(this)"/>
+        </label>
+      </div>
     </div>
-    <div class="card" style="margin-bottom:12px;font-size:.8rem;color:rgba(255,255,255,.5);line-height:1.7">
+    <div class="card" style="margin-bottom:12px;font-size:.8rem;color:rgba(255,255,255,.5);line-height:1.7" id="bformatwrap">
       <div style="font-weight:700;color:#00d4aa;margin-bottom:6px">📋 Format namunasi:</div>
       <code style="font-size:.75rem;background:rgba(255,255,255,.05);border-radius:6px;padding:8px;display:block;white-space:pre-wrap">Savol: Savol matni?
 A) Variant
 B) Variant
 C) Variant
 D) Variant
-Togri: A
-
-Savol: Ikkinchi savol?
-...</code>
+Togri: A</code>
     </div>
     <button class="btn btn-green" onclick="bSaqla()" id="bbtn">📤 Yuklash</button>
     <div class="xb" id="bxb"></div>
@@ -1111,24 +1123,48 @@ async function sSaqla(){
 }
 
 // KO'P SAVOL YUKLASH
+var bTabVal=1;
+function bTab(n){
+  bTabVal=n;
+  document.getElementById('btab1').className='tb '+(n===1?'on':'off');
+  document.getElementById('btab2').className='tb '+(n===2?'on':'off');
+  document.getElementById('bmatnwrap').style.display=n===1?'block':'none';
+  document.getElementById('bpdfwrap').style.display=n===2?'block':'none';
+  document.getElementById('bformatwrap').style.display=n===1?'block':'none';
+}
+function bPdfTanla(inp){
+  var f=inp.files[0];
+  if(f)document.getElementById('bpdfnom').textContent=f.name+' ('+Math.round(f.size/1024)+' KB)';
+}
 async function bSaqla(){
   var fan=document.getElementById('bfan').value.trim();
   var mavzu=document.getElementById('bmavzu').value.trim();
-  var matn=document.getElementById('bmatn').value.trim();
   if(!fan||!mavzu){xb('bxb','err','Fan va mavzuni kiriting!');return;}
-  if(!matn){xb('bxb','err','Savollarni kiriting!');return;}
   var btn=document.getElementById('bbtn');
   btn.disabled=true;btn.textContent='Yuklanmoqda...';
   xb('bxb','inf','Serverga yuborilmoqda...');
   try{
-    var r=await fetch(API+'/savol/fayldan',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({fan:fan,mavzu:mavzu,matn:matn,ustoz_id:CU.id||0})});
-    var d=await r.json();
-    if(d.success){
-      xb('bxb','ok','✅ '+d.qoshildi+' ta savol qo\'shildi! Fan: '+fan+', Mavzu: '+mavzu);
-      document.getElementById('bmatn').value='';
+    if(bTabVal===2){
+      var pdfinp=document.getElementById('bpdfinp');
+      if(!pdfinp.files||!pdfinp.files[0]){xb('bxb','err','PDF faylni tanlang!');btn.disabled=false;btn.textContent='📤 Yuklash';return;}
+      var fd=new FormData();
+      fd.append('fan',fan);fd.append('mavzu',mavzu);fd.append('ustoz_id',CU.id||0);fd.append('fayl',pdfinp.files[0]);
+      var r=await fetch(API+'/savol/pdf',{method:'POST',body:fd});
+      var d=await r.json();
+      if(d.success){
+        xb('bxb','ok','✅ '+d.qoshildi+' ta savol qo\'shildi!');
+        pdfinp.value='';document.getElementById('bpdfnom').textContent='PDF faylni tanlang';
+      }else{xb('bxb','err',d.detail||'Xato');}
     }else{
-      xb('bxb','err',d.detail||'Xato yuz berdi');
+      var matn=document.getElementById('bmatn').value.trim();
+      if(!matn){xb('bxb','err','Savollarni kiriting!');btn.disabled=false;btn.textContent='📤 Yuklash';return;}
+      var r=await fetch(API+'/savol/fayldan',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({fan:fan,mavzu:mavzu,matn:matn,ustoz_id:CU.id||0})});
+      var d=await r.json();
+      if(d.success){
+        xb('bxb','ok','✅ '+d.qoshildi+' ta savol qo\'shildi!');
+        document.getElementById('bmatn').value='';
+      }else{xb('bxb','err',d.detail||'Xato');}
     }
   }catch(e){xb('bxb','err','Serverga ulanib bo\'lmadi!');}
   btn.disabled=false;btn.textContent='📤 Yuklash';
