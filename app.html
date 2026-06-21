@@ -346,7 +346,8 @@ body[data-tema="yorug"] #tema-tog{background:rgba(0,0,0,.06);border-color:rgba(0
     <div id="utlist"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
   </div>
   <div id="ub2" style="display:none;padding:16px">
-    <button class="btn btn-green" onclick="go('p9c',-1)" style="margin-bottom:14px">➕ Savol qo'shish</button>
+    <button class="btn btn-green" onclick="go('p9c',-1)" style="margin-bottom:8px">➕ Savol qo'shish</button>
+    <button class="btn" onclick="go('p9f',-1)" style="background:linear-gradient(135deg,#8b5cf6,#4da6ff);color:#fff;margin-bottom:14px">📥 Ko'p savol yuklash</button>
     <div id="uslist"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
   </div>
   <div id="ub3" style="display:none;padding:16px">
@@ -453,6 +454,39 @@ body[data-tema="yorug"] #tema-tog{background:rgba(0,0,0,.06);border-color:rgba(0
   </div>
 </div>
 
+<!-- KO'P SAVOL YUKLASH -->
+<div id="p9f" class="page" style="padding-bottom:80px">
+  <div class="top">
+    <button onclick="go('p9',6)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+    <div class="tlogo">Ko'p savol yuklash</div>
+    <div style="width:34px"></div>
+  </div>
+  <div style="padding:16px">
+    <div class="card" style="margin-bottom:12px">
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">Fan</div>
+      <input class="inp" id="bfan" type="text" placeholder="Masalan: Kimyo" style="margin-bottom:10px"/>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">Mavzu</div>
+      <input class="inp" id="bmavzu" type="text" placeholder="Masalan: Kimyoviy reaksiyalar" style="margin-bottom:10px"/>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">Savollar (quyidagi formatda)</div>
+      <textarea class="inp" id="bmatn" rows="10" placeholder="Savol: Suvning formulasi?&#10;A) H2O&#10;B) CO2&#10;C) O2&#10;D) NaCl&#10;Togri: A&#10;&#10;Savol: Mis elementining belgisi?&#10;A) Fe&#10;B) Cu&#10;C) Al&#10;D) Na&#10;Togri: B" style="resize:vertical;min-height:180px;font-size:.82rem;line-height:1.6"></textarea>
+    </div>
+    <div class="card" style="margin-bottom:12px;font-size:.8rem;color:rgba(255,255,255,.5);line-height:1.7">
+      <div style="font-weight:700;color:#00d4aa;margin-bottom:6px">📋 Format namunasi:</div>
+      <code style="font-size:.75rem;background:rgba(255,255,255,.05);border-radius:6px;padding:8px;display:block;white-space:pre-wrap">Savol: Savol matni?
+A) Variant
+B) Variant
+C) Variant
+D) Variant
+Togri: A
+
+Savol: Ikkinchi savol?
+...</code>
+    </div>
+    <button class="btn btn-green" onclick="bSaqla()" id="bbtn">📤 Yuklash</button>
+    <div class="xb" id="bxb"></div>
+  </div>
+</div>
+
 <!-- NAV -->
 <div class="nav" id="nav" style="display:none">
   <div class="nitem on" id="n0" onclick="go('p1',0)"><span>🏠</span><span>Bosh</span></div>
@@ -553,7 +587,7 @@ var sTogri='';
 
 // GO - sahifa almashtirish
 function go(id,nav){
-  var all=['p1','p2','p3','p3b','p3c','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e','p-elon'];
+  var all=['p1','p2','p3','p3b','p3c','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e','p9f','p-elon'];
   all.forEach(function(x){var e=document.getElementById(x);if(e)e.style.display='none';});
   var el=document.getElementById(id);
   if(el)el.style.display='block';
@@ -1074,6 +1108,30 @@ async function sSaqla(){
       ['A','B','C','D'].forEach(function(h){var e=document.getElementById('st'+h);if(e){e.className='vb';var bg=e.querySelector('.vbg');if(bg){bg.style.background='rgba(255,255,255,.08)';bg.style.color='#fff';}}});
     }else xb('sxb','err',res.detail||'Xato');
   }catch(e){xb('sxb','err','Xato');}
+}
+
+// KO'P SAVOL YUKLASH
+async function bSaqla(){
+  var fan=document.getElementById('bfan').value.trim();
+  var mavzu=document.getElementById('bmavzu').value.trim();
+  var matn=document.getElementById('bmatn').value.trim();
+  if(!fan||!mavzu){xb('bxb','err','Fan va mavzuni kiriting!');return;}
+  if(!matn){xb('bxb','err','Savollarni kiriting!');return;}
+  var btn=document.getElementById('bbtn');
+  btn.disabled=true;btn.textContent='Yuklanmoqda...';
+  xb('bxb','inf','Serverga yuborilmoqda...');
+  try{
+    var r=await fetch(API+'/savol/fayldan',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({fan:fan,mavzu:mavzu,matn:matn,ustoz_id:CU.id||0})});
+    var d=await r.json();
+    if(d.success){
+      xb('bxb','ok','✅ '+d.qoshildi+' ta savol qo\'shildi! Fan: '+fan+', Mavzu: '+mavzu);
+      document.getElementById('bmatn').value='';
+    }else{
+      xb('bxb','err',d.detail||'Xato yuz berdi');
+    }
+  }catch(e){xb('bxb','err','Serverga ulanib bo\'lmadi!');}
+  btn.disabled=false;btn.textContent='📤 Yuklash';
 }
 
 // KITOB BOT
