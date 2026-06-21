@@ -615,15 +615,15 @@ async function testBoshlash(){
     var rr=await fetch(API+'/student/royxat',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({test_kod:kod,ism:CU.name,familiya:'',telefon:'',user_id:CU.id||0})});
     var rd=await rr.json();
-    tUD={ism:CU.name,kod:kod,fan:d.fan,tur:d.tur||'milliy',soni:d.savollar_soni||40,vid:rd.varaq_id||''};
+    tUD={ism:CU.name,kod:kod,fan:d.fan,tur:d.tur||'milliy',soni:d.savollar_soni||40,vaqt:d.vaqt||90,vid:rd.varaq_id||''};
     document.getElementById('tfan').textContent=d.fan;
     tJav={};tJ=0;tBelgi={};
     var saqBor=tAvtoyukla();
     if(saqBor&&confirm('💾 Saqlangan javoblar topildi. Davom ettirasizmi?')){
       taymerBoshlash(Math.ceil(tQoldi/60));
     }else{
-      tJav={};tBelgi={};tQoldi=(tUD.tur==='milliy'?90:60)*60;
-      taymerBoshlash(tUD.tur==='milliy'?90:60);
+      tJav={};tBelgi={};tQoldi=tUD.vaqt*60;
+      taymerBoshlash(tUD.vaqt);
     }
     tKor();go('p3',1);
     document.getElementById('txb').style.display='none';
