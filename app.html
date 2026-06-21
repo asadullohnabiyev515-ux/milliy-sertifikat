@@ -49,6 +49,33 @@ body{font-family:sans-serif;background:#0a0f1e;color:#fff;min-height:100vh}
 .xb.inf{background:rgba(0,136,255,.15);border:1px solid rgba(0,136,255,.3);color:#4da6ff}
 .sp{display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,.1);border-top-color:#00d4aa;border-radius:50%;animation:sp .6s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
+/* YORUG' REJIM */
+body[data-tema="yorug"]{background:#f0f4f8;color:#1a1a2e}
+body[data-tema="yorug"] #p0{background:#f0f4f8}
+body[data-tema="yorug"] .card{background:#fff;border-color:rgba(0,0,0,.08)}
+body[data-tema="yorug"] .inp{background:#e8edf2;border-color:rgba(0,0,0,.12);color:#1a1a2e}
+body[data-tema="yorug"] .inp::placeholder{color:rgba(0,0,0,.35)}
+body[data-tema="yorug"] .nav{background:rgba(240,244,248,.97);border-color:rgba(0,0,0,.08)}
+body[data-tema="yorug"] .nitem span:first-child,body[data-tema="yorug"] .nitem span:last-child{color:#1a1a2e}
+body[data-tema="yorug"] .top{background:rgba(240,244,248,.95);border-color:rgba(0,0,0,.08)}
+body[data-tema="yorug"] .sbox{background:#fff;border-color:rgba(0,0,0,.08)}
+body[data-tema="yorug"] .slab{color:rgba(0,0,0,.4)}
+body[data-tema="yorug"] .mc{background:#fff;border-color:rgba(0,0,0,.08)}
+body[data-tema="yorug"] .ms{color:rgba(0,0,0,.4)}
+body[data-tema="yorug"] .mt{color:#1a1a2e}
+body[data-tema="yorug"] .vb{background:#fff;border-color:rgba(0,0,0,.1);color:#1a1a2e}
+body[data-tema="yorug"] .vbg{background:rgba(0,0,0,.06);color:#1a1a2e}
+body[data-tema="yorug"] .ri{background:#fff;border-color:rgba(0,0,0,.08);color:#1a1a2e}
+body[data-tema="yorug"] .prog{background:rgba(0,0,0,.08)}
+body[data-tema="yorug"] .tb.off{border-color:rgba(0,0,0,.15);color:rgba(0,0,0,.45);background:transparent}
+body[data-tema="yorug"] .btn-out{border-color:rgba(0,0,0,.2);color:#1a1a2e}
+body[data-tema="yorug"] .xb.err{background:rgba(255,59,48,.1);color:#c0392b}
+body[data-tema="yorug"] .xb.ok{background:rgba(0,212,170,.1);color:#00897b}
+body[data-tema="yorug"] .xb.inf{background:rgba(0,136,255,.1);color:#1565c0}
+body[data-tema="yorug"] .sp{border-color:rgba(0,0,0,.1);border-top-color:#00d4aa}
+/* Tema tugmasi */
+#tema-tog{position:fixed;top:10px;right:10px;z-index:9999;width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);transition:background .2s}
+body[data-tema="yorug"] #tema-tog{background:rgba(0,0,0,.06);border-color:rgba(0,0,0,.12)}
 #kimyo-bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;overflow:hidden;pointer-events:none}
 .zarracha{position:absolute;opacity:0;animation:suzib linear infinite;color:rgba(0,212,170,0.5);user-select:none;font-weight:700}
 .pufakcha{position:absolute;border-radius:50%;border:1.5px solid rgba(0,212,170,0.12);background:rgba(0,212,170,0.03);animation:suzib linear infinite}
@@ -57,6 +84,7 @@ body{font-family:sans-serif;background:#0a0f1e;color:#fff;min-height:100vh}
 </style>
 </head>
 <body>
+<button id="tema-tog" onclick="temaToggle()" title="Rejim almashtirish">🌙</button>
 <div id="kimyo-bg"></div>
 <div id="app">
 
@@ -1031,6 +1059,18 @@ async function savolOchir(fan,mavzu){
 
 // HELPER
 function xb(id,cls,txt){var e=document.getElementById(id);if(!e)return;e.style.display=txt?'block':'none';e.className='xb '+cls;e.textContent=txt;}
+function temaToggle(){
+  var t=document.body.getAttribute('data-tema')==='yorug'?'qorongu':'yorug';
+  document.body.setAttribute('data-tema',t);
+  localStorage.setItem('tema',t);
+  document.getElementById('tema-tog').textContent=t==='yorug'?'🌙':'☀️';
+}
+(function(){
+  var t=localStorage.getItem('tema')||'qorongu';
+  document.body.setAttribute('data-tema',t);
+  var btn=document.getElementById('tema-tog');
+  if(btn)btn.textContent=t==='yorug'?'🌙':'☀️';
+})();
 
 (function(){
   var bg=document.getElementById('kimyo-bg');
