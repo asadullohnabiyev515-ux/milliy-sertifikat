@@ -599,7 +599,16 @@ async function kFan(fan){
   }catch(e){}
 }
 function kBack(){document.getElementById('ktitle').textContent='Kitoblar';document.getElementById('kfanlar').style.display='block';document.getElementById('klist').style.display='none';}
-function kYukla(fid,n){if(tg)tg.sendData(JSON.stringify({action:'kitob_yukla',fayl_id:fid,nomi:n}));else alert('Bot orqali yuklanadi');}
+async function kYukla(fid,n){
+  var uid=CU&&CU.id?CU.id:(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user?tg.initDataUnsafe.user.id:null);
+  if(!uid){alert('Avval tizimga kiring!');return;}
+  try{
+    var r=await fetch(API+'/kitob/yuborish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fayl_id:fid,user_id:uid,nomi:n})});
+    var d=await r.json();
+    if(d.success){alert('📚 Kitob botga yuborildi!');}
+    else{alert('Xato: '+(d.detail||'Yuborib bo\'lmadi'));}
+  }catch(e){alert('Serverga ulanib bo\'lmadi!');}
+}
 
 // REYTING
 async function rLoad(){await rTab('u');}
