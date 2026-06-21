@@ -139,9 +139,9 @@ body[data-tema="yorug"] #tema-tog{background:rgba(0,0,0,.06);border-color:rgba(0
 <!-- TEST ISHLASH -->
 <div id="p3" class="page" style="padding-bottom:80px">
   <div class="top">
-    <button onclick="go('p2',1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">✕</button>
+    <button onclick="tChiq()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">✕</button>
     <div class="tlogo" id="tfan">Test</div>
-    <div style="width:34px"></div>
+    <div id="taymer" style="font-size:.85rem;font-weight:700;color:#00d4aa;min-width:52px;text-align:right">90:00</div>
   </div>
   <div style="padding:14px 16px 0">
     <div style="display:flex;justify-content:space-between;margin-bottom:6px">
@@ -149,7 +149,19 @@ body[data-tema="yorug"] #tema-tog{background:rgba(0,0,0,.06);border-color:rgba(0
       <span style="font-size:.85rem;font-weight:700;color:#00d4aa" id="tfoiz">0%</span>
     </div>
     <div class="prog"><div class="pf" id="tfill" style="width:0%"></div></div>
-    <div style="font-size:.78rem;color:rgba(255,255,255,.4);margin-bottom:4px" id="tsnum">1-savol</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin:10px 0 4px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:.78rem;color:rgba(255,255,255,.4)" id="tsnum">1-savol</span>
+        <button id="tbelgiBtn" onclick="tBelgila()" style="background:rgba(255,200,0,.1);border:1px solid rgba(255,200,0,.25);color:#ffd700;border-radius:6px;padding:2px 8px;font-size:.7rem;cursor:pointer">🚩 Belgilash</button>
+      </div>
+      <button onclick="tXaritaToggle()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:2px 8px;font-size:.7rem;color:rgba(255,255,255,.6);cursor:pointer">📋 Xarita</button>
+    </div>
+    <div id="txarita" style="display:none;margin-bottom:10px;background:rgba(255,255,255,.04);border-radius:10px;padding:10px">
+      <div id="txarita-grid" style="display:grid;grid-template-columns:repeat(8,1fr);gap:4px"></div>
+      <div style="display:flex;gap:12px;margin-top:8px;font-size:.65rem;color:rgba(255,255,255,.4)">
+        <span>⬜ Javobsiz</span><span>🟩 Javob berildi</span><span>🟨 Belgilangan</span>
+      </div>
+    </div>
     <div style="font-size:.95rem;font-weight:600;margin-bottom:14px" id="tstext">Javobni tanlang:</div>
     <div id="tvar"></div>
     <div id="tochiq" style="display:none"><input class="inp" id="toinp" type="text" placeholder="Javobingizni yozing..."/></div>
@@ -471,7 +483,70 @@ var urlkod=new URLSearchParams(location.search).get('kod');
 var urltab=new URLSearchParams(location.search).get('tab');
 var ADMINS=[5145005581,0];
 var CU={};
-var tJav={},tUD={},tJ=0;
+var tJav={},tUD={},tJ=0,tBelgi={},tQoldi=90*60,tTaymer=null;
+
+function taymerBoshlash(daqiqa){
+  tQoldi=(daqiqa||90)*60;
+  if(tTaymer)clearInterval(tTaymer);
+  tTaymer=setInterval(function(){
+    tQoldi--;
+    var m=Math.floor(tQoldi/60),s=tQoldi%60;
+    var el=document.getElementById('taymer');
+    if(el){el.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;el.style.color=tQoldi<300?'#ff6b6b':'#00d4aa';}
+    if(tQoldi%10===0)tAvtosaqlash();
+    if(tQoldi<=0){clearInterval(tTaymer);alert('⏰ Vaqt tugadi! Javoblar yuborilmoqda...');tYubor();}
+  },1000);
+}
+function taymerToxtat(){if(tTaymer){clearInterval(tTaymer);tTaymer=null;}}
+
+function tAvtosaqlash(){
+  try{localStorage.setItem('tj_'+tUD.kod,JSON.stringify(tJav));localStorage.setItem('tb_'+tUD.kod,JSON.stringify(tBelgi));localStorage.setItem('tq_'+tUD.kod,tQoldi);}catch(e){}
+}
+function tAvtoyukla(){
+  try{
+    var jav=localStorage.getItem('tj_'+tUD.kod);
+    var belgi=localStorage.getItem('tb_'+tUD.kod);
+    var qoldi=localStorage.getItem('tq_'+tUD.kod);
+    if(jav)tJav=JSON.parse(jav);
+    if(belgi)tBelgi=JSON.parse(belgi);
+    if(qoldi)tQoldi=parseInt(qoldi);
+    return !!jav;
+  }catch(e){return false;}
+}
+function tAvtotoza(){
+  try{localStorage.removeItem('tj_'+tUD.kod);localStorage.removeItem('tb_'+tUD.kod);localStorage.removeItem('tq_'+tUD.kod);}catch(e){}
+}
+
+function tBelgila(){
+  tBelgi[tJ]=!tBelgi[tJ];
+  var bb=document.getElementById('tbelgiBtn');
+  if(bb)bb.style.background=tBelgi[tJ]?'rgba(255,200,0,.3)':'rgba(255,200,0,.1)';
+  tXaritaYangi();
+}
+function tXaritaToggle(){
+  var x=document.getElementById('txarita');
+  if(x){x.style.display=x.style.display==='none'?'block':'none';tXaritaYangi();}
+}
+function tXaritaYangi(){
+  var g=document.getElementById('txarita-grid');
+  if(!g||document.getElementById('txarita').style.display==='none')return;
+  var jami=tUD.soni||40,html='';
+  for(var i=0;i<jami;i++){
+    var bg=tBelgi[i]?'rgba(255,200,0,.3)':tJav[i]?'rgba(0,212,170,.25)':'rgba(255,255,255,.08)';
+    var bd=tBelgi[i]?'rgba(255,200,0,.5)':tJav[i]?'rgba(0,212,170,.4)':'rgba(255,255,255,.1)';
+    var akt=i===tJ?';outline:2px solid #fff;outline-offset:1px':'';
+    html+='<button onclick="tSakra('+i+')" style="background:'+bg+';border:1px solid '+bd+';border-radius:5px;padding:5px 2px;font-size:.68rem;cursor:pointer;color:#fff'+akt+'">'+(i+1)+'</button>';
+  }
+  g.innerHTML=html;
+}
+function tSakra(i){
+  if(tUD.tur==='milliy'&&tJ>=35){var v=document.getElementById('toinp').value.trim();if(v)tJav[tJ]=v;}
+  tJ=i;tKor();
+}
+function tChiq(){
+  if(confirm('Testdan chiqasizmi? Javoblar saqlanib qoladi.')){tAvtosaqlash();taymerToxtat();go('p2',1);}
+}
+
 var ttS=[],ttJav={},ttJ=0,ttF='',ttM='';
 var uTurVal='m',uSoni=40,uJavoblar={};
 var sTogri='';
@@ -542,7 +617,14 @@ async function testBoshlash(){
     var rd=await rr.json();
     tUD={ism:CU.name,kod:kod,fan:d.fan,tur:d.tur||'milliy',soni:d.savollar_soni||40,vid:rd.varaq_id||''};
     document.getElementById('tfan').textContent=d.fan;
-    tJav={};tJ=0;
+    tJav={};tJ=0;tBelgi={};
+    var saqBor=tAvtoyukla();
+    if(saqBor&&confirm('💾 Saqlangan javoblar topildi. Davom ettirasizmi?')){
+      taymerBoshlash(Math.ceil(tQoldi/60));
+    }else{
+      tJav={};tBelgi={};tQoldi=(tUD.tur==='milliy'?90:60)*60;
+      taymerBoshlash(tUD.tur==='milliy'?90:60);
+    }
     tKor();go('p3',1);
     document.getElementById('txb').style.display='none';
   }catch(e){xb('txb','err','Serverga ulanib bo\'lmadi!');}
@@ -567,6 +649,10 @@ function tKor(){
     document.getElementById('toinp').value=tJav[n]||'';
   }
 }
+  var bb=document.getElementById('tbelgiBtn');
+  if(bb)bb.style.background=tBelgi[tJ]?'rgba(255,200,0,.3)':'rgba(255,200,0,.1)';
+  tXaritaYangi();
+}
 function tV(v){tJav[tJ]=v;tKor();}
 function tOld(){if(tJ>0){tJ--;tKor();}}
 function tKeyin(){
@@ -574,7 +660,13 @@ function tKeyin(){
   if(tJ===tUD.soni-1){
     document.getElementById('yism').textContent=CU.name;
     document.getElementById('ykod').textContent=tUD.kod;
-    document.getElementById('ytoldi').textContent=Object.keys(tJav).length+'/'+tUD.soni;
+    var javBerildi=Object.keys(tJav).filter(function(k){return tJav[k]!=='';}).length;
+    var javobsiz=tUD.soni-javBerildi;
+    document.getElementById('ytoldi').textContent=javBerildi+'/'+tUD.soni;
+    var ogoh=document.getElementById('yogoh');
+    if(!ogoh){ogoh=document.createElement('div');ogoh.id='yogoh';var card=document.querySelector('#p3b .card');card.insertBefore(ogoh,document.getElementById('yxb'));}
+    if(javobsiz>0){ogoh.style.cssText='background:rgba(255,150,0,.15);border:1px solid rgba(255,150,0,.3);border-radius:8px;padding:10px;font-size:.82rem;color:#ffb347;margin-top:10px;display:block';ogoh.textContent='⚠️ '+javobsiz+' ta savol javobsiz qoldi!';}
+    else{ogoh.style.display='none';}
     go('p3b',1);
   }else{tJ++;tKor();}
 }
@@ -593,6 +685,7 @@ async function tYubor(){
       var e2=document.getElementById('p3c-ball');if(e2)e2.textContent=d.ball+' / '+d.maks_ball+' ball';
       var e3=document.getElementById('p3c-foiz');if(e3)e3.textContent=d.foiz+'% ('+d.togri_soni+'/'+d.jami+')';
       var e4=document.getElementById('p3c-sub');if(e4)e4.textContent=sub;
+      taymerToxtat();tAvtotoza();
       document.getElementById('nav').style.display='none';
       go('p3c',-1);
     }else{xb('yxb','err',d.detail||'Xato');btn.disabled=false;btn.textContent='📨 Yuborish';}
