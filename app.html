@@ -595,7 +595,7 @@ async function kFan(fan){
     var d=await r.json();
     var kl=d.kitoblar||[];
     if(!kl.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Kitoblar yo\'q</div>';return;}
-    li.innerHTML=kl.map(function(k){return '<div class="ri" style="justify-content:space-between"><div style="font-size:.9rem;font-weight:600">'+k.nomi+'</div><div onclick="kYukla(\''+k.fayl_id+'\',\''+k.nomi+'\')" style="background:rgba(0,212,170,.12);border:1px solid rgba(0,212,170,.25);border-radius:8px;padding:4px 10px;font-size:.7rem;color:#00d4aa;font-weight:600;cursor:pointer">⬇</div></div>';}).join('');
+    li.innerHTML=kl.map(function(k){return '<div class="ri" onclick="kYukla(\''+k.fayl_id+'\',\''+k.nomi+'\')" style="justify-content:space-between;cursor:pointer;active:opacity(.7)"><div style="font-size:.9rem;font-weight:600">'+k.nomi+'</div><div style="font-size:1.2rem">📥</div></div>';}).join('');
   }catch(e){}
 }
 function kBack(){document.getElementById('ktitle').textContent='Kitoblar';document.getElementById('kfanlar').style.display='block';document.getElementById('klist').style.display='none';}
