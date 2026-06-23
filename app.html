@@ -232,6 +232,7 @@ body[data-tema="yorug"] #tema-tog{background:rgba(0,0,0,.06);border-color:rgba(0
   <div class="top"><div class="tlogo">Tester</div><div class="av" id="av7">A</div></div>
   <div class="tbtns">
     <button class="tb on" id="tt1" onclick="tTab(1)">📚 Tayyor</button>
+    <button class="tb off" id="tt2" onclick="tTab(2)">📋 Ketma-ket</button>
     <button class="tb off" id="tt3" onclick="tTab(3)">🔄 Trening</button>
   </div>
   <div id="tb1" style="padding:16px">
@@ -245,6 +246,19 @@ body[data-tema="yorug"] #tema-tog{background:rgba(0,0,0,.06);border-color:rgba(0
         <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase" id="tfnom">Fan</div>
       </div>
       <div id="tmavlist"></div>
+    </div>
+  </div>
+  <div id="tb2" style="display:none;padding:16px">
+    <div id="tseqfanwrap">
+      <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Fanni tanlang</div>
+      <div class="g2" id="tseqfangrid"><div style="grid-column:span 2;text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
+    </div>
+    <div id="tseqmavwrap" style="display:none">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+        <button onclick="tSeqBack()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.2rem;cursor:pointer">←</button>
+        <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase" id="tseqfannom">Fan</div>
+      </div>
+      <div id="tseqmavlist"></div>
     </div>
   </div>
   <div id="tb3" style="display:none;padding:16px">
@@ -293,7 +307,7 @@ body[data-tema="yorug"] #tema-tog{background:rgba(0,0,0,.06);border-color:rgba(0
     <div class="sbox" style="text-align:center"><div class="snum" style="color:#ff9500" id="ttjami">0</div><div class="slab">Jami</div></div>
   </div>
   <div id="ttxatolar" style="margin-bottom:16px"></div>
-  <button class="btn btn-green" onclick="go('p7',4)">🔄 Qayta urinish</button>
+  <div id="ttnatbtnlar"><button class="btn btn-green" onclick="go('p7',4)">🔄 Qayta urinish</button></div>
 </div>
 
 <!-- PROFIL -->
@@ -531,6 +545,7 @@ function tChiq(){
 }
 
 var ttS=[],ttJav={},ttJ=0,ttF='',ttM='';
+var ttMode='',ttSeqFan_='',ttSeqMavzular=[],ttSeqIdx=0;
 var uTurVal='m',uSoni=40,uJavoblar={};
 var sTogri='';
 
@@ -749,11 +764,12 @@ async function rTab(t){
 
 // TESTER
 function tTab(n){
-  [1,3].forEach(function(i){
+  [1,2,3].forEach(function(i){
     document.getElementById('tt'+i).className='tb '+(i===n?'on':'off');
     document.getElementById('tb'+i).style.display=i===n?'block':'none';
   });
-  if(n===1)ttFanLoad();
+  if(n===1){ttMode='';ttFanLoad();}
+  if(n===2){ttMode='seq';ttSeqFanLoad();}
   if(n===3)ttTrLoad();
 }
 async function ttFanLoad(){
@@ -835,6 +851,22 @@ async function ttNat(){
     var xl=d.notogri||[];
     document.getElementById('ttxatolar').innerHTML=xl.length?'<div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Xato javoblar</div>'+xl.map(function(x){return '<div class="ri" style="flex-direction:column;align-items:flex-start"><div style="font-size:.78rem;color:rgba(255,255,255,.4)">Savol #'+x.savol_id+'</div><div style="font-size:.85rem;margin-top:4px">Sizniki: <span style="color:#ff6b6b;font-weight:600">'+x.berilgan+'</span></div><div style="font-size:.85rem">To\'g\'ri: <span style="color:#00d4aa;font-weight:600">'+x.togri+'</span></div></div>';}).join(''):'';
     go('p7c',-1);
+    var bArea=document.getElementById('ttnatbtnlar');
+    if(ttMode==='seq'){
+      if(b>=60){
+        seqSave(ttSeqFan_,ttSeqMavzular[ttSeqIdx]);
+        if(typeof renderSeqMavzular==='function')renderSeqMavzular();
+        if(ttSeqIdx>=ttSeqMavzular.length-1){
+          bArea.innerHTML='<div style="text-align:center;padding:12px;color:#00d4aa;font-weight:700;font-size:.95rem;margin-bottom:12px">🏆 Barcha mavzular muvaffaqiyatli o\'tildi!</div><button class="btn btn-out" onclick="go(\'p7\',4);tTab(2)">📋 Mavzular ro\'yxati</button>';
+        }else{
+          bArea.innerHTML='<button class="btn btn-green" onclick="ttSeqStart('+(ttSeqIdx+1)+')">→ Keyingi mavzu</button><button class="btn btn-out" style="margin-top:8px" onclick="go(\'p7\',4);tTab(2)">📋 Mavzular ro\'yxati</button>';
+        }
+      }else{
+        bArea.innerHTML='<div style="background:rgba(255,59,48,.1);border:1px solid rgba(255,59,48,.25);border-radius:10px;padding:10px;font-size:.82rem;color:#ff6b6b;margin-bottom:10px;text-align:center">Keyingi mavzu uchun 60%+ ball kerak!</div><button class="btn btn-green" onclick="ttSeqStart('+ttSeqIdx+')">🔄 Qayta urinish</button><button class="btn btn-out" style="margin-top:8px" onclick="go(\'p7\',4);tTab(2)">📋 Mavzular ro\'yxati</button>';
+      }
+    }else{
+      bArea.innerHTML='<button class="btn btn-green" onclick="go(\'p7\',4)">🔄 Qayta urinish</button>';
+    }
   }catch(e){alert('Natija xato: '+e);}
 }
 async function ttTrLoad(){
@@ -844,6 +876,84 @@ async function ttTrLoad(){
     var d=await r.json();
     document.getElementById('trsoni').textContent=d.xato_soni||0;
   }catch(e){}
+}
+
+// KETMA-KET TESTER
+function seqProgress(fan){
+  try{return JSON.parse(localStorage.getItem('seq_'+fan+'_'+(CU.id||0))||'{}');}catch(e){return {};}
+}
+function seqSave(fan,mavzu){
+  var p=seqProgress(fan);p[mavzu]=true;
+  localStorage.setItem('seq_'+fan+'_'+(CU.id||0),JSON.stringify(p));
+}
+function tSeqBack(){
+  document.getElementById('tseqfanwrap').style.display='block';
+  document.getElementById('tseqmavwrap').style.display='none';
+}
+async function ttSeqFanLoad(){
+  var g=document.getElementById('tseqfangrid');
+  var ic={'Kimyo':'🧪','Fizika':'⚡','Matematika':'📐','Biologiya':'🌿'};
+  g.innerHTML='<div style="grid-column:span 2;text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
+  try{
+    var r=await fetch(API+'/savol/fanlar');
+    var d=await r.json();
+    var fl=d.fanlar||[];
+    if(!fl.length){g.innerHTML='<div style="grid-column:span 2;text-align:center;padding:20px;color:rgba(255,255,255,.4)">Savollar yo\'q</div>';return;}
+    g.innerHTML=fl.map(function(f){return '<div onclick="ttSeqFanTanla(\''+f.fan+'\')" class="mc" style="text-align:center"><div style="font-size:2rem;margin-bottom:8px">'+(ic[f.fan]||'📚')+'</div><div class="mt">'+f.fan+'</div><div class="ms">'+f.jami+' savol</div></div>';}).join('');
+  }catch(e){g.innerHTML='<div style="grid-column:span 2;text-align:center;padding:20px;color:rgba(255,255,255,.4)">Server bilan ulanib bo\'lmadi</div>';}
+}
+async function ttSeqFanTanla(fan){
+  ttSeqFan_=fan;
+  document.getElementById('tseqfannom').textContent=fan;
+  document.getElementById('tseqfanwrap').style.display='none';
+  document.getElementById('tseqmavwrap').style.display='block';
+  var li=document.getElementById('tseqmavlist');
+  li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
+  try{
+    var r=await fetch(API+'/savol/mavzular/'+fan);
+    var d=await r.json();
+    ttSeqMavzular=(d.mavzular||[]).map(function(m){return m.mavzu;});
+    renderSeqMavzular();
+  }catch(e){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Xato</div>';}
+}
+function renderSeqMavzular(){
+  var p=seqProgress(ttSeqFan_);
+  var li=document.getElementById('tseqmavlist');
+  if(!ttSeqMavzular.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Mavzular yo\'q</div>';return;}
+  var html='<div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Mavzular ketma-ketligi</div>';
+  ttSeqMavzular.forEach(function(mav,idx){
+    var prev=idx===0?true:!!p[ttSeqMavzular[idx-1]];
+    var done=!!p[mav];
+    var locked=!prev;
+    var clr=done?'#00d4aa':locked?'rgba(255,255,255,.25)':'#fff';
+    var icon=done?'✅':locked?'🔒':'▶';
+    var bg=done?'rgba(0,212,170,.08)':locked?'rgba(255,255,255,.02)':'rgba(255,255,255,.04)';
+    var bd=done?'rgba(0,212,170,.2)':locked?'rgba(255,255,255,.05)':'rgba(255,255,255,.08)';
+    var oc=locked?'':'onclick="ttSeqStart('+idx+')"';
+    html+='<div '+oc+' style="background:'+bg+';border:1px solid '+bd+';border-radius:14px;padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:'+(locked?'default':'pointer')+'">'+
+      '<div style="width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;color:'+clr+';flex-shrink:0">'+(idx+1)+'</div>'+
+      '<div style="flex:1"><div style="font-size:.9rem;font-weight:600;color:'+clr+'">'+mav+'</div>'+
+      (done?'<div style="font-size:.72rem;color:#00d4aa;margin-top:2px">✓ Muvaffaqiyatli o\'tildi</div>':
+       locked?'<div style="font-size:.72rem;color:rgba(255,255,255,.3);margin-top:2px">Avvalgi mavzuni tugatish kerak</div>':
+       '<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:2px">Boshlash uchun bosing</div>')+
+      '</div><div style="font-size:1.2rem">'+icon+'</div></div>';
+  });
+  li.innerHTML=html;
+}
+async function ttSeqStart(idx){
+  ttSeqIdx=idx;
+  ttMode='seq';
+  var mav=ttSeqMavzular[idx];
+  ttF=ttSeqFan_;ttM=mav;
+  try{
+    var r=await fetch(API+'/savol/olish/'+ttSeqFan_+'/'+mav+'?soni=10');
+    var d=await r.json();
+    ttS=d.savollar||[];
+    if(!ttS.length){alert('Bu mavzuda savollar yo\'q!');return;}
+    ttJav={};ttJ=0;
+    document.getElementById('ttitle').textContent=ttSeqFan_+' — '+mav;
+    ttKor();go('p7b',-1);
+  }catch(e){alert('Xato: '+e);}
 }
 
 // PROFIL
