@@ -117,7 +117,7 @@ body[data-tema="yorug"] #tema-tog{background:rgba(0,0,0,.06);border-color:rgba(0
       <div class="mc" onclick="go('p2',1)"><div class="mi" style="background:rgba(0,212,170,.12)">📝</div><div class="mt">Testlar</div><div class="ms">Test ishlash</div></div>
       <div class="mc" onclick="go('p5',2)"><div class="mi" style="background:rgba(255,107,53,.12)">📚</div><div class="mt">Kitoblar</div><div class="ms">Fanlar bo'yicha</div></div>
       <div class="mc" onclick="go('p6',3)"><div class="mi" style="background:rgba(0,136,255,.12)">🏆</div><div class="mt">Reyting</div><div class="ms">Top o'quvchilar</div></div>
-      <div class="mc" onclick="go('p7',4)"><div class="mi" style="background:rgba(139,92,246,.12)">🎯</div><div class="mt">Tester</div><div class="ms">Mashq qilish</div></div>
+      <div class="mc" onclick="go('p7',4);tTab(1)"><div class="mi" style="background:rgba(139,92,246,.12)">🎯</div><div class="mt">Tester</div><div class="ms">Mashq qilish</div></div>
     </div>
   </div>
 </div>
@@ -194,9 +194,10 @@ body[data-tema="yorug"] #tema-tog{background:rgba(0,0,0,.06);border-color:rgba(0
 
 <!-- TEST TAMOM -->
 <div id="p3c" class="page" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:40px 20px">
-  <div style="font-size:5rem;margin-bottom:16px">🎉</div>
-  <div style="font-size:1.2rem;font-weight:800;margin-bottom:8px">Barakalla!</div>
-  <div style="font-size:.88rem;color:rgba(255,255,255,.4)">Javoblaringiz yuborildi.</div>
+  <div style="font-size:5rem;margin-bottom:16px" id="p3c-emoji">🎉</div>
+  <div style="font-size:1.2rem;font-weight:800;margin-bottom:8px" id="p3c-ball">Barakalla!</div>
+  <div style="font-size:.88rem;color:rgba(255,255,255,.4)" id="p3c-foiz">Javoblaringiz yuborildi.</div>
+  <div style="font-size:.82rem;color:rgba(255,255,255,.5);margin-top:8px" id="p3c-sub"></div>
   <button class="btn btn-green" id="boshbtn" style="margin-top:24px;max-width:200px">🏠 Bosh sahifa</button>
 </div>
 
@@ -274,7 +275,7 @@ body[data-tema="yorug"] #tema-tog{background:rgba(0,0,0,.06);border-color:rgba(0
 <!-- TESTER TEST -->
 <div id="p7b" class="page" style="padding-bottom:80px">
   <div class="top">
-    <button onclick="go('p7',4)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">✕</button>
+    <button onclick="go('p7',4);tTab(ttMode==='seq'?2:1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">✕</button>
     <div class="tlogo" id="ttitle">Test</div>
     <div style="width:34px"></div>
   </div>
@@ -456,7 +457,7 @@ body[data-tema="yorug"] #tema-tog{background:rgba(0,0,0,.06);border-color:rgba(0
   <div class="nitem" id="n1" onclick="go('p2',1)"><span>📝</span><span>Testlar</span></div>
   <div class="nitem" id="n2" onclick="go('p5',2)"><span>📚</span><span>Kitoblar</span></div>
   <div class="nitem" id="n3" onclick="go('p6',3)"><span>🏆</span><span>Reyting</span></div>
-  <div class="nitem" id="n4" onclick="go('p7',4)"><span>🎯</span><span>Tester</span></div>
+  <div class="nitem" id="n4" onclick="go('p7',4);tTab(1)"><span>🎯</span><span>Tester</span></div>
   <div class="nitem" id="n5" onclick="go('p8',5)"><span>👤</span><span>Profil</span></div>
   <div class="nitem" id="n-elon" onclick="go('p-elon',-1)"><span style="position:relative">🔔<span id="elon-badge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ff4757;color:#fff;border-radius:50%;font-size:9px;width:14px;height:14px;text-align:center;line-height:14px;font-weight:700">!</span></span><span>E'lon</span></div>
 </div>
@@ -561,12 +562,16 @@ function go(id,nav){
   var el=document.getElementById(id);
   if(el)el.style.display='block';
   window.scrollTo(0,0);
+  var ne=document.getElementById('n-elon');
   if(nav>=0){
-    for(var i=0;i<7;i++){var n=document.getElementById('n'+i);if(n)n.className='nitem'+(i===nav?' on':'');}
+    for(var i=0;i<6;i++){var n=document.getElementById('n'+i);if(n)n.className='nitem'+(i===nav?' on':'');}
+    if(ne)ne.className='nitem';
+  }else if(id==='p-elon'){
+    for(var i=0;i<6;i++){var n=document.getElementById('n'+i);if(n)n.className='nitem';}
+    if(ne)ne.className='nitem on';
   }
   if(id==='p5')kLoad();
   if(id==='p6')rLoad();
-  if(id==='p7')tTab(1);
   if(id==='p8')pLoad();
   if(id==='p9')uLoad();
   if(id==='p-elon')elonLoad();
@@ -582,9 +587,10 @@ function kirish(){
   document.getElementById('pid').textContent='ID: '+CU.id;
   if(urlkod)document.getElementById('tkod').value=urlkod;
   // Ustoz uchun nav
-  if(ADMINS.indexOf(CU.id)>=0){
+  if(ADMINS.indexOf(CU.id)>=0&&!document.getElementById('n-ustoz')){
     var nav=document.getElementById('nav');
     var ni=document.createElement('div');
+    ni.id='n-ustoz';
     ni.className='nitem';
     ni.innerHTML='<span>👨‍🏫</span><span>Ustoz</span>';
     ni.onclick=function(){go('p9',6);};
@@ -599,7 +605,7 @@ function kirish(){
   setInterval(elonBadgeYanila,5*60*1000);
   // bosh sahifa
   go('p1',0);
-  if(urltab==='tester')setTimeout(function(){go('p7',4);},200);
+  if(urltab==='tester')setTimeout(function(){go('p7',4);tTab(1);},200);
 }
 
 document.getElementById('kirish-btn').onclick=kirish;
@@ -733,10 +739,9 @@ async function kFan(fan){
 }
 function kBack(){document.getElementById('ktitle').textContent='Kitoblar';document.getElementById('kfanlar').style.display='block';document.getElementById('klist').style.display='none';}
 async function kYukla(fid,n){
-  var uid=CU&&CU.id?CU.id:(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user?tg.initDataUnsafe.user.id:null);
-  if(!uid){alert('Avval tizimga kiring!');return;}
+  if(!CU.id){alert('Avval tizimga kiring!');return;}
   try{
-    var r=await apiFetch(API+'/kitob/yuborish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fayl_id:fid,user_id:uid,nomi:n})});
+    var r=await apiFetch(API+'/kitob/yuborish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fayl_id:fid,user_id:CU.id,nomi:n})});
     var d=await r.json();
     if(d.success){alert('📚 Kitob botga yuborildi!');}
     else{alert('Xato: '+(d.detail||'Yuborib bo\'lmadi'));}
@@ -777,17 +782,19 @@ function tTab(n){
   if(n===2){ttMode='seq';ttSeqFanLoad();}
   if(n===3)ttTrLoad();
 }
-async function ttFanLoad(){
+async function ttFanGridLoad(gridId,onclickFn){
+  var g=document.getElementById(gridId);
+  var ic={'Kimyo':'🧪','Fizika':'⚡','Matematika':'📐','Biologiya':'🌿'};
+  g.innerHTML='<div style="grid-column:span 2;text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
   try{
     var r=await apiFetch(API+'/savol/fanlar');
     var d=await r.json();
     var fl=d.fanlar||[];
-    var g=document.getElementById('tfgrid');
-    var ic={'Kimyo':'🧪','Fizika':'⚡','Matematika':'📐','Biologiya':'🌿'};
     if(!fl.length){g.innerHTML='<div style="grid-column:span 2;text-align:center;padding:20px;color:rgba(255,255,255,.4)">Savollar yo\'q.<br>Ustoz savol qo\'shsin.</div>';return;}
-    g.innerHTML=fl.map(function(f){return '<div onclick="ttFan(\''+f.fan+'\')" class="mc" style="text-align:center"><div style="font-size:2rem;margin-bottom:8px">'+(ic[f.fan]||'📚')+'</div><div class="mt">'+f.fan+'</div><div class="ms">'+f.jami+' savol</div></div>';}).join('');
-  }catch(e){document.getElementById('tfgrid').innerHTML='<div style="grid-column:span 2;text-align:center;padding:20px;color:rgba(255,255,255,.4)">Server bilan ulanib bo\'lmadi</div>';}
+    g.innerHTML=fl.map(function(f){return '<div onclick="'+onclickFn+'(\''+f.fan+'\')" class="mc" style="text-align:center"><div style="font-size:2rem;margin-bottom:8px">'+(ic[f.fan]||'📚')+'</div><div class="mt">'+f.fan+'</div><div class="ms">'+f.jami+' savol</div></div>';}).join('');
+  }catch(e){g.innerHTML='<div style="grid-column:span 2;text-align:center;padding:20px;color:rgba(255,255,255,.4)">Server bilan ulanib bo\'lmadi</div>';}
 }
+function ttFanLoad(){ttFanGridLoad('tfgrid','ttFan');}
 async function ttFan(fan){
   ttF=fan;
   document.getElementById('tfnom').textContent=fan;
@@ -895,17 +902,10 @@ function tSeqBack(){
   document.getElementById('tseqfanwrap').style.display='block';
   document.getElementById('tseqmavwrap').style.display='none';
 }
-async function ttSeqFanLoad(){
-  var g=document.getElementById('tseqfangrid');
-  var ic={'Kimyo':'🧪','Fizika':'⚡','Matematika':'📐','Biologiya':'🌿'};
-  g.innerHTML='<div style="grid-column:span 2;text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
-  try{
-    var r=await apiFetch(API+'/savol/fanlar');
-    var d=await r.json();
-    var fl=d.fanlar||[];
-    if(!fl.length){g.innerHTML='<div style="grid-column:span 2;text-align:center;padding:20px;color:rgba(255,255,255,.4)">Savollar yo\'q</div>';return;}
-    g.innerHTML=fl.map(function(f){return '<div onclick="ttSeqFanTanla(\''+f.fan+'\')" class="mc" style="text-align:center"><div style="font-size:2rem;margin-bottom:8px">'+(ic[f.fan]||'📚')+'</div><div class="mt">'+f.fan+'</div><div class="ms">'+f.jami+' savol</div></div>';}).join('');
-  }catch(e){g.innerHTML='<div style="grid-column:span 2;text-align:center;padding:20px;color:rgba(255,255,255,.4)">Server bilan ulanib bo\'lmadi</div>';}
+function ttSeqFanLoad(){
+  document.getElementById('tseqfanwrap').style.display='block';
+  document.getElementById('tseqmavwrap').style.display='none';
+  ttFanGridLoad('tseqfangrid','ttSeqFanTanla');
 }
 async function ttSeqFanTanla(fan){
   ttSeqFan_=fan;
@@ -1184,7 +1184,6 @@ function kBotYubor(){
   xb('kxb','inf','Bot orqali: Ustoz paneli → Kitob qo\'shish');
 }
 
-// E'LONLAR
 // E'LONLAR
 function elonLoad(){
   var li=document.getElementById('elon-list');
