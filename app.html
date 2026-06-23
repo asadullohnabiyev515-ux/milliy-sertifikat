@@ -232,7 +232,6 @@ body[data-tema="yorug"] #tema-tog{background:rgba(0,0,0,.06);border-color:rgba(0
   <div class="top"><div class="tlogo">Tester</div><div class="av" id="av7">A</div></div>
   <div class="tbtns">
     <button class="tb on" id="tt1" onclick="tTab(1)">📚 Tayyor</button>
-    <button class="tb off" id="tt2" onclick="tTab(2)">👥 Do'st</button>
     <button class="tb off" id="tt3" onclick="tTab(3)">🔄 Trening</button>
   </div>
   <div id="tb1" style="padding:16px">
@@ -246,23 +245,6 @@ body[data-tema="yorug"] #tema-tog{background:rgba(0,0,0,.06);border-color:rgba(0
         <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase" id="tfnom">Fan</div>
       </div>
       <div id="tmavlist"></div>
-    </div>
-  </div>
-  <div id="tb2" style="display:none;padding:16px">
-    <div class="card" style="margin-bottom:12px">
-      <div style="font-weight:700;margin-bottom:8px">👥 Do'st bilan test</div>
-      <select id="dfan" class="inp"><option value="">Fan tanlang...</option></select>
-      <select id="dsoni" class="inp" style="margin-top:8px">
-        <option value="5">5 ta</option><option value="10" selected>10 ta</option>
-        <option value="15">15 ta</option><option value="20">20 ta</option>
-      </select>
-      <button class="btn btn-green" onclick="dYarat()" style="margin-top:10px">🎯 Test yaratish</button>
-      <div class="xb" id="dxb"></div>
-    </div>
-    <div class="card">
-      <div style="font-weight:700;margin-bottom:8px">🔑 Kod orqali kirish</div>
-      <input class="inp" id="dkod" type="text" placeholder="DOST_ABC123" style="text-transform:uppercase;margin-top:8px"/>
-      <button class="btn" onclick="alert('Tez kunda!')" style="background:linear-gradient(135deg,#8b5cf6,#d946ef);color:#fff;margin-top:10px">▶ Kirish</button>
     </div>
   </div>
   <div id="tb3" style="display:none;padding:16px">
@@ -767,12 +749,11 @@ async function rTab(t){
 
 // TESTER
 function tTab(n){
-  [1,2,3].forEach(function(i){
+  [1,3].forEach(function(i){
     document.getElementById('tt'+i).className='tb '+(i===n?'on':'off');
     document.getElementById('tb'+i).style.display=i===n?'block':'none';
   });
   if(n===1)ttFanLoad();
-  if(n===2)ttDostLoad();
   if(n===3)ttTrLoad();
 }
 async function ttFanLoad(){
@@ -855,24 +836,6 @@ async function ttNat(){
     document.getElementById('ttxatolar').innerHTML=xl.length?'<div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Xato javoblar</div>'+xl.map(function(x){return '<div class="ri" style="flex-direction:column;align-items:flex-start"><div style="font-size:.78rem;color:rgba(255,255,255,.4)">Savol #'+x.savol_id+'</div><div style="font-size:.85rem;margin-top:4px">Sizniki: <span style="color:#ff6b6b;font-weight:600">'+x.berilgan+'</span></div><div style="font-size:.85rem">To\'g\'ri: <span style="color:#00d4aa;font-weight:600">'+x.togri+'</span></div></div>';}).join(''):'';
     go('p7c',-1);
   }catch(e){alert('Natija xato: '+e);}
-}
-async function ttDostLoad(){
-  try{
-    var r=await fetch(API+'/savol/fanlar');
-    var d=await r.json();
-    var sel=document.getElementById('dfan');
-    sel.innerHTML='<option value="">Fan tanlang...</option>'+(d.fanlar||[]).map(function(f){return '<option value="'+f.fan+'">'+f.fan+'</option>';}).join('');
-  }catch(e){}
-}
-async function dYarat(){
-  var fan=document.getElementById('dfan').value;
-  var soni=document.getElementById('dsoni').value;
-  if(!fan){alert('Fan tanlang!');return;}
-  try{
-    var r=await fetch(API+'/dost/yarat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({yaratuvchi_id:CU.id||0,fan:fan,savollar_soni:parseInt(soni)})});
-    var d=await r.json();
-    if(d.success){var e=document.getElementById('dxb');e.style.display='block';e.className='xb ok';e.textContent='Kod: '+d.kod;}
-  }catch(e){alert('Xato');}
 }
 async function ttTrLoad(){
   if(!CU.id)return;
