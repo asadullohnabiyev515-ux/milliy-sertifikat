@@ -439,13 +439,8 @@ body[data-tema="yorug"] #tema-tog{background:rgba(0,0,0,.06);border-color:rgba(0
   </div>
   <div style="padding:16px">
     <div class="card">
-      <div style="font-size:.85rem;color:rgba(255,255,255,.4);margin-bottom:14px;line-height:1.5">Kitobni bot orqali yuboring: Ustoz paneli → Kitob qo'shish</div>
-      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">Fan</div>
-      <input class="inp" id="kfaninp" type="text" placeholder="Kimyo" style="margin-bottom:10px"/>
-      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">Kitob nomi</div>
-      <input class="inp" id="knominp" type="text" placeholder="Kimyo 9-sinf" style="margin-bottom:12px"/>
-      <button class="btn btn-green" onclick="kBotYubor()">📤 Bot orqali yuklash</button>
-      <div class="xb" id="kxb"></div>
+      <div style="font-size:1rem;font-weight:700;margin-bottom:10px">📤 Kitob yuklash</div>
+      <div style="font-size:.88rem;color:rgba(255,255,255,.6);line-height:1.7">Kitobni <b>bot orqali</b> yuboring:<br><br>1. Botga o'ting<br>2. Ustoz paneli → Kitoblar<br>3. Kitob faylini yuboring (PDF)</div>
     </div>
   </div>
 </div>
@@ -566,14 +561,16 @@ function go(id,nav){
   if(nav>=0){
     for(var i=0;i<6;i++){var n=document.getElementById('n'+i);if(n)n.className='nitem'+(i===nav?' on':'');}
     if(ne)ne.className='nitem';
+    var nu=document.getElementById('n-ustoz');if(nu)nu.className='nitem'+(nav===6?' on':'');
   }else if(id==='p-elon'){
     for(var i=0;i<6;i++){var n=document.getElementById('n'+i);if(n)n.className='nitem';}
     if(ne)ne.className='nitem on';
+    var nu=document.getElementById('n-ustoz');if(nu)nu.className='nitem';
   }
   if(id==='p5')kLoad();
   if(id==='p6')rLoad();
   if(id==='p8')pLoad();
-  if(id==='p9')uLoad();
+  if(id==='p9')uTab(1);
   if(id==='p-elon')elonLoad();
 }
 
@@ -780,7 +777,6 @@ function tTab(n){
   });
   if(n===1){ttMode='';ttFanLoad();}
   if(n===2){ttMode='seq';ttSeqFanLoad();}
-  if(n===3)ttTrLoad();
 }
 async function ttFanGridLoad(gridId,onclickFn){
   var g=document.getElementById(gridId);
@@ -877,19 +873,10 @@ async function ttNat(){
         bArea.innerHTML='<div style="background:rgba(255,59,48,.1);border:1px solid rgba(255,59,48,.25);border-radius:10px;padding:10px;font-size:.82rem;color:#ff6b6b;margin-bottom:10px;text-align:center">Keyingi mavzu uchun 60%+ ball kerak!</div><button class="btn btn-green" onclick="ttSeqStart('+ttSeqIdx+')">🔄 Qayta urinish</button><button class="btn btn-out" style="margin-top:8px" onclick="go(\'p7\',4);tTab(2)">📋 Mavzular ro\'yxati</button>';
       }
     }else{
-      bArea.innerHTML='<button class="btn btn-green" onclick="go(\'p7\',4)">🔄 Qayta urinish</button>';
+      bArea.innerHTML='<button class="btn btn-green" onclick="go(\'p7\',4);tTab(1)">🔄 Qayta urinish</button>';
     }
   }catch(e){alert('Natija xato: '+e);}
 }
-async function ttTrLoad(){
-  if(!CU.id)return;
-  try{
-    var r=await apiFetch(API+'/trening/'+CU.id);
-    var d=await r.json();
-    document.getElementById('trsoni').textContent=d.xato_soni||0;
-  }catch(e){}
-}
-
 // KETMA-KET TESTER
 function seqProgress(fan){
   try{return JSON.parse(localStorage.getItem('seq_'+fan+'_'+(CU.id||0))||'{}');}catch(e){return {};}
@@ -1163,25 +1150,6 @@ async function sSaqla(){
       ['A','B','C','D'].forEach(function(h){var e=document.getElementById('st'+h);if(e){e.className='vb';var bg=e.querySelector('.vbg');if(bg){bg.style.background='rgba(255,255,255,.08)';bg.style.color='#fff';}}});
     }else xb('sxb','err',res.detail||'Xato');
   }catch(e){xb('sxb','err','Xato');}
-}
-
-// KO'P SAVOL YUKLASH
-var bTabVal=1;
-function bTab(n){
-  bTabVal=n;
-  document.getElementById('btab1').className='tb '+(n===1?'on':'off');
-  document.getElementById('btab2').className='tb '+(n===2?'on':'off');
-  document.getElementById('bmatnwrap').style.display=n===1?'block':'none';
-  document.getElementById('bpdfwrap').style.display=n===2?'block':'none';
-  document.getElementById('bformatwrap').style.display=n===1?'block':'none';
-}
-
-// KITOB BOT
-function kBotYubor(){
-  var fan=document.getElementById('kfaninp').value.trim();
-  var nom=document.getElementById('knominp').value.trim();
-  if(!fan||!nom){xb('kxb','err','Fan va nomni kiriting!');return;}
-  xb('kxb','inf','Bot orqali: Ustoz paneli → Kitob qo\'shish');
 }
 
 // E'LONLAR
