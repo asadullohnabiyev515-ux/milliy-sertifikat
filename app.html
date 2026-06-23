@@ -507,7 +507,7 @@ Togri: A</code>
   <div class="nitem" id="n3" onclick="go('p6',3)"><span>🏆</span><span>Reyting</span></div>
   <div class="nitem" id="n4" onclick="go('p7',4)"><span>🎯</span><span>Tester</span></div>
   <div class="nitem" id="n5" onclick="go('p8',5)"><span>👤</span><span>Profil</span></div>
-  <div class="nitem" onclick="go('p-elon',-1)"><span>📢</span><span>E'lon</span></div>
+  <div class="nitem" id="n-elon" onclick="go('p-elon',-1)"><span style="position:relative">🔔<span id="elon-badge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ff4757;color:#fff;border-radius:50%;font-size:9px;width:14px;height:14px;text-align:center;line-height:14px;font-weight:700">!</span></span><span>E'lon</span></div>
 </div>
 
 <div id="p-elon" class="page" style="padding-bottom:80px">
@@ -637,6 +637,9 @@ function kirish(){
   document.getElementById('p0').style.display='none';
   // nav ko'rsat
   document.getElementById('nav').style.display='flex';
+  // e'lon badge
+  elonBadgeYanila();
+  setInterval(elonBadgeYanila,5*60*1000);
   // bosh sahifa
   go('p1',0);
   if(urltab==='tester')setTimeout(function(){go('p7',4);},200);
@@ -1183,30 +1186,6 @@ function kBotYubor(){
 }
 
 // E'LONLAR
-async function elonLoad(){
-  var li=document.getElementById('elon-list');
-  li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
-  fetch(API+'/elon/royxat')
-    .then(function(r){return r.json();})
-    .then(function(d){
-      var el=d.elonlar||[];
-      if(!el.length){
-        li.innerHTML='<div style="text-align:center;padding:40px;color:rgba(255,255,255,.4)">Hozircha e\'lonlar yo\'q</div>';
-        return;
-      }
-      li.innerHTML=el.map(function(e){
-        return '<div class="ri" style="flex-direction:column;align-items:flex-start;gap:6px;margin-bottom:10px">'+
-          '<div style="display:flex;justify-content:space-between;width:100%;align-items:center">'+
-          '<div style="font-size:.9rem;font-weight:700;color:#00d4aa">'+e.sarlavha+'</div>'+
-          '<div style="font-size:.7rem;color:rgba(255,255,255,.4)">'+e.vaqt+'</div></div>'+
-          '<div style="font-size:.85rem;line-height:1.5;color:rgba(255,255,255,.85)">'+e.matn+'</div>'+
-          '</div>';
-      }).join('');
-    }).catch(function(){
-      li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Xato</div>';
-    });
-}
-
 // E'LONLAR
 function elonLoad(){
   var li=document.getElementById('elon-list');
@@ -1221,8 +1200,26 @@ function elonLoad(){
           '<div style="display:flex;justify-content:space-between;width:100%;align-items:center">'+
           '<div style="font-size:.9rem;font-weight:700;color:#00d4aa">'+e.sarlavha+'</div>'+
           '<div style="font-size:.7rem;color:rgba(255,255,255,.4)">'+e.vaqt+'</div></div>'+
-          '<div style="font-size:.85rem;line-height:1.5">'+e.matn+'</div></div>';
+          '<div style="font-size:.85rem;line-height:1.5;color:rgba(255,255,255,.85)">'+e.matn+'</div></div>';
       }).join('');
+      if(el[0]&&el[0].id){
+        localStorage.setItem('elon_korilgan',el[0].id);
+        var b=document.getElementById('elon-badge');
+        if(b)b.style.display='none';
+      }
+    }).catch(function(){
+      li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Xato</div>';
+    });
+}
+
+function elonBadgeYanila(){
+  fetch(API+'/elon/oxirgi_id')
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var oxirgi=d.id||0;
+      var korilgan=parseInt(localStorage.getItem('elon_korilgan')||'0');
+      var b=document.getElementById('elon-badge');
+      if(b)b.style.display=oxirgi>korilgan?'block':'none';
     }).catch(function(){});
 }
 
