@@ -664,8 +664,9 @@ async function testBoshlash(){
     var rr=await fetch(API+'/student/royxat',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({test_kod:kod,ism:CU.name,familiya:'',telefon:'',user_id:CU.id||0})});
     var rd=await rr.json();
-    tUD={ism:CU.name,kod:kod,fan:d.fan,tur:d.tur||'milliy',soni:d.savollar_soni||40,vaqt:d.vaqt||90,vid:rd.varaq_id||''};
+    tUD={ism:CU.name,kod:kod,fan:d.fan,tur:d.tur||'milliy',soni:d.savollar_soni||40,vaqt:d.vaqt||90,vid:rd.varaq_id||'',savollar:null};
     document.getElementById('tfan').textContent=d.fan;
+    try{var sq=await fetch(API+'/test/savollar/'+kod);var sd=await sq.json();if(sd.bor)tUD.savollar=sd.savollar;}catch(e){}
     tJav={};tJ=0;tBelgi={};
     var saqBor=tAvtoyukla();
     if(saqBor&&confirm('💾 Saqlangan javoblar topildi. Davom ettirasizmi?')){
@@ -689,10 +690,16 @@ function tKor(){
   document.getElementById('tkeyin').textContent=n===jami-1?'✅ Tekshirish':'Keyingi →';
   var vs=['A','B','C','D'],och=false;
   if(tur==='milliy'){if(n>=32&&n<=34)vs=['A','B','C','D','E','F'];if(n>=35)och=true;}
+  var savol=tUD.savollar&&tUD.savollar[n]?tUD.savollar[n]:null;
+  document.getElementById('tstext').textContent=savol?savol.savol:'Javobni tanlang:';
+  document.getElementById('tstext').style.fontSize=savol?'.9rem':'1rem';
   var vb=document.getElementById('tvar'),ob=document.getElementById('tochiq');
   if(!och){
     vb.style.display='block';ob.style.display='none';
-    vb.innerHTML=vs.map(function(v){return '<button onclick="tV(\''+v+'\')" class="vb'+(tJav[n]===v?' sel':'')+'"><span class="vbg">'+v+'</span>'+v+' variant</button>';}).join('');
+    vb.innerHTML=vs.map(function(v){
+      var vtxt=savol&&savol.variantlar&&savol.variantlar[v]?savol.variantlar[v]:v+' variant';
+      return '<button onclick="tV(\''+v+'\')" class="vb'+(tJav[n]===v?' sel':'')+'"><span class="vbg">'+v+'</span>'+vtxt+'</button>';
+    }).join('');
   }else{
     vb.style.display='none';ob.style.display='block';
     document.getElementById('toinp').value=tJav[n]||'';
