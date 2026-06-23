@@ -472,6 +472,11 @@ body[data-tema="yorug"] #tema-tog{background:rgba(0,0,0,.06);border-color:rgba(0
 
 <script>
 var API='https://milliy-imtihon.onrender.com';
+function apiFetch(url,opts){
+  var ctrl=new AbortController();
+  var t=setTimeout(function(){ctrl.abort();},12000);
+  return fetch(url,Object.assign({},opts||{},{signal:ctrl.signal})).finally(function(){clearTimeout(t);});
+}
 var tg=window.Telegram&&window.Telegram.WebApp?window.Telegram.WebApp:null;
 if(tg){tg.ready();tg.expand();}
 var uid=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user?tg.initDataUnsafe.user.id:null;
@@ -609,16 +614,16 @@ async function testBoshlash(){
   if(!kod){xb('txb','err','Test kodini kiriting!');return;}
   xb('txb','inf','Tekshirilmoqda...');
   try{
-    var r=await fetch(API+'/test/tekshir/'+kod);
+    var r=await apiFetch(API+'/test/tekshir/'+kod);
     var d=await r.json();
     if(!d.topildi){xb('txb','err','Test topilmadi!');return;}
     if(d.tugadi){xb('txb','err','Bu test yakunlangan!');return;}
-    var rr=await fetch(API+'/student/royxat',{method:'POST',headers:{'Content-Type':'application/json'},
+    var rr=await apiFetch(API+'/student/royxat',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({test_kod:kod,ism:CU.name,familiya:'',telefon:'',user_id:CU.id||0})});
     var rd=await rr.json();
     tUD={ism:CU.name,kod:kod,fan:d.fan,tur:d.tur||'milliy',soni:d.savollar_soni||40,vaqt:d.vaqt||90,vid:rd.varaq_id||'',savollar:null};
     document.getElementById('tfan').textContent=d.fan;
-    try{var sq=await fetch(API+'/test/savollar/'+kod);var sd=await sq.json();if(sd.bor)tUD.savollar=sd.savollar;}catch(e){}
+    try{var sq=await apiFetch(API+'/test/savollar/'+kod);var sd=await sq.json();if(sd.bor)tUD.savollar=sd.savollar;}catch(e){}
     tJav={};tJ=0;tBelgi={};
     var saqBor=tAvtoyukla();
     if(saqBor&&confirm('💾 Saqlangan javoblar topildi. Davom ettirasizmi?')){
@@ -682,7 +687,7 @@ async function tYubor(){
   btn.disabled=true;btn.textContent='Yuborilmoqda...';
   for(var i=0;i<tUD.soni;i++){if(!tJav[i])tJav[i]='';}
   try{
-    var r=await fetch(API+'/natija/yuborish',{method:'POST',headers:{'Content-Type':'application/json'},
+    var r=await apiFetch(API+'/natija/yuborish',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({test_kod:tUD.kod,ism:tUD.ism,familiya:'',telefon:'',user_id:CU.id||0,javoblar:tJav,varaq_id:tUD.vid||''})});
     var d=await r.json();
     if(r.ok&&d.success){
@@ -702,7 +707,7 @@ async function tYubor(){
 // KITOBLAR
 async function kLoad(){
   try{
-    var r=await fetch(API+'/kitob/fanlar');
+    var r=await apiFetch(API+'/kitob/fanlar');
     var d=await r.json();
     var fanlar=d.fanlar||[];
     var g=document.getElementById('kfgrid');
@@ -719,7 +724,7 @@ async function kFan(fan){
   var li=document.getElementById('klistinner');
   li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
   try{
-    var r=await fetch(API+'/kitob/royxat/'+fan);
+    var r=await apiFetch(API+'/kitob/royxat/'+fan);
     var d=await r.json();
     var kl=d.kitoblar||[];
     if(!kl.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Kitoblar yo\'q</div>';return;}
@@ -731,7 +736,7 @@ async function kYukla(fid,n){
   var uid=CU&&CU.id?CU.id:(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user?tg.initDataUnsafe.user.id:null);
   if(!uid){alert('Avval tizimga kiring!');return;}
   try{
-    var r=await fetch(API+'/kitob/yuborish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fayl_id:fid,user_id:uid,nomi:n})});
+    var r=await apiFetch(API+'/kitob/yuborish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fayl_id:fid,user_id:uid,nomi:n})});
     var d=await r.json();
     if(d.success){alert('📚 Kitob botga yuborildi!');}
     else{alert('Xato: '+(d.detail||'Yuborib bo\'lmadi'));}
@@ -748,7 +753,7 @@ async function rTab(t){
   var li=document.getElementById('rlist');
   li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
   try{
-    var r=await fetch(API+(t==='u'?'/reyting/umumiy':'/reyting/oxirgi'));
+    var r=await apiFetch(API+(t==='u'?'/reyting/umumiy':'/reyting/oxirgi'));
     var d=await r.json();
     var rl=d.reyting||[];
     if(t==='o'&&d.fan)s.textContent='Oxirgi: '+d.fan;
@@ -774,7 +779,7 @@ function tTab(n){
 }
 async function ttFanLoad(){
   try{
-    var r=await fetch(API+'/savol/fanlar');
+    var r=await apiFetch(API+'/savol/fanlar');
     var d=await r.json();
     var fl=d.fanlar||[];
     var g=document.getElementById('tfgrid');
@@ -790,7 +795,7 @@ async function ttFan(fan){
   document.getElementById('tmavwrap').style.display='block';
   var li=document.getElementById('tmavlist');
   li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
-  fetch(API+'/savol/mavzular/'+fan)
+  apiFetch(API+'/savol/mavzular/'+fan)
     .then(function(r){return r.json();})
     .then(function(d){
       var ml=d.mavzular||[];
@@ -813,7 +818,7 @@ function ttMav(mav){
 
 async function ttBoshla(soni){
   try{
-    var r=await fetch(API+'/savol/olish/'+ttF+'/'+ttM+'?soni='+soni);
+    var r=await apiFetch(API+'/savol/olish/'+ttF+'/'+ttM+'?soni='+soni);
     var d=await r.json();
     ttS=d.savollar||[];
     if(!ttS.length){alert('Savollar yo\'q!');return;}
@@ -839,7 +844,7 @@ function ttOld(){if(ttJ>0){ttJ--;ttKor();}}
 function ttKeyin(){if(ttJ===ttS.length-1)ttNat();else{ttJ++;ttKor();}}
 async function ttNat(){
   try{
-    var r=await fetch(API+'/savol/tekshir?fan='+ttF+'&mavzu='+ttM,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ttJav)});
+    var r=await apiFetch(API+'/savol/tekshir?fan='+ttF+'&mavzu='+ttM,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ttJav)});
     var d=await r.json();
     var b=d.ball||0;
     document.getElementById('ttball').textContent=b+'%';
@@ -872,7 +877,7 @@ async function ttNat(){
 async function ttTrLoad(){
   if(!CU.id)return;
   try{
-    var r=await fetch(API+'/trening/'+CU.id);
+    var r=await apiFetch(API+'/trening/'+CU.id);
     var d=await r.json();
     document.getElementById('trsoni').textContent=d.xato_soni||0;
   }catch(e){}
@@ -895,7 +900,7 @@ async function ttSeqFanLoad(){
   var ic={'Kimyo':'🧪','Fizika':'⚡','Matematika':'📐','Biologiya':'🌿'};
   g.innerHTML='<div style="grid-column:span 2;text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
   try{
-    var r=await fetch(API+'/savol/fanlar');
+    var r=await apiFetch(API+'/savol/fanlar');
     var d=await r.json();
     var fl=d.fanlar||[];
     if(!fl.length){g.innerHTML='<div style="grid-column:span 2;text-align:center;padding:20px;color:rgba(255,255,255,.4)">Savollar yo\'q</div>';return;}
@@ -910,7 +915,7 @@ async function ttSeqFanTanla(fan){
   var li=document.getElementById('tseqmavlist');
   li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
   try{
-    var r=await fetch(API+'/savol/mavzular/'+fan);
+    var r=await apiFetch(API+'/savol/mavzular/'+fan);
     var d=await r.json();
     ttSeqMavzular=(d.mavzular||[]).map(function(m){return m.mavzu;});
     renderSeqMavzular();
@@ -946,7 +951,7 @@ async function ttSeqStart(idx){
   var mav=ttSeqMavzular[idx];
   ttF=ttSeqFan_;ttM=mav;
   try{
-    var r=await fetch(API+'/savol/olish/'+ttSeqFan_+'/'+mav+'?soni=10');
+    var r=await apiFetch(API+'/savol/olish/'+ttSeqFan_+'/'+mav+'?soni=10');
     var d=await r.json();
     ttS=d.savollar||[];
     if(!ttS.length){alert('Bu mavzuda savollar yo\'q!');return;}
@@ -960,7 +965,7 @@ async function ttSeqStart(idx){
 async function pLoad(){
   if(!CU.id)return;
   try{
-    var r=await fetch(API+'/profil/'+CU.id);
+    var r=await apiFetch(API+'/profil/'+CU.id);
     var d=await r.json();
     document.getElementById('pjami').textContent=d.jami_test||0;
     document.getElementById('portacha').textContent=d.ortacha_ball||'—';
@@ -981,7 +986,7 @@ async function uLoad(){
   var li=document.getElementById('utlist');
   li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
   try{
-    var r=await fetch(API+'/ustoz/testlar/'+CU.id);
+    var r=await apiFetch(API+'/ustoz/testlar/'+CU.id);
     var d=await r.json();
     var tl=d.testlar||[];
     if(!tl.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Testlar yo\'q</div>';return;}
@@ -1003,7 +1008,7 @@ function uTab(n){
 async function uYakunla(kod){
   if(!confirm(kod+' yakunlansinmi?'))return;
   try{
-    var r=await fetch(API+'/test/yakunla',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({test_kod:kod,ustoz_id:CU.id})});
+    var r=await apiFetch(API+'/test/yakunla',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({test_kod:kod,ustoz_id:CU.id})});
     var d=await r.json();
     if(d.success){alert('Yakunlandi! Jami: '+d.jami);uLoad();}
     else alert('Xato: '+(d.detail||''));
@@ -1012,7 +1017,7 @@ async function uYakunla(kod){
 async function uSLoad(){
   var li=document.getElementById('uslist');
   try{
-    var r=await fetch(API+'/savol/fanlar');
+    var r=await apiFetch(API+'/savol/fanlar');
     var d=await r.json();
     var fl=d.fanlar||[];
     if(!fl.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Savollar yo\'q</div>';return;}
@@ -1031,14 +1036,14 @@ async function uSLoad(){
 async function uKLoad(){
   var li=document.getElementById('ukitoblist');
   try{
-    var r=await fetch(API+'/kitob/fanlar');
+    var r=await apiFetch(API+'/kitob/fanlar');
     var d=await r.json();
     var fl=d.fanlar||[];
     if(!fl.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Kitoblar yo\'q</div>';return;}
     var html='';
     for(var i=0;i<fl.length;i++){
       var fan=fl[i];
-      var r2=await fetch(API+'/kitob/royxat/'+fan);
+      var r2=await apiFetch(API+'/kitob/royxat/'+fan);
       var d2=await r2.json();
       (d2.kitoblar||[]).forEach(function(k,idx){
         html+='<div class="ri" style="justify-content:space-between"><div><div style="font-size:.88rem;font-weight:600">'+k.nomi+'</div><div style="font-size:.72rem;color:rgba(255,255,255,.4)">'+fan+'</div></div><button onclick="kOchir(\''+fan+'\','+idx+')" style="background:rgba(255,59,48,.12);border:1px solid rgba(255,59,48,.25);border-radius:8px;padding:4px 10px;font-size:.72rem;color:#ff6b6b;cursor:pointer">🗑</button></div>';
@@ -1050,7 +1055,7 @@ async function uKLoad(){
 async function kOchir(fan,idx){
   if(!confirm('O\'chirilsinmi?'))return;
   try{
-    var r=await fetch(API+'/kitob/ochir/'+fan+'/'+idx+'?ustoz_id='+CU.id,{method:'DELETE'});
+    var r=await apiFetch(API+'/kitob/ochir/'+fan+'/'+idx+'?ustoz_id='+CU.id,{method:'DELETE'});
     var d=await r.json();
     if(d.success){alert('O\'chirildi!');uKLoad();}
     else alert('Xato');
@@ -1120,7 +1125,7 @@ async function uTestSaqla(){
   var btn=document.getElementById('ujbtn');
   btn.disabled=true;btn.textContent='Saqlanmoqda...';
   try{
-    var r=await fetch(API+'/test/yarat',{method:'POST',headers:{'Content-Type':'application/json'},
+    var r=await apiFetch(API+'/test/yarat',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({kod:kod,fan:fan,ustoz_id:CU.id,javoblar:uJavoblar,tur:uTurVal==='m'?'milliy':'oddiy',savollar_soni:jami})});
     var d=await r.json();
     if(d.success){alert('Test yaratildi! Kod: '+kod);go('p9',6);uTab(1);}
@@ -1146,7 +1151,7 @@ async function sSaqla(){
   var d=document.getElementById('sd').value.trim();
   if(!fan||!mav||!sav||!a||!b||!c||!d||!sTogri){xb('sxb','err','Barcha maydonlarni to\'ldiring!');return;}
   try{
-    var r=await fetch(API+'/savol/qosh',{method:'POST',headers:{'Content-Type':'application/json'},
+    var r=await apiFetch(API+'/savol/qosh',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({fan:fan,mavzu:mav,savol:sav,variantlar:{A:a,B:b,C:c,D:d},togri_javob:sTogri,qiyinlik:'orta',ustoz_id:CU.id})});
     var res=await r.json();
     if(res.success){
@@ -1184,7 +1189,7 @@ function kBotYubor(){
 function elonLoad(){
   var li=document.getElementById('elon-list');
   li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
-  fetch(API+'/elon/royxat')
+  apiFetch(API+'/elon/royxat')
     .then(function(r){return r.json();})
     .then(function(d){
       var el=d.elonlar||[];
@@ -1207,7 +1212,7 @@ function elonLoad(){
 }
 
 function elonBadgeYanila(){
-  fetch(API+'/elon/oxirgi_id')
+  apiFetch(API+'/elon/oxirgi_id')
     .then(function(r){return r.json();})
     .then(function(d){
       var oxirgi=d.id||0;
@@ -1221,7 +1226,7 @@ function elonBadgeYanila(){
 async function testOchir(kod){
   if(!confirm(kod+' testni o\'chirishni tasdiqlaysizmi?'))return;
   try{
-    var r=await fetch(API+'/test/ochir/'+kod+'?ustoz_id='+CU.id,{method:'DELETE'});
+    var r=await apiFetch(API+'/test/ochir/'+kod+'?ustoz_id='+CU.id,{method:'DELETE'});
     var d=await r.json();
     if(d.success){alert('Test o\'chirildi!');uLoad();}
     else alert('Xato: '+(d.detail||''));
@@ -1231,7 +1236,7 @@ async function testOchir(kod){
 async function savolOchir(fan,mavzu){
   if(!confirm(fan+' - '+mavzu+' mavzusidagi barcha savollarni o\'chirishni tasdiqlaysizmi?'))return;
   try{
-    var r=await fetch(API+'/savol/ochir/'+fan+'/'+mavzu+'?ustoz_id='+CU.id,{method:'DELETE'});
+    var r=await apiFetch(API+'/savol/ochir/'+fan+'/'+mavzu+'?ustoz_id='+CU.id,{method:'DELETE'});
     var d=await r.json();
     if(d.success){alert('Savollar o\'chirildi!');uSLoad();}
     else alert('Xato: '+(d.detail||''));
