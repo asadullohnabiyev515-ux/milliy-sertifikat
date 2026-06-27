@@ -582,6 +582,10 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
       <button onclick="gMove('r')" style="background:rgba(255,255,255,.1);border:none;border-radius:10px;padding:10px;font-size:1.3rem;cursor:pointer">➡️</button>
     </div>
     <div style="margin-top:8px;font-size:.7rem;color:rgba(255,255,255,.3);text-align:center">H + H = He • He + He = Li • ... • Na = 🏆</div>
+    <div class="card" style="margin-top:14px">
+      <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">🏆 Top 10 Reyting</div>
+      <div id="g-reyting"><div style="text-align:center;color:rgba(255,255,255,.3);font-size:.85rem;padding:12px">Yuklanmoqda...</div></div>
+    </div>
   </div>
 </div>
 
@@ -1545,6 +1549,7 @@ function gameStart(){
   gRender();
   document.getElementById('g-over').style.display='none';
   document.getElementById('g-score').textContent='0';
+  gReytingLoad();
 }
 
 function gAdd(){
@@ -1631,6 +1636,41 @@ function gShowOver(ico,txt){
   document.getElementById('g-over-ico').textContent=ico;
   document.getElementById('g-over-txt').textContent=txt;
   document.getElementById('g-over-sub').textContent='Ball: '+gScore;
+  gSkorSaqla();
+}
+
+async function gSkorSaqla(){
+  if(!gScore) return;
+  var maxV=0;
+  for(var r=0;r<G;r++) for(var c=0;c<G;c++) if(gBoard[r][c]>maxV) maxV=gBoard[r][c];
+  var el=gElem(maxV);
+  try{
+    await fetch(API+'/game/natija',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({user_id:CU.id||0,name:CU.name||'Noma\'lum',score:gScore,elem:el.sym})});
+  }catch(e){}
+  gReytingLoad();
+}
+
+async function gReytingLoad(){
+  try{
+    var r=await fetch(API+'/game/reyting');
+    var d=await r.json();
+    var list=d.reyting||[];
+    var el=document.getElementById('g-reyting');
+    if(!list.length){el.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.3);font-size:.85rem;padding:12px">Hali o\'yin o\'ynalmagan</div>';return;}
+    var html='';
+    list.forEach(function(s,i){
+      var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1);
+      var mine=s.user_id&&s.user_id===CU.id;
+      html+='<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--c-sep)'+(mine?';background:rgba(0,212,170,.08);border-radius:8px;padding:7px 8px':'')+'">'
+        +'<div style="width:28px;text-align:center;font-weight:700;font-size:.9rem">'+medal+'</div>'
+        +'<div style="flex:1;font-size:.88rem;font-weight:'+(mine?'700':'500')+'">'+s.name+'</div>'
+        +'<div style="font-size:.8rem;color:rgba(255,255,255,.4)">'+s.elem+'</div>'
+        +'<div style="font-weight:700;color:#00d4aa;font-size:.9rem">'+s.score+'</div>'
+        +'</div>';
+    });
+    el.innerHTML=html;
+  }catch(e){}
 }
 function gCheck(){
   var maxV=0;
