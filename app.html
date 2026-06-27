@@ -525,6 +525,42 @@ body[data-tema="yorug"] [style*="background:rgba(255,255,255,.08)"]{background:r
   <div class="nitem" id="n4" onclick="go('p7',4);tTab(1)"><span>🎯</span><span>Tester</span></div>
   <div class="nitem" id="n5" onclick="go('p8',5)"><span>👤</span><span>Profil</span></div>
   <div class="nitem" id="n-elon" onclick="go('p-elon',-1)"><span style="position:relative">🔔<span id="elon-badge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ff4757;color:#fff;border-radius:50%;font-size:9px;width:14px;height:14px;text-align:center;line-height:14px;font-weight:700">!</span></span><span>E'lon</span></div>
+  <div class="nitem" id="n-game" onclick="go('p-game',-1);gameStart()"><span>⚗️</span><span>O'yin</span></div>
+</div>
+
+<!-- O'YIN SAHIFASI -->
+<div id="p-game" class="page" style="padding-bottom:80px;user-select:none">
+  <div class="top">
+    <button onclick="go('p1',0)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+    <div class="tlogo">⚗️ Element 2048</div>
+    <button onclick="gameStart()" style="background:none;border:none;color:#00d4aa;font-size:.85rem;font-weight:700;cursor:pointer">Yangi</button>
+  </div>
+  <div style="padding:12px 16px 0">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div style="display:flex;gap:8px">
+        <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:8px 14px;text-align:center;min-width:70px">
+          <div style="font-size:.65rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px">Ball</div>
+          <div style="font-size:1.2rem;font-weight:700" id="g-score">0</div>
+        </div>
+        <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:8px 14px;text-align:center;min-width:70px">
+          <div style="font-size:.65rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px">Rekord</div>
+          <div style="font-size:1.2rem;font-weight:700" id="g-best">0</div>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div id="g-elem-name" style="font-size:.8rem;color:#00d4aa;font-weight:600;min-height:18px"></div>
+        <div style="font-size:.65rem;color:rgba(255,255,255,.35)">Eng katta element</div>
+      </div>
+    </div>
+    <div id="g-board" style="position:relative;background:rgba(255,255,255,.06);border-radius:14px;padding:8px;touch-action:none"></div>
+    <div id="g-over" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(10,15,30,.85);border-radius:14px;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:10">
+      <div style="font-size:2rem;margin-bottom:8px" id="g-over-ico">😔</div>
+      <div style="font-size:1.3rem;font-weight:700;margin-bottom:6px" id="g-over-txt">O'yin tugadi!</div>
+      <div style="font-size:.9rem;color:rgba(255,255,255,.5);margin-bottom:16px" id="g-over-sub"></div>
+      <button onclick="gameStart()" class="btn btn-green" style="padding:10px 28px;font-size:1rem">Qayta o'ynash</button>
+    </div>
+    <div style="margin-top:10px;font-size:.72rem;color:rgba(255,255,255,.3);text-align:center">H + H = He • He + He = Li • ... • Na = 🏆</div>
+  </div>
 </div>
 
 <div id="p-elon" class="page" style="padding-bottom:80px">
@@ -623,7 +659,7 @@ var sTogri='';
 
 // GO - sahifa almashtirish
 function go(id,nav){
-  var all=['p1','p2','p3','p3b','p3c','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e','p9f','p9g','p-elon'];
+  var all=['p1','p2','p3','p3b','p3c','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e','p9f','p9g','p-elon','p-game'];
   all.forEach(function(x){var e=document.getElementById(x);if(e)e.style.display='none';});
   var el=document.getElementById(id);
   if(el)el.style.display='block';
@@ -1443,6 +1479,166 @@ function temaToggle(){
     d.style.cssText='left:'+Math.random()*94+'%;width:'+s+'px;height:'+s+'px;animation-duration:'+(14+Math.random()*16)+'s;animation-delay:'+(-(Math.random()*25))+'s';
     bg.appendChild(d);
   }
+})();
+
+// ═══════════════════════════════════════════════════════
+// ELEMENT 2048 O'YINI
+// ═══════════════════════════════════════════════════════
+var ELEM=[
+  {v:2,   sym:'H',  nom:'Vodorod',    bg:'#e74c3c', fg:'#fff'},
+  {v:4,   sym:'He', nom:'Geliy',      bg:'#e67e22', fg:'#fff'},
+  {v:8,   sym:'Li', nom:'Litiy',      bg:'#f1c40f', fg:'#333'},
+  {v:16,  sym:'Be', nom:'Berilliy',   bg:'#2ecc71', fg:'#fff'},
+  {v:32,  sym:'B',  nom:'Bor',        bg:'#1abc9c', fg:'#fff'},
+  {v:64,  sym:'C',  nom:'Uglerod',    bg:'#3498db', fg:'#fff'},
+  {v:128, sym:'N',  nom:'Azot',       bg:'#9b59b6', fg:'#fff'},
+  {v:256, sym:'O',  nom:'Kislorod',   bg:'#e91e63', fg:'#fff'},
+  {v:512, sym:'F',  nom:'Ftor',       bg:'#00bcd4', fg:'#fff'},
+  {v:1024,sym:'Ne', nom:'Neon',       bg:'#ff5722', fg:'#fff'},
+  {v:2048,sym:'Na', nom:'Natriy',     bg:'#ffd700', fg:'#333'},
+  {v:4096,sym:'Mg', nom:'Magniy',     bg:'#00e676', fg:'#333'},
+  {v:8192,sym:'Al', nom:'Alyuminiy',  bg:'#40c4ff', fg:'#333'},
+];
+
+var gBoard=[], gScore=0, gBest=+(localStorage.getItem('g2048best')||0);
+var G=4;
+
+function gElem(v){
+  for(var i=0;i<ELEM.length;i++) if(ELEM[i].v===v) return ELEM[i];
+  return {sym:'?',nom:'?',bg:'#333',fg:'#fff'};
+}
+
+function gameStart(){
+  gBoard=Array.from({length:G},()=>Array(G).fill(0));
+  gScore=0;
+  gRender();
+  gAdd(); gAdd();
+  gRender();
+  document.getElementById('g-over').style.display='none';
+  document.getElementById('g-score').textContent='0';
+}
+
+function gAdd(){
+  var empty=[];
+  for(var r=0;r<G;r++) for(var c=0;c<G;c++) if(!gBoard[r][c]) empty.push([r,c]);
+  if(!empty.length) return;
+  var pos=empty[Math.floor(Math.random()*empty.length)];
+  gBoard[pos[0]][pos[1]]=2;
+}
+
+function gRender(){
+  var bd=document.getElementById('g-board');
+  var sz=Math.min(window.innerWidth-64, 380);
+  var cell=Math.floor((sz-8)/G)-8;
+  bd.style.width=sz+'px';
+  bd.style.height=sz+'px';
+  bd.style.position='relative';
+  var html='';
+  var maxV=0;
+  for(var r=0;r<G;r++) for(var c=0;c<G;c++){
+    var v=gBoard[r][c];
+    if(v>maxV) maxV=v;
+    var x=8+c*(cell+8), y=8+r*(cell+8);
+    var el=gElem(v);
+    var bg=v?el.bg:'rgba(255,255,255,.05)';
+    var txt=v?('<div style="font-size:'+(cell>.80?'1.4rem':'.9rem')+';font-weight:900;line-height:1">'+el.sym+'</div><div style="font-size:.55rem;opacity:.8">'+el.nom+'</div>'):'';
+    html+='<div style="position:absolute;left:'+x+'px;top:'+y+'px;width:'+cell+'px;height:'+cell+'px;background:'+bg+';border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:'+(v?el.fg:'transparent')+';transition:all .1s;box-shadow:'+(v?'0 2px 8px rgba(0,0,0,.3)':'none')+'">'+txt+'</div>';
+  }
+  bd.innerHTML=html;
+  document.getElementById('g-score').textContent=gScore;
+  document.getElementById('g-best').textContent=gBest;
+  if(maxV){
+    var me=gElem(maxV);
+    document.getElementById('g-elem-name').textContent=me.sym+' — '+me.nom;
+  }
+}
+
+function gSlide(row){
+  var arr=row.filter(function(x){return x!==0;});
+  for(var i=0;i<arr.length-1;i++){
+    if(arr[i]===arr[i+1]){
+      arr[i]*=2;
+      gScore+=arr[i];
+      if(gScore>gBest){gBest=gScore;localStorage.setItem('g2048best',gBest);}
+      arr.splice(i+1,1);
+    }
+  }
+  while(arr.length<G) arr.push(0);
+  return arr;
+}
+
+function gMove(dir){
+  var moved=false;
+  var old=JSON.stringify(gBoard);
+  if(dir==='l'||dir==='r'){
+    for(var r=0;r<G;r++){
+      var row=gBoard[r].slice();
+      if(dir==='r') row.reverse();
+      var slid=gSlide(row);
+      if(dir==='r') slid.reverse();
+      gBoard[r]=slid;
+    }
+  } else {
+    for(var c=0;c<G;c++){
+      var col=[];
+      for(var r=0;r<G;r++) col.push(gBoard[r][c]);
+      if(dir==='d') col.reverse();
+      var slid2=gSlide(col);
+      if(dir==='d') slid2.reverse();
+      for(var r=0;r<G;r++) gBoard[r][c]=slid2[r];
+    }
+  }
+  moved=JSON.stringify(gBoard)!==old;
+  if(moved){gAdd(); gRender(); gCheck();}
+}
+
+function gCheck(){
+  var maxV=0;
+  for(var r=0;r<G;r++) for(var c=0;c<G;c++) if(gBoard[r][c]>maxV) maxV=gBoard[r][c];
+  if(maxV>=2048){
+    var ov=document.getElementById('g-over');
+    ov.style.display='flex';
+    document.getElementById('g-over-ico').textContent='🏆';
+    document.getElementById('g-over-txt').textContent='Barakalla! Na topildi!';
+    document.getElementById('g-over-sub').textContent='Ball: '+gScore;
+    return;
+  }
+  for(var r=0;r<G;r++) for(var c=0;c<G;c++){
+    if(!gBoard[r][c]) return;
+    if(c+1<G && gBoard[r][c]===gBoard[r][c+1]) return;
+    if(r+1<G && gBoard[r][c]===gBoard[r+1][c]) return;
+  }
+  var ov=document.getElementById('g-over');
+  ov.style.display='flex';
+  document.getElementById('g-over-ico').textContent='😔';
+  document.getElementById('g-over-txt').textContent='O\'yin tugadi!';
+  document.getElementById('g-over-sub').textContent='Ball: '+gScore;
+}
+
+// Klaviatura
+document.addEventListener('keydown',function(e){
+  if(!document.getElementById('p-game').classList.contains('active')) return;
+  var m={'ArrowLeft':'l','ArrowRight':'r','ArrowUp':'u','ArrowDown':'d'};
+  if(m[e.key]){e.preventDefault();gMove(m[e.key]);}
+});
+
+// Swipe (mobil)
+(function(){
+  var sx,sy;
+  var bd=document.getElementById('g-board');
+  if(!bd) return;
+  document.addEventListener('touchstart',function(e){
+    if(!document.getElementById('p-game').classList.contains('active')) return;
+    sx=e.touches[0].clientX; sy=e.touches[0].clientY;
+  },{passive:true});
+  document.addEventListener('touchend',function(e){
+    if(!document.getElementById('p-game').classList.contains('active')) return;
+    var dx=e.changedTouches[0].clientX-sx;
+    var dy=e.changedTouches[0].clientY-sy;
+    if(Math.abs(dx)<20&&Math.abs(dy)<20) return;
+    if(Math.abs(dx)>Math.abs(dy)) gMove(dx>0?'r':'l');
+    else gMove(dy>0?'d':'u');
+  },{passive:true});
 })();
 </script>
 </body>
