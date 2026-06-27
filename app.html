@@ -1529,7 +1529,7 @@ var ELEM=[
   {v:8192,sym:'Al', nom:'Alyuminiy',  bg:'#40c4ff', fg:'#333'},
 ];
 
-var gBoard=[], gScore=0, gBest=+(localStorage.getItem('g2048best')||0);
+var gBoard=[], gScore=0, gBest=+(localStorage.getItem('g2048best')||0), gRunning=false;
 var G=4;
 
 function gElem(v){
@@ -1539,7 +1539,7 @@ function gElem(v){
 
 function gameStart(){
   gBoard=Array.from({length:G},()=>Array(G).fill(0));
-  gScore=0;
+  gScore=0; gRunning=true;
   gRender();
   gAdd(); gAdd();
   gRender();
@@ -1599,6 +1599,7 @@ function gSlide(row){
 }
 
 function gMove(dir){
+  if(!gRunning) return;
   var moved=false;
   var old=JSON.stringify(gBoard);
   if(dir==='l'||dir==='r'){
@@ -1623,27 +1624,24 @@ function gMove(dir){
   if(moved){gAdd(); gRender(); gCheck();}
 }
 
+function gShowOver(ico,txt){
+  gRunning=false;
+  var ov=document.getElementById('g-over');
+  ov.style.display='flex';
+  document.getElementById('g-over-ico').textContent=ico;
+  document.getElementById('g-over-txt').textContent=txt;
+  document.getElementById('g-over-sub').textContent='Ball: '+gScore;
+}
 function gCheck(){
   var maxV=0;
   for(var r=0;r<G;r++) for(var c=0;c<G;c++) if(gBoard[r][c]>maxV) maxV=gBoard[r][c];
-  if(maxV>=2048){
-    var ov=document.getElementById('g-over');
-    ov.style.display='flex';
-    document.getElementById('g-over-ico').textContent='🏆';
-    document.getElementById('g-over-txt').textContent='Barakalla! Na topildi!';
-    document.getElementById('g-over-sub').textContent='Ball: '+gScore;
-    return;
-  }
+  if(maxV>=2048){ gShowOver('🏆','Barakalla! Na topildi!'); return; }
   for(var r=0;r<G;r++) for(var c=0;c<G;c++){
     if(!gBoard[r][c]) return;
     if(c+1<G && gBoard[r][c]===gBoard[r][c+1]) return;
     if(r+1<G && gBoard[r][c]===gBoard[r+1][c]) return;
   }
-  var ov=document.getElementById('g-over');
-  ov.style.display='flex';
-  document.getElementById('g-over-ico').textContent='😔';
-  document.getElementById('g-over-txt').textContent='O\'yin tugadi!';
-  document.getElementById('g-over-sub').textContent='Ball: '+gScore;
+  gShowOver('😔','O\'yin tugadi!');
 }
 
 function gActive(){return document.getElementById('p-game').style.display!=='none';}
