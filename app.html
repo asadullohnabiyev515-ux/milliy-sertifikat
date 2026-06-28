@@ -671,34 +671,45 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   <div class="top">
     <button onclick="go('p-games',-1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
     <div class="tlogo">🧪 Probirkalar</div>
-    <button onclick="wsStart()" style="background:none;border:none;color:#ef4444;font-size:.85rem;font-weight:700;cursor:pointer">Yangi</button>
+    <button onclick="wsStart(wsLevel)" style="background:none;border:none;color:#ef4444;font-size:.85rem;font-weight:700;cursor:pointer">🔁</button>
   </div>
-  <div style="display:flex;gap:6px;padding:6px 16px;justify-content:center">
-    <button id="ws-diff-easy"   onclick="wsStart('easy')"   style="flex:1;background:#ef4444;color:#fff;border:none;border-radius:10px;padding:7px 0;font-size:.8rem;font-weight:700;cursor:pointer">Oson</button>
-    <button id="ws-diff-medium" onclick="wsStart('medium')" style="flex:1;background:rgba(255,255,255,.1);color:var(--c-fg);border:none;border-radius:10px;padding:7px 0;font-size:.8rem;font-weight:700;cursor:pointer">O'rta</button>
-    <button id="ws-diff-hard"   onclick="wsStart('hard')"   style="flex:1;background:rgba(255,255,255,.1);color:var(--c-fg);border:none;border-radius:10px;padding:7px 0;font-size:.8rem;font-weight:700;cursor:pointer">Qiyin</button>
-  </div>
-  <div style="display:flex;justify-content:center;align-items:center;gap:12px;padding:4px 16px 8px">
-    <div style="text-align:center;background:rgba(255,255,255,.08);border-radius:10px;padding:6px 20px">
-      <div style="font-size:.6rem;opacity:.4;text-transform:uppercase;letter-spacing:1px">Yurishlar</div>
-      <div style="font-weight:700;font-size:1.1rem" id="ws-moves">0</div>
+  <!-- Level navigator -->
+  <div style="display:flex;align-items:center;justify-content:center;gap:10px;padding:6px 16px 4px">
+    <button onclick="wsGoLevel(wsLevel-1)" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;width:36px;height:36px;font-size:1.1rem;cursor:pointer;color:var(--c-fg)">‹</button>
+    <div style="text-align:center;flex:1">
+      <div style="font-size:1.3rem;font-weight:800" id="ws-level-txt">Level 1</div>
+      <div style="font-size:.65rem;opacity:.4" id="ws-level-sub">2 rang · 4 probirka</div>
     </div>
-    <button onclick="wsUndo()" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;padding:8px 16px;color:var(--c-fg);font-size:.85rem;cursor:pointer;font-weight:600">↩ Ortga</button>
+    <button onclick="wsGoLevel(wsLevel+1)" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;width:36px;height:36px;font-size:1.1rem;cursor:pointer;color:var(--c-fg)">›</button>
+  </div>
+  <!-- Progress bar -->
+  <div style="padding:2px 24px 6px">
+    <div style="background:rgba(255,255,255,.08);border-radius:4px;height:4px">
+      <div id="ws-progress" style="background:#ef4444;height:4px;border-radius:4px;transition:width .3s;width:6%"></div>
+    </div>
+  </div>
+  <div style="display:flex;justify-content:center;align-items:center;gap:10px;padding:2px 16px 8px">
+    <div style="text-align:center;background:rgba(255,255,255,.08);border-radius:10px;padding:5px 18px">
+      <div style="font-size:.58rem;opacity:.4;text-transform:uppercase;letter-spacing:1px">Yurishlar</div>
+      <div style="font-weight:700;font-size:1rem" id="ws-moves">0</div>
+    </div>
+    <button onclick="wsUndo()" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;padding:7px 14px;color:var(--c-fg);font-size:.82rem;cursor:pointer;font-weight:600">↩ Ortga</button>
   </div>
   <div id="ws-grid" style="padding:4px 8px"></div>
   <div id="ws-win" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,15,30,.92);z-index:200;flex-direction:column;align-items:center;justify-content:center">
-    <div style="font-size:3rem;margin-bottom:8px">🎉</div>
-    <div style="font-size:1.5rem;font-weight:800;margin-bottom:4px">Barakalla!</div>
-    <div style="font-size:.9rem;opacity:.5;margin-bottom:20px">Barcha ranglar tartibga keldi</div>
-    <div style="text-align:center;margin-bottom:24px">
+    <div style="font-size:3rem;margin-bottom:6px">🎉</div>
+    <div style="font-size:1.4rem;font-weight:800;margin-bottom:2px">Barakalla!</div>
+    <div style="font-size:.85rem;opacity:.5;margin-bottom:16px" id="ws-win-lvl">Level 1 tugadi</div>
+    <div style="text-align:center;margin-bottom:20px">
       <div style="font-size:2rem;font-weight:800;color:#ef4444" id="ws-win-moves">0</div>
-      <div style="font-size:.75rem;opacity:.5">yurishda hal qilindi</div>
+      <div style="font-size:.72rem;opacity:.5">yurishda hal qilindi</div>
     </div>
-    <button onclick="wsStart()" class="btn" style="background:#ef4444;color:#fff;padding:12px 32px;font-size:1rem;margin-bottom:10px;border:none;border-radius:14px;cursor:pointer;font-weight:700">🔁 Qayta</button>
-    <button onclick="document.getElementById('ws-win').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:.9rem;cursor:pointer;margin-top:6px">Yopish</button>
+    <button id="ws-next-btn" onclick="wsGoLevel(wsLevel+1)" style="background:#ef4444;color:#fff;padding:12px 32px;font-size:1rem;margin-bottom:8px;border:none;border-radius:14px;cursor:pointer;font-weight:700">➡️ Keyingi daraja</button>
+    <button onclick="wsStart(wsLevel)" style="background:rgba(255,255,255,.08);border:none;border-radius:12px;padding:10px 24px;color:var(--c-fg);font-size:.9rem;cursor:pointer;margin-bottom:6px">🔁 Qayta</button>
+    <button onclick="document.getElementById('ws-win').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,.3);font-size:.85rem;cursor:pointer;margin-top:4px">Yopish</button>
   </div>
   <div class="card" style="margin:12px 16px 0">
-    <div style="font-size:.75rem;font-weight:700;opacity:.4;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">🏆 Top 10 Reyting</div>
+    <div style="font-size:.75rem;font-weight:700;opacity:.4;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">🏆 Eng uzoq borganlar</div>
     <div id="ws-reyting"><div style="text-align:center;font-size:.85rem;padding:12px;opacity:.4">Yuklanmoqda...</div></div>
   </div>
 </div>
@@ -2052,35 +2063,51 @@ async function memReytingLoad(){
   }
 }
 // ============================================================
-// PROBIRKALAR (WATER SORT)
+// PROBIRKALAR (WATER SORT) — LEVELLAR
 // ============================================================
 var WS_COLORS=['#ef4444','#3b82f6','#22c55e','#f59e0b','#a855f7','#06b6d4','#f97316','#ec4899','#84cc16','#14b8a6'];
-var WSDIFFS={easy:{colors:4,empty:2},medium:{colors:7,empty:2},hard:{colors:10,empty:2}};
-var wsDiff='easy',wsTubes=[],wsSelected=-1,wsMoves=0,wsRunning=false,wsHistory=[];
+// Level konfiguratsiyasi: {colors, empty} — 16 level
+var WS_LEVELS=[
+  {colors:2,empty:2},{colors:3,empty:2},{colors:4,empty:2},{colors:4,empty:1},
+  {colors:5,empty:2},{colors:5,empty:1},{colors:6,empty:2},{colors:6,empty:1},
+  {colors:7,empty:2},{colors:7,empty:1},{colors:8,empty:2},{colors:8,empty:1},
+  {colors:9,empty:2},{colors:9,empty:1},{colors:10,empty:2},{colors:10,empty:1}
+];
+var wsLevel=1,wsMaxLevel=+(localStorage.getItem('ws_max')||1);
+var wsTubes=[],wsSelected=-1,wsMoves=0,wsRunning=false,wsHistory=[];
 
-function wsStart(diff){
-  if(diff)wsDiff=diff;
-  var d=WSDIFFS[wsDiff];
+function wsGoLevel(lv){
+  if(lv<1||lv>WS_LEVELS.length)return;
+  if(lv>wsMaxLevel)return; // hali ochilmagan
+  wsStart(lv);
+}
+
+function wsStart(lv){
+  if(lv)wsLevel=lv;
+  var d=WS_LEVELS[wsLevel-1];
   wsMoves=0;wsSelected=-1;wsRunning=true;wsHistory=[];
-  // Har rang 4 ta, aralash
+  // Har rang 4 ta, aralashtir
   var pool=[];
   for(var c=0;c<d.colors;c++) for(var i=0;i<4;i++) pool.push(c);
   for(var i=pool.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=pool[i];pool[i]=pool[j];pool[j]=t;}
   wsTubes=[];
   for(var t=0;t<d.colors;t++) wsTubes.push(pool.slice(t*4,t*4+4));
   for(var i=0;i<d.empty;i++) wsTubes.push([]);
-  // Diff tugmalar
-  Object.keys(WSDIFFS).forEach(function(k){
-    var b=document.getElementById('ws-diff-'+k);if(!b)return;
-    if(k===wsDiff){b.style.background='#ef4444';b.style.color='#fff';}
-    else{b.style.background='rgba(255,255,255,.1)';b.style.color='';}
-  });
   document.getElementById('ws-win').style.display='none';
   document.getElementById('ws-moves').textContent=0;
+  wsUpdateHeader();
   wsRender();
 }
 
-function wsTopColor(tube){for(var i=tube.length-1;i>=0;i--)return tube[i];return null;}
+function wsUpdateHeader(){
+  var d=WS_LEVELS[wsLevel-1];
+  var n=d.colors+d.empty;
+  document.getElementById('ws-level-txt').textContent='Level '+wsLevel;
+  document.getElementById('ws-level-sub').textContent=d.colors+' rang · '+n+' probirka';
+  var pct=Math.round(wsLevel/WS_LEVELS.length*100);
+  document.getElementById('ws-progress').style.width=pct+'%';
+}
+
 function wsTopCount(tube){
   if(!tube.length)return 0;
   var top=tube[tube.length-1],n=0;
@@ -2096,10 +2123,7 @@ function wsCanPour(fi,ti){
 function wsPour(fi,ti){
   if(!wsCanPour(fi,ti))return false;
   wsHistory.push(JSON.parse(JSON.stringify(wsTubes)));
-  var top=wsTubes[fi][wsTubes[fi].length-1];
-  var cnt=wsTopCount(wsTubes[fi]);
-  var space=4-wsTubes[ti].length;
-  var amt=Math.min(cnt,space);
+  var cnt=wsTopCount(wsTubes[fi]),space=4-wsTubes[ti].length,amt=Math.min(cnt,space);
   for(var i=0;i<amt;i++) wsTubes[ti].push(wsTubes[fi].pop());
   wsMoves++;
   document.getElementById('ws-moves').textContent=wsMoves;
@@ -2118,22 +2142,19 @@ function wsCheckWin(){return wsTubes.every(wsSorted);}
 
 function wsTubeClick(idx){
   if(!wsRunning)return;
-  if(wsSelected===-1){
-    if(!wsTubes[idx].length)return;
-    wsSelected=idx;wsRender();return;
-  }
+  if(wsSelected===-1){if(!wsTubes[idx].length)return;wsSelected=idx;wsRender();return;}
   if(wsSelected===idx){wsSelected=-1;wsRender();return;}
   if(wsCanPour(wsSelected,idx)){
     wsPour(wsSelected,idx);wsSelected=-1;wsRender();
     if(wsCheckWin()){wsRunning=false;setTimeout(wsWin,350);}
-  }else{
-    wsSelected=idx;wsRender();
-  }
+  }else{wsSelected=idx;wsRender();}
 }
 
 function wsRender(){
   var g=document.getElementById('ws-grid');if(!g)return;
   var n=wsTubes.length,tw=48,ch=38,br=24,gap=8;
+  // Ko'p probirkada kichikroq qil
+  if(n>=10){tw=42;ch=34;br=21;gap=6;}
   var perRow=Math.ceil(n/2);
   var html='';
   for(var row=0;row<2;row++){
@@ -2143,20 +2164,15 @@ function wsRender(){
     for(var i=s;i<e;i++){
       var tube=wsTubes[i],sel=i===wsSelected;
       var ty=sel?'-10px':'0px';
-      var wallColor=sel?'rgba(255,255,255,.85)':'rgba(255,255,255,.22)';
-      var shadow=sel?'box-shadow:0 0 14px rgba(255,255,255,.3);':'';
+      var wc=sel?'rgba(255,255,255,.85)':'rgba(255,255,255,.22)';
+      var sh=sel?'box-shadow:0 0 14px rgba(255,255,255,.3);':'';
       html+='<div onclick="wsTubeClick('+i+')" style="display:flex;flex-direction:column;align-items:center;cursor:pointer;transform:translateY('+ty+');transition:transform .13s">';
-      // Probirka tanasi
-      html+='<div style="width:'+tw+'px;height:'+(ch*4)+'px;border:2.5px solid '+wallColor+';border-top:none;border-radius:0 0 '+br+'px '+br+'px;overflow:hidden;background:rgba(0,0,0,.15);box-sizing:border-box;display:flex;flex-direction:column;'+shadow+'">';
+      html+='<div style="width:'+(tw+4)+'px;height:5px;background:'+wc+';border-radius:3px 3px 0 0;margin-bottom:1px"></div>';
+      html+='<div style="width:'+tw+'px;height:'+(ch*4)+'px;border:2.5px solid '+wc+';border-top:none;border-radius:0 0 '+br+'px '+br+'px;overflow:hidden;background:rgba(0,0,0,.15);box-sizing:border-box;display:flex;flex-direction:column;'+sh+'">';
       var empty=4-tube.length;
       for(var ev=0;ev<empty;ev++) html+='<div style="flex:1"></div>';
-      for(var ci=tube.length-1;ci>=0;ci--){
-        html+='<div style="flex:1;background:'+WS_COLORS[tube[ci]]+'"></div>';
-      }
-      html+='</div>';
-      // Probirka og'zi (rim)
-      html+='<div style="width:'+(tw+4)+'px;height:5px;background:'+wallColor+';border-radius:3px 3px 0 0;margin-bottom:1px;order:-1"></div>';
-      html+='</div>';
+      for(var ci=tube.length-1;ci>=0;ci--) html+='<div style="flex:1;background:'+WS_COLORS[tube[ci]]+'"></div>';
+      html+='</div></div>';
     }
     html+='</div>';
   }
@@ -2164,16 +2180,25 @@ function wsRender(){
 }
 
 function wsWin(){
+  var isLast=wsLevel>=WS_LEVELS.length;
+  // Keyingi levalni ochish
+  if(wsLevel>=wsMaxLevel&&!isLast){
+    wsMaxLevel=wsLevel+1;
+    localStorage.setItem('ws_max',wsMaxLevel);
+  }
   document.getElementById('ws-win-moves').textContent=wsMoves;
+  document.getElementById('ws-win-lvl').textContent='Level '+wsLevel+' tugadi'+(isLast?' — Barcha levellar!':'');
+  var nb=document.getElementById('ws-next-btn');
+  if(nb)nb.style.display=isLast?'none':'block';
   document.getElementById('ws-win').style.display='flex';
-  wsSkorSaqla(wsMoves);
+  wsSkorSaqla();
 }
 
-async function wsSkorSaqla(moves){
+async function wsSkorSaqla(){
   if(!CU.id)return;
   try{
     await fetch(API+'/sort/natija',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({user_id:CU.id,name:CU.name||"Noma'lum",moves:moves,diff:wsDiff})});
+      body:JSON.stringify({user_id:CU.id,name:CU.name||"Noma'lum",max_level:Math.max(wsLevel,wsMaxLevel)})});
     wsReytingLoad();
   }catch(e){}
 }
@@ -2182,7 +2207,7 @@ async function wsReytingLoad(){
   var el=document.getElementById('ws-reyting');if(!el)return;
   el.innerHTML='<div style="text-align:center;font-size:.8rem;padding:10px;opacity:.4">Yuklanmoqda...</div>';
   try{
-    var r=await fetch(API+'/sort/reyting?diff='+encodeURIComponent(wsDiff));
+    var r=await fetch(API+'/sort/reyting');
     if(!r.ok)throw new Error('server: '+r.status);
     var d=await r.json();
     var list=d.reyting||[];
@@ -2195,8 +2220,7 @@ async function wsReytingLoad(){
       html+='<div style="display:flex;align-items:center;gap:8px;padding:8px 6px;border-bottom:1px solid rgba(128,128,128,.15);'+bg+'">'
         +'<div style="width:26px;text-align:center;font-size:.9rem">'+medal+'</div>'
         +'<div style="flex:1;font-size:.88rem;font-weight:'+(mine?700:500)+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+s.name+'</div>'
-        +'<div style="font-size:.7rem;opacity:.4;background:rgba(239,68,68,.15);border-radius:6px;padding:2px 6px;margin-right:4px">'+s.diff+'</div>'
-        +'<div style="font-weight:700;color:#ef4444;font-size:.9rem;white-space:nowrap">'+s.moves+' yurish</div>'
+        +'<div style="font-weight:700;color:#ef4444;font-size:.9rem;white-space:nowrap">Level '+s.max_level+'</div>'
         +'</div>';
     });
     el.innerHTML=html;
