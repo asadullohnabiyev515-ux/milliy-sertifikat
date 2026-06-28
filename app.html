@@ -2263,18 +2263,21 @@ async function wsReytingLoad(){
 // ============================================================
 // DAVRIY JADVAL
 // ============================================================
+// s=0(qizil), p=1(sariq), d=2(ko'k), f=3(yashil)
 var JCAT=[
-  {n:'Metallmas',    bg:'#2dd4bf',fg:'#fff'},
-  {n:'Ishqoriy metal',bg:'#f87171',fg:'#fff'},
-  {n:'Yer metali',   bg:'#fb923c',fg:'#fff'},
-  {n:"O'tish metali",bg:'#60a5fa',fg:'#1a1a2e'},
-  {n:'Post-metal',   bg:'#4ade80',fg:'#1a1a2e'},
-  {n:'Metalloid',    bg:'#a3e635',fg:'#1a1a2e'},
-  {n:'Galogen',      bg:'#f472b6',fg:'#fff'},
-  {n:'Inert gaz',    bg:'#c084fc',fg:'#fff'},
-  {n:'Lantanoid',    bg:'#fbbf24',fg:'#1a1a2e'},
-  {n:'Aktinoid',     bg:'#34d399',fg:'#1a1a2e'}
+  {n:'s-element',bg:'#ef4444',fg:'#fff'},
+  {n:'p-element',bg:'#f59e0b',fg:'#1a1a2e'},
+  {n:'d-element',bg:'#3b82f6',fg:'#fff'},
+  {n:'f-element',bg:'#22c55e',fg:'#1a1a2e'}
 ];
+// Guruh nomlari (1-18 → eski A/B tizimi)
+var JGRP=['','IA','IIA','IIIB','IVB','VB','VIB','VIIB','VIII','VIII','VIII','IB','IIB','IIIA','IVA','VA','VIA','VIIA','0'];
+function jBlock(row,col){
+  if(row>=8) return 3;  // f
+  if(col<=2)  return 0; // s
+  if(col>=13) return 1; // p
+  return 2;             // d
+}
 // [z, sym, nom_uz, mass, cat, row, col]
 var JEDATA=[
  [1,'H','Vodorod',1.008,0,1,1],[2,'He','Geliy',4.003,7,1,18],
@@ -2346,44 +2349,52 @@ var jGrid={},jByZ={},jInited=false;
 function jadvalInit(){
   if(jInited)return; jInited=true;
   JEDATA.forEach(function(e){jGrid[e[5]+','+e[6]]=e;jByZ[e[0]]=e;});
-  // Legend
   var lhtml='';
   JCAT.forEach(function(c){
-    lhtml+='<div style="display:flex;align-items:center;gap:3px;font-size:.6rem">'
-      +'<div style="width:9px;height:9px;border-radius:2px;background:'+c.bg+'"></div>'+c.n+'</div>';
+    lhtml+='<div style="display:flex;align-items:center;gap:3px;font-size:.62rem">'
+      +'<div style="width:10px;height:10px;border-radius:2px;background:'+c.bg+'"></div>'+c.n+'</div>';
   });
   document.getElementById('j-legend').innerHTML=lhtml;
   jadvalRender('');
 }
 
 function jadvalRender(q){
-  var cw=44,ch=52,gap=2;
-  var html='<div style="display:inline-block;min-width:'+((cw+gap)*18)+'px">';
+  var cw=44,ch=50,gap=2;
+  var total=(cw+gap)*18;
+  var html='<div style="display:inline-block;min-width:'+total+'px">';
+
+  // Guruh sarlavhalari (IA...0)
+  html+='<div style="display:flex;gap:'+gap+'px;margin-bottom:4px">';
+  for(var col=1;col<=18;col++){
+    var gname=JGRP[col];
+    // VIII uchun columns 8,9,10 ni birlashtirib ko'rsatish
+    var gbg=col<=2?'rgba(239,68,68,.2)':col>=13?'rgba(245,158,11,.2)':col>=3&&col<=12?'rgba(59,130,246,.2)':'rgba(0,0,0,0)';
+    html+='<div style="width:'+cw+'px;height:18px;text-align:center;font-size:.45rem;font-weight:700;border-radius:4px;display:flex;align-items:center;justify-content:center;background:'+gbg+';opacity:.9">'+gname+'</div>';
+  }
+  html+='</div>';
+
   for(var row=1;row<=9;row++){
-    if(row===8) html+='<div style="height:5px"></div>';
+    if(row===8) html+='<div style="height:6px"></div>';
     html+='<div style="display:flex;gap:'+gap+'px;margin-bottom:'+gap+'px">';
     for(var col=1;col<=18;col++){
-      if(row>=8&&col<3){html+='<div style="width:'+cw+'px;height:'+ch+'px"></div>';continue;}
-      if(row>=8&&col>17){html+='<div style="width:'+cw+'px;height:'+ch+'px"></div>';continue;}
-      if(row===8&&col===3-1){continue;}
+      if(row>=8&&(col<3||col>17)){html+='<div style="width:'+cw+'px;height:'+ch+'px"></div>';continue;}
       var e=jGrid[row+','+col];
       if(!e){
-        // lantanoid/aktinoid placeholder
         if((row===6||row===7)&&col===3){
           var lbl=row===6?'57–71':'89–103';
-          var pbg=row===6?'rgba(251,191,36,.18)':'rgba(52,211,153,.18)';
-          html+='<div style="width:'+cw+'px;height:'+ch+'px;background:'+pbg+';border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.38rem;opacity:.65;text-align:center;line-height:1.4">'+lbl+'<br>★</div>';
+          var blk=JCAT[3]; // f-block (green)
+          html+='<div onclick="elemModal(\''+lbl+'\')" style="width:'+cw+'px;height:'+ch+'px;background:'+blk.bg+';border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.38rem;opacity:.55;text-align:center;line-height:1.5;color:'+blk.fg+'">'+lbl+'</div>';
         }else{
           html+='<div style="width:'+cw+'px;height:'+ch+'px"></div>';
         }
       }else{
-        var cat=JCAT[e[4]];
+        var blk=JCAT[jBlock(row,col)];
         var match=!q||e[1].toLowerCase().indexOf(q)>=0||e[2].toLowerCase().indexOf(q)>=0||String(e[0]).indexOf(q)>=0;
-        var op=match?'1':'0.1';
-        html+='<div data-z="'+e[0]+'" onclick="elemModal('+e[0]+')" style="width:'+cw+'px;height:'+ch+'px;background:'+cat.bg+';border-radius:5px;cursor:pointer;padding:2px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:space-between;overflow:hidden;opacity:'+op+'">'
-          +'<div style="width:100%;font-size:.42rem;color:'+cat.fg+';opacity:.75;line-height:1">'+e[0]+'</div>'
-          +'<div style="font-size:.9rem;font-weight:800;color:'+cat.fg+';line-height:1">'+e[1]+'</div>'
-          +'<div style="font-size:.33rem;color:'+cat.fg+';opacity:.85;text-align:center;overflow:hidden;white-space:nowrap;width:100%;text-overflow:ellipsis">'+e[2]+'</div>'
+        var op=match?'1':'0.08';
+        html+='<div data-z="'+e[0]+'" onclick="elemModal('+e[0]+')" style="width:'+cw+'px;height:'+ch+'px;background:'+blk.bg+';border-radius:5px;cursor:pointer;padding:2px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:space-between;overflow:hidden;opacity:'+op+'">'
+          +'<div style="width:100%;font-size:.42rem;color:'+blk.fg+';opacity:.75;line-height:1">'+e[0]+'</div>'
+          +'<div style="font-size:.9rem;font-weight:800;color:'+blk.fg+';line-height:1">'+e[1]+'</div>'
+          +'<div style="font-size:.33rem;color:'+blk.fg+';opacity:.85;text-align:center;overflow:hidden;white-space:nowrap;width:100%;text-overflow:ellipsis">'+e[2]+'</div>'
           +'</div>';
       }
     }
@@ -2400,9 +2411,11 @@ function jadvalSearch(q){
 
 function elemModal(z){
   var e=jByZ[z];if(!e)return;
-  var cat=JCAT[e[4]];
-  var period=e[5]<=7?e[5]:(e[5]===8?'6 (f-blok)':'7 (f-blok)');
-  var group=e[5]<=7?e[6]:'—';
+  var blkIdx=jBlock(e[5],e[6]);
+  var cat=JCAT[blkIdx];
+  var period=e[5]<=7?e[5]:(e[5]===8?6:7);
+  var group=e[5]>=8?'f-blok':JGRP[e[6]]||'—';
+  var blkName=['s','p','d','f'][blkIdx]+'-element';
   var m=document.getElementById('j-modal');
   m.innerHTML='<div style="position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:400;display:flex;align-items:flex-end" onclick="document.getElementById(\'j-modal\').style.display=\'none\'">'
     +'<div style="width:100%;background:var(--c-bg);border-radius:20px 20px 0 0;padding:20px 20px 32px;max-height:85vh;overflow-y:auto" onclick="event.stopPropagation()">'
@@ -2416,10 +2429,10 @@ function elemModal(z){
     +'</div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">'
     +'<div style="background:var(--c-card);border-radius:12px;padding:12px">'
-    +'<div style="font-size:.6rem;opacity:.4;margin-bottom:3px">Tartib raqami</div>'
+    +'<div style="font-size:.6rem;opacity:.4;margin-bottom:3px">Tartib raqami (Z)</div>'
     +'<div style="font-weight:700;font-size:1.1rem">'+e[0]+'</div></div>'
     +'<div style="background:var(--c-card);border-radius:12px;padding:12px">'
-    +'<div style="font-size:.6rem;opacity:.4;margin-bottom:3px">Atom massasi</div>'
+    +'<div style="font-size:.6rem;opacity:.4;margin-bottom:3px">Atom massasi (Ar)</div>'
     +'<div style="font-weight:700;font-size:1.1rem">'+e[3]+'</div></div>'
     +'<div style="background:var(--c-card);border-radius:12px;padding:12px">'
     +'<div style="font-size:.6rem;opacity:.4;margin-bottom:3px">Davr</div>'
@@ -2427,6 +2440,9 @@ function elemModal(z){
     +'<div style="background:var(--c-card);border-radius:12px;padding:12px">'
     +'<div style="font-size:.6rem;opacity:.4;margin-bottom:3px">Guruh</div>'
     +'<div style="font-weight:700;font-size:1.1rem">'+group+'</div></div>'
+    +'<div style="background:'+cat.bg+';border-radius:12px;padding:12px;grid-column:1/-1">'
+    +'<div style="font-size:.6rem;color:'+cat.fg+';opacity:.7;margin-bottom:3px">Elektron bloki</div>'
+    +'<div style="font-weight:800;font-size:1.1rem;color:'+cat.fg+'">'+blkName+'</div></div>'
     +'</div>'
     +'<button onclick="document.getElementById(\'j-modal\').style.display=\'none\'" style="width:100%;background:rgba(255,255,255,.08);border:none;border-radius:12px;padding:12px;color:var(--c-fg);font-size:.9rem;cursor:pointer;font-weight:600">Yopish</button>'
     +'</div></div>';
