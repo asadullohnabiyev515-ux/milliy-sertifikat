@@ -2065,13 +2065,17 @@ async function memReytingLoad(){
 // ============================================================
 // PROBIRKALAR (WATER SORT) — LEVELLAR
 // ============================================================
-var WS_COLORS=['#ef4444','#3b82f6','#22c55e','#f59e0b','#a855f7','#06b6d4','#f97316','#ec4899','#84cc16','#14b8a6'];
-// Level konfiguratsiyasi: {colors, empty} — 16 level
+var WS_COLORS=['#ef4444','#3b82f6','#22c55e','#f59e0b','#a855f7','#06b6d4','#f97316','#ec4899','#84cc16','#14b8a6','#6366f1','#d946ef','#0ea5e9','#78716c','#7c3aed'];
+// Level konfiguratsiyasi: {colors, empty} — 30 level
 var WS_LEVELS=[
-  {colors:2,empty:2},{colors:3,empty:2},{colors:4,empty:2},{colors:4,empty:1},
-  {colors:5,empty:2},{colors:5,empty:1},{colors:6,empty:2},{colors:6,empty:1},
-  {colors:7,empty:2},{colors:7,empty:1},{colors:8,empty:2},{colors:8,empty:1},
-  {colors:9,empty:2},{colors:9,empty:1},{colors:10,empty:2},{colors:10,empty:1}
+  {colors:2,empty:2},{colors:3,empty:2},{colors:3,empty:1},{colors:4,empty:2}, // 1-4
+  {colors:4,empty:1},{colors:5,empty:2},{colors:5,empty:1},{colors:6,empty:2}, // 5-8
+  {colors:6,empty:1},{colors:7,empty:2},{colors:7,empty:1},{colors:8,empty:2}, // 9-12
+  {colors:8,empty:1},{colors:9,empty:2},{colors:9,empty:1},{colors:10,empty:2},// 13-16
+  {colors:10,empty:1},{colors:11,empty:2},{colors:11,empty:1},{colors:12,empty:2},// 17-20
+  {colors:12,empty:1},{colors:13,empty:2},{colors:13,empty:1},{colors:14,empty:2},// 21-24
+  {colors:14,empty:1},{colors:15,empty:2},{colors:15,empty:1},{colors:15,empty:1},// 25-28
+  {colors:15,empty:1},{colors:15,empty:1}                                         // 29-30
 ];
 var wsLevel=1,wsMaxLevel=+(localStorage.getItem('ws_max')||1);
 var wsTubes=[],wsSelected=-1,wsMoves=0,wsRunning=false,wsHistory=[];
@@ -2153,8 +2157,9 @@ function wsTubeClick(idx){
 function wsRender(){
   var g=document.getElementById('ws-grid');if(!g)return;
   var n=wsTubes.length,tw=48,ch=38,br=24,gap=8;
-  // Ko'p probirkada kichikroq qil
-  if(n>=10){tw=42;ch=34;br=21;gap=6;}
+  if(n>=16){tw=34;ch=28;br=17;gap=4;}
+  else if(n>=12){tw=40;ch=32;br=20;gap=5;}
+  else if(n>=10){tw=42;ch=34;br=21;gap=6;}
   var perRow=Math.ceil(n/2);
   var html='';
   for(var row=0;row<2;row++){
