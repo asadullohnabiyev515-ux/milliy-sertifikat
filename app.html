@@ -540,6 +540,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   <div class="nitem" id="n5" onclick="go('p8',5)"><span>👤</span><span>Profil</span></div>
   <div class="nitem" id="n-elon" onclick="go('p-elon',-1)"><span style="position:relative">🔔<span id="elon-badge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ff4757;color:#fff;border-radius:50%;font-size:9px;width:14px;height:14px;text-align:center;line-height:14px;font-weight:700">!</span></span><span>E'lon</span></div>
   <div class="nitem" id="n-game" onclick="go('p-games',-1)"><span>🎮</span><span>O'yinlar</span></div>
+  <div class="nitem" id="n-jadval" onclick="go('p-jadval',-1);jadvalInit()"><span>⚛️</span><span>Jadval</span></div>
 </div>
 
 <!-- O'YINLAR HUB -->
@@ -714,6 +715,25 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   </div>
 </div>
 
+<!-- DAVRIY JADVAL -->
+<div id="p-jadval" class="page" style="padding-bottom:80px">
+  <div class="top">
+    <button onclick="go('p1',0)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+    <div class="tlogo">⚛️ Davriy Jadval</div>
+    <div style="width:40px"></div>
+  </div>
+  <div style="padding:4px 16px 6px">
+    <input id="j-q" type="search" placeholder="🔍 Element nomi yoki belgisi..."
+      oninput="jadvalSearch(this.value)"
+      style="width:100%;background:rgba(255,255,255,.08);border:none;border-radius:12px;padding:9px 14px;color:var(--c-fg);font-size:.88rem;box-sizing:border-box;outline:none">
+  </div>
+  <div id="j-legend" style="display:flex;flex-wrap:wrap;gap:5px;padding:0 16px 6px"></div>
+  <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+    <div id="j-grid" style="padding:2px 6px 8px"></div>
+  </div>
+  <div id="j-modal" style="display:none;position:fixed;inset:0;z-index:400"></div>
+</div>
+
 <div id="p-elon" class="page" style="padding-bottom:80px">
   <div class="top"><div class="tl">E'lonlar</div></div>
   <div id="elon-list" style="padding:16px">
@@ -816,7 +836,7 @@ var sTogri='';
 
 // GO - sahifa almashtirish
 function go(id,nav){
-  var all=['p1','p2','p3','p3b','p3c','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e','p9f','p9g','p-elon','p-games','p-game','p-memory','p-sort'];
+  var all=['p1','p2','p3','p3b','p3c','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e','p9f','p9g','p-elon','p-games','p-game','p-memory','p-sort','p-jadval'];
   all.forEach(function(x){var e=document.getElementById(x);if(e)e.style.display='none';});
   var el=document.getElementById(id);
   if(el)el.style.display='block';
@@ -834,6 +854,13 @@ function go(id,nav){
     for(var i=0;i<6;i++){var n=document.getElementById('n'+i);if(n)n.className='nitem';}
     if(ne)ne.className='nitem';
     var ng=document.getElementById('n-game');if(ng)ng.className='nitem on';
+    var nj=document.getElementById('n-jadval');if(nj)nj.className='nitem';
+    var nu=document.getElementById('n-ustoz');if(nu)nu.className='nitem';
+  }else if(id==='p-jadval'){
+    for(var i=0;i<6;i++){var n=document.getElementById('n'+i);if(n)n.className='nitem';}
+    if(ne)ne.className='nitem';
+    var ng=document.getElementById('n-game');if(ng)ng.className='nitem';
+    var nj=document.getElementById('n-jadval');if(nj)nj.className='nitem on';
     var nu=document.getElementById('n-ustoz');if(nu)nu.className='nitem';
   }
   if(id==='p5')kLoad();
@@ -2232,6 +2259,178 @@ async function wsReytingLoad(){
   }catch(e){
     el.innerHTML='<div style="text-align:center;font-size:.8rem;padding:10px;color:#ff6b6b">Xato: '+e.message+'</div>';
   }
+}
+// ============================================================
+// DAVRIY JADVAL
+// ============================================================
+var JCAT=[
+  {n:'Metallmas',    bg:'#2dd4bf',fg:'#fff'},
+  {n:'Ishqoriy metal',bg:'#f87171',fg:'#fff'},
+  {n:'Yer metali',   bg:'#fb923c',fg:'#fff'},
+  {n:"O'tish metali",bg:'#60a5fa',fg:'#1a1a2e'},
+  {n:'Post-metal',   bg:'#4ade80',fg:'#1a1a2e'},
+  {n:'Metalloid',    bg:'#a3e635',fg:'#1a1a2e'},
+  {n:'Galogen',      bg:'#f472b6',fg:'#fff'},
+  {n:'Inert gaz',    bg:'#c084fc',fg:'#fff'},
+  {n:'Lantanoid',    bg:'#fbbf24',fg:'#1a1a2e'},
+  {n:'Aktinoid',     bg:'#34d399',fg:'#1a1a2e'}
+];
+// [z, sym, nom_uz, mass, cat, row, col]
+var JEDATA=[
+ [1,'H','Vodorod',1.008,0,1,1],[2,'He','Geliy',4.003,7,1,18],
+ [3,'Li','Litiy',6.941,1,2,1],[4,'Be','Berilliy',9.012,2,2,2],
+ [5,'B','Bor',10.811,5,2,13],[6,'C','Uglerod',12.011,0,2,14],
+ [7,'N','Azot',14.007,0,2,15],[8,'O','Kislorod',15.999,0,2,16],
+ [9,'F','Ftor',18.998,6,2,17],[10,'Ne','Neon',20.18,7,2,18],
+ [11,'Na','Natriy',22.99,1,3,1],[12,'Mg','Magniy',24.305,2,3,2],
+ [13,'Al','Alyuminiy',26.982,4,3,13],[14,'Si','Kremniy',28.086,5,3,14],
+ [15,'P','Fosfor',30.974,0,3,15],[16,'S','Oltingugurt',32.065,0,3,16],
+ [17,'Cl','Xlor',35.453,6,3,17],[18,'Ar','Argon',39.948,7,3,18],
+ [19,'K','Kaliy',39.098,1,4,1],[20,'Ca','Kaltsiy',40.078,2,4,2],
+ [21,'Sc','Skandiy',44.956,3,4,3],[22,'Ti','Titan',47.867,3,4,4],
+ [23,'V','Vanadiy',50.942,3,4,5],[24,'Cr','Xrom',51.996,3,4,6],
+ [25,'Mn','Marganets',54.938,3,4,7],[26,'Fe','Temir',55.845,3,4,8],
+ [27,'Co','Kobalt',58.933,3,4,9],[28,'Ni','Nikel',58.693,3,4,10],
+ [29,'Cu','Mis',63.546,3,4,11],[30,'Zn','Rux',65.38,3,4,12],
+ [31,'Ga','Galliy',69.723,4,4,13],[32,'Ge','Germaniy',72.63,5,4,14],
+ [33,'As','Mishyak',74.922,5,4,15],[34,'Se','Selen',78.971,0,4,16],
+ [35,'Br','Brom',79.904,6,4,17],[36,'Kr','Kripton',83.798,7,4,18],
+ [37,'Rb','Rubidiy',85.468,1,5,1],[38,'Sr','Stronsiy',87.62,2,5,2],
+ [39,'Y','Yitriy',88.906,3,5,3],[40,'Zr','Tsirkoniy',91.224,3,5,4],
+ [41,'Nb','Niobiy',92.906,3,5,5],[42,'Mo','Molibden',95.95,3,5,6],
+ [43,'Tc','Texnetsiy',98,3,5,7],[44,'Ru','Ruteniy',101.07,3,5,8],
+ [45,'Rh','Rodiy',102.906,3,5,9],[46,'Pd','Palladiy',106.42,3,5,10],
+ [47,'Ag','Kumush',107.868,3,5,11],[48,'Cd','Kadmiy',112.411,3,5,12],
+ [49,'In','Indiy',114.818,4,5,13],[50,'Sn','Qalay',118.71,4,5,14],
+ [51,'Sb','Surma',121.76,5,5,15],[52,'Te','Tellur',127.6,5,5,16],
+ [53,'I','Yod',126.904,6,5,17],[54,'Xe','Ksenon',131.293,7,5,18],
+ [55,'Cs','Tseziy',132.905,1,6,1],[56,'Ba','Bariy',137.327,2,6,2],
+ [72,'Hf','Hafniy',178.49,3,6,4],[73,'Ta','Tantal',180.948,3,6,5],
+ [74,'W','Volfram',183.84,3,6,6],[75,'Re','Reniy',186.207,3,6,7],
+ [76,'Os','Osmiy',190.23,3,6,8],[77,'Ir','Iridiy',192.217,3,6,9],
+ [78,'Pt','Platina',195.084,3,6,10],[79,'Au','Oltin',196.967,3,6,11],
+ [80,'Hg','Simob',200.592,3,6,12],[81,'Tl','Talliy',204.383,4,6,13],
+ [82,'Pb',"Qo'rg.",207.2,4,6,14],[83,'Bi','Vismut',208.98,4,6,15],
+ [84,'Po','Poloniy',209,5,6,16],[85,'At','Astat',210,6,6,17],
+ [86,'Rn','Radon',222,7,6,18],
+ [87,'Fr','Fransiy',223,1,7,1],[88,'Ra','Radiy',226,2,7,2],
+ [104,'Rf','Rezfordiy',267,3,7,4],[105,'Db','Dubniy',268,3,7,5],
+ [106,'Sg','Siborgiy',271,3,7,6],[107,'Bh','Boriy',272,3,7,7],
+ [108,'Hs','Xassiy',270,3,7,8],[109,'Mt','Meyteriy',276,3,7,9],
+ [110,'Ds','Darmsh.',281,3,7,10],[111,'Rg','Rentgeniy',280,3,7,11],
+ [112,'Cn','Kopernikiy',285,3,7,12],[113,'Nh','Nixoniy',284,4,7,13],
+ [114,'Fl','Fleroviy',289,4,7,14],[115,'Mc','Moskoviy',288,4,7,15],
+ [116,'Lv','Livermoriy',293,4,7,16],[117,'Ts','Tenessiy',294,6,7,17],
+ [118,'Og','Oganeson',294,7,7,18],
+ // Lantanoidlar (row 8)
+ [57,'La','Lantan',138.905,8,8,3],[58,'Ce','Seriy',140.116,8,8,4],
+ [59,'Pr','Prazeodim',140.908,8,8,5],[60,'Nd','Neodim',144.242,8,8,6],
+ [61,'Pm','Prometiy',145,8,8,7],[62,'Sm','Samariy',150.36,8,8,8],
+ [63,'Eu','Evropiy',151.964,8,8,9],[64,'Gd','Gadoliniy',157.25,8,8,10],
+ [65,'Tb','Terbiy',158.925,8,8,11],[66,'Dy','Disproziy',162.5,8,8,12],
+ [67,'Ho','Golmiy',164.93,8,8,13],[68,'Er','Erbiy',167.259,8,8,14],
+ [69,'Tm','Tuliy',168.934,8,8,15],[70,'Yb','Itterbiy',173.054,8,8,16],
+ [71,'Lu','Lyutetiy',174.967,8,8,17],
+ // Aktinoidlar (row 9)
+ [89,'Ac','Aktiniy',227,9,9,3],[90,'Th','Toriy',232.038,9,9,4],
+ [91,'Pa','Protakt.',231.036,9,9,5],[92,'U','Uran',238.029,9,9,6],
+ [93,'Np','Neptuniy',237,9,9,7],[94,'Pu','Plutoniy',244,9,9,8],
+ [95,'Am','Ameritsiy',243,9,9,9],[96,'Cm','Kyuriy',247,9,9,10],
+ [97,'Bk','Berkeliy',247,9,9,11],[98,'Cf','Kaliforniy',251,9,9,12],
+ [99,'Es','Eynshteyniy',252,9,9,13],[100,'Fm','Fermiy',257,9,9,14],
+ [101,'Md','Mendeleviy',258,9,9,15],[102,'No','Nobeliy',259,9,9,16],
+ [103,'Lr','Lorenisiy',262,9,9,17]
+];
+var jGrid={},jByZ={},jInited=false;
+
+function jadvalInit(){
+  if(jInited)return; jInited=true;
+  JEDATA.forEach(function(e){jGrid[e[5]+','+e[6]]=e;jByZ[e[0]]=e;});
+  // Legend
+  var lhtml='';
+  JCAT.forEach(function(c){
+    lhtml+='<div style="display:flex;align-items:center;gap:3px;font-size:.6rem">'
+      +'<div style="width:9px;height:9px;border-radius:2px;background:'+c.bg+'"></div>'+c.n+'</div>';
+  });
+  document.getElementById('j-legend').innerHTML=lhtml;
+  jadvalRender('');
+}
+
+function jadvalRender(q){
+  var cw=44,ch=52,gap=2;
+  var html='<div style="display:inline-block;min-width:'+((cw+gap)*18)+'px">';
+  for(var row=1;row<=9;row++){
+    if(row===8) html+='<div style="height:5px"></div>';
+    html+='<div style="display:flex;gap:'+gap+'px;margin-bottom:'+gap+'px">';
+    for(var col=1;col<=18;col++){
+      if(row>=8&&col<3){html+='<div style="width:'+cw+'px;height:'+ch+'px"></div>';continue;}
+      if(row>=8&&col>17){html+='<div style="width:'+cw+'px;height:'+ch+'px"></div>';continue;}
+      if(row===8&&col===3-1){continue;}
+      var e=jGrid[row+','+col];
+      if(!e){
+        // lantanoid/aktinoid placeholder
+        if((row===6||row===7)&&col===3){
+          var lbl=row===6?'57–71':'89–103';
+          var pbg=row===6?'rgba(251,191,36,.18)':'rgba(52,211,153,.18)';
+          html+='<div style="width:'+cw+'px;height:'+ch+'px;background:'+pbg+';border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.38rem;opacity:.65;text-align:center;line-height:1.4">'+lbl+'<br>★</div>';
+        }else{
+          html+='<div style="width:'+cw+'px;height:'+ch+'px"></div>';
+        }
+      }else{
+        var cat=JCAT[e[4]];
+        var match=!q||e[1].toLowerCase().indexOf(q)>=0||e[2].toLowerCase().indexOf(q)>=0||String(e[0]).indexOf(q)>=0;
+        var op=match?'1':'0.1';
+        html+='<div data-z="'+e[0]+'" onclick="elemModal('+e[0]+')" style="width:'+cw+'px;height:'+ch+'px;background:'+cat.bg+';border-radius:5px;cursor:pointer;padding:2px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:space-between;overflow:hidden;opacity:'+op+'">'
+          +'<div style="width:100%;font-size:.42rem;color:'+cat.fg+';opacity:.75;line-height:1">'+e[0]+'</div>'
+          +'<div style="font-size:.9rem;font-weight:800;color:'+cat.fg+';line-height:1">'+e[1]+'</div>'
+          +'<div style="font-size:.33rem;color:'+cat.fg+';opacity:.85;text-align:center;overflow:hidden;white-space:nowrap;width:100%;text-overflow:ellipsis">'+e[2]+'</div>'
+          +'</div>';
+      }
+    }
+    html+='</div>';
+  }
+  html+='</div>';
+  document.getElementById('j-grid').innerHTML=html;
+}
+
+function jadvalSearch(q){
+  q=(q||'').toLowerCase().trim();
+  jadvalRender(q);
+}
+
+function elemModal(z){
+  var e=jByZ[z];if(!e)return;
+  var cat=JCAT[e[4]];
+  var period=e[5]<=7?e[5]:(e[5]===8?'6 (f-blok)':'7 (f-blok)');
+  var group=e[5]<=7?e[6]:'—';
+  var m=document.getElementById('j-modal');
+  m.innerHTML='<div style="position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:400;display:flex;align-items:flex-end" onclick="document.getElementById(\'j-modal\').style.display=\'none\'">'
+    +'<div style="width:100%;background:var(--c-bg);border-radius:20px 20px 0 0;padding:20px 20px 32px;max-height:85vh;overflow-y:auto" onclick="event.stopPropagation()">'
+    +'<div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">'
+    +'<div style="width:76px;height:76px;min-width:76px;background:'+cat.bg+';border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center">'
+    +'<div style="font-size:.5rem;color:'+cat.fg+';opacity:.7">'+e[0]+'</div>'
+    +'<div style="font-size:1.8rem;font-weight:800;color:'+cat.fg+';line-height:1">'+e[1]+'</div>'
+    +'</div>'
+    +'<div><div style="font-size:1.3rem;font-weight:800">'+e[2]+'</div>'
+    +'<div style="font-size:.8rem;font-weight:600;margin-top:4px;padding:3px 8px;border-radius:6px;display:inline-block;background:'+cat.bg+';color:'+cat.fg+'">'+cat.n+'</div></div>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">'
+    +'<div style="background:var(--c-card);border-radius:12px;padding:12px">'
+    +'<div style="font-size:.6rem;opacity:.4;margin-bottom:3px">Tartib raqami</div>'
+    +'<div style="font-weight:700;font-size:1.1rem">'+e[0]+'</div></div>'
+    +'<div style="background:var(--c-card);border-radius:12px;padding:12px">'
+    +'<div style="font-size:.6rem;opacity:.4;margin-bottom:3px">Atom massasi</div>'
+    +'<div style="font-weight:700;font-size:1.1rem">'+e[3]+'</div></div>'
+    +'<div style="background:var(--c-card);border-radius:12px;padding:12px">'
+    +'<div style="font-size:.6rem;opacity:.4;margin-bottom:3px">Davr</div>'
+    +'<div style="font-weight:700;font-size:1.1rem">'+period+'</div></div>'
+    +'<div style="background:var(--c-card);border-radius:12px;padding:12px">'
+    +'<div style="font-size:.6rem;opacity:.4;margin-bottom:3px">Guruh</div>'
+    +'<div style="font-weight:700;font-size:1.1rem">'+group+'</div></div>'
+    +'</div>'
+    +'<button onclick="document.getElementById(\'j-modal\').style.display=\'none\'" style="width:100%;background:rgba(255,255,255,.08);border:none;border-radius:12px;padding:12px;color:var(--c-fg);font-size:.9rem;cursor:pointer;font-weight:600">Yopish</button>'
+    +'</div></div>';
+  m.style.display='block';
 }
 // ============================================================
 
