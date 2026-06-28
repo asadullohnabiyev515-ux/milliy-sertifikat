@@ -562,6 +562,14 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
         <div style="font-size:.75rem;color:#a78bfa;margin-top:6px;font-weight:600">4×4 · 6×6 · 8×8</div>
       </div>
     </div>
+    <div onclick="go('p-sort',-1);wsStart()" style="background:linear-gradient(135deg,#1a2a4a,#0d1f3a);border:1.5px solid rgba(239,68,68,.3);border-radius:18px;padding:24px 20px;cursor:pointer;display:flex;align-items:center;gap:16px">
+      <div style="font-size:3rem">🧪</div>
+      <div>
+        <div style="font-size:1.2rem;font-weight:800">Probirkalar</div>
+        <div style="font-size:.8rem;opacity:.5;margin-top:4px">Ranglarni tartiblash — bir xil rang bir probirkaga</div>
+        <div style="font-size:.75rem;color:#ef4444;margin-top:6px;font-weight:600">Oson · O'rta · Qiyin</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -655,6 +663,43 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   <div class="card" style="margin:12px 16px 0">
     <div style="font-size:.75rem;font-weight:700;opacity:.4;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">🏆 Top 10 Reyting</div>
     <div id="m-reyting"><div style="text-align:center;font-size:.85rem;padding:12px;opacity:.4">Yuklanmoqda...</div></div>
+  </div>
+</div>
+
+<!-- PROBIRKALAR (WATER SORT) -->
+<div id="p-sort" class="page" style="padding-bottom:80px;user-select:none">
+  <div class="top">
+    <button onclick="go('p-games',-1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+    <div class="tlogo">🧪 Probirkalar</div>
+    <button onclick="wsStart()" style="background:none;border:none;color:#ef4444;font-size:.85rem;font-weight:700;cursor:pointer">Yangi</button>
+  </div>
+  <div style="display:flex;gap:6px;padding:6px 16px;justify-content:center">
+    <button id="ws-diff-easy"   onclick="wsStart('easy')"   style="flex:1;background:#ef4444;color:#fff;border:none;border-radius:10px;padding:7px 0;font-size:.8rem;font-weight:700;cursor:pointer">Oson</button>
+    <button id="ws-diff-medium" onclick="wsStart('medium')" style="flex:1;background:rgba(255,255,255,.1);color:var(--c-fg);border:none;border-radius:10px;padding:7px 0;font-size:.8rem;font-weight:700;cursor:pointer">O'rta</button>
+    <button id="ws-diff-hard"   onclick="wsStart('hard')"   style="flex:1;background:rgba(255,255,255,.1);color:var(--c-fg);border:none;border-radius:10px;padding:7px 0;font-size:.8rem;font-weight:700;cursor:pointer">Qiyin</button>
+  </div>
+  <div style="display:flex;justify-content:center;align-items:center;gap:12px;padding:4px 16px 8px">
+    <div style="text-align:center;background:rgba(255,255,255,.08);border-radius:10px;padding:6px 20px">
+      <div style="font-size:.6rem;opacity:.4;text-transform:uppercase;letter-spacing:1px">Yurishlar</div>
+      <div style="font-weight:700;font-size:1.1rem" id="ws-moves">0</div>
+    </div>
+    <button onclick="wsUndo()" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;padding:8px 16px;color:var(--c-fg);font-size:.85rem;cursor:pointer;font-weight:600">↩ Ortga</button>
+  </div>
+  <div id="ws-grid" style="padding:4px 8px"></div>
+  <div id="ws-win" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,15,30,.92);z-index:200;flex-direction:column;align-items:center;justify-content:center">
+    <div style="font-size:3rem;margin-bottom:8px">🎉</div>
+    <div style="font-size:1.5rem;font-weight:800;margin-bottom:4px">Barakalla!</div>
+    <div style="font-size:.9rem;opacity:.5;margin-bottom:20px">Barcha ranglar tartibga keldi</div>
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:2rem;font-weight:800;color:#ef4444" id="ws-win-moves">0</div>
+      <div style="font-size:.75rem;opacity:.5">yurishda hal qilindi</div>
+    </div>
+    <button onclick="wsStart()" class="btn" style="background:#ef4444;color:#fff;padding:12px 32px;font-size:1rem;margin-bottom:10px;border:none;border-radius:14px;cursor:pointer;font-weight:700">🔁 Qayta</button>
+    <button onclick="document.getElementById('ws-win').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:.9rem;cursor:pointer;margin-top:6px">Yopish</button>
+  </div>
+  <div class="card" style="margin:12px 16px 0">
+    <div style="font-size:.75rem;font-weight:700;opacity:.4;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">🏆 Top 10 Reyting</div>
+    <div id="ws-reyting"><div style="text-align:center;font-size:.85rem;padding:12px;opacity:.4">Yuklanmoqda...</div></div>
   </div>
 </div>
 
@@ -760,7 +805,7 @@ var sTogri='';
 
 // GO - sahifa almashtirish
 function go(id,nav){
-  var all=['p1','p2','p3','p3b','p3c','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e','p9f','p9g','p-elon','p-games','p-game','p-memory'];
+  var all=['p1','p2','p3','p3b','p3c','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e','p9f','p9g','p-elon','p-games','p-game','p-memory','p-sort'];
   all.forEach(function(x){var e=document.getElementById(x);if(e)e.style.display='none';});
   var el=document.getElementById(id);
   if(el)el.style.display='block';
@@ -774,7 +819,7 @@ function go(id,nav){
     for(var i=0;i<6;i++){var n=document.getElementById('n'+i);if(n)n.className='nitem';}
     if(ne)ne.className='nitem on';
     var nu=document.getElementById('n-ustoz');if(nu)nu.className='nitem';
-  }else if(id==='p-games'||id==='p-game'||id==='p-memory'){
+  }else if(id==='p-games'||id==='p-game'||id==='p-memory'||id==='p-sort'){
     for(var i=0;i<6;i++){var n=document.getElementById('n'+i);if(n)n.className='nitem';}
     if(ne)ne.className='nitem';
     var ng=document.getElementById('n-game');if(ng)ng.className='nitem on';
@@ -786,6 +831,7 @@ function go(id,nav){
   if(id==='p9')uTab(1);
   if(id==='p-elon')elonLoad();
   if(id==='p-memory')memReytingLoad();
+  if(id==='p-sort')wsReytingLoad();
 }
 
 // KIRISH
@@ -1998,6 +2044,159 @@ async function memReytingLoad(){
         +'<div style="flex:1;font-size:.88rem;font-weight:'+(mine?700:500)+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+s.name+'</div>'
         +'<div style="font-size:.7rem;opacity:.4;background:rgba(167,139,250,.15);border-radius:6px;padding:2px 6px;margin-right:4px">'+s.diff+'</div>'
         +'<div style="font-weight:700;color:#a78bfa;font-size:.9rem;white-space:nowrap">'+s.score+'</div>'
+        +'</div>';
+    });
+    el.innerHTML=html;
+  }catch(e){
+    el.innerHTML='<div style="text-align:center;font-size:.8rem;padding:10px;color:#ff6b6b">Xato: '+e.message+'</div>';
+  }
+}
+// ============================================================
+// PROBIRKALAR (WATER SORT)
+// ============================================================
+var WS_COLORS=['#ef4444','#3b82f6','#22c55e','#f59e0b','#a855f7','#06b6d4','#f97316','#ec4899','#84cc16','#14b8a6'];
+var WSDIFFS={easy:{colors:4,empty:2},medium:{colors:7,empty:2},hard:{colors:10,empty:2}};
+var wsDiff='easy',wsTubes=[],wsSelected=-1,wsMoves=0,wsRunning=false,wsHistory=[];
+
+function wsStart(diff){
+  if(diff)wsDiff=diff;
+  var d=WSDIFFS[wsDiff];
+  wsMoves=0;wsSelected=-1;wsRunning=true;wsHistory=[];
+  // Har rang 4 ta, aralash
+  var pool=[];
+  for(var c=0;c<d.colors;c++) for(var i=0;i<4;i++) pool.push(c);
+  for(var i=pool.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=pool[i];pool[i]=pool[j];pool[j]=t;}
+  wsTubes=[];
+  for(var t=0;t<d.colors;t++) wsTubes.push(pool.slice(t*4,t*4+4));
+  for(var i=0;i<d.empty;i++) wsTubes.push([]);
+  // Diff tugmalar
+  Object.keys(WSDIFFS).forEach(function(k){
+    var b=document.getElementById('ws-diff-'+k);if(!b)return;
+    if(k===wsDiff){b.style.background='#ef4444';b.style.color='#fff';}
+    else{b.style.background='rgba(255,255,255,.1)';b.style.color='';}
+  });
+  document.getElementById('ws-win').style.display='none';
+  document.getElementById('ws-moves').textContent=0;
+  wsRender();
+}
+
+function wsTopColor(tube){for(var i=tube.length-1;i>=0;i--)return tube[i];return null;}
+function wsTopCount(tube){
+  if(!tube.length)return 0;
+  var top=tube[tube.length-1],n=0;
+  for(var i=tube.length-1;i>=0;i--){if(tube[i]===top)n++;else break;}
+  return n;
+}
+function wsCanPour(fi,ti){
+  if(fi===ti||!wsTubes[fi].length||wsTubes[ti].length>=4)return false;
+  var ft=wsTubes[fi][wsTubes[fi].length-1];
+  if(!wsTubes[ti].length)return true;
+  return ft===wsTubes[ti][wsTubes[ti].length-1];
+}
+function wsPour(fi,ti){
+  if(!wsCanPour(fi,ti))return false;
+  wsHistory.push(JSON.parse(JSON.stringify(wsTubes)));
+  var top=wsTubes[fi][wsTubes[fi].length-1];
+  var cnt=wsTopCount(wsTubes[fi]);
+  var space=4-wsTubes[ti].length;
+  var amt=Math.min(cnt,space);
+  for(var i=0;i<amt;i++) wsTubes[ti].push(wsTubes[fi].pop());
+  wsMoves++;
+  document.getElementById('ws-moves').textContent=wsMoves;
+  return true;
+}
+function wsUndo(){
+  if(!wsHistory.length)return;
+  wsTubes=wsHistory.pop();
+  wsMoves=Math.max(0,wsMoves-1);
+  wsSelected=-1;
+  document.getElementById('ws-moves').textContent=wsMoves;
+  wsRender();
+}
+function wsSorted(tube){return tube.length===0||(tube.length===4&&tube.every(function(c){return c===tube[0];}));}
+function wsCheckWin(){return wsTubes.every(wsSorted);}
+
+function wsTubeClick(idx){
+  if(!wsRunning)return;
+  if(wsSelected===-1){
+    if(!wsTubes[idx].length)return;
+    wsSelected=idx;wsRender();return;
+  }
+  if(wsSelected===idx){wsSelected=-1;wsRender();return;}
+  if(wsCanPour(wsSelected,idx)){
+    wsPour(wsSelected,idx);wsSelected=-1;wsRender();
+    if(wsCheckWin()){wsRunning=false;setTimeout(wsWin,350);}
+  }else{
+    wsSelected=idx;wsRender();
+  }
+}
+
+function wsRender(){
+  var g=document.getElementById('ws-grid');if(!g)return;
+  var n=wsTubes.length,tw=48,ch=38,br=24,gap=8;
+  var perRow=Math.ceil(n/2);
+  var html='';
+  for(var row=0;row<2;row++){
+    var s=row*perRow,e=Math.min(s+perRow,n);
+    if(s>=n)break;
+    html+='<div style="display:flex;gap:'+gap+'px;justify-content:center;padding:4px 0">';
+    for(var i=s;i<e;i++){
+      var tube=wsTubes[i],sel=i===wsSelected;
+      var ty=sel?'-10px':'0px';
+      var wallColor=sel?'rgba(255,255,255,.85)':'rgba(255,255,255,.22)';
+      var shadow=sel?'box-shadow:0 0 14px rgba(255,255,255,.3);':'';
+      html+='<div onclick="wsTubeClick('+i+')" style="display:flex;flex-direction:column;align-items:center;cursor:pointer;transform:translateY('+ty+');transition:transform .13s">';
+      // Probirka tanasi
+      html+='<div style="width:'+tw+'px;height:'+(ch*4)+'px;border:2.5px solid '+wallColor+';border-top:none;border-radius:0 0 '+br+'px '+br+'px;overflow:hidden;background:rgba(0,0,0,.15);box-sizing:border-box;display:flex;flex-direction:column;'+shadow+'">';
+      var empty=4-tube.length;
+      for(var ev=0;ev<empty;ev++) html+='<div style="flex:1"></div>';
+      for(var ci=tube.length-1;ci>=0;ci--){
+        html+='<div style="flex:1;background:'+WS_COLORS[tube[ci]]+'"></div>';
+      }
+      html+='</div>';
+      // Probirka og'zi (rim)
+      html+='<div style="width:'+(tw+4)+'px;height:5px;background:'+wallColor+';border-radius:3px 3px 0 0;margin-bottom:1px;order:-1"></div>';
+      html+='</div>';
+    }
+    html+='</div>';
+  }
+  g.innerHTML=html;
+}
+
+function wsWin(){
+  document.getElementById('ws-win-moves').textContent=wsMoves;
+  document.getElementById('ws-win').style.display='flex';
+  wsSkorSaqla(wsMoves);
+}
+
+async function wsSkorSaqla(moves){
+  if(!CU.id)return;
+  try{
+    await fetch(API+'/sort/natija',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({user_id:CU.id,name:CU.name||"Noma'lum",moves:moves,diff:wsDiff})});
+    wsReytingLoad();
+  }catch(e){}
+}
+
+async function wsReytingLoad(){
+  var el=document.getElementById('ws-reyting');if(!el)return;
+  el.innerHTML='<div style="text-align:center;font-size:.8rem;padding:10px;opacity:.4">Yuklanmoqda...</div>';
+  try{
+    var r=await fetch(API+'/sort/reyting?diff='+encodeURIComponent(wsDiff));
+    if(!r.ok)throw new Error('server: '+r.status);
+    var d=await r.json();
+    var list=d.reyting||[];
+    if(!list.length){el.innerHTML='<div style="text-align:center;font-size:.85rem;padding:12px;opacity:.4">Hali o\'yin o\'ynalmagan</div>';return;}
+    var html='';
+    list.forEach(function(s,i){
+      var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
+      var mine=CU.id&&s.user_id==CU.id;
+      var bg=mine?'background:rgba(239,68,68,.1);border-radius:8px;':'';
+      html+='<div style="display:flex;align-items:center;gap:8px;padding:8px 6px;border-bottom:1px solid rgba(128,128,128,.15);'+bg+'">'
+        +'<div style="width:26px;text-align:center;font-size:.9rem">'+medal+'</div>'
+        +'<div style="flex:1;font-size:.88rem;font-weight:'+(mine?700:500)+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+s.name+'</div>'
+        +'<div style="font-size:.7rem;opacity:.4;background:rgba(239,68,68,.15);border-radius:6px;padding:2px 6px;margin-right:4px">'+s.diff+'</div>'
+        +'<div style="font-weight:700;color:#ef4444;font-size:.9rem;white-space:nowrap">'+s.moves+' yurish</div>'
         +'</div>';
     });
     el.innerHTML=html;
