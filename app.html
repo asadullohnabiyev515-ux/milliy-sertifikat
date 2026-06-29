@@ -2637,19 +2637,19 @@ async function pgReytingLoad(){
     var rg=await fetch(API+'/game/reyting'); var dg=await rg.json();
     var el=document.getElementById('pg-g-reyting');
     if(el){var list=(dg.reyting||[]).slice(0,5);
-      el.innerHTML=list.length?list.map(function(r,i){return '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>'+(i+1)+'. '+r.ism+'</span><span style="color:#00d4aa;font-weight:700">'+r.ball+'</span></div>';}).join(''):'<span style="opacity:.4">Hozircha yo\'q</span>';}
+      el.innerHTML=list.length?list.map(function(r,i){return '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>'+(i+1)+'. '+r.name+'</span><span style="color:#00d4aa;font-weight:700">'+r.score+'</span></div>';}).join(''):'<span style="opacity:.4">Hozircha yo\'q</span>';}
   }catch(e){}
   try{
     var rm=await fetch(API+'/memory/reyting?diff=4x4'); var dm=await rm.json();
     var el=document.getElementById('pg-m-reyting');
-    if(el){var list=(dm.reyting||[]).slice(0,5);
-      el.innerHTML=list.length?list.map(function(r,i){return '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>'+(i+1)+'. '+r.ism+'</span><span style="color:#a78bfa;font-weight:700">'+r.ball+'</span></div>';}).join(''):'<span style="opacity:.4">Hozircha yo\'q</span>';}
+    if(el){var list=(Array.isArray(dm)?dm:dm.reyting||[]).slice(0,5);
+      el.innerHTML=list.length?list.map(function(r,i){return '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>'+(i+1)+'. '+r.name+'</span><span style="color:#a78bfa;font-weight:700">'+r.score+'</span></div>';}).join(''):'<span style="opacity:.4">Hozircha yo\'q</span>';}
   }catch(e){}
   try{
     var rs=await fetch(API+'/sort/reyting'); var ds=await rs.json();
     var el=document.getElementById('pg-s-reyting');
     if(el){var list=(ds.reyting||[]).slice(0,5);
-      el.innerHTML=list.length?list.map(function(r,i){return '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>'+(i+1)+'. '+r.ism+'</span><span style="color:#ef4444;font-weight:700">'+r.daraja+'</span></div>';}).join(''):'<span style="opacity:.4">Hozircha yo\'q</span>';}
+      el.innerHTML=list.length?list.map(function(r,i){return '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>'+(i+1)+'. '+r.name+'</span><span style="color:#ef4444;font-weight:700">'+r.max_level+'-level</span></div>';}).join(''):'<span style="opacity:.4">Hozircha yo\'q</span>';}
   }catch(e){}
 }
 </script>
