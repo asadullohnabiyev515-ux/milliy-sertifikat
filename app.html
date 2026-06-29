@@ -647,8 +647,8 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
         <div style="font-size:2.6rem">🔤</div>
         <div style="flex:1">
           <div style="font-size:1.1rem;font-weight:800">Nom va Formula</div>
-          <div style="font-size:.75rem;opacity:.5;margin-top:3px">Moddaning nomi va formulasini biling</div>
-          <div style="font-size:.7rem;color:#a855f7;margin-top:4px;font-weight:600">H₂O → Suv → ... → 85-daraja</div>
+          <div style="font-size:.75rem;opacity:.5;margin-top:3px">20 sinf: oksidlar, tuzlar, organika...</div>
+          <div style="font-size:.7rem;color:#a855f7;margin-top:4px;font-weight:600">Bir xil sinfdan chalg'ituvchi variantlar</div>
         </div>
       </div>
       <div style="padding:0 18px 6px">
@@ -656,7 +656,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
         <div id="pg-nf-best" style="font-size:.85rem;color:#a855f7;font-weight:700">—</div>
       </div>
       <div style="padding:10px 18px 18px">
-        <button onclick="go('p-modd',-1);mdStart()" style="width:100%;padding:11px;background:linear-gradient(135deg,#a855f7,#7c3aed);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
+        <button onclick="go('p-modd',-1)" style="width:100%;padding:11px;background:linear-gradient(135deg,#a855f7,#7c3aed);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
       </div>
     </div>
 
@@ -815,63 +815,128 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
 <!-- NOM VA FORMULA O'YINI -->
 <div id="p-modd" class="page" style="padding-bottom:80px;user-select:none">
   <div class="top">
-    <button onclick="go('p-games',-1)" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
-    <div class="tlogo">🔤 Nom va Formula</div>
+    <button onclick="mdBackBtn()" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
+    <div class="tlogo" id="md-title">🔤 Nom va Formula</div>
     <div id="md-lvl-top" style="font-size:.8rem;color:rgba(255,255,255,.5);font-weight:700;min-width:56px;text-align:right">—</div>
   </div>
-  <!-- Start screen -->
-  <div id="md-start" style="padding:20px 20px 0;text-align:center">
-    <div style="font-size:3rem;margin-bottom:10px">🔤</div>
-    <div style="font-size:1.1rem;font-weight:800;margin-bottom:6px">Nom va Formula</div>
-    <div style="font-size:.78rem;color:rgba(255,255,255,.45);margin-bottom:4px;line-height:1.6">Formulani ko'rib — nomini toping<br>yoki nomini ko'rib — formulasini toping.<br>Osondan qiyingacha 85 daraja!</div>
-    <div id="md-best-show" style="font-size:.8rem;color:#a855f7;margin:10px 0 18px;font-weight:700"></div>
-    <!-- Preview: easy levels -->
-    <div style="background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.25);border-radius:14px;padding:12px;margin-bottom:18px;text-align:left">
-      <div style="font-size:.62rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Darajalar qiyinligi</div>
-      <div style="display:flex;flex-direction:column;gap:5px;font-size:.78rem">
-        <div>🟢 1–20: H₂O, NaCl, Fe, HCl …</div>
-        <div>🟡 21–50: tuzlar, gidroksidlar …</div>
-        <div>🟠 51–70: murakkab birikmalar …</div>
-        <div>🔴 71–85: organika, CH₄ → C₆H₁₂O₆</div>
-      </div>
+  <!-- Sinf tanlash -->
+  <div id="md-pick" style="padding:6px 12px 20px;overflow-y:auto">
+    <div style="font-size:.58rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1.5px;margin:8px 0 8px">Anorganik moddalar</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+      <button onclick="mdStartClass('oksid')" style="background:rgba(239,68,68,.1);border:1.5px solid rgba(239,68,68,.3);border-radius:14px;padding:10px;text-align:center;cursor:pointer;color:var(--c-fg)">
+        <div style="font-size:1.5rem">🔥</div><div style="font-size:.82rem;font-weight:700;color:#ef4444;margin-top:2px">Oksidlar</div>
+        <div id="md-pk-oksid" style="font-size:.6rem;color:rgba(255,255,255,.35);margin-top:2px"></div>
+      </button>
+      <button onclick="mdStartClass('asos')" style="background:rgba(59,130,246,.1);border:1.5px solid rgba(59,130,246,.3);border-radius:14px;padding:10px;text-align:center;cursor:pointer;color:var(--c-fg)">
+        <div style="font-size:1.5rem">🧪</div><div style="font-size:.82rem;font-weight:700;color:#3b82f6;margin-top:2px">Asoslar</div>
+        <div id="md-pk-asos" style="font-size:.6rem;color:rgba(255,255,255,.35);margin-top:2px"></div>
+      </button>
+      <button onclick="mdStartClass('kislota')" style="background:rgba(245,158,11,.1);border:1.5px solid rgba(245,158,11,.3);border-radius:14px;padding:10px;text-align:center;cursor:pointer;color:var(--c-fg)">
+        <div style="font-size:1.5rem">⚗️</div><div style="font-size:.82rem;font-weight:700;color:#f59e0b;margin-top:2px">Kislotalar</div>
+        <div id="md-pk-kislota" style="font-size:.6rem;color:rgba(255,255,255,.35);margin-top:2px"></div>
+      </button>
+      <button onclick="mdStartClass('tuz')" style="background:rgba(0,212,170,.1);border:1.5px solid rgba(0,212,170,.3);border-radius:14px;padding:10px;text-align:center;cursor:pointer;color:var(--c-fg)">
+        <div style="font-size:1.5rem">🧂</div><div style="font-size:.82rem;font-weight:700;color:#00d4aa;margin-top:2px">Tuzlar</div>
+        <div id="md-pk-tuz" style="font-size:.6rem;color:rgba(255,255,255,.35);margin-top:2px"></div>
+      </button>
     </div>
-    <button onclick="mdStart()" style="background:linear-gradient(135deg,#a855f7,#7c3aed);color:#fff;border:none;border-radius:14px;padding:13px 36px;font-weight:800;font-size:1rem;cursor:pointer">▶ Boshlash</button>
+    <div style="font-size:.58rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px">Organik moddalar</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      <button onclick="mdStartClass('alkan')" style="background:rgba(100,116,139,.1);border:1.5px solid rgba(100,116,139,.3);border-radius:12px;padding:8px;text-align:center;cursor:pointer;color:var(--c-fg)">
+        <div style="font-size:1.1rem">⛽</div><div style="font-size:.75rem;font-weight:700;color:#94a3b8;margin-top:2px">Alkanlar</div>
+        <div id="md-pk-alkan" style="font-size:.58rem;color:rgba(255,255,255,.3)"></div>
+      </button>
+      <button onclick="mdStartClass('sikloalkan')" style="background:rgba(71,85,105,.1);border:1.5px solid rgba(71,85,105,.3);border-radius:12px;padding:8px;text-align:center;cursor:pointer;color:var(--c-fg)">
+        <div style="font-size:1.1rem">🔄</div><div style="font-size:.75rem;font-weight:700;color:#64748b;margin-top:2px">Sikloalkanlar</div>
+        <div id="md-pk-sikloalkan" style="font-size:.58rem;color:rgba(255,255,255,.3)"></div>
+      </button>
+      <button onclick="mdStartClass('alken')" style="background:rgba(14,165,233,.1);border:1.5px solid rgba(14,165,233,.3);border-radius:12px;padding:8px;text-align:center;cursor:pointer;color:var(--c-fg)">
+        <div style="font-size:1.1rem">🌊</div><div style="font-size:.75rem;font-weight:700;color:#0ea5e9;margin-top:2px">Alkenlar</div>
+        <div id="md-pk-alken" style="font-size:.58rem;color:rgba(255,255,255,.3)"></div>
+      </button>
+      <button onclick="mdStartClass('alkin')" style="background:rgba(139,92,246,.1);border:1.5px solid rgba(139,92,246,.3);border-radius:12px;padding:8px;text-align:center;cursor:pointer;color:var(--c-fg)">
+        <div style="font-size:1.1rem">⚡</div><div style="font-size:.75rem;font-weight:700;color:#8b5cf6;margin-top:2px">Alkinlar</div>
+        <div id="md-pk-alkin" style="font-size:.58rem;color:rgba(255,255,255,.3)"></div>
+      </button>
+      <button onclick="mdStartClass('alkadiyen')" style="background:rgba(16,185,129,.1);border:1.5px solid rgba(16,185,129,.3);border-radius:12px;padding:8px;text-align:center;cursor:pointer;color:var(--c-fg)">
+        <div style="font-size:1.1rem">⚛️</div><div style="font-size:.75rem;font-weight:700;color:#10b981;margin-top:2px">Alkadiенlar</div>
+        <div id="md-pk-alkadiyen" style="font-size:.58rem;color:rgba(255,255,255,.3)"></div>
+      </button>
+      <button onclick="mdStartClass('aren')" style="background:rgba(249,115,22,.1);border:1.5px solid rgba(249,115,22,.3);border-radius:12px;padding:8px;text-align:center;cursor:pointer;color:var(--c-fg)">
+        <div style="font-size:1.1rem">🔶</div><div style="font-size:.75rem;font-weight:700;color:#f97316;margin-top:2px">Arenlar</div>
+        <div id="md-pk-aren" style="font-size:.58rem;color:rgba(255,255,255,.3)"></div>
+      </button>
+      <button onclick="mdStartClass('spirt')" style="background:rgba(217,119,6,.1);border:1.5px solid rgba(217,119,6,.3);border-radius:12px;padding:8px;text-align:center;cursor:pointer;color:var(--c-fg)">
+        <div style="font-size:1.1rem">🥃</div><div style="font-size:.75rem;font-weight:700;color:#d97706;margin-top:2px">Spirtlar</div>
+        <div id="md-pk-spirt" style="font-size:.58rem;color:rgba(255,255,255,.3)"></div>
+      </button>
+      <button onclick="mdStartClass('fenol')" style="background:rgba(132,204,22,.1);border:1.5px solid rgba(132,204,22,.3);border-radius:12px;padding:8px;text-align:center;cursor:pointer;color:var(--c-fg)">
+        <div style="font-size:1.1rem">🌿</div><div style="font-size:.75rem;font-weight:700;color:#84cc16;margin-top:2px">Fenollar</div>
+        <div id="md-pk-fenol" style="font-size:.58rem;color:rgba(255,255,255,.3)"></div>
+      </button>
+      <button onclick="mdStartClass('aldegid')" style="background:rgba(236,72,153,.1);border:1.5px solid rgba(236,72,153,.3);border-radius:12px;padding:8px;text-align:center;cursor:pointer;color:var(--c-fg)">
+        <div style="font-size:1.1rem">🔬</div><div style="font-size:.75rem;font-weight:700;color:#ec4899;margin-top:2px">Aldegidlar</div>
+        <div id="md-pk-aldegid" style="font-size:.58rem;color:rgba(255,255,255,.3)"></div>
+      </button>
+      <button onclick="mdStartClass('keton')" style="background:rgba(167,139,250,.1);border:1.5px solid rgba(167,139,250,.3);border-radius:12px;padding:8px;text-align:center;cursor:pointer;color:var(--c-fg)">
+        <div style="font-size:1.1rem">💊</div><div style="font-size:.75rem;font-weight:700;color:#a78bfa;margin-top:2px">Ketonlar</div>
+        <div id="md-pk-keton" style="font-size:.58rem;color:rgba(255,255,255,.3)"></div>
+      </button>
+      <button onclick="mdStartClass('kislota_org')" style="background:rgba(234,179,8,.1);border:1.5px solid rgba(234,179,8,.3);border-radius:12px;padding:8px;text-align:center;cursor:pointer;color:var(--c-fg)">
+        <div style="font-size:1.1rem">🍋</div><div style="font-size:.75rem;font-weight:700;color:#eab308;margin-top:2px">Karbon kislotalar</div>
+        <div id="md-pk-kislota_org" style="font-size:.58rem;color:rgba(255,255,255,.3)"></div>
+      </button>
+      <button onclick="mdStartClass('efir_odd')" style="background:rgba(99,102,241,.1);border:1.5px solid rgba(99,102,241,.3);border-radius:12px;padding:8px;text-align:center;cursor:pointer;color:var(--c-fg)">
+        <div style="font-size:1.1rem">💨</div><div style="font-size:.75rem;font-weight:700;color:#6366f1;margin-top:2px">Oddiy efirlar</div>
+        <div id="md-pk-efir_odd" style="font-size:.58rem;color:rgba(255,255,255,.3)"></div>
+      </button>
+      <button onclick="mdStartClass('efir_mur')" style="background:rgba(6,182,212,.1);border:1.5px solid rgba(6,182,212,.3);border-radius:12px;padding:8px;text-align:center;cursor:pointer;color:var(--c-fg)">
+        <div style="font-size:1.1rem">🍎</div><div style="font-size:.75rem;font-weight:700;color:#06b6d4;margin-top:2px">Murakkab efirlar</div>
+        <div id="md-pk-efir_mur" style="font-size:.58rem;color:rgba(255,255,255,.3)"></div>
+      </button>
+      <button onclick="mdStartClass('amin')" style="background:rgba(124,58,237,.1);border:1.5px solid rgba(124,58,237,.3);border-radius:12px;padding:8px;text-align:center;cursor:pointer;color:var(--c-fg)">
+        <div style="font-size:1.1rem">🧬</div><div style="font-size:.75rem;font-weight:700;color:#7c3aed;margin-top:2px">Aminlar</div>
+        <div id="md-pk-amin" style="font-size:.58rem;color:rgba(255,255,255,.3)"></div>
+      </button>
+      <button onclick="mdStartClass('nitro')" style="background:rgba(220,38,38,.1);border:1.5px solid rgba(220,38,38,.3);border-radius:12px;padding:8px;text-align:center;cursor:pointer;color:var(--c-fg)">
+        <div style="font-size:1.1rem">💥</div><div style="font-size:.75rem;font-weight:700;color:#dc2626;margin-top:2px">Nitro birikmalar</div>
+        <div id="md-pk-nitro" style="font-size:.58rem;color:rgba(255,255,255,.3)"></div>
+      </button>
+      <button onclick="mdStartClass('uglevod')" style="background:rgba(245,158,11,.08);border:1.5px solid rgba(245,158,11,.25);border-radius:12px;padding:8px;text-align:center;cursor:pointer;color:var(--c-fg)">
+        <div style="font-size:1.1rem">🍬</div><div style="font-size:.75rem;font-weight:700;color:#fbbf24;margin-top:2px">Uglevodlar</div>
+        <div id="md-pk-uglevod" style="font-size:.58rem;color:rgba(255,255,255,.3)"></div>
+      </button>
+    </div>
   </div>
-  <!-- Game board -->
+  <!-- O'yin taxtasi -->
   <div id="md-board" style="display:none">
-    <div style="display:flex;gap:8px;padding:4px 14px 6px">
-      <div style="flex:1;background:rgba(255,255,255,.06);border-radius:12px;padding:7px;text-align:center">
-        <div style="font-size:.58rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px">Daraja</div>
-        <div id="md-lvl" style="font-size:1.3rem;font-weight:800;color:#a855f7">1</div>
+    <div style="display:flex;gap:6px;padding:4px 12px 4px;align-items:center">
+      <div style="flex:1;background:rgba(255,255,255,.06);border-radius:10px;padding:6px;text-align:center">
+        <div style="font-size:.54rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.8px">Daraja</div>
+        <div id="md-lvl" style="font-size:1.2rem;font-weight:800;color:#a855f7">1</div>
       </div>
-      <div style="flex:1;background:rgba(255,255,255,.06);border-radius:12px;padding:7px;text-align:center">
-        <div style="font-size:.58rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px">Rekord</div>
-        <div id="md-best" style="font-size:1.3rem;font-weight:800;color:gold">0</div>
+      <div style="flex:1;background:rgba(255,255,255,.06);border-radius:10px;padding:6px;text-align:center">
+        <div style="font-size:.54rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.8px">Rekord</div>
+        <div id="md-best" style="font-size:1.2rem;font-weight:800;color:gold">0</div>
       </div>
-      <div style="flex:1;background:rgba(255,255,255,.06);border-radius:12px;padding:7px;text-align:center">
-        <div style="font-size:.58rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px">Jami</div>
-        <div style="font-size:1rem;font-weight:800;color:rgba(255,255,255,.4)">85</div>
-      </div>
+      <div id="md-cls-badge" style="border-radius:10px;padding:5px 10px;font-size:.75rem;font-weight:700;white-space:nowrap;border:1px solid rgba(168,85,247,.4);background:rgba(168,85,247,.15);color:#a855f7">Oksidlar</div>
     </div>
-    <div style="margin:0 14px 6px;background:rgba(255,255,255,.1);border-radius:6px;height:4px">
-      <div id="md-bar" style="background:linear-gradient(90deg,#a855f7,#f59e0b);border-radius:6px;height:4px;width:0%;transition:width .4s"></div>
+    <div style="margin:4px 12px 3px;background:rgba(255,255,255,.1);border-radius:4px;height:3px">
+      <div id="md-bar" style="background:#a855f7;border-radius:4px;height:3px;width:0%;transition:width .4s"></div>
     </div>
-    <!-- Question type label -->
-    <div id="md-hint" style="font-size:.68rem;color:rgba(255,255,255,.3);text-align:center;margin:0 14px 6px;letter-spacing:.5px"></div>
-    <!-- Question display -->
-    <div id="md-q" style="margin:0 14px 12px;background:rgba(168,85,247,.08);border:1.5px solid rgba(168,85,247,.3);border-radius:18px;padding:18px 14px;text-align:center;font-size:1.3rem;font-weight:800;min-height:68px;display:flex;align-items:center;justify-content:center;line-height:1.5;word-break:break-all;letter-spacing:.5px"></div>
-    <!-- Options -->
-    <div id="md-opts" style="display:flex;flex-direction:column;gap:8px;padding:0 14px"></div>
+    <div id="md-hint" style="font-size:.64rem;color:rgba(255,255,255,.3);text-align:center;margin:4px 12px 3px;letter-spacing:.5px"></div>
+    <div id="md-q" style="margin:3px 12px 9px;background:rgba(168,85,247,.08);border:1.5px solid rgba(168,85,247,.3);border-radius:16px;padding:15px 12px;text-align:center;font-size:1.2rem;font-weight:800;min-height:62px;display:flex;align-items:center;justify-content:center;line-height:1.5;word-break:break-all"></div>
+    <div id="md-opts" style="display:flex;flex-direction:column;gap:7px;padding:0 12px"></div>
   </div>
-  <!-- Game over -->
-  <div id="md-over" style="display:none;margin:30px 20px;text-align:center">
-    <div id="md-over-ico" style="font-size:3rem;margin-bottom:12px">😔</div>
-    <div id="md-over-txt" style="font-size:1.15rem;font-weight:800;margin-bottom:6px"></div>
-    <div id="md-over-sub" style="font-size:.82rem;color:rgba(255,255,255,.5);margin-bottom:6px;line-height:1.6"></div>
-    <div id="md-over-ans" style="font-size:.78rem;color:rgba(168,85,247,.8);margin-bottom:20px;padding:8px;background:rgba(168,85,247,.1);border-radius:10px"></div>
-    <div style="display:flex;gap:10px;justify-content:center">
-      <button onclick="mdStart()" style="background:linear-gradient(135deg,#a855f7,#7c3aed);color:#fff;border:none;border-radius:12px;padding:10px 20px;font-weight:700;font-size:.9rem;cursor:pointer">🔄 Qayta</button>
-      <button onclick="go('p-games',-1)" style="background:rgba(255,255,255,.1);border:none;border-radius:12px;padding:10px 18px;color:var(--c-fg);font-size:.85rem;cursor:pointer;font-weight:600">← O'yinlar</button>
+  <!-- O'yin tugadi -->
+  <div id="md-over" style="display:none;margin:26px 18px;text-align:center">
+    <div id="md-over-ico" style="font-size:2.8rem;margin-bottom:10px">😔</div>
+    <div id="md-over-txt" style="font-size:1.1rem;font-weight:800;margin-bottom:4px"></div>
+    <div id="md-over-sub" style="font-size:.8rem;color:rgba(255,255,255,.5);margin-bottom:6px;line-height:1.6"></div>
+    <div id="md-over-ans" style="font-size:.77rem;color:rgba(168,85,247,.85);margin-bottom:16px;padding:9px 10px;background:rgba(168,85,247,.1);border-radius:10px;line-height:1.5;text-align:left"></div>
+    <div style="display:flex;gap:8px;justify-content:center">
+      <button onclick="mdStartClass(mdCurClass)" style="background:linear-gradient(135deg,#a855f7,#7c3aed);color:#fff;border:none;border-radius:12px;padding:10px 18px;font-weight:700;font-size:.88rem;cursor:pointer">🔄 Qayta</button>
+      <button onclick="mdShowPick()" style="background:rgba(255,255,255,.1);border:none;border-radius:12px;padding:10px 16px;color:var(--c-fg);font-size:.84rem;cursor:pointer;font-weight:600">← Sinflar</button>
     </div>
   </div>
 </div>
@@ -1184,13 +1249,7 @@ function go(id,nav){
   if(id==='p9')uTab(1);
   if(id==='p-elon')elonLoad();
   if(id==='p-games')pgReytingLoad();
-  if(id==='p-modd'){
-    var bs=document.getElementById('md-best-show');
-    if(bs)bs.textContent=mdBest?'Rekord: '+mdBest+'-daraja':'';
-    document.getElementById('md-start').style.display='';
-    document.getElementById('md-board').style.display='none';
-    document.getElementById('md-over').style.display='none';
-  }
+  if(id==='p-modd')mdShowPick();
 }
 
 // KIRISH
@@ -3305,157 +3364,409 @@ async function rzSkorSaqla(){
 }
 
 // === NOM VA FORMULA O'YINI ===
-var MD=[
-  // --- 1-20: Eng oson: elementlar va oddiy birikmalar ---
-  {f:'H₂O',n:'Suv'},
-  {f:'O₂',n:'Kislorod'},
-  {f:'H₂',n:'Vodorod'},
-  {f:'N₂',n:'Azot'},
-  {f:'CO₂',n:'Karbonat angidrid'},
-  {f:'NaCl',n:'Osh tuzi'},
-  {f:'Fe',n:'Temir'},
-  {f:'Cu',n:'Mis'},
-  {f:'Au',n:'Oltin'},
-  {f:'Ag',n:'Kumush'},
-  {f:'Na',n:'Natriy'},
-  {f:'Ca',n:'Kalsiy'},
-  {f:'Al',n:'Alyuminiy'},
-  {f:'Mg',n:'Magniy'},
-  {f:'Zn',n:'Rux'},
-  {f:'Cl₂',n:'Xlor'},
-  {f:'S',n:'Oltingugurt'},
-  {f:'P',n:'Fosfor'},
-  {f:'C',n:'Uglerod'},
-  {f:'K',n:'Kaliy'},
-  // --- 21-40: Kislotalar, asoslar, oddiy oksidlar ---
-  {f:'HCl',n:'Xlorid kislota'},
-  {f:'H₂SO₄',n:'Sulfat kislota'},
-  {f:'HNO₃',n:'Nitrat kislota'},
-  {f:'H₃PO₄',n:'Fosfor kislota'},
-  {f:'H₂S',n:'Vodorod sulfid'},
-  {f:'NaOH',n:'Natriy gidroksid'},
-  {f:'KOH',n:'Kaliy gidroksid'},
-  {f:'Ca(OH)₂',n:'Kalsiy gidroksid'},
-  {f:'Ba(OH)₂',n:'Bariy gidroksid'},
-  {f:'NH₃',n:'Ammiak'},
-  {f:'CaO',n:'Kalsiy oksid'},
-  {f:'Na₂O',n:'Natriy oksid'},
-  {f:'Fe₂O₃',n:'Temir(III) oksid'},
-  {f:'FeO',n:'Temir(II) oksid'},
-  {f:'CuO',n:'Mis(II) oksid'},
-  {f:'SO₂',n:'Oltingugurt(IV) oksid'},
-  {f:'SO₃',n:'Oltingugurt(VI) oksid'},
-  {f:'NO₂',n:'Azot(IV) oksid'},
-  {f:'P₂O₅',n:'Fosfor(V) oksid'},
-  {f:'Al₂O₃',n:'Alyuminiy oksid'},
-  // --- 41-55: Tuzlar ---
-  {f:'Na₂CO₃',n:'Natriy karbonat'},
-  {f:'NaHCO₃',n:'Natriy gidrokarbonat'},
-  {f:'CaCO₃',n:'Kalsiy karbonat'},
-  {f:'CuSO₄',n:'Mis(II) sulfat'},
-  {f:'FeSO₄',n:'Temir(II) sulfat'},
-  {f:'Fe₂(SO₄)₃',n:'Temir(III) sulfat'},
-  {f:'BaSO₄',n:'Bariy sulfat'},
-  {f:'AgCl',n:'Kumush xlorid'},
-  {f:'KMnO₄',n:'Kaliy permanganat'},
-  {f:'MnO₂',n:'Marganes(IV) oksid'},
-  {f:'NH₄Cl',n:'Ammoniy xlorid'},
-  {f:'KNO₃',n:'Kaliy nitrat'},
-  {f:'Na₂SO₄',n:'Natriy sulfat'},
-  {f:'CaSO₄',n:'Kalsiy sulfat'},
-  {f:'NH₄NO₃',n:'Ammoniy nitrat'},
-  // --- 56-65: Murakkab anorganik ---
-  {f:'H₂O₂',n:'Vodorod peroksid'},
-  {f:'HF',n:'Ftorid kislota'},
-  {f:'HBr',n:'Bromid kislota'},
-  {f:'H₂CO₃',n:'Karbon kislota'},
-  {f:'H₂SiO₃',n:'Kremniy kislota'},
-  {f:'Fe(OH)₂',n:'Temir(II) gidroksid'},
-  {f:'Fe(OH)₃',n:'Temir(III) gidroksid'},
-  {f:'Cu(OH)₂',n:'Mis(II) gidroksid'},
-  {f:'Al(OH)₃',n:'Alyuminiy gidroksid'},
-  {f:'NaAlO₂',n:'Natriy aluminat'},
-  {f:'Na₂ZnO₂',n:'Natriy zinkat'},
-  {f:'Na₂SiO₃',n:'Natriy silikat'},
-  {f:'AlCl₃',n:'Alyuminiy xlorid'},
-  {f:'FeCl₃',n:'Temir(III) xlorid'},
-  {f:'Al₂(SO₄)₃',n:'Alyuminiy sulfat'},
-  // --- 66-75: Organika (eng oddiy) ---
-  {f:'CH₄',n:'Metan'},
-  {f:'C₂H₆',n:'Etan'},
-  {f:'C₃H₈',n:'Propan'},
-  {f:'C₄H₁₀',n:'Butan'},
-  {f:'C₅H₁₂',n:'Pentan'},
-  {f:'C₂H₄',n:'Etilen'},
-  {f:'C₃H₆',n:'Propilen'},
-  {f:'C₂H₂',n:'Atsetilen'},
-  {f:'C₆H₆',n:'Benzol'},
-  {f:'C₇H₈',n:'Toluol'},
-  // --- 76-85: Organika (murakkab) ---
-  {f:'CH₃OH',n:'Metanol'},
-  {f:'C₂H₅OH',n:'Etanol'},
-  {f:'C₃H₇OH',n:'Propanol'},
-  {f:'C₃H₅(OH)₃',n:'Glitserin'},
-  {f:'HCOOH',n:'Chumoli kislota'},
-  {f:'CH₃COOH',n:'Sirka kislota'},
-  {f:'HCHO',n:'Formaldegid'},
-  {f:'CH₃CHO',n:'Atsetaldegid'},
-  {f:'C₆H₁₂O₆',n:'Glukoza'},
-  {f:'C₁₂H₂₂O₁₁',n:'Saxaroza'},
-];
-var mdLevel=0,mdBest=0,mdRunning=false,mdOptList=[],mdAns='',mdDir='name';
-try{mdBest=parseInt(localStorage.getItem('mdBest')||'0');}catch(e){}
+// NOM VA FORMULA: class-based dataset
+var MD_CLASS={
+  oksid:{title:'Oksidlar',ico:'🔥',col:'#ef4444',items:[
+    {f:'H₂O',n:'Suv',a:'Divodorod oksid · Vodorod(I) oksid'},
+    {f:'CO',n:'Uglerod(II) oksid',a:'Karbon monooksid · Is gazi'},
+    {f:'CO₂',n:'Uglerod(IV) oksid',a:'Karbonat angidrid · Karbon dioksid'},
+    {f:'SO₂',n:'Oltingugurt(IV) oksid',a:'Sulfuroz angidrid'},
+    {f:'SO₃',n:'Oltingugurt(VI) oksid',a:'Sulfat angidrid'},
+    {f:'NO',n:'Azot(II) oksid',a:'Azot monooksid'},
+    {f:'NO₂',n:'Azot(IV) oksid',a:"Qo'ng'ir gaz · Azot dioksid"},
+    {f:'N₂O',n:'Azot(I) oksid',a:'Kulgi gazi · Diazot monooksid'},
+    {f:'N₂O₃',n:'Azot(III) oksid',a:'Nitrit angidrid'},
+    {f:'N₂O₅',n:'Azot(V) oksid',a:'Nitrat angidrid · Diazot pentaoksid'},
+    {f:'P₂O₃',n:'Fosfor(III) oksid',a:'Difosfor trioksid'},
+    {f:'P₂O₅',n:'Fosfor(V) oksid',a:'Fosfor angidrid · Difosfor pentaoksid'},
+    {f:'CaO',n:'Kalsiy oksid',a:'Yanmagan ohak'},
+    {f:'Na₂O',n:'Natriy oksid',a:'Dinatriy oksid'},
+    {f:'K₂O',n:'Kaliy oksid',a:'Dikaliy oksid'},
+    {f:'BaO',n:'Bariy oksid',a:'Bariy monooksid'},
+    {f:'MgO',n:'Magniy oksid',a:'Magneziya · Periklaz'},
+    {f:'Al₂O₃',n:'Alyuminiy oksid',a:'Alumina · Korund'},
+    {f:'SiO₂',n:'Kremniy(IV) oksid',a:'Kvarts · Silika'},
+    {f:'FeO',n:'Temir(II) oksid',a:'Temir monooksid · Vüstit'},
+    {f:'Fe₂O₃',n:'Temir(III) oksid',a:'Gemat · Limonit'},
+    {f:'Fe₃O₄',n:'Temir(II,III) oksid',a:'Magnetit'},
+    {f:'CuO',n:'Mis(II) oksid',a:'Mis oksid · Tenorit'},
+    {f:'Cu₂O',n:'Mis(I) oksid',a:'Kuprit'},
+    {f:'ZnO',n:'Rux oksid',a:'Tsinkoksid · Sinkit'},
+    {f:'MnO',n:'Marganes(II) oksid',a:'Manganoite'},
+    {f:'MnO₂',n:'Marganes(IV) oksid',a:'Piroluzit'},
+    {f:'Mn₂O₇',n:'Marganes(VII) oksid',a:'Marganes geptaoksid'},
+    {f:'Cr₂O₃',n:'Xrom(III) oksid',a:'Eskolaite'},
+    {f:'CrO₃',n:'Xrom(VI) oksid',a:'Xrom angidrid'},
+    {f:'PbO',n:"Qo'rg'oshin(II) oksid",a:'Massikot · Litarj'},
+    {f:'PbO₂',n:"Qo'rg'oshin(IV) oksid",a:'Plattnerit'},
+    {f:'Pb₃O₄',n:"Qo'rg'oshin(II,IV) oksid",a:'Suriya · Minium'},
+    {f:'As₂O₃',n:'Mishyak(III) oksid',a:'Arsenious oksid'},
+  ]},
+  asos:{title:'Asoslar',ico:'🧪',col:'#3b82f6',items:[
+    {f:'NaOH',n:'Natriy gidroksid',a:"Kaustik soda · So'yuvchi natriy"},
+    {f:'KOH',n:'Kaliy gidroksid',a:'Kaustik kali'},
+    {f:'LiOH',n:'Litiy gidroksid',a:'Litiy monogidrat'},
+    {f:'Ca(OH)₂',n:'Kalsiy gidroksid',a:"So'ndirilgan ohak · Portlandit"},
+    {f:'Ba(OH)₂',n:'Bariy gidroksid',a:'Bariy digidroksid'},
+    {f:'Sr(OH)₂',n:'Stronsiy gidroksid',a:''},
+    {f:'Mg(OH)₂',n:'Magniy gidroksid',a:'Brucit · Magneziya sut'},
+    {f:'Fe(OH)₂',n:'Temir(II) gidroksid',a:'Amakinit'},
+    {f:'Fe(OH)₃',n:'Temir(III) gidroksid',a:'Ferrigidroksid'},
+    {f:'Cu(OH)₂',n:'Mis(II) gidroksid',a:''},
+    {f:'Al(OH)₃',n:'Alyuminiy gidroksid',a:'Gibbsit · Bayerit'},
+    {f:'Zn(OH)₂',n:'Rux gidroksid',a:''},
+    {f:'Cr(OH)₃',n:'Xrom(III) gidroksid',a:''},
+    {f:'Mn(OH)₂',n:'Marganes(II) gidroksid',a:''},
+    {f:'Pb(OH)₂',n:"Qo'rg'oshin(II) gidroksid",a:''},
+    {f:'NH₄OH',n:'Ammoniy gidroksid',a:'Ammiak suvi'},
+    {f:'Ni(OH)₂',n:'Nikel(II) gidroksid',a:''},
+    {f:'Bi(OH)₃',n:'Vismut(III) gidroksid',a:''},
+  ]},
+  kislota:{title:'Kislotalar',ico:'⚗️',col:'#f59e0b',items:[
+    {f:'HF',n:'Ftorid kislota',a:'Ftorovodorod kislota'},
+    {f:'HCl',n:'Xlorid kislota',a:"Tuz kislota · Muriatik kislota"},
+    {f:'HBr',n:'Bromid kislota',a:'Bromovodorod kislota'},
+    {f:'HI',n:'Yodid kislota',a:'Yodovodorod kislota'},
+    {f:'H₂S',n:'Vodorod sulfid kislota',a:'Gidrosulfid kislota'},
+    {f:'H₂SO₄',n:'Sulfat kislota',a:"Vitriol yog'i"},
+    {f:'H₂SO₃',n:'Sulfat(IV) kislota',a:'Sulfuroz kislota'},
+    {f:'H₂S₂O₇',n:'Disulfat kislota',a:'Oleum · Pirosulfat kislota'},
+    {f:'HNO₃',n:'Nitrat kislota',a:'Azotat kislota · Aqva fortis'},
+    {f:'HNO₂',n:'Nitrit kislota',a:'Azotli kislota'},
+    {f:'H₃PO₄',n:'Ortofosfat kislota',a:'Fosfor kislota'},
+    {f:'H₃PO₃',n:'Fosfit kislota',a:'Fosforli kislota'},
+    {f:'H₄P₂O₇',n:'Pirofosfat kislota',a:'Difosfor kislota'},
+    {f:'H₂CO₃',n:'Karbonat kislota',a:'Karbon kislota'},
+    {f:'H₂SiO₃',n:'Metasilisiy kislota',a:'Kremniy kislota'},
+    {f:'HMnO₄',n:'Marganes(VII) kislota',a:'Permanganat kislota'},
+    {f:'H₂CrO₄',n:'Xromat kislota',a:'Xrom(VI) kislota'},
+    {f:'H₂Cr₂O₇',n:'Dixromat kislota',a:'Bixromat kislota'},
+    {f:'HClO',n:'Gipoxlorit kislota',a:'Xlor(I) kislota'},
+    {f:'HClO₂',n:'Xlorit kislota',a:'Xlor(III) kislota'},
+    {f:'HClO₃',n:'Xlorat kislota',a:'Xlor(V) kislota'},
+    {f:'HClO₄',n:'Perxlorat kislota',a:'Xlor(VII) kislota'},
+    {f:'HCN',n:'Sianid kislota',a:"Prussiya kislota · Sinilna kislota"},
+    {f:'H₂O₂',n:'Vodorod peroksid',a:'Peroksid · Divodorod dioksid'},
+    {f:'H₃BO₃',n:'Bor kislota',a:'Ortobor kislota · Sassolin'},
+  ]},
+  tuz:{title:'Tuzlar',ico:'🧂',col:'#00d4aa',items:[
+    {f:'NaCl',n:'Natriy xlorid',a:'Osh tuzi · Halid'},
+    {f:'KCl',n:'Kaliy xlorid',a:'Silvin'},
+    {f:'CaCl₂',n:'Kalsiy xlorid',a:''},
+    {f:'BaCl₂',n:'Bariy xlorid',a:''},
+    {f:'MgCl₂',n:'Magniy xlorid',a:'Bishoffit (·6H₂O)'},
+    {f:'AlCl₃',n:'Alyuminiy xlorid',a:''},
+    {f:'FeCl₂',n:'Temir(II) xlorid',a:'Rokit'},
+    {f:'FeCl₃',n:'Temir(III) xlorid',a:'Moliit'},
+    {f:'CuCl₂',n:'Mis(II) xlorid',a:''},
+    {f:'ZnCl₂',n:'Rux xlorid',a:''},
+    {f:'AgCl',n:'Kumush xlorid',a:'Kerargiit'},
+    {f:'PbCl₂',n:"Qo'rg'oshin(II) xlorid",a:'Kotunit'},
+    {f:'NH₄Cl',n:'Ammoniy xlorid',a:'Nushodik · Sal ammoniac'},
+    {f:'Na₂SO₄',n:'Natriy sulfat',a:'Glauber tuzi (·10H₂O) · Mirablit'},
+    {f:'K₂SO₄',n:'Kaliy sulfat',a:'Arkanit'},
+    {f:'CaSO₄',n:'Kalsiy sulfat',a:'Anhidrit · Gips (·2H₂O)'},
+    {f:'BaSO₄',n:'Bariy sulfat',a:'Barit'},
+    {f:'MgSO₄',n:'Magniy sulfat',a:'Epsom tuzi (·7H₂O)'},
+    {f:'FeSO₄',n:'Temir(II) sulfat',a:'Yashil vitriol (·7H₂O)'},
+    {f:'Fe₂(SO₄)₃',n:'Temir(III) sulfat',a:''},
+    {f:'CuSO₄',n:'Mis(II) sulfat',a:"Ko'k vitriol (·5H₂O) · Xalkanit"},
+    {f:'ZnSO₄',n:'Rux sulfat',a:'Oq vitriol (·7H₂O)'},
+    {f:'Al₂(SO₄)₃',n:'Alyuminiy sulfat',a:''},
+    {f:'Na₂CO₃',n:'Natriy karbonat',a:"Kul soda · So'da"},
+    {f:'K₂CO₃',n:'Kaliy karbonat',a:'Potas · Kali'},
+    {f:'CaCO₃',n:'Kalsiy karbonat',a:'Ohaktosh · Marmar · Kalsit'},
+    {f:'MgCO₃',n:'Magniy karbonat',a:'Magnezit'},
+    {f:'BaCO₃',n:'Bariy karbonat',a:'Viterit'},
+    {f:'NaHCO₃',n:'Natriy gidrokarbonat',a:"Ichimlik soda · Natriy bikarbonat"},
+    {f:'Ca(HCO₃)₂',n:'Kalsiy gidrokarbonat',a:'Kalsiy bikarbonat'},
+    {f:'KNO₃',n:'Kaliy nitrat',a:'Selitra · Niter'},
+    {f:'NaNO₃',n:'Natriy nitrat',a:'Chili selitra'},
+    {f:'NH₄NO₃',n:'Ammoniy nitrat',a:'Ammoniy selitra'},
+    {f:'Ca(NO₃)₂',n:'Kalsiy nitrat',a:"Norveç seli"},
+    {f:'AgNO₃',n:'Kumush nitrat',a:'Lyapis'},
+    {f:'KMnO₄',n:'Kaliy permanganat',a:'Marganes(VII) kali'},
+    {f:'K₂Cr₂O₇',n:'Kaliy dixromat',a:'Bixromat'},
+    {f:'K₂CrO₄',n:'Kaliy xromat',a:'Tarapacait'},
+    {f:'Na₂SiO₃',n:'Natriy silikat',a:'Suyuq shisha'},
+    {f:'NaAlO₂',n:'Natriy aluminat',a:''},
+    {f:'Na₂ZnO₂',n:'Natriy zinkat',a:''},
+    {f:'(NH₄)₂SO₄',n:'Ammoniy sulfat',a:'Maskanit'},
+    {f:'Na₃PO₄',n:'Natriy ortofosfat',a:''},
+  ]},
+  alkan:{title:'Alkanlar',ico:'⛽',col:'#94a3b8',items:[
+    {f:'CH₄',n:'Metan',a:"Bolot gazi · Karbon tetragidridi"},
+    {f:'C₂H₆',n:'Etan',a:'Dimetil'},
+    {f:'C₃H₈',n:'Propan',a:'Metiletan'},
+    {f:'C₄H₁₀',n:'n-Butan',a:'Normal butan'},
+    {f:'(CH₃)₂CHCH₃',n:'Izobutan',a:'2-Metilpropan'},
+    {f:'C₅H₁₂',n:'n-Pentan',a:'Normal pentan'},
+    {f:'(CH₃)₂CHCH₂CH₃',n:'Izopentan',a:'2-Metilbutan'},
+    {f:'C(CH₃)₄',n:'Neopentan',a:'2,2-Dimetilpropan'},
+    {f:'C₆H₁₄',n:'n-Geksan',a:'Normal geksan'},
+    {f:'C₇H₁₆',n:'n-Geptan',a:'Normal geptan'},
+    {f:'C₈H₁₈',n:'n-Oktan',a:'Normal oktan'},
+    {f:'C₉H₂₀',n:'n-Nonan',a:''},
+    {f:'C₁₀H₂₂',n:'n-Dekan',a:''},
+    {f:'C₁₆H₃₄',n:'n-Geksadekan',a:'Setan · Setilgidridi'},
+  ]},
+  sikloalkan:{title:'Sikloalkanlar',ico:'🔄',col:'#64748b',items:[
+    {f:'C₃H₆',n:'Tsiklopropan',a:'Trimetilen'},
+    {f:'C₄H₈',n:'Tsiklobutan',a:'Tetrametilen'},
+    {f:'C₅H₁₀',n:'Tsiklopentan',a:'Pentametilen'},
+    {f:'C₆H₁₂',n:'Tsikloheksan',a:'Geksametilen'},
+    {f:'C₇H₁₄',n:'Tsikloheptan',a:''},
+    {f:'C₈H₁₆',n:'Tsiklooktan',a:''},
+    {f:'C₁₀H₁₈',n:'Dekalin',a:'Dekagidronnaftalin'},
+  ]},
+  alken:{title:'Alkenlar',ico:'🌊',col:'#0ea5e9',items:[
+    {f:'CH₂=CH₂',n:'Etilen',a:'Eten · Etilin'},
+    {f:'CH₂=CHCH₃',n:'Propilen',a:'Propen'},
+    {f:'CH₂=CHCH₂CH₃',n:'But-1-en',a:'1-Butilen · α-Butilen'},
+    {f:'CH₃CH=CHCH₃',n:'But-2-en',a:'2-Butilen · β-Butilen'},
+    {f:'CH₂=C(CH₃)₂',n:'2-Metilpropen',a:'Izobutilen'},
+    {f:'CH₂=CH(CH₂)₂CH₃',n:'Pent-1-en',a:'1-Penten'},
+    {f:'CH₃CH=CHCH₂CH₃',n:'Pent-2-en',a:'2-Penten'},
+    {f:'CH₂=C(CH₃)CH₂CH₃',n:'2-Metilbut-1-en',a:''},
+    {f:'CH₂=CH(CH₂)₃CH₃',n:'Geks-1-en',a:'1-Geksilen'},
+    {f:'CH₂=CHCH(CH₃)₂',n:'3-Metilbut-1-en',a:'Isopropeniletan'},
+  ]},
+  alkin:{title:'Alkinlar',ico:'⚡',col:'#8b5cf6',items:[
+    {f:'CH≡CH',n:'Atsetilen',a:'Etin · Etinin'},
+    {f:'CH≡CCH₃',n:'Propin',a:'Metilatsitilen · 1-Propin'},
+    {f:'CH≡CCH₂CH₃',n:'But-1-in',a:'Etilatsitilen'},
+    {f:'CH₃C≡CCH₃',n:'But-2-in',a:'Dimetilatsitelen · 2-Butin'},
+    {f:'CH≡C(CH₂)₂CH₃',n:'Pent-1-in',a:'Propilatsitilen'},
+    {f:'CH₃CH₂C≡CCH₃',n:'Pent-2-in',a:'Metilpropilatsitelen'},
+    {f:'CH≡C(CH₂)₃CH₃',n:'Geks-1-in',a:''},
+    {f:'HC≡C−C≡CH',n:'Diatsetilen',a:'But-1,3-diin · Butadiyn'},
+  ]},
+  alkadiyen:{title:'Alkadiенlar',ico:'⚛️',col:'#10b981',items:[
+    {f:'CH₂=C=CH₂',n:'Propadien',a:'Allen · Allilen'},
+    {f:'CH₂=CH−CH=CH₂',n:'1,3-Butadien',a:'Diviniil · Butadien'},
+    {f:'CH₂=C(CH₃)−CH=CH₂',n:'Izopren',a:'2-Metilbuta-1,3-dien'},
+    {f:'CH₂=CH−CH=CH−CH₃',n:'Penta-1,3-dien',a:'Piperilen'},
+    {f:'CH₂=CH−CH=CH₂ (1,3)',n:'Buta-1,3-dien',a:'Diviniil (qayta)'},
+    {f:'CH₂=C=CHCH₃',n:'But-1,2-dien',a:'Metilallen'},
+    {f:'CH₂=CH−C≡CH',n:'Vinilatsitilen',a:'But-1-en-3-in'},
+  ]},
+  aren:{title:'Arenlar',ico:'🔶',col:'#f97316',items:[
+    {f:'C₆H₆',n:'Benzol',a:'Benzen · Tsikloheksakitrien'},
+    {f:'C₆H₅CH₃',n:'Toluol',a:'Metilbenzol · Fenilmetan'},
+    {f:'1,2-C₆H₄(CH₃)₂',n:'o-Ksilen',a:'1,2-Dimetilbenzol · orto-Ksilen'},
+    {f:'1,3-C₆H₄(CH₃)₂',n:'m-Ksilen',a:'1,3-Dimetilbenzol · meta-Ksilen'},
+    {f:'1,4-C₆H₄(CH₃)₂',n:'p-Ksilen',a:'1,4-Dimetilbenzol · para-Ksilen'},
+    {f:'C₆H₅C₂H₅',n:'Etilbenzol',a:'Feniletan'},
+    {f:'C₆H₅CH(CH₃)₂',n:'Kumol',a:'Izopropilbenzol · 2-Fenilpropan'},
+    {f:'C₆H₅CH=CH₂',n:'Stirol',a:'Vinilbenzol · Feniletilen'},
+    {f:'C₁₀H₈',n:'Naftalin',a:''},
+    {f:'C₁₄H₁₀',n:'Antratsen',a:''},
+  ]},
+  spirt:{title:'Spirtlar',ico:'🥃',col:'#d97706',items:[
+    {f:'CH₃OH',n:'Metanol',a:"Metil spirti · Yog'och spirti · Karbinol"},
+    {f:'C₂H₅OH',n:'Etanol',a:'Etil spirti · Vino spirti'},
+    {f:'CH₂OH−CH₂OH',n:'Etilenglikol',a:'Etandiol-1,2 · 1,2-Etandiol'},
+    {f:'C₃H₇OH',n:'1-Propanol',a:'n-Propil spirti'},
+    {f:'(CH₃)₂CHOH',n:'2-Propanol',a:'Izopropanol · Izopropil spirti'},
+    {f:'C₄H₉OH',n:'1-Butanol',a:'n-Butil spirti'},
+    {f:'(CH₃)₃COH',n:'tret-Butanol',a:'2-Metil-2-propanol · tert-Butanol'},
+    {f:'C₅H₁₁OH',n:'1-Pentanol',a:'n-Amil spirti'},
+    {f:'C₃H₅(OH)₃',n:'Glitserin',a:'Propantriol · Gliserol'},
+    {f:'C₆H₁₃OH',n:'1-Geksanol',a:'Kapril spirti'},
+    {f:'C₁₆H₃₃OH',n:'Setil spirti',a:'1-Geksadekanol'},
+    {f:'C₁₈H₃₇OH',n:'Stearil spirti',a:'Oktadekanol'},
+  ]},
+  fenol:{title:'Fenollar',ico:'🌿',col:'#84cc16',items:[
+    {f:'C₆H₅OH',n:'Fenol',a:'Karbol kislota · Gidroksibenzon'},
+    {f:'o-CH₃C₆H₄OH',n:'o-Krezol',a:'2-Metillenol · orto-Krezol'},
+    {f:'m-CH₃C₆H₄OH',n:'m-Krezol',a:'3-Metillenol · meta-Krezol'},
+    {f:'p-CH₃C₆H₄OH',n:'p-Krezol',a:'4-Metillenol · para-Krezol'},
+    {f:'1,2-C₆H₄(OH)₂',n:'Pirokatekin',a:'1,2-Benzendiol · Katexol'},
+    {f:'1,3-C₆H₄(OH)₂',n:'Rezorsin',a:'1,3-Benzendiol'},
+    {f:'1,4-C₆H₄(OH)₂',n:'Gidrokinon',a:'1,4-Benzendiol'},
+    {f:'C₁₀H₇OH',n:'α-Naftol',a:'1-Naftol'},
+  ]},
+  aldegid:{title:'Aldegidlar',ico:'🔬',col:'#ec4899',items:[
+    {f:'HCHO',n:'Formaldegid',a:'Metanal · Mravyin aldegid · Formalin (40%)'},
+    {f:'CH₃CHO',n:'Atsetaldegid',a:'Etanal · Sirka aldegid'},
+    {f:'C₂H₅CHO',n:'Propional',a:'Propanal · Propan aldegidi'},
+    {f:'C₃H₇CHO',n:'Butiral',a:'Butanal · Moy aldegidi'},
+    {f:'(CH₃)₂CHCHO',n:'Izomoy aldegidi',a:'2-Metilpropanal'},
+    {f:'C₄H₉CHO',n:'Valerial',a:'Pentanal'},
+    {f:'C₆H₅CHO',n:'Benzaldegid',a:'Fenilkarbaldegid · Bodom moyi'},
+    {f:'OHCCHO',n:'Glioksal',a:'Etandial · Oksalaldegid'},
+    {f:'OHCCH₂CHO',n:'Malonaldegid',a:'Propandial'},
+  ]},
+  keton:{title:'Ketonlar',ico:'💊',col:'#a78bfa',items:[
+    {f:'CH₃COCH₃',n:'Aseton',a:'Propan-2-on · Dimetilketon'},
+    {f:'CH₃COC₂H₅',n:'Metiletilketon',a:'Butan-2-on · 2-Butanon'},
+    {f:'CH₃CO(CH₂)₂CH₃',n:'Metilpropilketon',a:'Pentan-2-on'},
+    {f:'C₂H₅COC₂H₅',n:'Dietilketon',a:'Pentan-3-on · 3-Pentanon'},
+    {f:'C₆H₅COCH₃',n:'Atsetofenonа',a:'Metilfenil keton'},
+    {f:'C₆H₅COC₆H₅',n:'Benzofenon',a:'Difenilketon'},
+    {f:'CH₃COCH₂COCH₃',n:'Atsetilaseton',a:'Pentan-2,4-dion'},
+    {f:'CH₃CO(CH₂)₄CH₃',n:'Metilamilketon',a:'Geptan-2-on'},
+  ]},
+  kislota_org:{title:'Karbon kislotalar',ico:'🍋',col:'#eab308',items:[
+    {f:'HCOOH',n:'Chumoli kislota',a:'Metanoat kislota · Formiat kislota'},
+    {f:'CH₃COOH',n:'Sirka kislota',a:'Etanoat kislota · Atseton kislota'},
+    {f:'C₂H₅COOH',n:'Propiyon kislota',a:'Propanoat kislota'},
+    {f:'C₃H₇COOH',n:'Moy kislota',a:'Butanoat kislota · n-Butirat'},
+    {f:'(CH₃)₂CHCOOH',n:'Izomoy kislota',a:'2-Metilpropanoat kislota'},
+    {f:'C₄H₉COOH',n:'Valerian kislota',a:'Pentanoat kislota'},
+    {f:'C₅H₁₁COOH',n:'Kaproik kislota',a:'Geksanoat kislota'},
+    {f:'C₆H₅COOH',n:'Benzoy kislota',a:'Benzolkarboksilat kislota'},
+    {f:'HOOCCOOH',n:'Oksalat kislota',a:"Etandioat kislota · Qo'ng'iroq kislota"},
+    {f:'HOOCCH₂COOH',n:'Malonot kislota',a:'Propandioat kislota'},
+    {f:'HOOC(CH₂)₂COOH',n:'Suksinat kislota',a:'Butandioat kislota · Kaxrabo kislota'},
+    {f:'CH₂=CHCOOH',n:'Akrilik kislota',a:'Propenoat kislota'},
+    {f:'C₁₅H₃₁COOH',n:'Palmitin kislota',a:'Geksadekanoat kislota'},
+    {f:'C₁₇H₃₅COOH',n:'Stearin kislota',a:'Oktadekanoat kislota'},
+  ]},
+  efir_odd:{title:'Oddiy efirlar',ico:'💨',col:'#6366f1',items:[
+    {f:'(CH₃)₂O',n:'Dimetil efir',a:'Metoksimetan'},
+    {f:'C₂H₅OC₂H₅',n:'Dietil efir',a:'Etoksietan · Sulfat efiri'},
+    {f:'CH₃OC₂H₅',n:'Metil-etil efir',a:'Metoksetan'},
+    {f:'(C₃H₇)₂O',n:'Dipropil efir',a:'Propoksipropan'},
+    {f:'(C₄H₉)₂O',n:'Dibutil efir',a:''},
+    {f:'C₆H₅OC₂H₅',n:'Fenil-etil efir',a:'Etoksibenzol'},
+    {f:'C₆H₅OCH₃',n:'Anizol',a:'Metoksibenzol · Metilfenil efir'},
+  ]},
+  efir_mur:{title:'Murakkab efirlar',ico:'🍎',col:'#06b6d4',items:[
+    {f:'HCOOCH₃',n:'Metil formiat',a:'Metil metanoat'},
+    {f:'HCOOC₂H₅',n:'Etil formiat',a:'Etil metanoat'},
+    {f:'CH₃COOCH₃',n:'Metil atsetat',a:'Metil etanoat'},
+    {f:'CH₃COOC₂H₅',n:'Etil atsetat',a:'Etil etanoat'},
+    {f:'CH₃COOC₃H₇',n:'Propil atsetat',a:'Propil etanoat'},
+    {f:'C₂H₅COOCH₃',n:'Metil propionat',a:'Metil propanoat'},
+    {f:'C₂H₅COOC₂H₅',n:'Etil propionat',a:'Etil propanoat'},
+    {f:'C₃H₇COOC₂H₅',n:'Etil butirat',a:'Etil butanoat (ananas hidi)'},
+    {f:'CH₃COOC₅H₁₁',n:'Amil atsetat',a:'3-Metilbutil etanoat (banan hidi)'},
+    {f:'HCOOC₅H₁₁',n:'Amil formiat',a:'Amil metanoat'},
+  ]},
+  amin:{title:'Aminlar',ico:'🧬',col:'#7c3aed',items:[
+    {f:'CH₃NH₂',n:'Metilamin',a:'Aminometan · Metanamin'},
+    {f:'C₂H₅NH₂',n:'Etilamin',a:'Aminoetan · Etanamin'},
+    {f:'(CH₃)₂NH',n:'Dimetilamin',a:'N-Metilmetanamin'},
+    {f:'(CH₃)₃N',n:'Trimetilamin',a:'N,N-Dimetilmetanamin'},
+    {f:'C₆H₅NH₂',n:'Anilin',a:'Benzenamin · Fenilamin · Aminobenzol'},
+    {f:'o-CH₃C₆H₄NH₂',n:'o-Toluidin',a:'2-Metilanilin'},
+    {f:'p-CH₃C₆H₄NH₂',n:'p-Toluidin',a:'4-Metilanilin'},
+    {f:'NH₂CH₂COOH',n:'Glitsin',a:'Aminoatset kislota · Glitsinam'},
+    {f:'(C₂H₅)₂NH',n:'Dietilamin',a:'N-Etiletanamin'},
+  ]},
+  nitro:{title:'Nitro birikmalar',ico:'💥',col:'#dc2626',items:[
+    {f:'CH₃NO₂',n:'Nitrometан',a:'Nitrometan'},
+    {f:'C₂H₅NO₂',n:'Nitroetan',a:''},
+    {f:'C₃H₇NO₂',n:'1-Nitropropan',a:'Nitropropan'},
+    {f:'C₆H₅NO₂',n:'Nitrobenzol',a:"Nitrobenzol · Alfabe yog'i"},
+    {f:'o-CH₃C₆H₄NO₂',n:'o-Nitrotoluol',a:'1-Metil-2-nitrobenzol'},
+    {f:'p-CH₃C₆H₄NO₂',n:'p-Nitrotoluol',a:'1-Metil-4-nitrobenzol'},
+    {f:'C₆H₂(NO₂)₃CH₃',n:'Trinitrotoluol',a:'TNT · Toluit · Tritol'},
+  ]},
+  uglevod:{title:'Uglevodlar',ico:'🍬',col:'#fbbf24',items:[
+    {f:'C₆H₁₂O₆ (ald)',n:'Glukoza',a:"Üzum shakar · Dekstroza · Aldogeksoza",d:'n'},
+    {f:'C₆H₁₂O₆ (ket)',n:'Fruktoza',a:"Meva shakar · Levuloza · Ketogeksoza",d:'n'},
+    {f:'C₅H₁₀O₅ (ald)',n:'Riboza',a:'Aldopentoza',d:'n'},
+    {f:'C₅H₁₀O₅ (ket)',n:'Ksiluloza',a:'Ketopentoza',d:'n'},
+    {f:'C₁₂H₂₂O₁₁ (sax)',n:'Saxaroza',a:"Qamish shakar · Lavlagi shakar",d:'n'},
+    {f:'C₁₂H₂₂O₁₁ (mal)',n:'Maltoza',a:"Solod shakar",d:'n'},
+    {f:'C₁₂H₂₂O₁₁ (lak)',n:'Laktoza',a:'Sut shakar',d:'n'},
+    {f:'(C₆H₁₀O₅)ₙ (amiloza)',n:'Kraxmal',a:'Amiloza · Amilopektin aralashmasi',d:'n'},
+    {f:'(C₆H₁₀O₅)ₙ (sel)',n:'Sellyuloza',a:"Kletchatka",d:'n'},
+    {f:'C₆H₁₄O₆',n:'Sorbit',a:'D-Glyukit · Sorbitol'},
+  ]},
+};
 
-function mdStart(){
+// State
+var mdCurClass='oksid',mdPool=[],mdLevel=0,mdBest=0,mdRunning=false,mdOptList=[],mdAns='',mdDir='name';
+
+function mdStart(){mdShowPick();}
+
+function mdBackBtn(){
+  var pick=document.getElementById('md-pick');
+  if(pick&&pick.style.display!=='none'){go('p-games',-1);}
+  else{mdRunning=false;mdShowPick();}
+}
+
+function mdShowPick(){
+  document.getElementById('md-pick').style.display='';
+  document.getElementById('md-board').style.display='none';
+  document.getElementById('md-over').style.display='none';
+  document.getElementById('md-title').textContent='🔤 Nom va Formula';
+  document.getElementById('md-lvl-top').textContent='—';
+  Object.keys(MD_CLASS).forEach(function(k){
+    var el=document.getElementById('md-pk-'+k);
+    if(!el)return;
+    var cnt=MD_CLASS[k].items.length;
+    var b=parseInt(localStorage.getItem('mdBest_'+k)||'0')||0;
+    el.textContent=b?'✓ '+b+'/'+cnt+' ta':cnt+' ta';
+  });
+}
+
+function mdStartClass(cls){
+  mdCurClass=cls;
+  var c=MD_CLASS[cls];
+  mdPool=rzShuffle(c.items.slice());
   mdLevel=0; mdRunning=true;
-  document.getElementById('md-start').style.display='none';
+  try{mdBest=parseInt(localStorage.getItem('mdBest_'+cls)||'0');}catch(e){mdBest=0;}
+  document.getElementById('md-pick').style.display='none';
   document.getElementById('md-over').style.display='none';
   document.getElementById('md-board').style.display='';
+  var badge=document.getElementById('md-cls-badge');
+  badge.textContent=c.ico+' '+c.title;
+  badge.style.color=c.col;
+  badge.style.borderColor=c.col+'55';
+  badge.style.background=c.col+'18';
   document.getElementById('md-best').textContent=mdBest||0;
+  document.getElementById('md-lvl').style.color=c.col;
+  document.getElementById('md-title').textContent=c.ico+' '+c.title;
   mdShow();
 }
 
 function mdShow(){
-  if(mdLevel>=MD.length){mdOver('🏆','Barcha 85 daraja o\'tildi!');return;}
-  var item=MD[mdLevel];
+  var pool=mdPool;
+  if(mdLevel>=pool.length){mdOver('🏆',"Barcha "+pool.length+" ta modda o'tildi!");return;}
+  var item=pool[mdLevel];
+  var total=pool.length;
+  var c=MD_CLASS[mdCurClass];
   document.getElementById('md-lvl').textContent=mdLevel+1;
-  document.getElementById('md-lvl-top').textContent=(mdLevel+1)+'/85';
-  var pct=Math.min(100,((mdLevel)/MD.length)*100);
+  document.getElementById('md-lvl-top').textContent=(mdLevel+1)+'/'+total;
+  var pct=Math.min(100,(mdLevel/total)*100);
   document.getElementById('md-bar').style.width=pct+'%';
-  // Daraja rangini o'zgartir
-  var barColor=mdLevel<20?'#00d4aa':mdLevel<50?'#a855f7':mdLevel<70?'#f59e0b':'#ef4444';
-  document.getElementById('md-bar').style.background='linear-gradient(90deg,'+barColor+','+barColor+'88)';
-  document.getElementById('md-lvl').style.color=barColor;
+  document.getElementById('md-bar').style.background='linear-gradient(90deg,'+c.col+','+c.col+'88)';
+  document.getElementById('md-lvl').style.color=c.col;
 
-  // Tasodifiy yo'nalish: formula→nom yoki nom→formula
-  mdDir=Math.random()>0.5?'name':'formula';
+  // Direction: if item.d==='n' only ask name→formula
+  if(item.d==='n'){mdDir='formula';}
+  else{mdDir=Math.random()>0.5?'name':'formula';}
+
   var q,hint;
   if(mdDir==='name'){
     q=item.f; hint='Bu formulaning nomi nima?'; mdAns=item.n;
   }else{
-    q='"'+item.n+'"'; hint='Bu moddaning formulasi qaysi?'; mdAns=item.f;
+    q=item.n; hint="Bu moddaning formulasi qaysi?"; mdAns=item.f;
   }
   document.getElementById('md-hint').textContent=hint;
   document.getElementById('md-q').textContent=q;
 
-  // Noto'g'ri variantlar: yaqin darajadagi moddalardan
+  // Wrong options from SAME CLASS (confusing!)
+  var pool2=MD_CLASS[mdCurClass].items;
   var candidates=[];
-  var s=Math.max(0,mdLevel-12),e=Math.min(MD.length-1,mdLevel+12);
-  for(var i=s;i<=e;i++){if(i!==mdLevel)candidates.push(i);}
+  for(var i=0;i<pool2.length;i++){if(pool2[i]!==item)candidates.push(i);}
   candidates=rzShuffle(candidates);
-  var wrongs=[],tries=0;
+  var wrongs=[];
   for(var i=0;i<candidates.length&&wrongs.length<3;i++){
-    var v=mdDir==='name'?MD[candidates[i]].n:MD[candidates[i]].f;
-    if(wrongs.indexOf(v)===-1)wrongs.push(v);
+    var cand=pool2[candidates[i]];
+    var v=mdDir==='name'?cand.n:cand.f;
+    if(v!==mdAns&&wrongs.indexOf(v)===-1)wrongs.push(v);
   }
-  // To'ldirish
-  while(wrongs.length<3&&tries<100){tries++;var ri=Math.floor(Math.random()*MD.length);if(ri===mdLevel)continue;var v=mdDir==='name'?MD[ri].n:MD[ri].f;if(wrongs.indexOf(v)===-1&&v!==mdAns)wrongs.push(v);}
 
   mdOptList=rzShuffle([mdAns].concat(wrongs));
   var html='';
   mdOptList.forEach(function(o,i){
-    var fs=mdDir==='name'?'.88rem':'1rem';
-    html+='<button onclick="mdAnswer('+i+')" id="mdb'+i+'" style="background:rgba(255,255,255,.06);border:1.5px solid rgba(168,85,247,.25);border-radius:12px;padding:11px 14px;color:var(--c-fg);font-size:'+fs+';font-weight:600;cursor:pointer;text-align:left;width:100%;line-height:1.4">'+o+'</button>';
+    var fs=mdDir==='name'?'.83rem':'1rem';
+    html+='<button onclick="mdAnswer('+i+')" id="mdb'+i+'" style="background:rgba(255,255,255,.06);border:1.5px solid '+c.col+'33;border-radius:11px;padding:10px 12px;color:var(--c-fg);font-size:'+fs+';font-weight:600;cursor:pointer;text-align:left;width:100%;line-height:1.4">'+o+'</button>';
   });
   document.getElementById('md-opts').innerHTML=html;
 }
@@ -3464,13 +3775,12 @@ function mdAnswer(idx){
   if(!mdRunning)return;
   var chosen=mdOptList[idx];
   var correct=(chosen===mdAns);
-  var btns=document.getElementById('md-opts').querySelectorAll('button');
-  btns.forEach(function(b){b.disabled=true;});
+  document.getElementById('md-opts').querySelectorAll('button').forEach(function(b){b.disabled=true;});
   if(correct){
     document.getElementById('mdb'+idx).style.background='rgba(0,212,170,.35)';
     document.getElementById('mdb'+idx).style.borderColor='#00d4aa';
     mdLevel++;
-    if(mdLevel>mdBest){mdBest=mdLevel;try{localStorage.setItem('mdBest',mdBest);}catch(e){}}
+    if(mdLevel>mdBest){mdBest=mdLevel;try{localStorage.setItem('mdBest_'+mdCurClass,mdBest);}catch(e){}}
     document.getElementById('md-best').textContent=mdBest;
     setTimeout(function(){mdShow();},600);
   }else{
@@ -3480,7 +3790,7 @@ function mdAnswer(idx){
       if(o===mdAns){document.getElementById('mdb'+i).style.background='rgba(0,212,170,.35)';document.getElementById('mdb'+i).style.borderColor='#00d4aa';}
     });
     mdRunning=false;
-    setTimeout(function(){mdOver('😔','Noto\'g\'ri!');},1500);
+    setTimeout(function(){mdOver('😔',"Noto'g'ri!");},1500);
   }
 }
 
@@ -3490,23 +3800,25 @@ function mdOver(ico,txt){
   document.getElementById('md-over').style.display='';
   document.getElementById('md-over-ico').textContent=ico;
   document.getElementById('md-over-txt').textContent=txt;
-  var item=MD[Math.min(mdLevel,MD.length-1)];
-  var lvlLabel=mdLevel<20?'🟢':mdLevel<50?'🟡':mdLevel<70?'🟠':'🔴';
   document.getElementById('md-over-sub').innerHTML=
-    lvlLabel+' '+mdLevel+'-darajaga yetdingiz<br>Rekord: '+mdBest+'-daraja';
-  if(mdLevel<MD.length&&mdRunning===false&&ico==='😔'){
-    var wrongItem=MD[mdLevel];
-    document.getElementById('md-over-ans').textContent=
-      wrongItem.f+' — '+wrongItem.n;
+    mdLevel+" ta to'g'ri javob · Rekord: "+mdBest;
+  if(ico==='😔'&&mdLevel<mdPool.length){
+    var item=mdPool[mdLevel];
+    var altTxt=item.a?' ('+item.a+')':'';
+    document.getElementById('md-over-ans').textContent=item.f+' = '+item.n+altTxt;
   }else{
     document.getElementById('md-over-ans').textContent='';
   }
   pgNfBest();
 }
 
-// p-games: nom-formula rekordini ko'rsatish
 function pgNfBest(){
-  try{var b=parseInt(localStorage.getItem('mdBest')||'0');var el=document.getElementById('pg-nf-best');if(el)el.textContent=b?b+'-darajaga yetilgan':'Hali o\'ynamagan';}catch(e){}
+  try{
+    var cls=Object.keys(MD_CLASS),played=0,total=0;
+    cls.forEach(function(c){var b=parseInt(localStorage.getItem('mdBest_'+c)||'0');if(b>0){played++;total+=b;}});
+    var el=document.getElementById('pg-nf-best');
+    if(el)el.textContent=played?(played+" sinf · "+total+" to'g'ri javob"):"Hali o'ynamagan";
+  }catch(e){}
 }
 
 // p-games yuklanishida mini-reytinglar
