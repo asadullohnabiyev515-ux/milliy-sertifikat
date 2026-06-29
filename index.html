@@ -5,20 +5,232 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Milliy Imtihon</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,sans-serif;background:#eef2ff;color:#1e3a8a;min-height:100vh;padding:16px 12px 40px}
+.sahifa{display:none}.sahifa.aktiv{display:block}
+.karta{background:#fff;border-radius:16px;padding:22px 18px;box-shadow:0 4px 24px rgba(29,78,216,.10);margin-bottom:16px}
+.logo{font-size:36px;text-align:center;margin-bottom:4px}
+h1{text-align:center;font-size:1.25rem;font-weight:700;margin-bottom:4px;color:#1e3a8a}
+.sub{text-align:center;font-size:.85rem;color:#1e40af;margin-bottom:20px}
+label{display:block;font-size:.78rem;font-weight:600;color:#1e40af;margin:14px 0 5px;text-transform:uppercase}
+input{width:100%;padding:12px 14px;border:1.5px solid #c7d2fe;border-radius:10px;font-size:1rem;background:#eef2ff;color:#1e3a8a;outline:none}
+input:focus{border-color:#1d4ed8}
+.btn{display:block;width:100%;padding:14px;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:14px}
+.btn-primary{background:#1d4ed8;color:#fff}
+.btn-success{background:#1e40af;color:#fff}
+.btn-outline{background:transparent;border:2px solid #1d4ed8;color:#1d4ed8}
+.btn:disabled{opacity:.5}
+.progress-info{display:flex;justify-content:space-between;font-size:.85rem;color:#1e40af;margin-bottom:6px}
+.progress-bar{height:8px;background:#dbeafe;border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;background:#1d4ed8;border-radius:99px;transition:width .3s}
+.variantlar{display:grid;gap:10px;margin-top:8px}
+.variant-btn{padding:13px 16px;border:2px solid #c7d2fe;border-radius:10px;background:#fff;font-size:1rem;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;color:#1e3a8a}
+.variant-btn.tanlandi{border-color:#1d4ed8;background:#dbeafe;font-weight:600}
+.variant-badge{width:28px;height:28px;border-radius:50%;background:#dbeafe;color:#1d4ed8;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0}
+.variant-btn.tanlandi .variant-badge{background:#1d4ed8;color:#fff}
+.ochiq-input{width:100%;padding:14px;border:2px solid #c7d2fe;border-radius:10px;font-size:1.1rem;text-align:center;outline:none;background:#eef2ff;margin-top:8px;color:#1e3a8a}
+.ochiq-input:focus{border-color:#1d4ed8}
+.nav-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.xabar{padding:14px;border-radius:10px;font-size:.95rem;font-weight:500;margin-top:14px;display:none}
+.xabar.success{background:#dbeafe;color:#1e3a8a}
+.xabar.error{background:#fee2e2;color:#991b1b}
+.xabar.info{background:#e0e7ff;color:#3730a3}
+.info-qator{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #dbeafe;font-size:.95rem}
+.info-qator:last-child{border:none}
+.info-label{color:#1e40af}
+.savol-raqam{font-size:.8rem;color:#1e40af;margin-bottom:4px}
+.nav-btns .btn{margin-top:0}
+
+#kimyo-bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;overflow:hidden;pointer-events:none}
+.zarracha{position:absolute;opacity:0;animation:suzib-chiq linear infinite;color:#2563eb;user-select:none;font-weight:700}
+.pufakcha{position:absolute;border-radius:50%;border:2px solid rgba(29,78,216,0.15);background:rgba(29,78,216,0.04);animation:suzib-chiq linear infinite}
+@keyframes suzib-chiq{
+  0%{transform:translateY(110vh) rotate(0deg);opacity:0}
+  5%{opacity:0.18}
+  95%{opacity:0.18}
+  100%{transform:translateY(-15vh) rotate(360deg);opacity:0}
+}
+</style>
 </head>
 <body>
-<div id="p0" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:#0a0f1e;color:#fff;text-align:center;padding:24px">
-<div style="font-size:3rem;margin-bottom:16px">🎓</div>
-<div style="font-size:1.4rem;font-weight:800;color:#00d4aa;margin-bottom:8px">Milliy Imtihon</div>
-<button id="kbtn" style="padding:14px 28px;background:linear-gradient(135deg,#00d4aa,#00a8ff);border:none;border-radius:14px;color:#fff;font-size:1rem;font-weight:700;cursor:pointer;margin-top:20px">Kirish</button>
+<div id="kimyo-bg" aria-hidden="true"></div>
+
+<div id="s-kirish" class="sahifa aktiv">
+<div class="karta">
+<div class="logo">🎓</div>
+<h1>Milliy Imtihon</h1>
+<p class="sub">Malumotlaringizni kiriting</p>
+<label>Ism</label>
+<input id="ism" type="text" placeholder="Masalan: Alibek"/>
+<label>Familiya</label>
+<input id="familiya" type="text" placeholder="Masalan: Rahimov"/>
+<label>Telefon</label>
+<input id="telefon" type="tel" placeholder="+998 90 123 45 67"/>
+<label>Test kodi</label>
+<input id="test-kod" type="text" placeholder="Masalan: MAT2024" style="text-transform:uppercase"/>
+<button class="btn btn-primary" onclick="kirish()">Testni boshlash</button>
+<div id="kirish-xabar" class="xabar"></div>
 </div>
+</div>
+
+<div id="s-test" class="sahifa">
+<div class="karta">
+<div class="progress-info">
+<span id="prog-matn">1 / 40</span>
+<span id="prog-foiz">0%</span>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+<br/>
+<div class="savol-raqam" id="savol-raqam">1-savol</div>
+<div id="savol-title" style="font-size:1rem;font-weight:600;margin-bottom:12px">Javobni tanlang:</div>
+<div id="variantlar-blok" class="variantlar"></div>
+<div id="ochiq-blok" style="display:none">
+<input class="ochiq-input" id="ochiq-input" type="text" placeholder="Javobingizni yozing..."/>
+</div>
+<div class="nav-btns">
+<button class="btn btn-outline" onclick="oldinga()" id="btn-oldin">Oldingi</button>
+<button class="btn btn-primary" onclick="keyingi()" id="btn-keyin">Keyingi</button>
+</div>
+</div>
+</div>
+
+<div id="s-yuborish" class="sahifa">
+<div class="karta">
+<div class="logo">📋</div>
+<h1>Tekshirib koring</h1>
+<p class="sub">Yuborishdan oldin tekshiring</p>
+<div class="info-qator"><span class="info-label">Ism Familiya</span><span id="sum-ism"></span></div>
+<div class="info-qator"><span class="info-label">Telefon</span><span id="sum-tel"></span></div>
+<div class="info-qator"><span class="info-label">Test kodi</span><span id="sum-kod"></span></div>
+<div class="info-qator"><span class="info-label">Toldirilgan</span><span id="sum-toldirilgan"></span></div>
+<button class="btn btn-success" id="yuborish-btn" onclick="yuborish()">Javoblarni yuborish</button>
+<button class="btn btn-outline" onclick="sahifaOch('s-test')" style="margin-top:8px">Qaytib ozgartirish</button>
+<div id="yuborish-xabar" class="xabar"></div>
+</div>
+</div>
+
+<div id="s-tamom" class="sahifa">
+<div class="karta" style="text-align:center;padding:40px 20px">
+<div style="font-size:64px;margin-bottom:16px">🎉</div>
+<h1>Barakalla!</h1>
+<p style="color:#666;margin-top:8px">Javoblaringiz yuborildi.<br>Natijangizni ustozingizdan bilib olasiz.</p>
+</div>
+</div>
+
 <script>
-var tg=window.Telegram&&window.Telegram.WebApp?window.Telegram.WebApp:null;
+const API = 'https://milliy-imtihon.onrender.com';
+const tg = window.Telegram?.WebApp;
 if(tg){tg.ready();tg.expand();}
-document.getElementById('kbtn').onclick=function(){alert('Ishlayapti!');};
-if(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user){
-  document.getElementById('kbtn').click();
+const userId = tg?.initDataUnsafe?.user?.id ?? null;
+const urlKod = new URLSearchParams(window.location.search).get('kod');
+if(urlKod) document.getElementById('test-kod').value = urlKod;
+
+let joriyAvol = 1, javoblar = {}, userData = {};
+
+function sahifaOch(id){
+  document.querySelectorAll('.sahifa').forEach(s=>s.classList.remove('aktiv'));
+  document.getElementById(id).classList.add('aktiv');
+  window.scrollTo(0,0);
 }
+
+async function kirish(){
+  const ism=document.getElementById('ism').value.trim();
+  const familiya=document.getElementById('familiya').value.trim();
+  const telefon=document.getElementById('telefon').value.trim();
+  const kod=document.getElementById('test-kod').value.trim().toUpperCase();
+  if(!ism||!familiya||!telefon||!kod){xabarKo('kirish-xabar','error','Barcha maydonlarni toldiring!');return;}
+  xabarKo('kirish-xabar','info','Tekshirilmoqda...');
+  try{
+    const r=await fetch(`${API}/test/tekshir/${kod}`);
+    const d=await r.json();
+    if(!d.topildi){xabarKo('kirish-xabar','error','Test topilmadi!');return;}
+    if(d.tugadi){xabarKo('kirish-xabar','error','Bu test yakunlangan!');return;}
+    userData={ism,familiya,telefon,kod};
+    joriyAvol=1;javoblar={};
+    savolKorsat();
+    sahifaOch('s-test');
+  }catch(e){xabarKo('kirish-xabar','error','Serverga ulanib bolmadi!');}
+}
+
+function savolKorsat(){
+  const n=joriyAvol;
+  document.getElementById('savol-raqam').textContent=`${n}-savol`;
+  document.getElementById('prog-matn').textContent=`${n} / 40`;
+  document.getElementById('prog-foiz').textContent=`${Math.round((n-1)/40*100)}%`;
+  document.getElementById('prog-fill').style.width=`${(n-1)/40*100}%`;
+  document.getElementById('btn-oldin').disabled=n===1;
+  document.getElementById('btn-keyin').textContent=n===40?'Tekshirish':'Keyingi';
+  const vBlok=document.getElementById('variantlar-blok');
+  const oBlok=document.getElementById('ochiq-blok');
+  if(n<=35){
+    vBlok.style.display='grid';oBlok.style.display='none';
+    const variantlar=n<=32?['A','B','C','D']:['A','B','C','D','E','F'];
+    vBlok.innerHTML=variantlar.map(v=>`<button class="variant-btn ${javoblar[n]===v?'tanlandi':''}" onclick="variant('${v}')"><span class="variant-badge">${v}</span>${v} variant</button>`).join('');
+  }else{
+    vBlok.style.display='none';oBlok.style.display='block';
+    document.getElementById('savol-title').textContent='Javobingizni yozing:';
+    document.getElementById('ochiq-input').value=javoblar[n]||'';
+  }
+}
+
+function variant(v){javoblar[joriyAvol]=v;savolKorsat();}
+
+function keyingi(){
+  const n=joriyAvol;
+  if(n>35){const val=document.getElementById('ochiq-input').value.trim();if(val)javoblar[n]=val;}
+  if(n===40){
+    document.getElementById('sum-ism').textContent=`${userData.ism} ${userData.familiya}`;
+    document.getElementById('sum-tel').textContent=userData.telefon;
+    document.getElementById('sum-kod').textContent=userData.kod;
+    document.getElementById('sum-toldirilgan').textContent=`${Object.keys(javoblar).length} / 40`;
+    sahifaOch('s-yuborish');return;
+  }
+  joriyAvol++;savolKorsat();
+}
+
+function oldinga(){if(joriyAvol>1){joriyAvol--;savolKorsat();}}
+
+async function yuborish(){
+  const btn=document.getElementById('yuborish-btn');
+  btn.disabled=true;btn.textContent='Yuborilmoqda...';
+  for(let i=1;i<=40;i++){if(!javoblar[i])javoblar[i]='';}
+  try{
+    const r=await fetch(`${API}/natija/yuborish`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({test_kod:userData.kod,ism:userData.ism,familiya:userData.familiya,telefon:userData.telefon,user_id:userId||0,javoblar})
+    });
+    const d=await r.json();
+    if(r.ok&&d.success){sahifaOch('s-tamom');setTimeout(()=>tg?.close?.(),4000);}
+    else{xabarKo('yuborish-xabar','error',d.detail||'Xato');btn.disabled=false;btn.textContent='Javoblarni yuborish';}
+  }catch(e){xabarKo('yuborish-xabar','error','Serverga ulanib bolmadi!');btn.disabled=false;btn.textContent='Javoblarni yuborish';}
+}
+
+function xabarKo(id,tur,matn){
+  const el=document.getElementById(id);
+  el.style.display='block';el.className=`xabar ${tur}`;el.textContent=matn;
+}
+
+(function kimyoBgYarat(){
+  const bg=document.getElementById('kimyo-bg');
+  const EMOJI=['🧪','🧪','⚗️','⚗️','⚗️','🔬','🧫','🧬','💊','🔭'];
+  const FORMULA=['H₂O','CO₂','NaCl','O₂','H₂','NH₃','HCl','CH₄','H₂SO₄','KOH','NaOH','CaCO₃','SO₂','NO₂','KMnO₄','Al₂O₃','Fe','Na','Ca','K'];
+  const barchasi=[...EMOJI,...FORMULA];
+  barchasi.forEach(el=>{
+    const d=document.createElement('div');
+    d.className='zarracha';
+    d.textContent=el;
+    d.style.cssText=`left:${Math.random()*94}%;font-size:${0.7+Math.random()*1.1}rem;animation-duration:${11+Math.random()*14}s;animation-delay:${-Math.random()*22}s`;
+    bg.appendChild(d);
+  });
+  for(let i=0;i<18;i++){
+    const d=document.createElement('div');
+    d.className='pufakcha';
+    const s=12+Math.random()*38;
+    d.style.cssText=`left:${Math.random()*94}%;width:${s}px;height:${s}px;animation-duration:${13+Math.random()*16}s;animation-delay:${-Math.random()*25}s`;
+    bg.appendChild(d);
+  }
+})();
 </script>
 </body>
 </html>
