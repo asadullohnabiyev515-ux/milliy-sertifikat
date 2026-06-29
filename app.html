@@ -290,10 +290,11 @@ body{font-family:sans-serif;background:#0a0f1e;color:#fff;min-height:100vh}
 <!-- USTOZ -->
 <div id="p9" class="page" style="padding-bottom:80px">
   <div class="top"><div class="tlogo">Ustoz paneli</div><div class="av" id="av9">U</div></div>
-  <div class="tbtns">
+  <div class="tbtns" style="overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch">
     <button class="tb on" id="ut1" onclick="uTab(1)">📝 Testlar</button>
     <button class="tb off" id="ut2" onclick="uTab(2)">❓ Savollar</button>
     <button class="tb off" id="ut3" onclick="uTab(3)">📚 Kitoblar</button>
+    <button class="tb off" id="ut4" onclick="uTab(4)">👥 O'quvchilar</button>
   </div>
   <div id="ub1" style="padding:16px">
     <button class="btn btn-green" onclick="go('p9b',-1)" style="margin-bottom:14px">➕ Yangi test yaratish</button>
@@ -306,6 +307,18 @@ body{font-family:sans-serif;background:#0a0f1e;color:#fff;min-height:100vh}
   <div id="ub3" style="display:none;padding:16px">
     <button class="btn btn-green" onclick="go('p9d',-1)" style="margin-bottom:14px">➕ Kitob qo'shish</button>
     <div id="ukitoblist"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
+  </div>
+  <div id="ub4" style="display:none;padding:16px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px">Ro'yxatdan o'tganlar</div>
+      <div id="uoqsoni" style="font-size:.75rem;color:#00d4aa;font-weight:700"></div>
+    </div>
+    <button onclick="uBildirishnoma()" style="width:100%;padding:11px;background:rgba(255,180,0,.1);border:1px solid rgba(255,180,0,.3);border-radius:12px;color:#ffb400;font-size:.85rem;font-weight:700;cursor:pointer;margin-bottom:12px">
+      📣 Eski foydalanuvchilarga xabar yuborish
+    </button>
+    <div id="ubill_xb" style="display:none;font-size:.78rem;border-radius:10px;padding:10px 12px;margin-bottom:10px;background:rgba(0,212,170,.08);color:#00d4aa;border:1px solid rgba(0,212,170,.2)"></div>
+    <input class="inp" id="uoqsearch" type="text" placeholder="🔍 Ism yoki telefon qidirish..." oninput="uOqSearch()" style="margin-bottom:12px;margin-top:0"/>
+    <div id="uoqlist"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
   </div>
 </div>
 
@@ -772,14 +785,74 @@ async function uLoad(){
     }).join('');
   }catch(e){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Xato</div>';}
 }
+var _uoqAll=[];
 function uTab(n){
-  [1,2,3].forEach(function(i){
+  [1,2,3,4].forEach(function(i){
     document.getElementById('ut'+i).className='tb '+(i===n?'on':'off');
     document.getElementById('ub'+i).style.display=i===n?'block':'none';
   });
   if(n===1)uLoad();
   if(n===2)uSLoad();
   if(n===3)uKLoad();
+  if(n===4)uOqLoad();
+}
+async function uOqLoad(){
+  var li=document.getElementById('uoqlist');
+  li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
+  document.getElementById('uoqsearch').value='';
+  try{
+    var r=await fetch(API+'/users/royxat');
+    var d=await r.json();
+    _uoqAll=d.users||[];
+    document.getElementById('uoqsoni').textContent=_uoqAll.length+' ta';
+    uOqRender(_uoqAll);
+  }catch(e){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Xato</div>';}
+}
+function uOqRender(list){
+  var li=document.getElementById('uoqlist');
+  if(!list.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Hozircha ro\'yxatdan o\'tganlar yo\'q</div>';return;}
+  li.innerHTML=list.map(function(u,i){
+    return '<div class="ri" style="gap:10px;align-items:center">'+
+      '<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#00d4aa,#00a8ff);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0">'+(i+1)+'</div>'+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="font-size:.88rem;font-weight:700">'+u.ism+' '+u.familiya+'</div>'+
+        '<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:2px">'+u.telefon+'</div>'+
+      '</div>'+
+      '<div style="font-size:.65rem;color:rgba(255,255,255,.3);white-space:nowrap">'+u.vaqt+'</div>'+
+    '</div>';
+  }).join('');
+}
+function uOqSearch(){
+  var q=document.getElementById('uoqsearch').value.toLowerCase().trim();
+  if(!q){uOqRender(_uoqAll);return;}
+  var filtered=_uoqAll.filter(function(u){
+    return (u.ism+' '+u.familiya).toLowerCase().includes(q)||u.telefon.includes(q);
+  });
+  document.getElementById('uoqsoni').textContent=filtered.length+'/'+_uoqAll.length+' ta';
+  uOqRender(filtered);
+}
+async function uBildirishnoma(){
+  if(!confirm('Ro\'yxatdan o\'tmagan eski foydalanuvchilarga xabar yuborilsinmi?'))return;
+  var xb=document.getElementById('ubill_xb');
+  xb.style.display='block';
+  xb.textContent='Yuborilmoqda...';
+  try{
+    var r=await fetch(API+'/admin/bildirishnoma_royxat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ustoz_id:CU.id})
+    });
+    var d=await r.json();
+    if(d.success){
+      xb.textContent='✅ '+d.yuboriladi+' ta foydalanuvchiga xabar yuborildi!';
+    } else {
+      xb.style.background='rgba(255,59,48,.08)';xb.style.color='#ff6b6b';xb.style.borderColor='rgba(255,59,48,.2)';
+      xb.textContent='Xato: '+(d.detail||'');
+    }
+  }catch(e){
+    xb.style.background='rgba(255,59,48,.08)';xb.style.color='#ff6b6b';xb.style.borderColor='rgba(255,59,48,.2)';
+    xb.textContent='Xato: '+e;
+  }
 }
 async function uYakunla(kod){
   if(!confirm(kod+' yakunlansinmi?'))return;
