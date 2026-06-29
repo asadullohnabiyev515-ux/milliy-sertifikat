@@ -681,6 +681,25 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
       </div>
     </div>
 
+    <!-- Tarixiy Nomlar -->
+    <div style="background:linear-gradient(135deg,#1a2a4a,#0d1f3a);border:1.5px solid rgba(16,185,129,.3);border-radius:18px;overflow:hidden">
+      <div style="padding:18px 18px 12px;display:flex;align-items:center;gap:14px">
+        <div style="font-size:2.6rem">📜</div>
+        <div style="flex:1">
+          <div style="font-size:1.1rem;font-weight:800">Tarixiy Nomlar</div>
+          <div style="font-size:.75rem;opacity:.5;margin-top:3px">100 ta tarixiy va xalq nomlar testi</div>
+          <div style="font-size:.7rem;color:#10b981;margin-top:4px;font-weight:600">4 variantli · aralash savol</div>
+        </div>
+      </div>
+      <div style="padding:0 18px 6px">
+        <div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Rekord</div>
+        <div id="pg-tn-best" style="font-size:.85rem;color:#10b981;font-weight:700">—</div>
+      </div>
+      <div style="padding:10px 18px 18px">
+        <button onclick="go('p-tarix',-1);tnStart()" style="width:100%;padding:11px;background:linear-gradient(135deg,#10b981,#059669);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1035,6 +1054,44 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   </div>
 </div>
 
+<!-- TARIXIY NOMLAR -->
+<div id="p-tarix" class="page" style="padding-bottom:80px;user-select:none">
+  <div class="top">
+    <button onclick="go('p-games',-1)" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
+    <div class="tlogo">📜 Tarixiy</div>
+    <div id="tn-lvl" style="font-size:.8rem;color:rgba(255,255,255,.5);font-weight:700;min-width:60px;text-align:right">—</div>
+  </div>
+  <!-- O'yin taxtasi -->
+  <div id="tn-board" style="display:none;padding:8px 14px">
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <div style="flex:1;background:rgba(255,255,255,.06);border-radius:12px;padding:7px;text-align:center">
+        <div style="font-size:.58rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px">To'g'ri</div>
+        <div id="tn-score" style="font-size:1.3rem;font-weight:800;color:#10b981">0</div>
+      </div>
+      <div style="flex:1;background:rgba(255,255,255,.06);border-radius:12px;padding:7px;text-align:center">
+        <div style="font-size:.58rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px">Rekord</div>
+        <div id="tn-best-cur" style="font-size:1.3rem;font-weight:800;color:gold">0</div>
+      </div>
+    </div>
+    <div style="background:rgba(255,255,255,.1);border-radius:6px;height:4px;margin-bottom:10px">
+      <div id="tn-bar" style="border-radius:6px;height:4px;width:0%;background:linear-gradient(90deg,#10b981,#059669);transition:width .4s"></div>
+    </div>
+    <div id="tn-q" style="background:rgba(255,255,255,.06);border:1.5px solid rgba(16,185,129,.2);border-radius:18px;padding:18px 14px;text-align:center;font-size:1rem;font-weight:700;min-height:72px;display:flex;align-items:center;justify-content:center;line-height:1.6;margin-bottom:12px;word-break:break-word"></div>
+    <div id="tn-opts" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
+  </div>
+  <!-- O'yin tugadi -->
+  <div id="tn-over" style="display:none;margin:30px 20px;text-align:center">
+    <div id="tn-over-ico" style="font-size:3rem;margin-bottom:10px">🎉</div>
+    <div id="tn-over-txt" style="font-size:1.15rem;font-weight:800;margin-bottom:6px"></div>
+    <div id="tn-over-sub" style="font-size:.8rem;color:rgba(255,255,255,.5);margin-bottom:16px;line-height:1.6"></div>
+    <div id="tn-over-ans" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:12px;padding:12px;font-size:.88rem;color:#ff6b6b;margin-bottom:18px;display:none"></div>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button onclick="go('p-games',-1)" style="background:rgba(255,255,255,.1);border:none;border-radius:12px;padding:10px 18px;color:var(--c-fg);font-size:.85rem;cursor:pointer;font-weight:600">← O'yinlar</button>
+      <button onclick="tnStart()" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:12px;padding:10px 18px;font-weight:700;font-size:.85rem;cursor:pointer">🔄 Qayta</button>
+    </div>
+  </div>
+</div>
+
 <!-- KIMYO JADVALLARI -->
 <div id="p-jadval" class="page" style="padding-bottom:80px">
   <div class="top">
@@ -1234,7 +1291,7 @@ var sTogri='';
 
 // GO - sahifa almashtirish
 function go(id,nav){
-  var all=['p1','p2','p3','p3b','p3c','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e','p9f','p9g','p-elon','p-games','p-game','p-memory','p-sort','p-modd','p-react','p-jadval'];
+  var all=['p1','p2','p3','p3b','p3c','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e','p9f','p9g','p-elon','p-games','p-game','p-memory','p-sort','p-modd','p-react','p-tarix','p-jadval'];
   all.forEach(function(x){var e=document.getElementById(x);if(e)e.style.display='none';});
   var el=document.getElementById(id);
   if(el)el.style.display='block';
@@ -1248,7 +1305,7 @@ function go(id,nav){
     for(var i=0;i<6;i++){var n=document.getElementById('n'+i);if(n)n.className='nitem';}
     if(ne)ne.className='nitem on';
     var nu=document.getElementById('n-ustoz');if(nu)nu.className='nitem';
-  }else if(id==='p-games'||id==='p-game'||id==='p-memory'||id==='p-sort'||id==='p-modd'||id==='p-react'){
+  }else if(id==='p-games'||id==='p-game'||id==='p-memory'||id==='p-sort'||id==='p-modd'||id==='p-react'||id==='p-tarix'){
     for(var i=0;i<6;i++){var n=document.getElementById('n'+i);if(n)n.className='nitem';}
     if(ne)ne.className='nitem';
     var ng=document.getElementById('n-game');if(ng)ng.className='nitem on';
@@ -3952,9 +4009,205 @@ function pgNfBest(){
   }catch(e){}
 }
 
+// ── TARIXIY NOMLAR O'YINI ──
+var TN_DATA=[
+  // Vitriolar
+  {q:'"Ko\'k vitriol" formulasi?',a:'CuSO₄·5H₂O',w:['FeSO₄·7H₂O','ZnSO₄·7H₂O','MgSO₄·7H₂O']},
+  {q:'"Yashil vitriol" formulasi?',a:'FeSO₄·7H₂O',w:['CuSO₄·5H₂O','ZnSO₄·7H₂O','Fe₂(SO₄)₃']},
+  {q:'"Oq vitriol" formulasi?',a:'ZnSO₄·7H₂O',w:['MgSO₄·7H₂O','CuSO₄·5H₂O','ZnCl₂']},
+  {q:'"Epsom tuzi" (taxir tuz) formulasi?',a:'MgSO₄·7H₂O',w:['Na₂SO₄·10H₂O','CaSO₄·2H₂O','MgCl₂·6H₂O']},
+  {q:'"Glauber tuzi" formulasi?',a:'Na₂SO₄·10H₂O',w:['MgSO₄·7H₂O','Na₂CO₃·10H₂O','Na₂SO₄']},
+  // Selitra, osh tuzi
+  {q:'"Osh tuzi" formulasi?',a:'NaCl',w:['KCl','NaBr','Na₂SO₄']},
+  {q:'"Selitra" (kaliy selitra) formulasi?',a:'KNO₃',w:['NaNO₃','NH₄NO₃','Ca(NO₃)₂']},
+  {q:'"Chili selitra" formulasi?',a:'NaNO₃',w:['KNO₃','NH₄NO₃','NaNO₂']},
+  {q:'"Ammoniy selitra" formulasi?',a:'NH₄NO₃',w:['KNO₃','NaNO₃','(NH₄)₂SO₄']},
+  {q:'"Nushodik tuz" formulasi?',a:'NH₄Cl',w:['NH₄NO₃','(NH₄)₂SO₄','NH₄Br']},
+  {q:'NaCl ning tarixiy nomi?',a:'Osh tuzi',w:['Selitra','Nushodik tuz','Soda']},
+  {q:'NH₄Cl ning tarixiy nomi?',a:'Nushodik tuz',w:['Ammoniy selitra','Potas','Soda']},
+  // Soda, potas, lyapis
+  {q:'"Soda" (kul soda) formulasi?',a:'Na₂CO₃',w:['NaHCO₃','K₂CO₃','Na₂SO₄']},
+  {q:'"Ichimlik soda" formulasi?',a:'NaHCO₃',w:['Na₂CO₃','KHCO₃','NaCl']},
+  {q:'"Potas" formulasi?',a:'K₂CO₃',w:['Na₂CO₃','KCl','K₂SO₄']},
+  {q:'"Lyapis" formulasi?',a:'AgNO₃',w:['AgCl','Ag₂SO₄','AgBr']},
+  {q:'"Barit" formulasi?',a:'BaSO₄',w:['BaCO₃','CaSO₄','Ba(OH)₂']},
+  {q:'Na₂CO₃ ning tarixiy nomi?',a:'Soda',w:['Ichimlik soda','Potas','Nushodik tuz']},
+  // Ohak, kaustik
+  {q:'"Kaustik soda" formulasi?',a:'NaOH',w:['KOH','Na₂O','NaCl']},
+  {q:'"Kaustik kali" formulasi?',a:'KOH',w:['NaOH','K₂O','KCl']},
+  {q:'"So\'ndirilgan ohak" formulasi?',a:'Ca(OH)₂',w:['CaO','CaCO₃','Mg(OH)₂']},
+  {q:'"So\'ndirilmagan ohak" (tirik ohak) formulasi?',a:'CaO',w:['Ca(OH)₂','CaCO₃','MgO']},
+  {q:'"Ohaktosh" formulasi?',a:'CaCO₃',w:['MgCO₃','BaCO₃','CaSO₄']},
+  {q:'"Gips" formulasi?',a:'CaSO₄·2H₂O',w:['CaCO₃','Ca(OH)₂','BaSO₄']},
+  {q:'Ca(OH)₂ ning tarixiy nomi?',a:"So'ndirilgan ohak",w:["So'ndirilmagan ohak",'Ohaktosh','Gips']},
+  // Minerallar, oksidlar
+  {q:'"Kvarts" formulasi?',a:'SiO₂',w:['SiC','Al₂O₃','TiO₂']},
+  {q:'"Magnetit" formulasi?',a:'Fe₃O₄',w:['Fe₂O₃','FeO','Fe(OH)₃']},
+  {q:'"Gemat" formulasi?',a:'Fe₂O₃',w:['Fe₃O₄','FeO','FeSO₄']},
+  {q:'"Piroluzit" formulasi?',a:'MnO₂',w:['MnO','Mn₂O₇','KMnO₄']},
+  {q:'"Kuprit" formulasi?',a:'Cu₂O',w:['CuO','Cu(OH)₂','CuSO₄·5H₂O']},
+  {q:'"Korund" formulasi?',a:'Al₂O₃',w:['Al(OH)₃','SiO₂','AlCl₃']},
+  {q:'"Minium" formulasi?',a:'Pb₃O₄',w:['PbO','PbO₂','Pb(OH)₂']},
+  {q:'"Magneziya" formulasi?',a:'MgO',w:['Mg(OH)₂','MgCO₃','CaO']},
+  {q:'SiO₂ ning tarixiy nomi?',a:'Kvarts',w:['Korund','Magnezit','Rutil']},
+  {q:'Fe₃O₄ ning tarixiy nomi?',a:'Magnetit',w:['Gemat','Piroluzit','Vüstit']},
+  // Boshqa anorganik
+  {q:'"Suyuq shisha" formulasi?',a:'Na₂SiO₃',w:['Na₂CO₃','SiO₂','Na₃PO₄']},
+  {q:'"Magnezit" formulasi?',a:'MgCO₃',w:['MgO','Mg(OH)₂','MgSO₄']},
+  {q:'"Nushodik" (ammiak) formulasi?',a:'NH₃',w:['NH₄Cl','N₂H₄','NH₄OH']},
+  {q:'"Silvin" formulasi?',a:'KCl',w:['NaCl','KBr','K₂SO₄']},
+  {q:'"Brusit" formulasi?',a:'Mg(OH)₂',w:['Ca(OH)₂','Fe(OH)₂','MgO']},
+  {q:'"Gibsit" formulasi?',a:'Al(OH)₃',w:['Al₂O₃','Fe(OH)₃','Zn(OH)₂']},
+  {q:'AgNO₃ ning tarixiy nomi?',a:'Lyapis',w:['Selitra','Barit','Nushodik tuz']},
+  // Kislotalar
+  {q:'"Vitriol yog\'i" formulasi?',a:'H₂SO₄',w:['H₂SO₃','HNO₃','H₃PO₄']},
+  {q:'"Tuz kislota" formulasi?',a:'HCl',w:['HBr','HF','H₂SO₄']},
+  {q:'"Aqva fortis" formulasi?',a:'HNO₃',w:['HNO₂','H₂SO₄','H₃PO₄']},
+  {q:'"Sinilna kislota" formulasi?',a:'HCN',w:['HSCN','H₂S','H₂O₂']},
+  {q:'"Chumoli kislota" formulasi?',a:'HCOOH',w:['CH₃COOH','C₂H₅COOH','H₂C₂O₄']},
+  {q:'"Sirka kislota" formulasi?',a:'CH₃COOH',w:['HCOOH','C₂H₅COOH','CH₃OH']},
+  {q:'H₂SO₄ ning tarixiy nomi?',a:"Vitriol yog'i",w:['Aqva fortis','Oleum','Tuz kislota']},
+  {q:'HNO₃ ning tarixiy nomi?',a:'Aqva fortis',w:["Vitriol yog'i",'Tuz kislota','Sinilna kislota']},
+  // Organik kislotalar
+  {q:'"Karbol kislota" formulasi?',a:'C₆H₅OH',w:['C₆H₅CH₃','C₆H₅NH₂','C₆H₆']},
+  {q:'"Oksalat kislota" formulasi?',a:'HOOCCOOH',w:['HOOCCH₂COOH','CH₃COOH','HCOOH']},
+  {q:'"Kaxrabo kislota" formulasi?',a:'HOOC(CH₂)₂COOH',w:['HOOCCOOH','HOOCCH₂COOH','HOOC(CH₂)₃COOH']},
+  {q:'"Stearin kislota" formulasi?',a:'C₁₇H₃₅COOH',w:['C₁₅H₃₁COOH','C₁₇H₃₃COOH','C₁₉H₃₉COOH']},
+  {q:'"Palmitin kislota" formulasi?',a:'C₁₅H₃₁COOH',w:['C₁₇H₃₅COOH','C₁₃H₂₇COOH','C₁₇H₃₃COOH']},
+  {q:'"Oleik kislota" formulasi?',a:'C₁₇H₃₃COOH',w:['C₁₇H₃₅COOH','C₁₅H₃₁COOH','C₁₇H₃₁COOH']},
+  {q:'HCOOH ning tarixiy nomi?',a:'Chumoli kislota',w:['Sirka kislota','Moy kislota','Propiyon kislota']},
+  {q:'C₆H₅OH ning tarixiy nomi?',a:'Karbol kislota',w:['Anilin','Toluol','Krezol']},
+  // Spirtlar
+  {q:'"Yog\'och spirti" formulasi?',a:'CH₃OH',w:['C₂H₅OH','C₃H₇OH','HCOOH']},
+  {q:'"Vino spirti" formulasi?',a:'C₂H₅OH',w:['CH₃OH','C₃H₇OH','C₂H₄(OH)₂']},
+  {q:'"Glitserin" formulasi?',a:'C₃H₅(OH)₃',w:['C₂H₄(OH)₂','C₃H₇OH','C₄H₆(OH)₂']},
+  {q:'"Etilenglikol" formulasi?',a:'HOCH₂CH₂OH',w:['C₃H₅(OH)₃','C₄H₈(OH)₂','CH₃OH']},
+  {q:'C₂H₅OH ning tarixiy nomi?',a:'Vino spirti',w:["Yog'och spirti",'Glitserin','Etilenglikol']},
+  // Gazlar
+  {q:'"Botqoq gazi" formulasi?',a:'CH₄',w:['C₂H₆','CO','C₂H₂']},
+  {q:'"Kulgi gazi" formulasi?',a:'N₂O',w:['NO','NO₂','N₂O₃']},
+  {q:'"Is gazi" formulasi?',a:'CO',w:['CO₂','NO','SO₂']},
+  {q:'"Qo\'ng\'ir gaz" formulasi?',a:'NO₂',w:['NO','N₂O','SO₂']},
+  {q:'N₂O ning tarixiy nomi?',a:'Kulgi gazi',w:['Is gazi',"Qo'ng'ir gaz",'Azot oksid']},
+  // Uglevodorodlar
+  {q:'"Atsetilen" formulasi?',a:'CH≡CH',w:['CH₂=CH₂','CH₄','CH₂=CHCH₃']},
+  {q:'"Etilen" formulasi?',a:'CH₂=CH₂',w:['CH≡CH','CH₄','C₂H₆']},
+  {q:'"Diviniil" formulasi?',a:'CH₂=CH-CH=CH₂',w:['CH₂=CH₂','CH₂=C=CH₂','CH₂=CHCH₂CH₃']},
+  {q:'"Izopren" formulasi?',a:'CH₂=C(CH₃)-CH=CH₂',w:['CH₂=CH-CH=CH₂','CH₂=CHCH₃','CH₂=C=CH₂']},
+  {q:'"Toluol" formulasi?',a:'C₆H₅CH₃',w:['C₆H₆','C₆H₅OH','C₈H₁₀']},
+  {q:'"Stirol" formulasi?',a:'C₆H₅CH=CH₂',w:['C₆H₅CH₃','C₆H₅C₂H₅','C₆H₅CH₂CH₃']},
+  {q:'"Kumol" formulasi?',a:'C₆H₅CH(CH₃)₂',w:['C₆H₅C₂H₅','C₆H₅CH₃','C₆H₅CH₂CH₂CH₃']},
+  {q:'"Naftalin" formulasi?',a:'C₁₀H₈',w:['C₆H₆','C₁₄H₁₀','C₁₂H₈']},
+  {q:'"Diatsetilen" formulasi?',a:'HC≡C-C≡CH',w:['CH₂=CH-CH=CH₂','CH≡CH','HC≡C-CH=CH₂']},
+  // Aldegid, keton
+  {q:'"Formalin" (formaldegid) formulasi?',a:'HCHO',w:['CH₃CHO','HCOOH','CH₃COCH₃']},
+  {q:'"Aseton" formulasi?',a:'CH₃COCH₃',w:['CH₃CHO','C₂H₅COC₂H₅','CH₃COCH₂CH₃']},
+  {q:'"Benzaldegid" (bodom moyi) formulasi?',a:'C₆H₅CHO',w:['C₆H₅COOH','C₆H₅COCH₃','C₆H₅CH₂OH']},
+  {q:'HCHO ning tarixiy nomi?',a:'Formaldegid',w:['Atsetaldegid','Sirka aldegid','Formalin kislota']},
+  {q:'CH₃COCH₃ ning tarixiy nomi?',a:'Aseton',w:['Atsetaldegid','Propanol','Butanon']},
+  {q:'C₆H₅CHO ning tarixiy nomi?',a:'Benzaldegid',w:['Benzoy kislota','Atsetofenon','Kumarin']},
+  // Uglevodlar
+  {q:'"Üzum shakar" (glukoza) formulasi?',a:'C₆H₁₂O₆',w:['C₅H₁₀O₅','C₁₂H₂₂O₁₁','C₆H₁₄O₆']},
+  {q:'"Qamish shakar" (saxaroza) formulasi?',a:'C₁₂H₂₂O₁₁',w:['C₆H₁₂O₆','(C₆H₁₀O₅)n','C₁₂H₂₄O₁₂']},
+  {q:'"Sut shakar" (laktoza) formulasi?',a:'C₁₂H₂₂O₁₁',w:['C₆H₁₂O₆','C₁₁H₂₂O₁₁','C₁₂H₂₀O₁₁']},
+  {q:'"Solod shakar" (maltoza) formulasi?',a:'C₁₂H₂₂O₁₁',w:['C₆H₁₂O₆','C₁₂H₂₄O₁₁','C₁₁H₂₂O₁₁']},
+  {q:'"Kletchatka" (sellyuloza) formulasi?',a:'(C₆H₁₀O₅)n',w:['(C₆H₁₂O₆)n','C₁₂H₂₂O₁₁','(C₅H₈O₄)n']},
+  {q:'"Dekstroza" ning boshqa nomi?',a:'Glukoza',w:['Fruktoza','Galaktoza','Laktoza']},
+  {q:'C₁₂H₂₂O₁₁ (qamish shakar) tarixiy nomi?',a:'Saxaroza',w:['Laktoza','Maltoza','Trehaloza']},
+  // Anilin, TNT, boshqa
+  {q:'"Anilin" formulasi?',a:'C₆H₅NH₂',w:['C₆H₅OH','C₆H₅NO₂','C₆H₆']},
+  {q:'"Nitrobenzol" formulasi?',a:'C₆H₅NO₂',w:['C₆H₅NH₂','C₆H₆','o-C₆H₄(NO₂)₂']},
+  {q:'"TNT" (trinitrotoluol) formulasi?',a:'C₆H₂(NO₂)₃CH₃',w:['C₆H₃(NO₂)₃','C₆H₅NO₂','C₆H₂(NO₂)₃OH']},
+  {q:'"Pikrinat kislota" formulasi?',a:'C₆H₂(NO₂)₃OH',w:['C₆H₂(NO₂)₃CH₃','C₆H₅NO₂','C₆H₃(NO₂)₂OH']},
+  {q:'"Dietil efir" (sulfat efiri) formulasi?',a:'C₂H₅OC₂H₅',w:['(CH₃)₂O','C₃H₇OC₃H₇','C₂H₅OC₃H₇']},
+  {q:'"Karbinol" formulasi?',a:'CH₃OH',w:['C₂H₅OH','HCOOH','CH₂OH-CH₂OH']},
+  {q:'"Oleum" formulasi?',a:'H₂S₂O₇',w:['H₂SO₄','H₂SO₃','SO₃']},
+  {q:'"Moy kislota" formulasi?',a:'C₃H₇COOH',w:['C₂H₅COOH','C₄H₉COOH','C₃H₇OH']},
+  {q:'"Benzoy kislota" formulasi?',a:'C₆H₅COOH',w:['C₆H₅CHO','C₆H₅COCH₃','HOOCCOOH']},
+  {q:'Al₂O₃ ning tarixiy nomi?',a:'Korund',w:['Kvarts','Bauxit','Magnezit']},
+];
+
+var tnPool=[],tnLevel=0,tnBest=0,tnRunning=false,tnCur=null;
+
+function tnStart(){
+  tnPool=rzShuffle(TN_DATA.slice());
+  tnLevel=0;tnRunning=true;
+  try{tnBest=parseInt(localStorage.getItem('tnBest')||'0');}catch(e){tnBest=0;}
+  document.getElementById('tn-over').style.display='none';
+  document.getElementById('tn-board').style.display='block';
+  document.getElementById('tn-best-cur').textContent=tnBest||'0';
+  tnNext();
+}
+
+function tnNext(){
+  if(tnLevel>=tnPool.length){
+    tnOver(true,'100/100 — Barcha savollarni yutdingiz! 🏆');return;
+  }
+  tnCur=tnPool[tnLevel];
+  document.getElementById('tn-score').textContent=tnLevel;
+  document.getElementById('tn-lvl').textContent=tnLevel+'/100';
+  document.getElementById('tn-bar').style.width=(tnLevel)+'%';
+  document.getElementById('tn-q').textContent=tnCur.q;
+  var opts=rzShuffle([tnCur.a].concat(tnCur.w));
+  var html='';
+  opts.forEach(function(o){
+    html+='<button onclick="tnAns(\''+o.replace(/'/g,"\\'")+'\')" style="padding:11px 8px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);border-radius:14px;color:var(--c-fg);font-size:.82rem;font-weight:600;cursor:pointer;text-align:center;line-height:1.4;word-break:break-all">'+o+'</button>';
+  });
+  document.getElementById('tn-opts').innerHTML=html;
+}
+
+function tnAns(val){
+  if(!tnRunning)return;
+  var btns=document.getElementById('tn-opts').querySelectorAll('button');
+  btns.forEach(function(b){b.disabled=true;});
+  if(val===tnCur.a){
+    btns.forEach(function(b){if(b.textContent===val)b.style.background='rgba(16,185,129,.35)';});
+    tnLevel++;
+    if(tnLevel>tnBest){tnBest=tnLevel;try{localStorage.setItem('tnBest',tnBest);}catch(e){}}
+    document.getElementById('tn-best-cur').textContent=tnBest;
+    setTimeout(tnNext,600);
+  }else{
+    btns.forEach(function(b){
+      if(b.textContent===val)b.style.background='rgba(239,68,68,.35)';
+      if(b.textContent===tnCur.a)b.style.background='rgba(16,185,129,.35)';
+    });
+    tnRunning=false;
+    setTimeout(function(){tnOver(false,tnCur.a);},1000);
+  }
+}
+
+function tnOver(win,ans){
+  tnRunning=false;
+  document.getElementById('tn-board').style.display='none';
+  document.getElementById('tn-over').style.display='block';
+  var ansEl=document.getElementById('tn-over-ans');
+  if(win){
+    document.getElementById('tn-over-ico').textContent='🏆';
+    document.getElementById('tn-over-txt').textContent='Zo\'r! Hammasi to\'g\'ri!';
+    document.getElementById('tn-over-sub').textContent='100 ta savolni to\'liq yutdingiz!';
+    ansEl.style.display='none';
+  }else{
+    document.getElementById('tn-over-ico').textContent='😔';
+    document.getElementById('tn-over-txt').textContent=tnLevel+' ta to\'g\'ri javob';
+    document.getElementById('tn-over-sub').textContent='Rekord: '+tnBest+' ta';
+    ansEl.style.display='block';
+    ansEl.textContent='✓ To\'g\'ri javob: '+ans;
+  }
+  pgTnBest();
+}
+
+function pgTnBest(){
+  try{
+    var b=parseInt(localStorage.getItem('tnBest')||'0');
+    var el=document.getElementById('pg-tn-best');
+    if(el)el.textContent=b?b+'/100 ta to\'g\'ri':"Hali o'ynamagan";
+  }catch(e){}
+}
+
 // p-games yuklanishida mini-reytinglar
 async function pgReytingLoad(){
   pgNfBest();
+  pgTnBest();
   try{
     var rg=await fetch(API+'/game/reyting'); var dg=await rg.json();
     var el=document.getElementById('pg-g-reyting');
