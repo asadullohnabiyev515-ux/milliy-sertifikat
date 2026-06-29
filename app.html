@@ -3750,11 +3750,20 @@ function mdShow(){
   document.getElementById('md-hint').textContent=hint;
   document.getElementById('md-q').textContent=q;
 
-  // Wrong options from SAME CLASS (confusing!)
+  // Wrong options: nearby items in original array first (structurally similar!),
+  // then fall back to rest of class. This ensures HClO₃ gets HClO/HClO₂/HClO₄,
+  // Fe₂O₃ gets FeO/Fe₃O₄/CuO, etc.
   var pool2=MD_CLASS[mdCurClass].items;
-  var candidates=[];
-  for(var i=0;i<pool2.length;i++){if(pool2[i]!==item)candidates.push(i);}
-  candidates=rzShuffle(candidates);
+  var origIdx=pool2.indexOf(item);
+  var rng=Math.min(6,Math.max(3,Math.floor(pool2.length/5)));
+  var s=Math.max(0,origIdx-rng),e=Math.min(pool2.length-1,origIdx+rng);
+  var nearby=[],rest=[];
+  for(var i=0;i<pool2.length;i++){
+    if(pool2[i]===item)continue;
+    if(i>=s&&i<=e)nearby.push(i);else rest.push(i);
+  }
+  nearby=rzShuffle(nearby);rest=rzShuffle(rest);
+  var candidates=nearby.concat(rest);
   var wrongs=[];
   for(var i=0;i<candidates.length&&wrongs.length<3;i++){
     var cand=pool2[candidates[i]];
