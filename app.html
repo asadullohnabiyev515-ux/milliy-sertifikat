@@ -774,21 +774,99 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   </div>
 </div>
 
-<!-- DAVRIY JADVAL -->
+<!-- KIMYO JADVALLARI -->
 <div id="p-jadval" class="page" style="padding-bottom:80px">
   <div class="top">
     <button onclick="go('p1',0)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
-    <div class="tlogo">⚛️ Davriy Jadval</div>
+    <div class="tlogo">⚛️ Kimyo Jadvallari</div>
     <div style="width:40px"></div>
   </div>
-  <div style="padding:4px 16px 6px">
-    <input id="j-q" type="search" placeholder="🔍 Element nomi yoki belgisi..."
-      oninput="jadvalSearch(this.value)"
-      style="width:100%;background:rgba(255,255,255,.08);border:none;border-radius:12px;padding:9px 14px;color:var(--c-fg);font-size:.88rem;box-sizing:border-box;outline:none">
+  <!-- Tablar -->
+  <div style="display:flex;gap:5px;padding:4px 12px 6px">
+    <button id="jt1" onclick="jTab(1)" style="flex:1;background:#3b82f6;color:#fff;border:none;border-radius:10px;padding:7px 0;font-size:.75rem;font-weight:700;cursor:pointer">⚛️ Davriy</button>
+    <button id="jt2" onclick="jTab(2)" style="flex:1;background:rgba(255,255,255,.1);color:var(--c-fg);border:none;border-radius:10px;padding:7px 0;font-size:.75rem;font-weight:700;cursor:pointer">⚡ Beketov</button>
+    <button id="jt3" onclick="jTab(3)" style="flex:1;background:rgba(255,255,255,.1);color:var(--c-fg);border:none;border-radius:10px;padding:7px 0;font-size:.75rem;font-weight:700;cursor:pointer">💧 Eruvchanlik</button>
   </div>
-  <div id="j-legend" style="display:flex;flex-wrap:wrap;gap:5px;padding:0 16px 6px"></div>
-  <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
-    <div id="j-grid" style="padding:2px 6px 8px"></div>
+  <!-- 1: Davriy jadval -->
+  <div id="j-s1">
+    <div style="padding:4px 16px 6px">
+      <input id="j-q" type="search" placeholder="🔍 Element nomi yoki belgisi..."
+        oninput="jadvalSearch(this.value)"
+        style="width:100%;background:rgba(255,255,255,.08);border:none;border-radius:12px;padding:9px 14px;color:var(--c-fg);font-size:.88rem;box-sizing:border-box;outline:none">
+    </div>
+    <div id="j-legend" style="display:flex;flex-wrap:wrap;gap:5px;padding:0 16px 6px"></div>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+      <div id="j-grid" style="padding:2px 6px 8px"></div>
+    </div>
+  </div>
+  <!-- 2: Beketov qatori -->
+  <div id="j-s2" style="display:none;padding:10px 14px">
+    <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:10px;line-height:1.5">Metalllarning faollik qatori — chapdan o'ngga faollik kamayadi</div>
+    <!-- Juda faol -->
+    <div style="margin-bottom:10px">
+      <div style="font-size:.62rem;font-weight:700;color:#ef4444;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🔴 Juda faol — sovuq suv bilan reaksiyaga kirishadi</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        <div style="background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);border-radius:10px;padding:7px 12px;text-align:center;min-width:44px"><div style="font-size:1rem;font-weight:800;color:#ef4444">Li</div><div style="font-size:.6rem;opacity:.6">Litiy</div></div>
+        <div style="background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);border-radius:10px;padding:7px 12px;text-align:center;min-width:44px"><div style="font-size:1rem;font-weight:800;color:#ef4444">K</div><div style="font-size:.6rem;opacity:.6">Kaliy</div></div>
+        <div style="background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);border-radius:10px;padding:7px 12px;text-align:center;min-width:44px"><div style="font-size:1rem;font-weight:800;color:#ef4444">Ba</div><div style="font-size:.6rem;opacity:.6">Bariy</div></div>
+        <div style="background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);border-radius:10px;padding:7px 12px;text-align:center;min-width:44px"><div style="font-size:1rem;font-weight:800;color:#ef4444">Ca</div><div style="font-size:.6rem;opacity:.6">Kaltsiy</div></div>
+        <div style="background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);border-radius:10px;padding:7px 12px;text-align:center;min-width:44px"><div style="font-size:1rem;font-weight:800;color:#ef4444">Na</div><div style="font-size:.6rem;opacity:.6">Natriy</div></div>
+      </div>
+    </div>
+    <!-- Faol -->
+    <div style="margin-bottom:10px">
+      <div style="font-size:.62rem;font-weight:700;color:#f97316;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🟠 Faol — qaynoq suv / bug' bilan reaksiyaga kirishadi</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        <div style="background:rgba(249,115,22,.15);border:1px solid rgba(249,115,22,.4);border-radius:10px;padding:7px 12px;text-align:center;min-width:44px"><div style="font-size:1rem;font-weight:800;color:#f97316">Mg</div><div style="font-size:.6rem;opacity:.6">Magniy</div></div>
+        <div style="background:rgba(249,115,22,.15);border:1px solid rgba(249,115,22,.4);border-radius:10px;padding:7px 12px;text-align:center;min-width:44px"><div style="font-size:1rem;font-weight:800;color:#f97316">Al</div><div style="font-size:.6rem;opacity:.6">Alyum.</div></div>
+      </div>
+    </div>
+    <!-- O'rta faol -->
+    <div style="margin-bottom:10px">
+      <div style="font-size:.62rem;font-weight:700;color:#f59e0b;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🟡 O'rta faol — suyultirilgan kislota bilan reaksiyaga kirishadi</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        <div style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.35);border-radius:10px;padding:7px 10px;text-align:center;min-width:40px"><div style="font-size:.95rem;font-weight:800;color:#f59e0b">Mn</div><div style="font-size:.58rem;opacity:.6">Marg.</div></div>
+        <div style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.35);border-radius:10px;padding:7px 10px;text-align:center;min-width:40px"><div style="font-size:.95rem;font-weight:800;color:#f59e0b">Zn</div><div style="font-size:.58rem;opacity:.6">Rux</div></div>
+        <div style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.35);border-radius:10px;padding:7px 10px;text-align:center;min-width:40px"><div style="font-size:.95rem;font-weight:800;color:#f59e0b">Cr</div><div style="font-size:.58rem;opacity:.6">Xrom</div></div>
+        <div style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.35);border-radius:10px;padding:7px 10px;text-align:center;min-width:40px"><div style="font-size:.95rem;font-weight:800;color:#f59e0b">Fe</div><div style="font-size:.58rem;opacity:.6">Temir</div></div>
+        <div style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.35);border-radius:10px;padding:7px 10px;text-align:center;min-width:40px"><div style="font-size:.95rem;font-weight:800;color:#f59e0b">Co</div><div style="font-size:.58rem;opacity:.6">Kobalt</div></div>
+        <div style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.35);border-radius:10px;padding:7px 10px;text-align:center;min-width:40px"><div style="font-size:.95rem;font-weight:800;color:#f59e0b">Ni</div><div style="font-size:.58rem;opacity:.6">Nikel</div></div>
+        <div style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.35);border-radius:10px;padding:7px 10px;text-align:center;min-width:40px"><div style="font-size:.95rem;font-weight:800;color:#f59e0b">Sn</div><div style="font-size:.58rem;opacity:.6">Qalay</div></div>
+        <div style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.35);border-radius:10px;padding:7px 10px;text-align:center;min-width:40px"><div style="font-size:.95rem;font-weight:800;color:#f59e0b">Pb</div><div style="font-size:.58rem;opacity:.6">Qo'rg.</div></div>
+      </div>
+    </div>
+    <!-- H2 -->
+    <div style="margin-bottom:10px;display:flex;align-items:center;gap:8px">
+      <div style="flex:1;height:1px;background:rgba(255,255,255,.15)"></div>
+      <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:6px 14px;text-align:center"><div style="font-size:.9rem;font-weight:800;color:rgba(255,255,255,.7)">H₂</div><div style="font-size:.6rem;opacity:.5">Vodorod</div></div>
+      <div style="flex:1;height:1px;background:rgba(255,255,255,.15)"></div>
+    </div>
+    <!-- Kam faol -->
+    <div style="margin-bottom:10px">
+      <div style="font-size:.62rem;font-weight:700;color:#22c55e;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🟢 Kam faol — konsentrlangan kislota bilan reaksiyaga kirishadi</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        <div style="background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.35);border-radius:10px;padding:7px 12px;text-align:center;min-width:44px"><div style="font-size:1rem;font-weight:800;color:#22c55e">Cu</div><div style="font-size:.6rem;opacity:.6">Mis</div></div>
+        <div style="background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.35);border-radius:10px;padding:7px 12px;text-align:center;min-width:44px"><div style="font-size:1rem;font-weight:800;color:#22c55e">Hg</div><div style="font-size:.6rem;opacity:.6">Simob</div></div>
+        <div style="background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.35);border-radius:10px;padding:7px 12px;text-align:center;min-width:44px"><div style="font-size:1rem;font-weight:800;color:#22c55e">Ag</div><div style="font-size:.6rem;opacity:.6">Kumush</div></div>
+      </div>
+    </div>
+    <!-- Inert -->
+    <div style="margin-bottom:10px">
+      <div style="font-size:.62rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🔵 Inert — ko'pgina kislotalar bilan reaksiyaga kirmasdi</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        <div style="background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.35);border-radius:10px;padding:7px 12px;text-align:center;min-width:44px"><div style="font-size:1rem;font-weight:800;color:#a78bfa">Pt</div><div style="font-size:.6rem;opacity:.6">Platina</div></div>
+        <div style="background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.35);border-radius:10px;padding:7px 12px;text-align:center;min-width:44px"><div style="font-size:1rem;font-weight:800;color:#a78bfa">Au</div><div style="font-size:.6rem;opacity:.6">Oltin</div></div>
+      </div>
+    </div>
+    <!-- Eslatma -->
+    <div style="background:rgba(255,255,255,.05);border-radius:12px;padding:10px 12px;font-size:.72rem;line-height:1.6;color:rgba(255,255,255,.5)">
+      💡 Chapda turgan metal o'ngdagi metalning tuzidan uni siqib chiqara oladi.<br>
+      Faqat Na, K, Ca, Li — eritma orqali emas, bevosita suv bilan reaksiyaga kirishadi.
+    </div>
+  </div>
+  <!-- 3: Eruvchanlik jadvali -->
+  <div id="j-s3" style="display:none">
+    <div id="j-eruv" style="padding:4px 0"></div>
   </div>
   <div id="j-modal" style="display:none;position:fixed;inset:0;z-index:400"></div>
 </div>
@@ -2602,6 +2680,72 @@ var JEDATA=[
  [103,'Lr','Lorenisiy',262,9,9,17]
 ];
 var jGrid={},jByZ={},jInited=false;
+
+// ============================================================
+// KIMYO JADVALLARI — TABLAR
+// ============================================================
+function jTab(n){
+  for(var i=1;i<=3;i++){
+    var t=document.getElementById('jt'+i);
+    var s=document.getElementById('j-s'+i);
+    var on=i===n;
+    if(t){t.style.background=on?'#3b82f6':'rgba(255,255,255,.1)';t.style.color=on?'#fff':'var(--c-fg)';}
+    if(s)s.style.display=on?'':'none';
+  }
+  if(n===3&&!jEruvInited){jEruvInited=true;jEruvRender();}
+}
+
+var jEruvInited=false;
+var ERUVKAT=['H⁺','Na⁺','K⁺','NH₄⁺','Ba²⁺','Ca²⁺','Mg²⁺','Al³⁺','Fe²⁺','Fe³⁺','Cu²⁺','Zn²⁺','Ag⁺','Pb²⁺'];
+var ERUVAON=['OH⁻','Cl⁻','Br⁻','I⁻','S²⁻','SO₄²⁻','CO₃²⁻','PO₄³⁻','NO₃⁻'];
+var ERUVD=[
+  ['—', 'E',  'E',  'E',  '—',  'E',  '—',  '—',  'E'],  // H⁺
+  ['E', 'E',  'E',  'E',  'E',  'E',  'E',  'E',  'E'],   // Na⁺
+  ['E', 'E',  'E',  'E',  'E',  'E',  'E',  'E',  'E'],   // K⁺
+  ['E', 'E',  'E',  'E',  'E',  'E',  'E',  'E',  'E'],   // NH₄⁺
+  ['E', 'E',  'E',  'E',  '—',  'E!', 'E!', 'E!', 'E'],  // Ba²⁺
+  ['K', 'E',  'E',  'E',  '—',  'K',  'E!', 'E!', 'E'],  // Ca²⁺
+  ['E!','E',  'E',  'E',  '—',  'E',  'E!', 'E!', 'E'],  // Mg²⁺
+  ['E!','E',  'E',  'E',  '—',  'E',  '—',  'E!', 'E'],  // Al³⁺
+  ['E!','E',  'E',  'E',  'E!', 'E',  'E!', 'E!', 'E'],  // Fe²⁺
+  ['E!','E',  'E',  '—',  '—',  'E',  '—',  'E!', 'E'],  // Fe³⁺
+  ['E!','E',  'E',  '—',  'E!', 'E',  'E!', 'E!', 'E'],  // Cu²⁺
+  ['E!','E',  'E',  'E',  'E!', 'E',  'E!', 'E!', 'E'],  // Zn²⁺
+  ['—', 'E!', 'E!', 'E!', 'E!', 'K',  'E!', 'E!', 'E'],  // Ag⁺
+  ['E!','K',  'K',  'K',  'E!', 'K',  'E!', 'E!', 'E'],  // Pb²⁺
+];
+
+function jEruvRender(){
+  var el=document.getElementById('j-eruv');
+  if(!el)return;
+  var clr={'E':'rgba(34,197,94,.2)','E!':'rgba(239,68,68,.25)','K':'rgba(251,191,36,.2)','—':'rgba(120,120,120,.12)'};
+  var tc={'E':'#22c55e','E!':'#ef4444','K':'#f59e0b','—':'rgba(200,200,200,.35)'};
+  var legend='<div style="display:flex;gap:10px;padding:6px 14px 4px;flex-wrap:wrap;font-size:.68rem">'
+    +'<span>🟢 <b style="color:#22c55e">E</b> — eriydi</span>'
+    +'<span>🔴 <b style="color:#ef4444">E!</b> — erimaydi</span>'
+    +'<span>🟡 <b style="color:#f59e0b">K</b> — kam eriydi</span>'
+    +'<span style="opacity:.5">⬜ — — mavjud emas</span>'
+    +'</div>';
+  var tw=34;
+  var html='<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px 8px 8px">'
+    +'<table style="border-collapse:separate;border-spacing:2px;font-size:.7rem;min-width:max-content">';
+  html+='<tr><th style="min-width:46px;padding:3px 6px;text-align:left;font-size:.65rem;color:rgba(255,255,255,.5);position:sticky;left:0;background:var(--c-bg);z-index:2">Ion</th>';
+  ERUVAON.forEach(function(a){
+    html+='<th style="min-width:'+tw+'px;padding:3px 2px;text-align:center;font-size:.6rem;color:rgba(255,255,255,.55);font-weight:700;white-space:nowrap">'+a+'</th>';
+  });
+  html+='</tr>';
+  ERUVKAT.forEach(function(k,ri){
+    var bg=ri%2?'rgba(255,255,255,.02)':'transparent';
+    html+='<tr style="background:'+bg+'">'
+      +'<td style="padding:2px 6px;font-weight:800;font-size:.72rem;position:sticky;left:0;background:var(--c-bg);z-index:1;white-space:nowrap">'+k+'</td>';
+    ERUVD[ri].forEach(function(v){
+      html+='<td style="padding:1px;text-align:center"><div style="width:'+tw+'px;height:'+tw+'px;background:'+clr[v]+';border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:700;color:'+tc[v]+';font-size:.68rem">'+v+'</div></td>';
+    });
+    html+='</tr>';
+  });
+  html+='</table></div>';
+  el.innerHTML=legend+html;
+}
 
 function jadvalInit(){
   if(jInited)return; jInited=true;
