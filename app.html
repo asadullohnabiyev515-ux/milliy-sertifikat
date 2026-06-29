@@ -248,7 +248,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
 </div>
 
 <!-- TEST TAMOM -->
-<div id="p3c" class="page" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:40px 20px">
+<div id="p3c" class="page" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:40px 20px">
   <div style="font-size:5rem;margin-bottom:16px" id="p3c-emoji">🎉</div>
   <div style="font-size:1.2rem;font-weight:800;margin-bottom:8px" id="p3c-ball">Barakalla!</div>
   <div style="font-size:.88rem;color:rgba(255,255,255,.4)" id="p3c-foiz">Javoblaringiz yuborildi.</div>
@@ -706,7 +706,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
 <!-- O'YIN SAHIFASI (2048) -->
 <div id="p-game" class="page" style="padding-bottom:80px;user-select:none">
   <div class="top">
-    <button onclick="go('p-games',-1)" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
+    <div style="min-width:80px"></div>
     <div class="tlogo">⚗️ 2048</div>
     <button onclick="gameStart()" style="background:none;border:none;color:#00d4aa;font-size:.85rem;font-weight:700;cursor:pointer">🔁</button>
   </div>
@@ -747,10 +747,15 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   </div>
 </div>
 
+  <div style="padding:8px 16px 4px">
+    <button onclick="go('p-games',-1)" style="width:100%;padding:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;color:rgba(255,255,255,.5);font-size:.85rem;font-weight:700;cursor:pointer">← O'yinlarga qaytish</button>
+  </div>
+</div>
+
 <!-- MEMORY O'YINI -->
 <div id="p-memory" class="page" style="padding-bottom:80px;user-select:none">
   <div class="top">
-    <button onclick="go('p-games',-1)" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
+    <div style="min-width:80px"></div>
     <div class="tlogo">🧩 Memory</div>
     <button onclick="memStart()" style="background:none;border:none;color:#a78bfa;font-size:.85rem;font-weight:700;cursor:pointer">🔁</button>
   </div>
@@ -785,13 +790,17 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     </div>
     <button onclick="memStart()" class="btn" style="background:#a78bfa;color:#fff;padding:12px 32px;font-size:1rem;margin-bottom:10px;border:none;border-radius:14px;cursor:pointer;font-weight:700">🔁 Qayta</button>
     <button onclick="document.getElementById('m-win').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:.9rem;cursor:pointer;margin-top:6px">Yopish</button>
+    <button onclick="go('p-games',-1)" style="background:none;border:none;color:rgba(255,255,255,.3);font-size:.82rem;cursor:pointer;margin-top:4px">← O'yinlarga qaytish</button>
+  </div>
+  <div style="padding:8px 16px 4px">
+    <button onclick="go('p-games',-1)" style="width:100%;padding:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;color:rgba(255,255,255,.5);font-size:.85rem;font-weight:700;cursor:pointer">← O'yinlarga qaytish</button>
   </div>
 </div>
 
 <!-- PROBIRKALAR (WATER SORT) -->
 <div id="p-sort" class="page" style="padding-bottom:80px;user-select:none">
   <div class="top">
-    <button onclick="go('p-games',-1)" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
+    <div style="min-width:80px"></div>
     <div class="tlogo">🧪 Probirkalar</div>
     <div style="width:40px"></div>
   </div>
@@ -830,13 +839,17 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <button id="ws-next-btn" onclick="wsGoLevel(wsLevel+1)" style="background:#ef4444;color:#fff;padding:12px 32px;font-size:1rem;margin-bottom:8px;border:none;border-radius:14px;cursor:pointer;font-weight:700">➡️ Keyingi daraja</button>
     <button onclick="wsStart(wsLevel)" style="background:rgba(255,255,255,.08);border:none;border-radius:12px;padding:10px 24px;color:var(--c-fg);font-size:.9rem;cursor:pointer;margin-bottom:6px">🔁 Qayta</button>
     <button onclick="document.getElementById('ws-win').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,.3);font-size:.85rem;cursor:pointer;margin-top:4px">Yopish</button>
+    <button onclick="go('p-games',-1)" style="background:none;border:none;color:rgba(255,255,255,.3);font-size:.82rem;cursor:pointer;margin-top:4px">← O'yinlarga qaytish</button>
+  </div>
+  <div style="padding:8px 16px 4px">
+    <button onclick="go('p-games',-1)" style="width:100%;padding:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;color:rgba(255,255,255,.5);font-size:.85rem;font-weight:700;cursor:pointer">← O'yinlarga qaytish</button>
   </div>
 </div>
 
 <!-- NOM VA FORMULA O'YINI -->
 <div id="p-modd" class="page" style="padding-bottom:80px;user-select:none">
   <div class="top">
-    <button onclick="mdBackBtn()" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
+    <div style="min-width:80px"></div>
     <div class="tlogo" id="md-title">🔤 Nom va Formula</div>
     <div id="md-lvl-top" style="font-size:.8rem;color:rgba(255,255,255,.5);font-weight:700;min-width:56px;text-align:right">—</div>
   </div>
@@ -974,6 +987,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <div style="display:flex;gap:8px;justify-content:center">
       <button onclick="mdStartClass(mdCurClass)" style="background:linear-gradient(135deg,#a855f7,#7c3aed);color:#fff;border:none;border-radius:12px;padding:10px 18px;font-weight:700;font-size:.88rem;cursor:pointer">🔄 Qayta</button>
       <button onclick="mdShowPick()" style="background:rgba(255,255,255,.1);border:none;border-radius:12px;padding:10px 16px;color:var(--c-fg);font-size:.84rem;cursor:pointer;font-weight:600">← Sinflar</button>
+      <button onclick="go('p-games',-1)" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;color:rgba(255,255,255,.5);font-size:.82rem;cursor:pointer;font-weight:600">O'yinlar</button>
     </div>
   </div>
 </div>
@@ -981,7 +995,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
 <!-- REAKSIYALAR ZANJIRI -->
 <div id="p-react" class="page" style="padding-bottom:80px;user-select:none">
   <div class="top">
-    <button onclick="go('p-games',-1)" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
+    <div style="min-width:80px"></div>
     <div class="tlogo">⛓️ Zanjir</div>
     <div id="rz-lvl" style="font-size:.8rem;color:rgba(255,255,255,.5);font-weight:700;min-width:56px;text-align:right">—</div>
   </div>
@@ -1050,14 +1064,18 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <div style="display:flex;gap:10px;justify-content:center">
       <button onclick="rzPick()" style="background:rgba(255,255,255,.1);border:none;border-radius:12px;padding:10px 18px;color:var(--c-fg);font-size:.85rem;cursor:pointer;font-weight:600">Daraja tanlash</button>
       <button id="rz-retry-btn" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:12px;padding:10px 18px;font-weight:700;font-size:.85rem;cursor:pointer">🔄 Qayta</button>
+      <button onclick="go('p-games',-1)" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;color:rgba(255,255,255,.5);font-size:.82rem;cursor:pointer;font-weight:600">O'yinlar</button>
     </div>
+  </div>
+  <div style="padding:8px 16px 4px">
+    <button onclick="go('p-games',-1)" style="width:100%;padding:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;color:rgba(255,255,255,.5);font-size:.85rem;font-weight:700;cursor:pointer">← O'yinlarga qaytish</button>
   </div>
 </div>
 
 <!-- TARIXIY NOMLAR -->
 <div id="p-tarix" class="page" style="padding-bottom:80px;user-select:none">
   <div class="top">
-    <button onclick="go('p-games',-1)" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
+    <div style="min-width:80px"></div>
     <div class="tlogo">📜 Tarixiy</div>
     <div id="tn-lvl" style="font-size:.8rem;color:rgba(255,255,255,.5);font-weight:700;min-width:60px;text-align:right">—</div>
   </div>
@@ -1089,6 +1107,9 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
       <button onclick="go('p-games',-1)" style="background:rgba(255,255,255,.1);border:none;border-radius:12px;padding:10px 18px;color:var(--c-fg);font-size:.85rem;cursor:pointer;font-weight:600">← O'yinlar</button>
       <button onclick="tnStart()" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:12px;padding:10px 18px;font-weight:700;font-size:.85rem;cursor:pointer">🔄 Qayta</button>
     </div>
+  </div>
+  <div style="padding:8px 16px 4px">
+    <button onclick="go('p-games',-1)" style="width:100%;padding:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;color:rgba(255,255,255,.5);font-size:.85rem;font-weight:700;cursor:pointer">← O'yinlarga qaytish</button>
   </div>
 </div>
 
@@ -1496,7 +1517,7 @@ async function tYubor(){
       var e4=document.getElementById('p3c-sub');if(e4)e4.textContent=sub;
       taymerToxtat();tAvtotoza();
       document.getElementById('nav').style.display='none';
-      go('p3c',-1);
+      go('p3c',-1);document.getElementById('p3c').style.display='flex';
     }else{xb('yxb','err',d.detail||'Xato');btn.disabled=false;btn.textContent='📨 Yuborish';}
   }catch(e){xb('yxb','err','Xato');btn.disabled=false;btn.textContent='📨 Yuborish';}
 }
