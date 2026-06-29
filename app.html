@@ -49,6 +49,8 @@ body{font-family:sans-serif;background:#0a0f1e;color:#fff;min-height:100vh}
 .xb.inf{background:rgba(0,136,255,.15);border:1px solid rgba(0,136,255,.3);color:#4da6ff}
 .sp{display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,.1);border-top-color:#00d4aa;border-radius:50%;animation:sp .6s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
+@keyframes mdBlink{0%,100%{opacity:1}50%{opacity:0}}
+.md-caret{animation:mdBlink 1s step-end infinite;color:#a855f7}
 /* YORUG' REJIM */
 /* ── CSS O'ZGARUVCHILAR (TEMA TIZIMI) ── */
 :root{
@@ -926,7 +928,23 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     </div>
     <div id="md-hint" style="font-size:.64rem;color:rgba(255,255,255,.3);text-align:center;margin:4px 12px 3px;letter-spacing:.5px"></div>
     <div id="md-q" style="margin:3px 12px 9px;background:rgba(168,85,247,.08);border:1.5px solid rgba(168,85,247,.3);border-radius:16px;padding:15px 12px;text-align:center;font-size:1.2rem;font-weight:800;min-height:62px;display:flex;align-items:center;justify-content:center;line-height:1.5;word-break:break-all"></div>
-    <div id="md-opts" style="display:flex;flex-direction:column;gap:7px;padding:0 12px"></div>
+    <!-- Javob yozish maydoni -->
+    <div style="padding:0 12px 4px">
+      <!-- Formula yozish (maxsus klaviatura) -->
+      <div id="md-f-disp" style="display:none;background:rgba(255,255,255,.08);border:2px solid rgba(168,85,247,.5);border-radius:12px;padding:10px 14px;font-size:1.1rem;font-weight:700;min-height:44px;margin-bottom:6px;letter-spacing:.5px;word-break:break-all;line-height:1.5">
+        <span id="md-typed"></span><span class="md-caret">▮</span>
+      </div>
+      <!-- Nom yozish (qurilma klaviaturasi) -->
+      <input id="md-name-inp" type="text" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"
+        placeholder="Nomini yozing..."
+        style="display:none;width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:2px solid rgba(168,85,247,.5);border-radius:12px;padding:10px 14px;font-size:1rem;font-weight:600;color:var(--c-fg);outline:none;margin-bottom:6px">
+      <!-- Tekshirish tugmasi -->
+      <button onclick="mdSubmit()" id="md-submit-btn" style="width:100%;padding:11px;background:linear-gradient(135deg,#a855f7,#7c3aed);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">
+        ✓ Tekshirish
+      </button>
+    </div>
+    <!-- Kimyo klaviaturasi (formula uchun) -->
+    <div id="md-chem-kb" style="display:none;padding:4px 10px 6px"></div>
   </div>
   <!-- O'yin tugadi -->
   <div id="md-over" style="display:none;margin:26px 18px;text-align:center">
@@ -3724,6 +3742,97 @@ function mdStartClass(cls){
   mdShow();
 }
 
+var mdTyped='';
+var mdKbBuilt=false;
+
+function mdBuildKb(){
+  // Element rows: 8 cols
+  var rows=[
+    ['H','C','N','O','S','P','Cl','F'],
+    ['Na','K','Ca','Mg','Al','Fe','Cu','Zn'],
+    ['Ag','Ba','Mn','Cr','Pb','Si','Br','I'],
+    ['Li','Sr','Ni','As','Bi','Hg','Au','B'],
+    ['₂','₃','₄','₅','₆','₇','₈','₁₀'],
+    ['(',')',  '=','≡','−','NH₄','⌫','✓'],
+  ];
+  var html='';
+  rows.forEach(function(row,ri){
+    html+='<div style="display:flex;gap:3px;margin-bottom:3px">';
+    row.forEach(function(k){
+      var isNum=k.match(/^[₀-₉₁₀]+$/);
+      var isDel=k==='⌫', isOk=k==='✓';
+      var bg=isDel?'rgba(239,68,68,.2)':isOk?'rgba(0,212,170,.2)':isNum?'rgba(168,85,247,.15)':'rgba(255,255,255,.08)';
+      var col=isDel?'#ef4444':isOk?'#00d4aa':isNum?'#c084fc':'rgba(255,255,255,.9)';
+      var bdr=isDel?'rgba(239,68,68,.35)':isOk?'rgba(0,212,170,.35)':isNum?'rgba(168,85,247,.3)':'rgba(255,255,255,.12)';
+      var act=isDel?'mdKbDel()':isOk?'mdSubmit()':'mdKbType(\''+k+'\')';
+      html+='<button onclick="'+act+'" style="flex:1;background:'+bg+';border:1px solid '+bdr+';border-radius:6px;padding:7px 1px;color:'+col+';font-size:.68rem;font-weight:700;cursor:pointer;min-height:34px;line-height:1">'+k+'</button>';
+    });
+    html+='</div>';
+  });
+  document.getElementById('md-chem-kb').innerHTML=html;
+  mdKbBuilt=true;
+}
+
+function mdKbType(c){
+  mdTyped+=c;
+  document.getElementById('md-typed').textContent=mdTyped;
+}
+
+function mdKbDel(){
+  mdTyped=[...mdTyped].slice(0,-1).join('');
+  document.getElementById('md-typed').textContent=mdTyped;
+}
+
+function mdNorm(s){
+  return s.trim().toLowerCase().replace(/[''ʻʼ`]/g,"'").replace(/\s+/g,' ');
+}
+
+function mdSubmit(){
+  if(!mdRunning)return;
+  var answer;
+  if(mdDir==='formula'){
+    answer=mdTyped.trim();
+  }else{
+    answer=(document.getElementById('md-name-inp').value||'').trim();
+  }
+  if(!answer)return;
+
+  // For formula: exact match (both use Unicode subscripts)
+  // For name: normalized case-insensitive
+  var correct;
+  if(mdDir==='formula'){
+    correct=(answer===mdAns);
+  }else{
+    correct=(mdNorm(answer)===mdNorm(mdAns));
+  }
+
+  var fd=document.getElementById('md-f-disp');
+  var ni=document.getElementById('md-name-inp');
+  var sb=document.getElementById('md-submit-btn');
+  sb.disabled=true;
+
+  if(correct){
+    if(fd.style.display!=='none')fd.style.borderColor='#00d4aa';
+    if(ni.style.display!=='none')ni.style.borderColor='#00d4aa';
+    sb.style.background='#00d4aa';
+    mdLevel++;
+    if(mdLevel>mdBest){mdBest=mdLevel;try{localStorage.setItem('mdBest_'+mdCurClass,mdBest);}catch(e){}}
+    document.getElementById('md-best').textContent=mdBest;
+    setTimeout(function(){mdShow();},700);
+  }else{
+    if(fd.style.display!=='none')fd.style.borderColor='#ef4444';
+    if(ni.style.display!=='none')ni.style.borderColor='#ef4444';
+    sb.style.background='#ef4444';
+    // Show correct answer in question box
+    var qEl=document.getElementById('md-q');
+    qEl.style.borderColor='#ef4444';
+    qEl.style.background='rgba(239,68,68,.08)';
+    qEl.innerHTML='<span style="font-size:.65rem;opacity:.5;display:block;margin-bottom:3px">To\'g\'ri javob:</span>'+mdAns;
+    mdRunning=false;
+    setTimeout(function(){mdOver('😔',"Noto'g'ri!");},2000);
+  }
+}
+
 function mdShow(){
   var pool=mdPool;
   if(mdLevel>=pool.length){mdOver('🏆',"Barcha "+pool.length+" ta modda o'tildi!");return;}
@@ -3743,63 +3852,43 @@ function mdShow(){
 
   var q,hint;
   if(mdDir==='name'){
-    q=item.f; hint='Bu formulaning nomi nima?'; mdAns=item.n;
+    // Show formula → type NAME
+    q=item.f; hint='⬇ Nomini yozing'; mdAns=item.n;
   }else{
-    q=item.n; hint="Bu moddaning formulasi qaysi?"; mdAns=item.f;
+    // Show name → type FORMULA
+    q=item.n; hint='⬇ Formulasini yozing'; mdAns=item.f;
   }
+  var qEl=document.getElementById('md-q');
+  qEl.textContent=q;
+  qEl.style.borderColor=c.col+'55';
+  qEl.style.background=c.col+'0d';
   document.getElementById('md-hint').textContent=hint;
-  document.getElementById('md-q').textContent=q;
 
-  // Wrong options: nearby items in original array first (structurally similar!),
-  // then fall back to rest of class. This ensures HClO₃ gets HClO/HClO₂/HClO₄,
-  // Fe₂O₃ gets FeO/Fe₃O₄/CuO, etc.
-  var pool2=MD_CLASS[mdCurClass].items;
-  var origIdx=pool2.indexOf(item);
-  var rng=Math.min(6,Math.max(3,Math.floor(pool2.length/5)));
-  var s=Math.max(0,origIdx-rng),e=Math.min(pool2.length-1,origIdx+rng);
-  var nearby=[],rest=[];
-  for(var i=0;i<pool2.length;i++){
-    if(pool2[i]===item)continue;
-    if(i>=s&&i<=e)nearby.push(i);else rest.push(i);
-  }
-  nearby=rzShuffle(nearby);rest=rzShuffle(rest);
-  var candidates=nearby.concat(rest);
-  var wrongs=[];
-  for(var i=0;i<candidates.length&&wrongs.length<3;i++){
-    var cand=pool2[candidates[i]];
-    var v=mdDir==='name'?cand.n:cand.f;
-    if(v!==mdAns&&wrongs.indexOf(v)===-1)wrongs.push(v);
-  }
+  // Reset input area
+  var fd=document.getElementById('md-f-disp');
+  var ni=document.getElementById('md-name-inp');
+  var kb=document.getElementById('md-chem-kb');
+  var sb=document.getElementById('md-submit-btn');
+  fd.style.borderColor=c.col+'66';
+  ni.style.borderColor=c.col+'66';
+  sb.style.background='linear-gradient(135deg,'+c.col+','+c.col+'99)';
+  sb.disabled=false;
 
-  mdOptList=rzShuffle([mdAns].concat(wrongs));
-  var html='';
-  mdOptList.forEach(function(o,i){
-    var fs=mdDir==='name'?'.83rem':'1rem';
-    html+='<button onclick="mdAnswer('+i+')" id="mdb'+i+'" style="background:rgba(255,255,255,.06);border:1.5px solid '+c.col+'33;border-radius:11px;padding:10px 12px;color:var(--c-fg);font-size:'+fs+';font-weight:600;cursor:pointer;text-align:left;width:100%;line-height:1.4">'+o+'</button>';
-  });
-  document.getElementById('md-opts').innerHTML=html;
-}
-
-function mdAnswer(idx){
-  if(!mdRunning)return;
-  var chosen=mdOptList[idx];
-  var correct=(chosen===mdAns);
-  document.getElementById('md-opts').querySelectorAll('button').forEach(function(b){b.disabled=true;});
-  if(correct){
-    document.getElementById('mdb'+idx).style.background='rgba(0,212,170,.35)';
-    document.getElementById('mdb'+idx).style.borderColor='#00d4aa';
-    mdLevel++;
-    if(mdLevel>mdBest){mdBest=mdLevel;try{localStorage.setItem('mdBest_'+mdCurClass,mdBest);}catch(e){}}
-    document.getElementById('md-best').textContent=mdBest;
-    setTimeout(function(){mdShow();},600);
+  if(mdDir==='formula'){
+    // Chemistry keyboard
+    fd.style.display='';
+    ni.style.display='none';
+    mdTyped='';
+    document.getElementById('md-typed').textContent='';
+    if(!mdKbBuilt)mdBuildKb();
+    kb.style.display='';
   }else{
-    document.getElementById('mdb'+idx).style.background='rgba(239,68,68,.35)';
-    document.getElementById('mdb'+idx).style.borderColor='#ef4444';
-    mdOptList.forEach(function(o,i){
-      if(o===mdAns){document.getElementById('mdb'+i).style.background='rgba(0,212,170,.35)';document.getElementById('mdb'+i).style.borderColor='#00d4aa';}
-    });
-    mdRunning=false;
-    setTimeout(function(){mdOver('😔',"Noto'g'ri!");},1500);
+    // Device keyboard for name
+    fd.style.display='none';
+    ni.style.display='';
+    ni.value='';
+    kb.style.display='none';
+    setTimeout(function(){ni.focus();},120);
   }
 }
 
