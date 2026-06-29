@@ -656,7 +656,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
         <div id="pg-r-reyting" style="font-size:.8rem;color:rgba(255,255,255,.6)">Yuklanmoqda...</div>
       </div>
       <div style="padding:12px 18px 18px">
-        <button onclick="go('p-react',-1);rzStart()" style="width:100%;padding:11px;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
+        <button onclick="go('p-react',-1);rzPick()" style="width:100%;padding:11px;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
       </div>
     </div>
 
@@ -798,39 +798,74 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   <div class="top">
     <button onclick="go('p-games',-1)" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
     <div class="tlogo">⛓️ Zanjir</div>
-    <div id="rz-lvl" style="font-size:.8rem;color:rgba(255,255,255,.5);font-weight:700;min-width:56px;text-align:right">1-daraja</div>
+    <div id="rz-lvl" style="font-size:.8rem;color:rgba(255,255,255,.5);font-weight:700;min-width:56px;text-align:right">—</div>
   </div>
-  <!-- Start screen -->
-  <div id="rz-start" style="margin:40px 20px;text-align:center">
-    <div style="font-size:3.5rem;margin-bottom:14px">⛓️</div>
-    <div style="font-size:1.2rem;font-weight:800;margin-bottom:8px">Reaksiyalar Zanjiri</div>
-    <div style="font-size:.82rem;color:rgba(255,255,255,.5);margin-bottom:24px;line-height:1.7">Har bir darajada bitta reaksiya ko'rsatiladi.<br>To'g'ri javobni toping va keyingi darajaga o'ting.<br>Xato qilsangiz — o'yin tugaydi!</div>
-    <button onclick="rzStart()" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:14px;padding:14px 40px;font-weight:800;font-size:1rem;cursor:pointer">▶ Boshlash</button>
+  <!-- Daraja tanlash -->
+  <div id="rz-pick" style="padding:8px 14px 20px;text-align:center">
+    <div style="font-size:2.8rem;margin-bottom:8px">⛓️</div>
+    <div style="font-size:1.1rem;font-weight:800;margin-bottom:4px">Reaksiyalar Zanjiri</div>
+    <div style="font-size:.76rem;color:rgba(255,255,255,.4);margin-bottom:18px">Har darajada bitta reaksiya. Xato — o'yin tugaydi!</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button onclick="rzStartDiff('easy')" style="background:rgba(0,212,170,.1);border:1.5px solid rgba(0,212,170,.4);border-radius:16px;padding:14px 16px;color:var(--c-fg);cursor:pointer;text-align:left">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="font-size:1.8rem">🟢</div>
+          <div style="flex:1">
+            <div style="font-size:.95rem;font-weight:800;color:#00d4aa">Oson</div>
+            <div style="font-size:.72rem;opacity:.5;margin-top:2px">Reaksiyadagi bitta noma'lumni toping</div>
+          </div>
+          <div id="rz-best-e" style="font-size:.72rem;color:rgba(255,255,255,.35)"></div>
+        </div>
+      </button>
+      <button onclick="rzStartDiff('mid')" style="background:rgba(245,158,11,.1);border:1.5px solid rgba(245,158,11,.4);border-radius:16px;padding:14px 16px;color:var(--c-fg);cursor:pointer;text-align:left">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="font-size:1.8rem">🟡</div>
+          <div style="flex:1">
+            <div style="font-size:.95rem;font-weight:800;color:#f59e0b">O'rta</div>
+            <div style="font-size:.72rem;opacity:.5;margin-top:2px">Faqat reagentlar beriladi — mahsulotni toping (Organika)</div>
+          </div>
+          <div id="rz-best-m" style="font-size:.72rem;color:rgba(255,255,255,.35)"></div>
+        </div>
+      </button>
+      <button onclick="rzStartDiff('hard')" style="background:rgba(239,68,68,.1);border:1.5px solid rgba(239,68,68,.4);border-radius:16px;padding:14px 16px;color:var(--c-fg);cursor:pointer;text-align:left">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="font-size:1.8rem">🔴</div>
+          <div style="flex:1">
+            <div style="font-size:.95rem;font-weight:800;color:#ef4444">Qiyin</div>
+            <div style="font-size:.72rem;opacity:.5;margin-top:2px">Mahsulotlar beriladi — reagentlarni toping (OQR)</div>
+          </div>
+          <div id="rz-best-h" style="font-size:.72rem;color:rgba(255,255,255,.35)"></div>
+        </div>
+      </button>
+    </div>
   </div>
-  <!-- Game board -->
+  <!-- O'yin taxtasi -->
   <div id="rz-board" style="display:none">
-    <div style="display:flex;gap:8px;padding:4px 14px 8px">
-      <div style="flex:1;background:rgba(255,255,255,.06);border-radius:12px;padding:8px;text-align:center">
-        <div style="font-size:.6rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px">To'g'ri</div>
+    <div style="display:flex;gap:8px;padding:4px 14px 6px">
+      <div style="flex:1;background:rgba(255,255,255,.06);border-radius:12px;padding:7px;text-align:center">
+        <div style="font-size:.58rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px">To'g'ri</div>
         <div id="rz-score" style="font-size:1.3rem;font-weight:800;color:#00d4aa">0</div>
       </div>
-      <div style="flex:1;background:rgba(255,255,255,.06);border-radius:12px;padding:8px;text-align:center">
-        <div style="font-size:.6rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px">Rekord</div>
-        <div id="rz-best" style="font-size:1.3rem;font-weight:800;color:gold">0</div>
+      <div style="flex:1;background:rgba(255,255,255,.06);border-radius:12px;padding:7px;text-align:center">
+        <div style="font-size:.58rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px">Rekord</div>
+        <div id="rz-best-cur" style="font-size:1.3rem;font-weight:800;color:gold">0</div>
       </div>
     </div>
-    <div style="margin:0 14px 10px;background:rgba(255,255,255,.1);border-radius:6px;height:5px">
-      <div id="rz-bar" style="background:linear-gradient(90deg,#f59e0b,#00d4aa);border-radius:6px;height:5px;width:0%;transition:width .4s"></div>
+    <div style="margin:0 14px 6px;background:rgba(255,255,255,.1);border-radius:6px;height:4px">
+      <div id="rz-bar" style="border-radius:6px;height:4px;width:0%;transition:width .4s"></div>
     </div>
-    <div id="rz-eq" style="margin:0 14px 14px;background:rgba(255,255,255,.06);border:1.5px solid rgba(245,158,11,.25);border-radius:18px;padding:20px 16px;text-align:center;font-size:1.05rem;font-weight:700;min-height:72px;display:flex;align-items:center;justify-content:center;line-height:1.7;word-break:break-word"></div>
-    <div id="rz-opts" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px"></div>
+    <div id="rz-hint" style="font-size:.66rem;color:rgba(255,255,255,.3);text-align:center;margin:0 14px 6px"></div>
+    <div id="rz-eq" style="margin:0 14px 12px;background:rgba(255,255,255,.06);border:1.5px solid rgba(245,158,11,.2);border-radius:18px;padding:16px 14px;text-align:center;font-size:1rem;font-weight:700;min-height:66px;display:flex;align-items:center;justify-content:center;line-height:1.7;word-break:break-word;flex-direction:column"></div>
+    <div id="rz-opts" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 14px"></div>
   </div>
-  <!-- Game over -->
-  <div id="rz-over" style="display:none;margin:40px 20px;text-align:center">
-    <div id="rz-over-ico" style="font-size:3rem;margin-bottom:12px">😔</div>
-    <div id="rz-over-txt" style="font-size:1.2rem;font-weight:800;margin-bottom:6px"></div>
-    <div id="rz-over-sub" style="font-size:.82rem;color:rgba(255,255,255,.5);margin-bottom:24px"></div>
-    <button onclick="rzStart()" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:14px;padding:12px 32px;font-weight:700;font-size:.95rem;cursor:pointer">🔄 Qayta boshlash</button>
+  <!-- O'yin tugadi -->
+  <div id="rz-over" style="display:none;margin:30px 20px;text-align:center">
+    <div id="rz-over-ico" style="font-size:3rem;margin-bottom:10px">😔</div>
+    <div id="rz-over-txt" style="font-size:1.15rem;font-weight:800;margin-bottom:6px"></div>
+    <div id="rz-over-sub" style="font-size:.8rem;color:rgba(255,255,255,.5);margin-bottom:20px;line-height:1.6"></div>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button onclick="rzPick()" style="background:rgba(255,255,255,.1);border:none;border-radius:12px;padding:10px 18px;color:var(--c-fg);font-size:.85rem;cursor:pointer;font-weight:600">Daraja tanlash</button>
+      <button id="rz-retry-btn" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:12px;padding:10px 18px;font-weight:700;font-size:.85rem;cursor:pointer">🔄 Qayta</button>
+    </div>
   </div>
 </div>
 
@@ -2935,99 +2970,134 @@ document.addEventListener('touchend',function(e){
 },{passive:false});
 
 // === REAKSIYALAR ZANJIRI ===
-var RZ=[
-  // Qo'shilish
-  {q:'2H₂ + O₂ → ?', a:'2H₂O', w:['H₂O₂','H₂SO₄','2HO']},
-  {q:'2Na + Cl₂ → ?', a:'2NaCl', w:['NaCl₂','Na₂Cl','NaCl']},
-  {q:'Fe + S → ?', a:'FeS', w:['FeSO₄','Fe₂S₃','FeS₂']},
-  {q:'4Al + 3O₂ → ?', a:'2Al₂O₃', w:['Al₂O₃','4AlO','AlO₂']},
-  {q:'2Mg + O₂ → ?', a:'2MgO', w:['MgO₂','Mg₂O','Mg(OH)₂']},
-  {q:'N₂ + 3H₂ ⇌ ?', a:'2NH₃', w:['NH₃','N₂H₄','NH']},
-  {q:'2SO₂ + O₂ → ?', a:'2SO₃', w:['SO₃','S₂O₄','2SO₄']},
-  {q:'4P + 5O₂ → ?', a:'2P₂O₅', w:['P₂O₅','4PO','P₄O₆']},
-  {q:'S + O₂ → ?', a:'SO₂', w:['SO₃','S₂O','S₂O₃']},
-  {q:'2Fe + 3Cl₂ → ?', a:'2FeCl₃', w:['2FeCl₂','FeCl₃','Fe₂Cl']},
-  // Kislota oksidi + suv
-  {q:'SO₃ + H₂O → ?', a:'H₂SO₄', w:['H₂SO₃','H₂S₂O₄','H₂S']},
-  {q:'SO₂ + H₂O → ?', a:'H₂SO₃', w:['H₂SO₄','H₂S₂O₃','H₂S']},
-  {q:'CO₂ + H₂O → ?', a:'H₂CO₃', w:['H₂CO','CO(OH)₂','CO₂·H₂O']},
-  {q:'P₂O₅ + 3H₂O → ?', a:'2H₃PO₄', w:['H₃PO₄','3H₃PO₄','H₂PO₄']},
-  {q:'N₂O₅ + H₂O → ?', a:'2HNO₃', w:['HNO₃','2HNO₂','2NO₃H']},
-  // Asosli oksid + suv
-  {q:'CaO + H₂O → ?', a:'Ca(OH)₂', w:['CaH₂O','Ca₂OH','CaO₂']},
-  {q:'Na₂O + H₂O → ?', a:'2NaOH', w:['NaOH','Na₂OH₂','Na(OH)₂']},
-  {q:'BaO + H₂O → ?', a:'Ba(OH)₂', w:['BaH₂O','BaOH','BaO·H₂O']},
-  {q:'K₂O + H₂O → ?', a:'2KOH', w:['KOH','K₂OH','K(OH)₂']},
-  // Oksid + oksid
-  {q:'CaO + CO₂ → ?', a:'CaCO₃', w:['Ca(CO₃)₂','Ca₂CO₃','CaC₂O₄']},
-  {q:'CaO + SO₃ → ?', a:'CaSO₄', w:['CaSO₃','Ca(SO₄)₂','CaS']},
-  {q:'Na₂O + CO₂ → ?', a:'Na₂CO₃', w:['NaCO₃','2NaCO₃','Na₂C₂O₄']},
-  // Parchalanish
-  {q:'2H₂O → 2H₂ + ?', a:'O₂↑', w:['H₂O₂','O₃↑','OH↑']},
-  {q:'2H₂O₂ → 2H₂O + ?', a:'O₂↑', w:['H₂↑','O₃↑','2OH↑']},
-  {q:'CaCO₃ → CaO + ?', a:'CO₂↑', w:['CO↑','C↓','CO₃']},
-  {q:'2KClO₃ → 2KCl + ?', a:'3O₂↑', w:['O₂↑','2O₂↑','Cl₂ + O₂']},
-  {q:'Cu(OH)₂ → CuO + ?', a:'H₂O', w:['H₂↑','H₂O₂','2OH']},
-  {q:'2Fe(OH)₃ → Fe₂O₃ + ?', a:'3H₂O', w:['H₂O','2H₂O','3OH']},
-  {q:'Ca(OH)₂ → CaO + ?', a:'H₂O', w:['H₂↑','Ca+H₂O₂','H₂O₂']},
-  // Metal + kislota
-  {q:'Zn + H₂SO₄ → ZnSO₄ + ?', a:'H₂↑', w:['H₂O','SO₂↑','H₂S']},
-  {q:'Mg + 2HCl → MgCl₂ + ?', a:'H₂↑', w:['Cl₂↑','H₂O','MgH₂']},
-  {q:'Fe + 2HCl → FeCl₂ + ?', a:'H₂↑', w:['Cl₂↑','H₂O','FeCl₃']},
-  {q:'2Al + 3H₂SO₄ → Al₂(SO₄)₃ + ?', a:'3H₂↑', w:['H₂↑','H₂O','3SO₂↑']},
-  {q:'Ca + 2HCl → CaCl₂ + ?', a:'H₂↑', w:['Cl₂↑','H₂O','CaH₂']},
-  {q:'Zn + 2HCl → ZnCl₂ + ?', a:'H₂↑', w:['H₂O','Cl₂↑','ZnH₂']},
-  // Metal + suv
-  {q:'2Na + 2H₂O → 2NaOH + ?', a:'H₂↑', w:['O₂↑','Na₂O','H₂O₂']},
-  {q:'Ca + 2H₂O → Ca(OH)₂ + ?', a:'H₂↑', w:['O₂↑','CaO','H₂O₂']},
-  {q:'2K + 2H₂O → 2KOH + ?', a:'H₂↑', w:['O₂↑','K₂O','KOH']},
-  // Metal + tuz
-  {q:'Fe + CuSO₄ → FeSO₄ + ?', a:'Cu', w:['Cu₂','CuO','CuFe']},
-  {q:'Cu + 2AgNO₃ → Cu(NO₃)₂ + ?', a:'2Ag', w:['Ag','AgO','Ag₂O']},
-  {q:'Zn + CuSO₄ → ZnSO₄ + ?', a:'Cu', w:['CuO','Cu₂O','ZnCu']},
-  // Neytrallanish
-  {q:'NaOH + HCl → NaCl + ?', a:'H₂O', w:['H₂↑','NaClO','H₂SO₄']},
-  {q:'2NaOH + H₂SO₄ → Na₂SO₄ + ?', a:'2H₂O', w:['H₂O','H₂↑','Na₂SO₃']},
-  {q:'Ca(OH)₂ + 2HCl → CaCl₂ + ?', a:'2H₂O', w:['H₂O','H₂↑','Ca(Cl)OH']},
-  {q:'Al(OH)₃ + 3HCl → AlCl₃ + ?', a:'3H₂O', w:['H₂O','H₂↑','3OH']},
-  {q:'KOH + HNO₃ → KNO₃ + ?', a:'H₂O', w:['H₂↑','KNO₂','H₂NO₃']},
-  // Ion almashinish (cho'kma)
-  {q:'AgNO₃ + NaCl → AgCl↓ + ?', a:'NaNO₃', w:['AgNaCl','NaNO₂','Na₂NO₃']},
-  {q:'BaCl₂ + Na₂SO₄ → BaSO₄↓ + ?', a:'2NaCl', w:['NaCl','Na₂Cl₂','NaSO₄']},
-  {q:'Na₂CO₃ + 2HCl → 2NaCl + H₂O + ?', a:'CO₂↑', w:['CO↑','C↓','H₂CO₃']},
-  {q:'Ca(OH)₂ + CO₂ → CaCO₃↓ + ?', a:'H₂O', w:['H₂↑','Ca(HCO₃)₂','CO']},
-  {q:'Na₂CO₃ + Ca(OH)₂ → CaCO₃↓ + ?', a:'2NaOH', w:['NaOH','NaO₂','Na(OH)₂']},
-  {q:'Pb(NO₃)₂ + 2KI → PbI₂↓ + ?', a:'2KNO₃', w:['KNO₃','KNO₂','K₂NO₃']},
-  // Oksid + kislota
-  {q:'CuO + H₂SO₄ → CuSO₄ + ?', a:'H₂O', w:['H₂↑','Cu(OH)₂','H₂SO₃']},
-  {q:'CaO + H₂SO₄ → CaSO₄ + ?', a:'H₂O', w:['H₂↑','Ca(OH)₂','CaSO₃']},
-  {q:'Fe₂O₃ + 3H₂SO₄ → Fe₂(SO₄)₃ + ?', a:'3H₂O', w:['H₂O','H₂↑','3H₂SO₃']},
-  {q:'Al₂O₃ + 6HCl → 2AlCl₃ + ?', a:'3H₂O', w:['H₂O','H₂↑','2H₂O']},
-  {q:'MgO + 2HCl → MgCl₂ + ?', a:'H₂O', w:['H₂↑','Mg(OH)₂','H₂O₂']},
-  // Qaytarilish (reduksiya)
-  {q:'CuO + H₂ → Cu + ?', a:'H₂O', w:['H₂↑','CuH₂','OH']},
-  {q:'Fe₂O₃ + 3H₂ → 2Fe + ?', a:'3H₂O', w:['H₂O','H₂↑','2H₂O']},
-  {q:'CuO + CO → Cu + ?', a:'CO₂', w:['CO₃','C + O₂','CuCO']},
-  {q:'Fe₂O₃ + 3CO → 2Fe + ?', a:'3CO₂', w:['CO₂','CO₃','CO + O₂']},
-  {q:'WO₃ + 3H₂ → W + ?', a:'3H₂O', w:['H₂O','H₂↑','3OH']},
-  // Yonish
-  {q:'C + O₂ → ?', a:'CO₂', w:['CO','C₂O','CO₃']},
-  {q:'2C + O₂ → ?', a:'2CO', w:['2CO₂','CO₂','CO + C']},
-  {q:'CH₄ + 2O₂ → CO₂ + ?', a:'2H₂O', w:['H₂O','4H₂O','H₂O₂']},
-  {q:'2H₂S + 3O₂ → 2SO₂ + ?', a:'2H₂O', w:['H₂O','H₂O₂','3H₂O']},
-  // Azot kimyosi
-  {q:'4NH₃ + 5O₂ → 4NO + ?', a:'6H₂O', w:['4H₂O','H₂O','3H₂O']},
-  {q:'3NO₂ + H₂O → 2HNO₃ + ?', a:'NO↑', w:['NO₂','N₂O','N₂']},
-  {q:'NH₃ + HCl → ?', a:'NH₄Cl', w:['NH₃Cl','NH₂Cl','(NH₄)Cl']},
-  {q:'4NH₃ + 3O₂ → 2N₂ + ?', a:'6H₂O', w:['4H₂O','H₂O','3H₂O']},
-  {q:'4NO₂ + O₂ + 2H₂O → ?', a:'4HNO₃', w:['2HNO₃','4HNO₂','HNO₃']},
-  // Amphoter
-  {q:'Al₂O₃ + 2NaOH → 2NaAlO₂ + ?', a:'H₂O', w:['H₂↑','Na₂Al₂O₄','AlNaO']},
-  {q:'Al(OH)₃ + NaOH → NaAlO₂ + ?', a:'2H₂O', w:['H₂O','H₂↑','H₂O₂']},
-  {q:'Zn + 2NaOH → Na₂ZnO₂ + ?', a:'H₂↑', w:['O₂↑','H₂O','ZnO']},
-  {q:'ZnO + 2NaOH → Na₂ZnO₂ + ?', a:'H₂O', w:['H₂↑','NaZnO','Na₂Zn']},
+// OSON: bitta noma'lum (mahsulot yoki reagent o'rnida ?)
+var RZ_E=[
+  {q:'2H₂ + O₂ → ?',a:'2H₂O',w:['H₂O₂','H₂SO₄','2HO']},
+  {q:'2Na + Cl₂ → ?',a:'2NaCl',w:['NaCl','Na₂Cl','NaCl₂']},
+  {q:'Fe + S → ?',a:'FeS',w:['FeSO₄','Fe₂S₃','FeO']},
+  {q:'4Al + 3O₂ → ?',a:'2Al₂O₃',w:['Al₂O₃','4AlO','AlO']},
+  {q:'2Mg + O₂ → ?',a:'2MgO',w:['MgO₂','Mg₂O','MgO']},
+  {q:'N₂ + 3H₂ ⇌ ?',a:'2NH₃',w:['NH₃','N₂H₄','2NH']},
+  {q:'2SO₂ + O₂ → ?',a:'2SO₃',w:['SO₃','S₂O₄','2SO₄']},
+  {q:'S + O₂ → ?',a:'SO₂',w:['SO₃','S₂O','SO₄']},
+  {q:'SO₃ + H₂O → ?',a:'H₂SO₄',w:['H₂SO₃','H₂S','H₂S₂O₄']},
+  {q:'SO₂ + H₂O → ?',a:'H₂SO₃',w:['H₂SO₄','H₂S','H₂SO₂']},
+  {q:'CO₂ + H₂O → ?',a:'H₂CO₃',w:['H₂CO','CO(OH)₂','H₂CO₂']},
+  {q:'P₂O₅ + 3H₂O → ?',a:'2H₃PO₄',w:['H₃PO₄','H₃PO₃','H₂PO₄']},
+  {q:'N₂O₅ + H₂O → ?',a:'2HNO₃',w:['HNO₃','2HNO₂','H₂N₂O₅']},
+  {q:'CaO + H₂O → ?',a:'Ca(OH)₂',w:['Ca₂OH','CaH₂O','CaO₂']},
+  {q:'Na₂O + H₂O → ?',a:'2NaOH',w:['NaOH','Na₂OH₂','Na(OH)₂']},
+  {q:'K₂O + H₂O → ?',a:'2KOH',w:['KOH','K₂OH','K(OH)₂']},
+  {q:'CaO + CO₂ → ?',a:'CaCO₃',w:['Ca(CO₃)₂','Ca₂CO₃','CaC₂O₄']},
+  {q:'Na₂O + CO₂ → ?',a:'Na₂CO₃',w:['NaCO₃','2NaCO₃','Na₂C₂O₄']},
+  {q:'2H₂O → 2H₂ + ?',a:'O₂↑',w:['H₂O₂','O₃↑','OH↑']},
+  {q:'2H₂O₂ → 2H₂O + ?',a:'O₂↑',w:['H₂↑','O₃↑','H₂O']},
+  {q:'CaCO₃ → CaO + ?',a:'CO₂↑',w:['CO↑','C↓','CO₃']},
+  {q:'2KClO₃ → 2KCl + ?',a:'3O₂↑',w:['O₂↑','2O₂↑','Cl₂↑']},
+  {q:'Cu(OH)₂ → CuO + ?',a:'H₂O',w:['H₂↑','H₂O₂','2OH']},
+  {q:'Zn + H₂SO₄ → ZnSO₄ + ?',a:'H₂↑',w:['H₂O','SO₂↑','H₂S']},
+  {q:'Mg + 2HCl → MgCl₂ + ?',a:'H₂↑',w:['Cl₂↑','H₂O','MgH₂']},
+  {q:'Fe + 2HCl → FeCl₂ + ?',a:'H₂↑',w:['Cl₂↑','H₂O','FeCl₃']},
+  {q:'Ca + 2HCl → CaCl₂ + ?',a:'H₂↑',w:['Cl₂↑','H₂O','CaH₂']},
+  {q:'2Na + 2H₂O → 2NaOH + ?',a:'H₂↑',w:['O₂↑','Na₂O','H₂O₂']},
+  {q:'Ca + 2H₂O → Ca(OH)₂ + ?',a:'H₂↑',w:['O₂↑','CaO','H₂O₂']},
+  {q:'Fe + CuSO₄ → FeSO₄ + ?',a:'Cu',w:['Cu₂','CuO','CuFe']},
+  {q:'Cu + 2AgNO₃ → Cu(NO₃)₂ + ?',a:'2Ag',w:['Ag','AgO','Ag₂O']},
+  {q:'Zn + CuSO₄ → ZnSO₄ + ?',a:'Cu',w:['CuO','Cu₂O','ZnCu']},
+  {q:'NaOH + HCl → NaCl + ?',a:'H₂O',w:['H₂↑','NaClO','H₂SO₄']},
+  {q:'2NaOH + H₂SO₄ → Na₂SO₄ + ?',a:'2H₂O',w:['H₂O','H₂↑','Na₂SO₃']},
+  {q:'AgNO₃ + NaCl → AgCl↓ + ?',a:'NaNO₃',w:['AgNaCl','NaNO₂','Na₂NO₃']},
+  {q:'BaCl₂ + Na₂SO₄ → BaSO₄↓ + ?',a:'2NaCl',w:['NaCl','Na₂Cl₂','NaSO₄']},
+  {q:'Ca(OH)₂ + CO₂ → CaCO₃↓ + ?',a:'H₂O',w:['H₂↑','Ca(HCO₃)₂','CO']},
+  {q:'CuO + H₂SO₄ → CuSO₄ + ?',a:'H₂O',w:['H₂↑','Cu(OH)₂','H₂SO₃']},
+  {q:'CuO + H₂ → Cu + ?',a:'H₂O',w:['H₂↑','CuH₂','OH']},
+  {q:'Fe₂O₃ + 3CO → 2Fe + ?',a:'3CO₂',w:['CO₂','CO₃','CO']},
+  {q:'C + O₂ → ?',a:'CO₂',w:['CO','C₂O','CO₃']},
+  {q:'CH₄ + 2O₂ → CO₂ + ?',a:'2H₂O',w:['H₂O','4H₂O','H₂O₂']},
+  {q:'4NH₃ + 5O₂ → 4NO + ?',a:'6H₂O',w:['4H₂O','H₂O','3H₂O']},
+  {q:'3NO₂ + H₂O → 2HNO₃ + ?',a:'NO↑',w:['NO₂','N₂O','N₂']},
+  {q:'Al₂O₃ + 2NaOH → 2NaAlO₂ + ?',a:'H₂O',w:['H₂↑','Na₂Al₂O₄','AlNaO']},
+  {q:'Zn + 2NaOH → Na₂ZnO₂ + ?',a:'H₂↑',w:['O₂↑','H₂O','ZnO']},
 ];
-var rzQueue=[],rzLevel=0,rzScore=0,rzBest=0,rzRunning=false,rzOptList=[];
+// O'RTA: faqat reagentlar — barcha mahsulotlarni toping (Organika ham bor)
+var RZ_M=[
+  {l:'2Na + Cl₂',r:'2NaCl',w:['NaCl','Na₂Cl₂','NaClO']},
+  {l:'4Al + 3O₂',r:'2Al₂O₃',w:['4AlO₂','Al₄O₆','2Al₂O']},
+  {l:'N₂ + 3H₂',r:'2NH₃',w:['NH₄','N₂H₂','N₂H₄ + H₂']},
+  {l:'2SO₂ + O₂',r:'2SO₃',w:['S₂O₅','SO₄','2H₂SO₄']},
+  {l:'SO₃ + H₂O',r:'H₂SO₄',w:['H₂SO₃','H₂S + O₂','H₃SO₄']},
+  {l:'P₂O₅ + 3H₂O',r:'2H₃PO₄',w:['H₃PO₄','2H₂PO₄ + H₂O','H₃PO₃ + H₂O₂']},
+  {l:'CaO + H₂O',r:'Ca(OH)₂',w:['CaO·H₂O','Ca + H₂O₂','CaH₂ + O₂']},
+  {l:'CaO + CO₂',r:'CaCO₃',w:['CaO·CO₂','Ca₂C₂O₅','Ca + CO₃']},
+  {l:'CaCO₃',r:'CaO + CO₂↑',w:['Ca + CO₃','Ca(CO₂)','CaC₂O₄ + O₂']},
+  {l:'2KClO₃',r:'2KCl + 3O₂↑',w:['2KClO + O₂↑','KCl₂ + 2O₂↑','2KClO₂ + O₂']},
+  {l:'2Fe(OH)₃',r:'Fe₂O₃ + 3H₂O',w:['FeO + H₂O','Fe₂O₂ + 3H₂O','Fe₂O₃ + H₂↑']},
+  {l:'2KMnO₄',r:'K₂MnO₄ + MnO₂ + O₂↑',w:['KMnO₄ + O₂','2KMnO₄ + O₂↑','MnO₂ + K₂O + O₂']},
+  {l:'Na₂CO₃ + 2HCl',r:'2NaCl + H₂O + CO₂↑',w:['NaCl + H₂CO₃','2NaCl + H₂CO₃','NaHCO₃ + NaCl']},
+  {l:'Na₂CO₃ + Ca(OH)₂',r:'CaCO₃↓ + 2NaOH',w:['NaOH + Ca + CO₂','Na₂CaO₂ + CO₂','Na₂CO₃·Ca(OH)₂']},
+  {l:'Al₂O₃ + 2NaOH',r:'2NaAlO₂ + H₂O',w:['NaAlO₃ + H₂','2NaAl + O₂ + H₂O','Na₂AlO₂ + H₂']},
+  {l:'Al(OH)₃ + NaOH',r:'NaAlO₂ + 2H₂O',w:['NaAl(OH)₄','AlNaO + H₂O','Na₂AlO₂ + H₂↑']},
+  {l:'2Al + 2NaOH + 2H₂O',r:'2NaAlO₂ + 3H₂↑',w:['2AlNaO + 3H₂↑','Al₂O₃ + NaH + H₂','2NaAlO + H₂O']},
+  {l:'2FeCl₂ + Cl₂',r:'2FeCl₃',w:['FeCl₄','2FeCl₂Cl','FeCl₂ + FeCl']},
+  {l:'MnO₂ + 4HCl',r:'MnCl₂ + Cl₂↑ + 2H₂O',w:['MnCl₄ + H₂O','MnO + 2HCl + Cl₂','Mn + 2H₂O + Cl₂']},
+  {l:'CaCO₃ + H₂O + CO₂',r:'Ca(HCO₃)₂',w:['CaO + H₂CO₃','CaCO₃·H₂O','CaH₂(CO₃)₂']},
+  // Organika (qo'shilish reaksiyalari)
+  {l:'C₂H₄ + H₂',r:'C₂H₆',w:['C₂H₂','CH₄','C₂H₅']},
+  {l:'C₂H₂ + H₂',r:'C₂H₄',w:['C₂H₆','CH₄','C₂H₃']},
+  {l:'C₂H₂ + 2H₂',r:'C₂H₆',w:['C₂H₄','2CH₃','C₂H₅']},
+  {l:'C₂H₄ + Br₂',r:'C₂H₄Br₂',w:['C₂H₃Br + HBr','2CH₂Br','C₂H₄Br + Br']},
+  {l:'C₂H₂ + HCl',r:'CH₂=CHCl',w:['C₂H₂Cl','C₂H₃Cl + H','CHCl + CH₂']},
+  {l:'C₂H₄ + H₂O',r:'C₂H₅OH',w:['CH₃OH + CH₄','C₂H₄·H₂O','C₂H₆O₂']},
+  {l:'CH₄ + Cl₂',r:'CH₃Cl + HCl',w:['CH₂Cl₂ + H₂','CH₃Cl₂ + H','CHCl + H₂Cl']},
+  {l:'C₂H₅OH + Na',r:'C₂H₅ONa + H₂↑',w:['C₂H₅Na + H₂O','C₂H₄ + NaOH + H₂','C₂H₅NaO + H']},
+  {l:'C₂H₅OH',r:'C₂H₄ + H₂O',w:['CH₃OH + CH₄','C₂H₄O + H₂','C₂H₅ + OH']},
+  {l:'C₂H₅OH + O₂',r:'CH₃COOH + H₂O',w:['CO₂ + H₂O','C₂H₄O₂ + H₂','C₂H₄ + H₂O₂']},
+  {l:'CH₃COOH + C₂H₅OH',r:'CH₃COOC₂H₅ + H₂O',w:['C₂H₅COOH + H₂O','CH₃OH + C₂H₄O₂','C₄H₁₀O₃']},
+  {l:'CH₃COOH + NaOH',r:'CH₃COONa + H₂O',w:['CH₃Na + CO₂ + H₂O','CH₃COO + NaOH','C₂H₅ONa + CO₂']},
+  {l:'C₆H₆ + Br₂',r:'C₆H₅Br + HBr',w:['C₆H₆Br₂','C₆H₅ + HBr₂','C₆H₄Br₂ + H₂']},
+  {l:'C₂H₄ + 3O₂',r:'2CO₂ + 2H₂O',w:['CO₂ + H₂O','2CO + 2H₂O','CO₂ + H₂']},
+  {l:'C₂H₅OH + 3O₂',r:'2CO₂ + 3H₂O',w:['CO₂ + H₂O','CO₂ + 2H₂O','2CO + H₂O']},
+  {l:'C₆H₁₂O₆',r:'2C₂H₅OH + 2CO₂↑',w:['3C₂H₄ + 3H₂O','C₆H₅OH + H₂','2CH₃COOH + H₂O']},
+];
+// QIYIN: mahsulotlar beriladi — reagentlarni toping (OQR, murakkab)
+var RZ_H=[
+  {l:'2Na + Cl₂',r:'2NaCl',w:['2K + Cl₂','2Li + Cl₂','Na + NaCl₃']},
+  {l:'CaO + H₂O',r:'Ca(OH)₂',w:['Ca + 2H₂O','Ca(OH) + OH','CaO·H₂O']},
+  {l:'SO₂ + H₂O',r:'H₂SO₃',w:['SO₃ + H₂O','H₂S + O₂','SO₂ + 2H₂O']},
+  {l:'SO₃ + H₂O',r:'H₂SO₄',w:['SO₂ + H₂O','SO₃ + 2H₂O','H₂SO₃ + O']},
+  {l:'NaOH + HCl',r:'NaCl + H₂O',w:['NaOH + HNO₃','Na₂O + HCl','NaCl + HCl']},
+  {l:'2Na + 2H₂O',r:'2NaOH + H₂↑',w:['Na + H₂O','2K + 2H₂O','2Na + H₂SO₄']},
+  {l:'CuO + H₂',r:'Cu + H₂O',w:['Cu₂O + H₂','CuO + CO','CuO + Na']},
+  {l:'Fe₂O₃ + 3CO',r:'2Fe + 3CO₂',w:['Fe₂O₃ + 3H₂','FeO + CO₂','Fe + CO']},
+  {l:'CuO + CO',r:'Cu + CO₂',w:['Cu₂O + CO₂','CuO + H₂','CuCO₃']},
+  {l:'Fe + CuSO₄',r:'FeSO₄ + Cu',w:['Zn + CuSO₄','Fe + ZnSO₄','Cu + FeSO₄']},
+  // OQR (oksidlanish-qaytarilish)
+  {l:'Cu + 2H₂SO₄(konc)',r:'CuSO₄ + SO₂↑ + 2H₂O',w:['Cu + H₂SO₄(suyuq)','CuO + H₂SO₄','Zn + 2H₂SO₄(konc)']},
+  {l:'S + 2H₂SO₄(konc)',r:'3SO₂ + 2H₂O',w:['S + H₂SO₄(suyuq)','S + HNO₃','SO₂ + H₂SO₄']},
+  {l:'C + 4HNO₃(konc)',r:'CO₂ + 4NO₂ + 2H₂O',w:['C + 2HNO₃','C + H₂SO₄(konc)','C + 4HCl']},
+  {l:'Zn + 4HNO₃(konc)',r:'Zn(NO₃)₂ + 2NO₂↑ + 2H₂O',w:['Zn + 2HNO₃(suyuq)','Cu + 4HNO₃(konc)','Zn + 2H₂SO₄(konc)']},
+  {l:'3Zn + 8HNO₃(suyuq)',r:'3Zn(NO₃)₂ + 2NO↑ + 4H₂O',w:['Zn + 4HNO₃(konc)','3Cu + 8HNO₃','Zn + HNO₃']},
+  {l:'4HCl + MnO₂',r:'MnCl₂ + Cl₂↑ + 2H₂O',w:['HCl + MnO','2HCl + MnO₂','2H₂SO₄ + MnO₂']},
+  {l:'2Fe + 6H₂SO₄(konc)',r:'Fe₂(SO₄)₃ + 3SO₂↑ + 6H₂O',w:['Fe + H₂SO₄(suyuq)','Fe + 3H₂SO₄','Fe + HNO₃(konc)']},
+  {l:'Fe + 4HNO₃(konc)',r:'Fe(NO₃)₃ + NO↑ + 2H₂O',w:['Fe + 3HNO₃','Fe + H₂SO₄(konc)','Fe + 4HCl']},
+  {l:'Cl₂ + 2NaOH',r:'NaCl + NaClO + H₂O',w:['Cl₂ + KOH','Cl₂ + Ca(OH)₂','HCl + NaOH']},
+  {l:'2KMnO₄ + 16HCl',r:'2KCl + 2MnCl₂ + 5Cl₂↑ + 8H₂O',w:['KMnO₄ + HCl','2KMnO₄ + H₂SO₄','2KCl + MnO₂ + Cl₂']},
+  // Organika (qiyin)
+  {l:'C₂H₄ + H₂',r:'C₂H₆',w:['C₂H₄ + 2H₂','C₂H₂ + 2H₂','C₂H₆ + H₂']},
+  {l:'C₂H₄ + H₂O',r:'C₂H₅OH',w:['C₂H₄ + 2H₂O','C₂H₂ + H₂O','C₂H₆ + H₂O']},
+  {l:'CH₃COOH + C₂H₅OH',r:'CH₃COOC₂H₅ + H₂O',w:['CH₃COOH + CH₃OH','C₂H₅COOH + C₂H₅OH','CH₃OH + C₂H₅COOH']},
+  {l:'C₂H₅OH',r:'C₂H₄ + H₂O',w:['C₂H₅OH + H₂','CH₃OH → CH₂ + H₂O','C₂H₆ → C₂H₄ + H₂']},
+  {l:'C₆H₁₂O₆',r:'2C₂H₅OH + 2CO₂↑',w:['C₆H₆ + 3H₂O','3C₂H₄ + 3H₂O','2CH₃COOH + 2H₂']},
+  {l:'CH₄ + Cl₂',r:'CH₃Cl + HCl',w:['CH₄ + HCl','C₂H₆ + Cl₂','CH₄ + 2Cl₂']},
+  // Amphoter (qiyin)
+  {l:'Al + NaOH(eritma) + H₂O',r:'NaAlO₂ + H₂↑',w:['Al + NaOH','AlO₂ + NaH','Al₂O₃ + NaH']},
+  {l:'ZnO + NaOH',r:'Na₂ZnO₂ + H₂O',w:['ZnO + KOH','Zn + NaOH','ZnSO₄ + NaOH']},
+  {l:'Zn + H₂SO₄(suyuq)',r:'ZnSO₄ + H₂↑',w:['Cu + H₂SO₄','Zn + HCl','Fe + H₂SO₄']},
+];
+
+var rzDiff='easy',rzQueue=[],rzLevel=0,rzScore=0,rzOptList=[],rzAns='',rzRunning=false;
+var rzBests={easy:0,mid:0,hard:0};
+try{var _rbs=JSON.parse(localStorage.getItem('rzBests')||'{}');rzBests.easy=_rbs.easy||0;rzBests.mid=_rbs.mid||0;rzBests.hard=_rbs.hard||0;}catch(e){}
 
 function rzShuffle(a){
   var arr=a.slice();
@@ -3035,55 +3105,87 @@ function rzShuffle(a){
   return arr;
 }
 
-function rzStart(){
-  rzQueue=rzShuffle(RZ);
-  rzLevel=0; rzScore=0; rzRunning=true;
-  document.getElementById('rz-start').style.display='none';
+function rzPick(){
+  document.getElementById('rz-pick').style.display='';
+  document.getElementById('rz-board').style.display='none';
+  document.getElementById('rz-over').style.display='none';
+  var dk={easy:'rz-best-e',mid:'rz-best-m',hard:'rz-best-h'};
+  ['easy','mid','hard'].forEach(function(d){
+    var el=document.getElementById(dk[d]);
+    if(el)el.textContent=rzBests[d]?'Rekord: '+rzBests[d]+'-daraja':'';
+  });
+}
+
+function rzStart(){rzStartDiff(rzDiff);}
+
+function rzStartDiff(diff){
+  rzDiff=diff;
+  var pool=diff==='easy'?RZ_E:diff==='mid'?RZ_M:RZ_H;
+  rzQueue=rzShuffle(pool);
+  rzLevel=0;rzScore=0;rzRunning=true;
+  document.getElementById('rz-pick').style.display='none';
   document.getElementById('rz-over').style.display='none';
   document.getElementById('rz-board').style.display='';
   document.getElementById('rz-score').textContent='0';
-  document.getElementById('rz-best').textContent=rzBest;
+  document.getElementById('rz-best-cur').textContent=rzBests[diff]||0;
+  var barColors={easy:'#00d4aa',mid:'#f59e0b',hard:'#ef4444'};
+  document.getElementById('rz-bar').style.background=barColors[diff];
+  document.getElementById('rz-retry-btn').onclick=function(){rzStartDiff(rzDiff);};
   rzShow();
 }
 
 function rzShow(){
+  var pool=rzDiff==='easy'?RZ_E:rzDiff==='mid'?RZ_M:RZ_H;
   if(rzLevel>=rzQueue.length){rzOver('🏆','Barcha reaksiyalar topildi!');return;}
   var r=rzQueue[rzLevel];
   document.getElementById('rz-lvl').textContent=(rzLevel+1)+'-daraja';
-  var eqHtml=r.q.replace('?','<span style="color:gold;font-size:1.2em;font-weight:900">?</span>');
-  document.getElementById('rz-eq').innerHTML='<span style="color:rgba(255,255,255,.35);font-size:.65rem;display:block;margin-bottom:8px">? — nimani bildiradi?</span>'+eqHtml;
-  var pct=Math.min(100,(rzLevel/RZ.length)*100);
+  var pct=Math.min(100,(rzLevel/pool.length)*100);
   document.getElementById('rz-bar').style.width=pct+'%';
-  rzOptList=rzShuffle([r.a].concat(r.w));
-  var bgs=['rgba(0,212,170,.12)','rgba(59,130,246,.12)','rgba(168,85,247,.12)','rgba(245,158,11,.12)'];
+  var eqHtml,hint;
+  var Q='<span style="color:gold;font-size:1.15em;font-weight:900">?</span>';
+  if(rzDiff==='easy'){
+    eqHtml=r.q.replace('?',Q);
+    rzAns=r.a; hint='? — nimani bildiradi?';
+  }else if(rzDiff==='mid'){
+    eqHtml=r.l+' <span style="color:rgba(255,255,255,.4)">→</span> '+Q;
+    rzAns=r.r; hint='Mahsulotlarni toping';
+  }else{
+    eqHtml=Q+' <span style="color:rgba(255,255,255,.4)">→</span> '+r.r;
+    rzAns=r.l; hint='Reagentlarni toping';
+  }
+  document.getElementById('rz-hint').textContent=hint;
+  document.getElementById('rz-eq').innerHTML=eqHtml;
+  rzOptList=rzShuffle([rzAns].concat(r.w));
+  var bgs=['rgba(0,212,170,.1)','rgba(59,130,246,.1)','rgba(168,85,247,.1)','rgba(245,158,11,.1)'];
   var bds=['rgba(0,212,170,.3)','rgba(59,130,246,.3)','rgba(168,85,247,.3)','rgba(245,158,11,.3)'];
   var html='';
   rzOptList.forEach(function(o,i){
-    html+='<button onclick="rzAnswer('+i+')" id="rzb'+i+'" style="background:'+bgs[i]+';border:1.5px solid '+bds[i]+';border-radius:14px;padding:14px 8px;color:var(--c-fg);font-size:.9rem;font-weight:600;cursor:pointer;text-align:center;width:100%;min-height:56px;line-height:1.4">'+o+'</button>';
+    html+='<button onclick="rzAnswer('+i+')" id="rzb'+i+'" style="background:'+bgs[i]+';border:1.5px solid '+bds[i]+';border-radius:14px;padding:12px 8px;color:var(--c-fg);font-size:.85rem;font-weight:600;cursor:pointer;text-align:center;width:100%;min-height:52px;line-height:1.4">'+o+'</button>';
   });
   document.getElementById('rz-opts').innerHTML=html;
 }
 
 function rzAnswer(idx){
   if(!rzRunning)return;
-  var r=rzQueue[rzLevel];
   var chosen=rzOptList[idx];
-  var correct=(chosen===r.a);
+  var correct=(chosen===rzAns);
   var btns=document.getElementById('rz-opts').querySelectorAll('button');
   btns.forEach(function(b){b.disabled=true;});
   if(correct){
     document.getElementById('rzb'+idx).style.background='rgba(0,212,170,.4)';
     document.getElementById('rzb'+idx).style.borderColor='#00d4aa';
-    rzScore++; rzBest=Math.max(rzBest,rzScore);
+    rzScore++;
+    rzBests[rzDiff]=Math.max(rzBests[rzDiff],rzScore);
+    try{localStorage.setItem('rzBests',JSON.stringify(rzBests));}catch(e){}
     document.getElementById('rz-score').textContent=rzScore;
-    document.getElementById('rz-best').textContent=rzBest;
+    document.getElementById('rz-best-cur').textContent=rzBests[rzDiff];
     rzLevel++;
     setTimeout(function(){rzShow();},650);
   }else{
     document.getElementById('rzb'+idx).style.background='rgba(239,68,68,.4)';
     document.getElementById('rzb'+idx).style.borderColor='#ef4444';
     rzOptList.forEach(function(o,i){
-      if(o===r.a){document.getElementById('rzb'+i).style.background='rgba(0,212,170,.4)';document.getElementById('rzb'+i).style.borderColor='#00d4aa';}
+      if(o===rzAns){document.getElementById('rzb'+i).style.background='rgba(0,212,170,.4)';document.getElementById('rzb'+i).style.borderColor='#00d4aa';}
     });
     rzRunning=false;
     setTimeout(function(){rzOver('😔','Noto\'g\'ri!');},1400);
@@ -3096,9 +3198,9 @@ function rzOver(ico,txt){
   document.getElementById('rz-over').style.display='';
   document.getElementById('rz-over-ico').textContent=ico;
   document.getElementById('rz-over-txt').textContent=txt;
-  var sub=rzLevel+'-darajaga yetdingiz · '+rzScore+' ta to\'g\'ri';
-  if(rzScore===RZ.length)sub='🏆 Barcha '+RZ.length+' ta reaksiya topildi!';
-  document.getElementById('rz-over-sub').textContent=sub;
+  var dLabel={easy:'🟢 Oson',mid:'🟡 O\'rta',hard:'🔴 Qiyin'};
+  document.getElementById('rz-over-sub').innerHTML=
+    dLabel[rzDiff]+' · '+rzLevel+'-darajaga yetdingiz<br>'+rzScore+' ta to\'g\'ri javob';
   if(rzScore>0)rzSkorSaqla();
 }
 
@@ -3107,7 +3209,7 @@ async function rzSkorSaqla(){
     if(!CU||!CU.id)return;
     await fetch(API+'/react/natija',{method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({user_id:CU.id,name:CU.name||'Noma\'lum',max_level:rzLevel})
+      body:JSON.stringify({user_id:CU.id,name:CU.name||'Noma\'lum',max_level:rzLevel,diff:rzDiff})
     });
   }catch(e){}
 }
@@ -3133,7 +3235,7 @@ async function pgReytingLoad(){
       el.innerHTML=list.length?list.map(function(r,i){return '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>'+(i+1)+'. '+r.name+'</span><span style="color:#ef4444;font-weight:700">'+r.max_level+'-level</span></div>';}).join(''):'<span style="opacity:.4">Hozircha yo\'q</span>';}
   }catch(e){}
   try{
-    var rr=await fetch(API+'/react/reyting'); var dr=await rr.json();
+    var rr=await fetch(API+'/react/reyting?diff=easy'); var dr=await rr.json();
     var el=document.getElementById('pg-r-reyting');
     if(el){var list=(dr.reyting||[]).slice(0,10);
       el.innerHTML=list.length?list.map(function(r,i){return '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>'+(i+1)+'. '+r.name+'</span><span style="color:#f59e0b;font-weight:700">'+r.max_level+'-daraja</span></div>';}).join(''):'<span style="opacity:.4">Hozircha yo\'q</span>';}
