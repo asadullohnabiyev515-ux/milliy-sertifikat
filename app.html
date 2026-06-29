@@ -595,7 +595,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
         </div>
       </div>
       <div style="padding:0 18px 6px">
-        <div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🏆 Top 5</div>
+        <div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🏆 Top 10</div>
         <div id="pg-g-reyting" style="font-size:.8rem;color:rgba(255,255,255,.6)">Yuklanmoqda...</div>
       </div>
       <div style="padding:12px 18px 18px">
@@ -614,7 +614,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
         </div>
       </div>
       <div style="padding:0 18px 6px">
-        <div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🏆 Top 5</div>
+        <div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🏆 Top 10</div>
         <div id="pg-m-reyting" style="font-size:.8rem;color:rgba(255,255,255,.6)">Yuklanmoqda...</div>
       </div>
       <div style="padding:12px 18px 18px">
@@ -633,7 +633,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
         </div>
       </div>
       <div style="padding:0 18px 6px">
-        <div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🏆 Top 5</div>
+        <div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🏆 Top 10</div>
         <div id="pg-s-reyting" style="font-size:.8rem;color:rgba(255,255,255,.6)">Yuklanmoqda...</div>
       </div>
       <div style="padding:12px 18px 18px">
@@ -2651,19 +2651,19 @@ async function pgReytingLoad(){
   try{
     var rg=await fetch(API+'/game/reyting'); var dg=await rg.json();
     var el=document.getElementById('pg-g-reyting');
-    if(el){var list=(dg.reyting||[]).slice(0,5);
+    if(el){var list=(dg.reyting||[]).slice(0,10);
       el.innerHTML=list.length?list.map(function(r,i){return '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>'+(i+1)+'. '+r.name+'</span><span style="color:#00d4aa;font-weight:700">'+r.score+'</span></div>';}).join(''):'<span style="opacity:.4">Hozircha yo\'q</span>';}
   }catch(e){}
   try{
     var rm=await fetch(API+'/memory/reyting?diff=4x4'); var dm=await rm.json();
     var el=document.getElementById('pg-m-reyting');
-    if(el){var list=(Array.isArray(dm)?dm:dm.reyting||[]).slice(0,5);
+    if(el){var list=(Array.isArray(dm)?dm:dm.reyting||[]).slice(0,10);
       el.innerHTML=list.length?list.map(function(r,i){return '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>'+(i+1)+'. '+r.name+'</span><span style="color:#a78bfa;font-weight:700">'+r.score+'</span></div>';}).join(''):'<span style="opacity:.4">Hozircha yo\'q</span>';}
   }catch(e){}
   try{
     var rs=await fetch(API+'/sort/reyting'); var ds=await rs.json();
     var el=document.getElementById('pg-s-reyting');
-    if(el){var list=(ds.reyting||[]).slice(0,5);
+    if(el){var list=(ds.reyting||[]).slice(0,10);
       el.innerHTML=list.length?list.map(function(r,i){return '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>'+(i+1)+'. '+r.name+'</span><span style="color:#ef4444;font-weight:700">'+r.max_level+'-level</span></div>';}).join(''):'<span style="opacity:.4">Hozircha yo\'q</span>';}
   }catch(e){}
 }
