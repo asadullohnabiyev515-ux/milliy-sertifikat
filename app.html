@@ -3550,19 +3550,19 @@ var MD_CLASS={
     {f:'CH₂=CHCH(CH₃)₂',n:'3-Metilbut-1-en',a:'Isopropeniletan'},
   ]},
   alkin:{title:'Alkinlar',ico:'⚡',col:'#8b5cf6',items:[
-    {f:'CH≡CH',n:'Atsetilen',a:'Etin · Etinin'},
-    {f:'CH≡CCH₃',n:'Propin',a:'Metilatsitilen · 1-Propin'},
-    {f:'CH≡CCH₂CH₃',n:'But-1-in',a:'Etilatsitilen'},
-    {f:'CH₃C≡CCH₃',n:'But-2-in',a:'Dimetilatsitelen · 2-Butin'},
-    {f:'CH≡C(CH₂)₂CH₃',n:'Pent-1-in',a:'Propilatsitilen'},
-    {f:'CH₃CH₂C≡CCH₃',n:'Pent-2-in',a:'Metilpropilatsitelen'},
-    {f:'CH≡C(CH₂)₃CH₃',n:'Geks-1-in',a:''},
-    {f:'HC≡C−C≡CH',n:'Diatsetilen',a:'But-1,3-diin · Butadiyn'},
+    {f:'CH≡CH',n:'Atsetilen',a:'Etin · Etinin',altf:['C₂H₂','C2H2']},
+    {f:'CH≡CCH₃',n:'Propin',a:'Metilatsitilen · 1-Propin',altf:['C₃H₄','C3H4']},
+    {f:'CH≡CCH₂CH₃',n:'But-1-in',a:'Etilatsitilen',altf:['C₄H₆','C4H6']},
+    {f:'CH₃C≡CCH₃',n:'But-2-in',a:'Dimetilatsitelen · 2-Butin',altf:['C₄H₆','C4H6']},
+    {f:'CH≡C(CH₂)₂CH₃',n:'Pent-1-in',a:'Propilatsitilen',altf:['C₅H₈','C5H8']},
+    {f:'CH₃CH₂C≡CCH₃',n:'Pent-2-in',a:'Metilpropilatsitelen',altf:['C₅H₈','C5H8']},
+    {f:'CH≡C(CH₂)₃CH₃',n:'Geks-1-in',a:'',altf:['C₆H₁₀','C6H10']},
+    {f:'HC≡C−C≡CH',n:'Diatsetilen',a:'But-1,3-diin · Butadiyn',altf:['C₄H₂','C4H2']},
   ]},
   alkadiyen:{title:'Alkadiенlar',ico:'⚛️',col:'#10b981',items:[
     {f:'CH₂=C=CH₂',n:'Propadien',a:'Allen · Allilen'},
-    {f:'CH₂=CH−CH=CH₂',n:'1,3-Butadien',a:'Diviniil · Butadien'},
-    {f:'CH₂=C(CH₃)−CH=CH₂',n:'Izopren',a:'2-Metilbuta-1,3-dien'},
+    {f:'CH₂=CH−CH=CH₂',n:'1,3-Butadien',a:'Diviniil · Butadien',altf:['CH₂=CHCH=CH₂','C₄H₆','C4H6']},
+    {f:'CH₂=C(CH₃)−CH=CH₂',n:'Izopren',a:'2-Metilbuta-1,3-dien',altf:['CH₂=C(CH₃)CH=CH₂','C₅H₈','C5H8']},
     {f:'CH₂=CH−CH=CH−CH₃',n:'Penta-1,3-dien',a:'Piperilen'},
     {f:'CH₂=CH−CH=CH₂ (1,3)',n:'Buta-1,3-dien',a:'Diviniil (qayta)'},
     {f:'CH₂=C=CHCH₃',n:'But-1,2-dien',a:'Metilallen'},
@@ -3642,13 +3642,13 @@ var MD_CLASS={
     {f:'C₁₇H₃₅COOH',n:'Stearin kislota',a:'Oktadekanoat kislota'},
   ]},
   efir_odd:{title:'Oddiy efirlar',ico:'💨',col:'#6366f1',items:[
-    {f:'(CH₃)₂O',n:'Dimetil efir',a:'Metoksimetan'},
-    {f:'C₂H₅OC₂H₅',n:'Dietil efir',a:'Etoksietan · Sulfat efiri'},
-    {f:'CH₃OC₂H₅',n:'Metil-etil efir',a:'Metoksetan'},
-    {f:'(C₃H₇)₂O',n:'Dipropil efir',a:'Propoksipropan'},
-    {f:'(C₄H₉)₂O',n:'Dibutil efir',a:''},
+    {f:'(CH₃)₂O',n:'Dimetil efir',a:'Metoksimetan',altf:['CH₃-O-CH₃','CH3-O-CH3','CH₃OCH₃','CH3OCH3']},
+    {f:'C₂H₅OC₂H₅',n:'Dietil efir',a:'Etoksietan · Sulfat efiri',altf:['(C₂H₅)₂O','(C2H5)2O']},
+    {f:'CH₃OC₂H₅',n:'Metil-etil efir',a:'Metoksetan',altf:['CH₃-O-C₂H₅','CH3-O-C2H5']},
+    {f:'(C₃H₇)₂O',n:'Dipropil efir',a:'Propoksipropan',altf:['C₃H₇-O-C₃H₇','C3H7-O-C3H7']},
+    {f:'(C₄H₉)₂O',n:'Dibutil efir',a:'',altf:['C₄H₉-O-C₄H₉']},
     {f:'C₆H₅OC₂H₅',n:'Fenil-etil efir',a:'Etoksibenzol'},
-    {f:'C₆H₅OCH₃',n:'Anizol',a:'Metoksibenzol · Metilfenil efir'},
+    {f:'C₆H₅OCH₃',n:'Anizol',a:'Metoksibenzol · Metilfenil efir',altf:['C₆H₅-O-CH₃']},
   ]},
   efir_mur:{title:'Murakkab efirlar',ico:'🍎',col:'#06b6d4',items:[
     {f:'HCOOCH₃',n:'Metil formiat',a:'Metil metanoat'},
@@ -3783,9 +3783,36 @@ function mdKbDel(){
   document.getElementById('md-typed').textContent=mdTyped;
 }
 
-function mdNorm(s){
-  return s.trim().toLowerCase().replace(/[''ʻʼ`]/g,"'").replace(/\s+/g,' ');
+// Roman raqamlarni arabchaga: III→3, II→2, etc.
+function mdRomAr(r){
+  var m={I:1,V:5,X:10,L:50,C:100,D:500,M:1000};
+  var s=r.toUpperCase().trim(),n=0,p=0;
+  for(var i=s.length-1;i>=0;i--){var v=m[s[i]]||0;if(v<p)n-=v;else n+=v;p=v;}
+  return n>0?''+n:r;
 }
+
+// Nomlar uchun normalizatsiya: (III)→(3), (II,III)→(2,3), case-insensitive
+function mdNorm(s){
+  return s.trim()
+    .replace(/[''ʻʼ`]/g,"'")
+    .replace(/\(([IVXLCDMivxlcdm,\s]+)\)/g,function(m,inner){
+      return '('+inner.split(',').map(function(p){return mdRomAr(p.trim());}).join(',')+')'
+    })
+    .replace(/\s+/g,' ')
+    .toLowerCase();
+}
+
+// Formulalar uchun normalizatsiya: ₂→2, tire o'chirish, bo'sh joy o'chirish
+function mdNormF(s){
+  return s.trim()
+    .replace(/₀/g,'0').replace(/₁/g,'1').replace(/₂/g,'2').replace(/₃/g,'3')
+    .replace(/₄/g,'4').replace(/₅/g,'5').replace(/₆/g,'6').replace(/₇/g,'7')
+    .replace(/₈/g,'8').replace(/₉/g,'9')
+    .replace(/[−\-–]/g,'')
+    .replace(/\s/g,'');
+}
+
+var mdCurItem=null; // joriy modda (altf tekshirish uchun)
 
 function mdSubmit(){
   if(!mdRunning)return;
@@ -3797,12 +3824,17 @@ function mdSubmit(){
   }
   if(!answer)return;
 
-  // For formula: exact match (both use Unicode subscripts)
-  // For name: normalized case-insensitive
   var correct;
   if(mdDir==='formula'){
-    correct=(answer===mdAns);
+    // Normalizatsiya bilan solishtir (indeks↔raqam, tire hisoblanmaydi)
+    var na=mdNormF(answer), nc=mdNormF(mdAns);
+    correct=(na===nc);
+    // altf (muqobil formulalar) tekshir
+    if(!correct&&mdCurItem&&mdCurItem.altf){
+      correct=mdCurItem.altf.some(function(af){return mdNormF(af)===na;});
+    }
   }else{
+    // Nom: Rim raqam + case-insensitive normalizatsiya
     correct=(mdNorm(answer)===mdNorm(mdAns));
   }
 
@@ -3837,6 +3869,7 @@ function mdShow(){
   var pool=mdPool;
   if(mdLevel>=pool.length){mdOver('🏆',"Barcha "+pool.length+" ta modda o'tildi!");return;}
   var item=pool[mdLevel];
+  mdCurItem=item;
   var total=pool.length;
   var c=MD_CLASS[mdCurClass];
   document.getElementById('md-lvl').textContent=mdLevel+1;
