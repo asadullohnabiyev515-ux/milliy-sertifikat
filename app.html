@@ -591,7 +591,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
         <div style="font-size:2.6rem">⚗️</div>
         <div style="flex:1">
           <div style="font-size:1.1rem;font-weight:800">Element 2048</div>
-          <div style="font-size:.75rem;opacity:.5;margin-top:3px">H+H=He → He+He=Li → ... → Na 🏆</div>
+          <div style="font-size:.75rem;opacity:.5;margin-top:3px">H→He→Li→...→Na→...→Og 👑 (118 element)</div>
         </div>
       </div>
       <div style="padding:0 18px 6px">
@@ -1835,21 +1835,82 @@ function temaToggle(){
 // ═══════════════════════════════════════════════════════
 // ELEMENT 2048 O'YINI
 // ═══════════════════════════════════════════════════════
-var ELEM=[
-  {v:2,   sym:'H',  nom:'Vodorod',    bg:'#e74c3c', fg:'#fff'},
-  {v:4,   sym:'He', nom:'Geliy',      bg:'#e67e22', fg:'#fff'},
-  {v:8,   sym:'Li', nom:'Litiy',      bg:'#f1c40f', fg:'#333'},
-  {v:16,  sym:'Be', nom:'Berilliy',   bg:'#2ecc71', fg:'#fff'},
-  {v:32,  sym:'B',  nom:'Bor',        bg:'#1abc9c', fg:'#fff'},
-  {v:64,  sym:'C',  nom:'Uglerod',    bg:'#3498db', fg:'#fff'},
-  {v:128, sym:'N',  nom:'Azot',       bg:'#9b59b6', fg:'#fff'},
-  {v:256, sym:'O',  nom:'Kislorod',   bg:'#e91e63', fg:'#fff'},
-  {v:512, sym:'F',  nom:'Ftor',       bg:'#00bcd4', fg:'#fff'},
-  {v:1024,sym:'Ne', nom:'Neon',       bg:'#ff5722', fg:'#fff'},
-  {v:2048,sym:'Na', nom:'Natriy',     bg:'#ffd700', fg:'#333'},
-  {v:4096,sym:'Mg', nom:'Magniy',     bg:'#00e676', fg:'#333'},
-  {v:8192,sym:'Al', nom:'Alyuminiy',  bg:'#40c4ff', fg:'#333'},
+var _ED=[
+  // Period 1
+  ['H','Vodorod','#06b6d4','#fff'],['He','Geliy','#7c3aed','#fff'],
+  // Period 2
+  ['Li','Litiy','#ef4444','#fff'],['Be','Berilliy','#f97316','#fff'],
+  ['B','Bor','#22c55e','#fff'],['C','Uglerod','#475569','#fff'],
+  ['N','Azot','#3b82f6','#fff'],['O','Kislorod','#e91e63','#fff'],
+  ['F','Ftor','#f59e0b','#333'],['Ne','Neon','#7c3aed','#fff'],
+  // Period 3
+  ['Na','Natriy','#ef4444','#fff'],['Mg','Magniy','#f97316','#fff'],
+  ['Al','Alyuminiy','#8b5cf6','#fff'],['Si','Kremniy','#22c55e','#fff'],
+  ['P','Fosfor','#ff6b35','#fff'],['S','Oltingugurt','#fbbf24','#333'],
+  ['Cl','Xlor','#f59e0b','#333'],['Ar','Argon','#7c3aed','#fff'],
+  // Period 4
+  ['K','Kaliy','#ef4444','#fff'],['Ca','Kaltsiy','#f97316','#fff'],
+  ['Sc','Skandiy','#3b82f6','#fff'],['Ti','Titan','#2563eb','#fff'],
+  ['V','Vanadiy','#1d4ed8','#fff'],['Cr','Xrom','#1e40af','#fff'],
+  ['Mn','Marganets','#7c3aed','#fff'],['Fe','Temir','#dc2626','#fff'],
+  ['Co','Kobalt','#0284c7','#fff'],['Ni','Nikel','#0891b2','#fff'],
+  ['Cu','Mis','#b45309','#fff'],['Zn','Rux','#0d9488','#fff'],
+  ['Ga','Galliy','#8b5cf6','#fff'],['Ge','Germaniy','#16a34a','#fff'],
+  ['As','Mishyak','#15803d','#fff'],['Se','Selen','#ea580c','#fff'],
+  ['Br','Brom','#92400e','#fff'],['Kr','Kripton','#7c3aed','#fff'],
+  // Period 5
+  ['Rb','Rubidiy','#ef4444','#fff'],['Sr','Stronsiy','#f97316','#fff'],
+  ['Y','Itriy','#0891b2','#fff'],['Zr','Zirkoniy','#0369a1','#fff'],
+  ['Nb','Niobiy','#0f766e','#fff'],['Mo','Molibden','#155e75','#fff'],
+  ['Tc','Texnetsiy','#6d28d9','#fff'],['Ru','Ruteniy','#7c3aed','#fff'],
+  ['Rh','Rodiy','#4338ca','#fff'],['Pd','Palladiy','#3730a3','#fff'],
+  ['Ag','Kumush','#94a3b8','#333'],['Cd','Kadmiy','#d97706','#fff'],
+  ['In','Indiy','#8b5cf6','#fff'],['Sn','Qalay','#6d28d9','#fff'],
+  ['Sb','Surma','#22c55e','#fff'],['Te','Tellur','#15803d','#fff'],
+  ['I','Yod','#6b21a8','#fff'],['Xe','Ksenon','#7c3aed','#fff'],
+  // Period 6
+  ['Cs','Seziy','#ef4444','#fff'],['Ba','Bariy','#f97316','#fff'],
+  // Lanthanides 57-71
+  ['La','Lantan','#ec4899','#fff'],['Ce','Seriy','#db2777','#fff'],
+  ['Pr','Prazeodim','#be185d','#fff'],['Nd','Neodim','#9d174d','#fff'],
+  ['Pm','Prometsiy','#881337','#fff'],['Sm','Samariy','#9d174d','#fff'],
+  ['Eu','Evropiy','#be185d','#fff'],['Gd','Gadoliniy','#db2777','#fff'],
+  ['Tb','Terbiy','#ec4899','#fff'],['Dy','Disproziy','#c026d3','#fff'],
+  ['Ho','Golmiy','#a21caf','#fff'],['Er','Erbiy','#86198f','#fff'],
+  ['Tm','Tuliy','#701a75','#fff'],['Yb','Iterbiy','#581c87','#fff'],
+  ['Lu','Lyutetiy','#4a044e','#fff'],
+  // Period 6 transition 72-80
+  ['Hf','Gafniy','#64748b','#fff'],['Ta','Tantal','#334155','#fff'],
+  ['W','Volfram','#1e293b','#fff'],['Re','Reniy','#0f172a','#fff'],
+  ['Os','Osmiy','#172554','#fff'],['Ir','Iridiy','#1e3a8a','#fff'],
+  ['Pt','Platina','#94a3b8','#333'],['Au','Oltin','#d97706','#333'],
+  ['Hg','Simob','#475569','#fff'],
+  // Period 6 post-transition + noble 81-86
+  ['Tl','Talliy','#8b5cf6','#fff'],["Pb","Qo'rg'oshin",'#4c1d95','#fff'],
+  ['Bi','Vismut','#5b21b6','#fff'],['Po','Poloniy','#22c55e','#fff'],
+  ['At','Astat','#f59e0b','#fff'],['Rn','Radon','#7c3aed','#fff'],
+  // Period 7
+  ['Fr','Frantsiy','#ef4444','#fff'],['Ra','Radiy','#f97316','#fff'],
+  // Actinides 89-103
+  ['Ac','Aktiniy','#14b8a6','#fff'],['Th','Toriy','#0d9488','#fff'],
+  ['Pa','Protaktiniy','#0f766e','#fff'],['U','Uran','#15803d','#fff'],
+  ['Np','Neptuniy','#166534','#fff'],['Pu','Plutoniy','#14532d','#fff'],
+  ['Am','Ameritsiy','#14b8a6','#fff'],['Cm','Kyuriy','#0d9488','#fff'],
+  ['Bk','Berkeliy','#0f766e','#fff'],['Cf','Kaliforniy','#047857','#fff'],
+  ['Es','Eynshteyniy','#065f46','#fff'],['Fm','Fermiy','#064e3b','#fff'],
+  ['Md','Mendeleyeviy','#134e4a','#fff'],['No','Nobeliy','#115e59','#fff'],
+  ['Lr','Lorensiy','#0d9488','#fff'],
+  // Period 7 transition + post-transition 104-118
+  ['Rf','Rezerfordiy','#1e40af','#fff'],['Db','Dubniy','#1d4ed8','#fff'],
+  ['Sg','Siborgiy','#2563eb','#fff'],['Bh','Boriy','#3b82f6','#fff'],
+  ['Hs','Xassiy','#0284c7','#fff'],['Mt','Maytniriy','#6b7280','#fff'],
+  ['Ds','Darmshtadtiy','#6b7280','#fff'],['Rg','Rentgeniy','#6b7280','#fff'],
+  ['Cn','Kopernikiy','#8b5cf6','#fff'],['Nh','Nixoniy','#6b7280','#fff'],
+  ['Fl','Fleroviy','#8b5cf6','#fff'],['Mc','Moskoviy','#6b7280','#fff'],
+  ['Lv','Livermori','#6d28d9','#fff'],['Ts','Tennessiy','#f59e0b','#fff'],
+  ['Og','Oganeson','#7c3aed','#fff'],
 ];
+var ELEM=_ED.map(function(e,i){return {v:Math.pow(2,i+1),sym:e[0],nom:e[1],bg:e[2],fg:e[3]};});
 
 var gBoard=[], gScore=0, gBest=+(localStorage.getItem('g2048best')||0), gRunning=false;
 var G=4;
@@ -1864,6 +1925,7 @@ function gameStart(){
   gScore=0; gRunning=true;
   gRender();
   gAdd(); gAdd();
+  _gMaxV=0;
   gRender();
   document.getElementById('g-over').style.display='none';
   document.getElementById('g-score').textContent='0';
@@ -2033,16 +2095,21 @@ async function gReytingLoad(){
     el.innerHTML='<div style="text-align:center;font-size:.8rem;padding:10px;color:#ff6b6b">Xato: '+e.message+'</div>';
   }
 }
+var _gMaxV=0;
 function gCheck(){
   var maxV=0;
   for(var r=0;r<G;r++) for(var c=0;c<G;c++) if(gBoard[r][c]>maxV) maxV=gBoard[r][c];
-  if(maxV>=2048){ gShowOver('🏆','Barakalla! Na topildi!'); return; }
+  var el=gElem(maxV);
+  // Yangi eng yuqori element bo'lsa flash
+  if(maxV>_gMaxV){_gMaxV=maxV;var en=document.getElementById('g-elem-name');if(en){en.style.color='gold';setTimeout(function(){en.style.color='#00d4aa';},800);}}
+  // Og (118-element) = LEGEND
+  if(maxV>=Math.pow(2,118)){gShowOver('👑','LEGEND! Og topildi!');return;}
   for(var r=0;r<G;r++) for(var c=0;c<G;c++){
     if(!gBoard[r][c]) return;
     if(c+1<G && gBoard[r][c]===gBoard[r][c+1]) return;
     if(r+1<G && gBoard[r][c]===gBoard[r+1][c]) return;
   }
-  gShowOver('😔','O\'yin tugadi!');
+  gShowOver('😔','O\'yin tugadi! · '+el.sym+' — '+el.nom);
 }
 
 function gActive(){return document.getElementById('p-game').style.display!=='none';}
