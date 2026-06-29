@@ -583,40 +583,73 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
 <!-- O'YINLAR HUB -->
 <div id="p-games" class="page" style="padding-bottom:80px">
   <div class="top"><div class="tlogo">🎮 O'yinlar</div></div>
-  <div style="padding:20px 16px;display:flex;flex-direction:column;gap:14px">
-    <div onclick="go('p-game',-1);gameStart()" style="background:linear-gradient(135deg,#1a2a4a,#0d1f3a);border:1.5px solid rgba(0,212,170,.3);border-radius:18px;padding:24px 20px;cursor:pointer;display:flex;align-items:center;gap:16px">
-      <div style="font-size:3rem">⚗️</div>
-      <div>
-        <div style="font-size:1.2rem;font-weight:800">Element 2048</div>
-        <div style="font-size:.8rem;opacity:.5;margin-top:4px">H + H = He • He + He = Li • ... → Na = 🏆</div>
-        <div style="font-size:.75rem;color:#00d4aa;margin-top:6px;font-weight:600">Swipe bilan boshqar</div>
+  <div style="padding:16px;display:flex;flex-direction:column;gap:16px">
+
+    <!-- Element 2048 -->
+    <div style="background:linear-gradient(135deg,#1a2a4a,#0d1f3a);border:1.5px solid rgba(0,212,170,.3);border-radius:18px;overflow:hidden">
+      <div style="padding:18px 18px 12px;display:flex;align-items:center;gap:14px">
+        <div style="font-size:2.6rem">⚗️</div>
+        <div style="flex:1">
+          <div style="font-size:1.1rem;font-weight:800">Element 2048</div>
+          <div style="font-size:.75rem;opacity:.5;margin-top:3px">H+H=He → He+He=Li → ... → Na 🏆</div>
+        </div>
+      </div>
+      <div style="padding:0 18px 6px">
+        <div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🏆 Top 5</div>
+        <div id="pg-g-reyting" style="font-size:.8rem;color:rgba(255,255,255,.6)">Yuklanmoqda...</div>
+      </div>
+      <div style="padding:12px 18px 18px">
+        <button onclick="go('p-game',-1);gameStart()" style="width:100%;padding:11px;background:linear-gradient(135deg,#00d4aa,#00a8ff);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
       </div>
     </div>
-    <div onclick="go('p-memory',-1);memStart()" style="background:linear-gradient(135deg,#1a2a4a,#0d1f3a);border:1.5px solid rgba(150,100,255,.3);border-radius:18px;padding:24px 20px;cursor:pointer;display:flex;align-items:center;gap:16px">
-      <div style="font-size:3rem">🧩</div>
-      <div>
-        <div style="font-size:1.2rem;font-weight:800">Memory</div>
-        <div style="font-size:.8rem;opacity:.5;margin-top:4px">Element belgisi va nomini juftlashtir</div>
-        <div style="font-size:.75rem;color:#a78bfa;margin-top:6px;font-weight:600">4×4 · 6×6 · 8×8</div>
+
+    <!-- Memory -->
+    <div style="background:linear-gradient(135deg,#1a2a4a,#0d1f3a);border:1.5px solid rgba(150,100,255,.3);border-radius:18px;overflow:hidden">
+      <div style="padding:18px 18px 12px;display:flex;align-items:center;gap:14px">
+        <div style="font-size:2.6rem">🧩</div>
+        <div style="flex:1">
+          <div style="font-size:1.1rem;font-weight:800">Memory</div>
+          <div style="font-size:.75rem;opacity:.5;margin-top:3px">Element belgisi va nomini juftlashtir</div>
+          <div style="font-size:.7rem;color:#a78bfa;margin-top:4px;font-weight:600">4×4 · 6×6 · 8×8</div>
+        </div>
+      </div>
+      <div style="padding:0 18px 6px">
+        <div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🏆 Top 5</div>
+        <div id="pg-m-reyting" style="font-size:.8rem;color:rgba(255,255,255,.6)">Yuklanmoqda...</div>
+      </div>
+      <div style="padding:12px 18px 18px">
+        <button onclick="go('p-memory',-1);memStart()" style="width:100%;padding:11px;background:linear-gradient(135deg,#a78bfa,#7c3aed);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
       </div>
     </div>
-    <div onclick="go('p-sort',-1);wsStart()" style="background:linear-gradient(135deg,#1a2a4a,#0d1f3a);border:1.5px solid rgba(239,68,68,.3);border-radius:18px;padding:24px 20px;cursor:pointer;display:flex;align-items:center;gap:16px">
-      <div style="font-size:3rem">🧪</div>
-      <div>
-        <div style="font-size:1.2rem;font-weight:800">Probirkalar</div>
-        <div style="font-size:.8rem;opacity:.5;margin-top:4px">Ranglarni tartiblash — bir xil rang bir probirkaga</div>
-        <div style="font-size:.75rem;color:#ef4444;margin-top:6px;font-weight:600">Oson · O'rta · Qiyin</div>
+
+    <!-- Probirkalar -->
+    <div style="background:linear-gradient(135deg,#1a2a4a,#0d1f3a);border:1.5px solid rgba(239,68,68,.3);border-radius:18px;overflow:hidden">
+      <div style="padding:18px 18px 12px;display:flex;align-items:center;gap:14px">
+        <div style="font-size:2.6rem">🧪</div>
+        <div style="flex:1">
+          <div style="font-size:1.1rem;font-weight:800">Probirkalar</div>
+          <div style="font-size:.75rem;opacity:.5;margin-top:3px">Ranglarni tartiblash</div>
+          <div style="font-size:.7rem;color:#ef4444;margin-top:4px;font-weight:600">Oson · O'rta · Qiyin</div>
+        </div>
+      </div>
+      <div style="padding:0 18px 6px">
+        <div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🏆 Top 5</div>
+        <div id="pg-s-reyting" style="font-size:.8rem;color:rgba(255,255,255,.6)">Yuklanmoqda...</div>
+      </div>
+      <div style="padding:12px 18px 18px">
+        <button onclick="go('p-sort',-1);wsStart()" style="width:100%;padding:11px;background:linear-gradient(135deg,#ef4444,#b91c1c);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
       </div>
     </div>
+
   </div>
 </div>
 
 <!-- O'YIN SAHIFASI (2048) -->
 <div id="p-game" class="page" style="padding-bottom:80px;user-select:none">
   <div class="top">
-    <button onclick="go('p1',0)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
-    <div class="tlogo">⚗️ Element 2048</div>
-    <button onclick="gameStart()" style="background:none;border:none;color:#00d4aa;font-size:.85rem;font-weight:700;cursor:pointer">Yangi</button>
+    <button onclick="go('p-games',-1)" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
+    <div class="tlogo">⚗️ 2048</div>
+    <button onclick="gameStart()" style="background:none;border:none;color:#00d4aa;font-size:.85rem;font-weight:700;cursor:pointer">🔁</button>
   </div>
   <div style="padding:12px 16px 0">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
@@ -652,19 +685,15 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
       <button onclick="gMove('r')" style="background:rgba(255,255,255,.1);border:none;border-radius:10px;padding:10px;font-size:1.3rem;cursor:pointer">➡️</button>
     </div>
     <div style="margin-top:8px;font-size:.7rem;color:rgba(255,255,255,.3);text-align:center">H + H = He • He + He = Li • ... • Na = 🏆</div>
-    <div class="card" style="margin-top:14px">
-      <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">🏆 Top 10 Reyting</div>
-      <div id="g-reyting"><div style="text-align:center;color:rgba(255,255,255,.3);font-size:.85rem;padding:12px">Yuklanmoqda...</div></div>
-    </div>
   </div>
 </div>
 
 <!-- MEMORY O'YINI -->
 <div id="p-memory" class="page" style="padding-bottom:80px;user-select:none">
   <div class="top">
-    <button onclick="go('p-games',-1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+    <button onclick="go('p-games',-1)" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
     <div class="tlogo">🧩 Memory</div>
-    <button onclick="memStart()" style="background:none;border:none;color:#a78bfa;font-size:.85rem;font-weight:700;cursor:pointer">Yangi</button>
+    <button onclick="memStart()" style="background:none;border:none;color:#a78bfa;font-size:.85rem;font-weight:700;cursor:pointer">🔁</button>
   </div>
   <div style="display:flex;gap:6px;padding:6px 16px;justify-content:center">
     <button id="m-diff-4x4" onclick="memStart('4x4')" style="flex:1;background:#a78bfa;color:#fff;border:none;border-radius:10px;padding:7px 0;font-size:.8rem;font-weight:700;cursor:pointer">4×4</button>
@@ -698,16 +727,12 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <button onclick="memStart()" class="btn" style="background:#a78bfa;color:#fff;padding:12px 32px;font-size:1rem;margin-bottom:10px;border:none;border-radius:14px;cursor:pointer;font-weight:700">🔁 Qayta</button>
     <button onclick="document.getElementById('m-win').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:.9rem;cursor:pointer;margin-top:6px">Yopish</button>
   </div>
-  <div class="card" style="margin:12px 16px 0">
-    <div style="font-size:.75rem;font-weight:700;opacity:.4;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">🏆 Top 10 Reyting</div>
-    <div id="m-reyting"><div style="text-align:center;font-size:.85rem;padding:12px;opacity:.4">Yuklanmoqda...</div></div>
-  </div>
 </div>
 
 <!-- PROBIRKALAR (WATER SORT) -->
 <div id="p-sort" class="page" style="padding-bottom:80px;user-select:none">
   <div class="top">
-    <button onclick="go('p-games',-1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+    <button onclick="go('p-games',-1)" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
     <div class="tlogo">🧪 Probirkalar</div>
     <button onclick="wsStart(wsLevel)" style="background:none;border:none;color:#ef4444;font-size:.85rem;font-weight:700;cursor:pointer">🔁</button>
   </div>
@@ -745,10 +770,6 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <button id="ws-next-btn" onclick="wsGoLevel(wsLevel+1)" style="background:#ef4444;color:#fff;padding:12px 32px;font-size:1rem;margin-bottom:8px;border:none;border-radius:14px;cursor:pointer;font-weight:700">➡️ Keyingi daraja</button>
     <button onclick="wsStart(wsLevel)" style="background:rgba(255,255,255,.08);border:none;border-radius:12px;padding:10px 24px;color:var(--c-fg);font-size:.9rem;cursor:pointer;margin-bottom:6px">🔁 Qayta</button>
     <button onclick="document.getElementById('ws-win').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,.3);font-size:.85rem;cursor:pointer;margin-top:4px">Yopish</button>
-  </div>
-  <div class="card" style="margin:12px 16px 0">
-    <div style="font-size:.75rem;font-weight:700;opacity:.4;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">🏆 Eng uzoq borganlar</div>
-    <div id="ws-reyting"><div style="text-align:center;font-size:.85rem;padding:12px;opacity:.4">Yuklanmoqda...</div></div>
   </div>
 </div>
 
@@ -905,8 +926,7 @@ function go(id,nav){
   if(id==='p8')pLoad();
   if(id==='p9')uTab(1);
   if(id==='p-elon')elonLoad();
-  if(id==='p-memory')memReytingLoad();
-  if(id==='p-sort')wsReytingLoad();
+  if(id==='p-games')pgReytingLoad();
 }
 
 // KIRISH
@@ -2588,14 +2608,17 @@ function elemModal(z){
 }
 // ============================================================
 
-// Swipe (mobil)
+// Swipe (faqat game board'da)
 var _gsx,_gsy;
+function gBoardEl(){return document.getElementById('g-board');}
 document.addEventListener('touchstart',function(e){
   if(!gActive()) return;
+  var bd=gBoardEl(); if(!bd||!bd.contains(e.target)) return;
   _gsx=e.touches[0].clientX; _gsy=e.touches[0].clientY;
-},{passive:false});
+},{passive:true});
 document.addEventListener('touchmove',function(e){
-  if(!gActive()) return;
+  if(!gActive()||_gsx===undefined) return;
+  var bd=gBoardEl(); if(!bd||!bd.contains(e.target)) return;
   e.preventDefault();
 },{passive:false});
 document.addEventListener('touchend',function(e){
@@ -2607,6 +2630,28 @@ document.addEventListener('touchend',function(e){
   if(Math.abs(dx)>Math.abs(dy)) gMove(dx>0?'r':'l');
   else gMove(dy>0?'d':'u');
 },{passive:false});
+
+// p-games yuklanishida mini-reytinglar
+async function pgReytingLoad(){
+  try{
+    var rg=await fetch(API+'/game/reyting'); var dg=await rg.json();
+    var el=document.getElementById('pg-g-reyting');
+    if(el){var list=(dg.reyting||[]).slice(0,5);
+      el.innerHTML=list.length?list.map(function(r,i){return '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>'+(i+1)+'. '+r.ism+'</span><span style="color:#00d4aa;font-weight:700">'+r.ball+'</span></div>';}).join(''):'<span style="opacity:.4">Hozircha yo\'q</span>';}
+  }catch(e){}
+  try{
+    var rm=await fetch(API+'/memory/reyting?diff=4x4'); var dm=await rm.json();
+    var el=document.getElementById('pg-m-reyting');
+    if(el){var list=(dm.reyting||[]).slice(0,5);
+      el.innerHTML=list.length?list.map(function(r,i){return '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>'+(i+1)+'. '+r.ism+'</span><span style="color:#a78bfa;font-weight:700">'+r.ball+'</span></div>';}).join(''):'<span style="opacity:.4">Hozircha yo\'q</span>';}
+  }catch(e){}
+  try{
+    var rs=await fetch(API+'/sort/reyting'); var ds=await rs.json();
+    var el=document.getElementById('pg-s-reyting');
+    if(el){var list=(ds.reyting||[]).slice(0,5);
+      el.innerHTML=list.length?list.map(function(r,i){return '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>'+(i+1)+'. '+r.ism+'</span><span style="color:#ef4444;font-weight:700">'+r.daraja+'</span></div>';}).join(''):'<span style="opacity:.4">Hozircha yo\'q</span>';}
+  }catch(e){}
+}
 </script>
 </body>
 </html>
