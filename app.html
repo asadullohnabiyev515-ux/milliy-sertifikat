@@ -641,6 +641,25 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
       </div>
     </div>
 
+    <!-- Reaksiyalar Zanjiri -->
+    <div style="background:linear-gradient(135deg,#1a2a4a,#0d1f3a);border:1.5px solid rgba(245,158,11,.3);border-radius:18px;overflow:hidden">
+      <div style="padding:18px 18px 12px;display:flex;align-items:center;gap:14px">
+        <div style="font-size:2.6rem">⛓️</div>
+        <div style="flex:1">
+          <div style="font-size:1.1rem;font-weight:800">Reaksiyalar Zanjiri</div>
+          <div style="font-size:.75rem;opacity:.5;margin-top:3px">Har darajada bitta reaksiya toping</div>
+          <div style="font-size:.7rem;color:#f59e0b;margin-top:4px;font-weight:600">Necha darajagacha borasiz?</div>
+        </div>
+      </div>
+      <div style="padding:0 18px 6px">
+        <div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🏆 Top 10</div>
+        <div id="pg-r-reyting" style="font-size:.8rem;color:rgba(255,255,255,.6)">Yuklanmoqda...</div>
+      </div>
+      <div style="padding:12px 18px 18px">
+        <button onclick="go('p-react',-1);rzStart()" style="width:100%;padding:11px;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -771,6 +790,47 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <button id="ws-next-btn" onclick="wsGoLevel(wsLevel+1)" style="background:#ef4444;color:#fff;padding:12px 32px;font-size:1rem;margin-bottom:8px;border:none;border-radius:14px;cursor:pointer;font-weight:700">➡️ Keyingi daraja</button>
     <button onclick="wsStart(wsLevel)" style="background:rgba(255,255,255,.08);border:none;border-radius:12px;padding:10px 24px;color:var(--c-fg);font-size:.9rem;cursor:pointer;margin-bottom:6px">🔁 Qayta</button>
     <button onclick="document.getElementById('ws-win').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,.3);font-size:.85rem;cursor:pointer;margin-top:4px">Yopish</button>
+  </div>
+</div>
+
+<!-- REAKSIYALAR ZANJIRI -->
+<div id="p-react" class="page" style="padding-bottom:80px;user-select:none">
+  <div class="top">
+    <button onclick="go('p-games',-1)" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
+    <div class="tlogo">⛓️ Zanjir</div>
+    <div id="rz-lvl" style="font-size:.8rem;color:rgba(255,255,255,.5);font-weight:700;min-width:56px;text-align:right">1-daraja</div>
+  </div>
+  <!-- Start screen -->
+  <div id="rz-start" style="margin:40px 20px;text-align:center">
+    <div style="font-size:3.5rem;margin-bottom:14px">⛓️</div>
+    <div style="font-size:1.2rem;font-weight:800;margin-bottom:8px">Reaksiyalar Zanjiri</div>
+    <div style="font-size:.82rem;color:rgba(255,255,255,.5);margin-bottom:24px;line-height:1.7">Har bir darajada bitta reaksiya ko'rsatiladi.<br>To'g'ri javobni toping va keyingi darajaga o'ting.<br>Xato qilsangiz — o'yin tugaydi!</div>
+    <button onclick="rzStart()" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:14px;padding:14px 40px;font-weight:800;font-size:1rem;cursor:pointer">▶ Boshlash</button>
+  </div>
+  <!-- Game board -->
+  <div id="rz-board" style="display:none">
+    <div style="display:flex;gap:8px;padding:4px 14px 8px">
+      <div style="flex:1;background:rgba(255,255,255,.06);border-radius:12px;padding:8px;text-align:center">
+        <div style="font-size:.6rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px">To'g'ri</div>
+        <div id="rz-score" style="font-size:1.3rem;font-weight:800;color:#00d4aa">0</div>
+      </div>
+      <div style="flex:1;background:rgba(255,255,255,.06);border-radius:12px;padding:8px;text-align:center">
+        <div style="font-size:.6rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px">Rekord</div>
+        <div id="rz-best" style="font-size:1.3rem;font-weight:800;color:gold">0</div>
+      </div>
+    </div>
+    <div style="margin:0 14px 10px;background:rgba(255,255,255,.1);border-radius:6px;height:5px">
+      <div id="rz-bar" style="background:linear-gradient(90deg,#f59e0b,#00d4aa);border-radius:6px;height:5px;width:0%;transition:width .4s"></div>
+    </div>
+    <div id="rz-eq" style="margin:0 14px 14px;background:rgba(255,255,255,.06);border:1.5px solid rgba(245,158,11,.25);border-radius:18px;padding:20px 16px;text-align:center;font-size:1.05rem;font-weight:700;min-height:72px;display:flex;align-items:center;justify-content:center;line-height:1.7;word-break:break-word"></div>
+    <div id="rz-opts" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px"></div>
+  </div>
+  <!-- Game over -->
+  <div id="rz-over" style="display:none;margin:40px 20px;text-align:center">
+    <div id="rz-over-ico" style="font-size:3rem;margin-bottom:12px">😔</div>
+    <div id="rz-over-txt" style="font-size:1.2rem;font-weight:800;margin-bottom:6px"></div>
+    <div id="rz-over-sub" style="font-size:.82rem;color:rgba(255,255,255,.5);margin-bottom:24px"></div>
+    <button onclick="rzStart()" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:14px;padding:12px 32px;font-weight:700;font-size:.95rem;cursor:pointer">🔄 Qayta boshlash</button>
   </div>
 </div>
 
@@ -973,7 +1033,7 @@ var sTogri='';
 
 // GO - sahifa almashtirish
 function go(id,nav){
-  var all=['p1','p2','p3','p3b','p3c','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e','p9f','p9g','p-elon','p-games','p-game','p-memory','p-sort','p-jadval'];
+  var all=['p1','p2','p3','p3b','p3c','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e','p9f','p9g','p-elon','p-games','p-game','p-memory','p-sort','p-react','p-jadval'];
   all.forEach(function(x){var e=document.getElementById(x);if(e)e.style.display='none';});
   var el=document.getElementById(id);
   if(el)el.style.display='block';
@@ -987,7 +1047,7 @@ function go(id,nav){
     for(var i=0;i<6;i++){var n=document.getElementById('n'+i);if(n)n.className='nitem';}
     if(ne)ne.className='nitem on';
     var nu=document.getElementById('n-ustoz');if(nu)nu.className='nitem';
-  }else if(id==='p-games'||id==='p-game'||id==='p-memory'||id==='p-sort'){
+  }else if(id==='p-games'||id==='p-game'||id==='p-memory'||id==='p-sort'||id==='p-react'){
     for(var i=0;i<6;i++){var n=document.getElementById('n'+i);if(n)n.className='nitem';}
     if(ne)ne.className='nitem';
     var ng=document.getElementById('n-game');if(ng)ng.className='nitem on';
@@ -2874,6 +2934,184 @@ document.addEventListener('touchend',function(e){
   else gMove(dy>0?'d':'u');
 },{passive:false});
 
+// === REAKSIYALAR ZANJIRI ===
+var RZ=[
+  // Qo'shilish
+  {q:'2H₂ + O₂ → ?', a:'2H₂O', w:['H₂O₂','H₂SO₄','2HO']},
+  {q:'2Na + Cl₂ → ?', a:'2NaCl', w:['NaCl₂','Na₂Cl','NaCl']},
+  {q:'Fe + S → ?', a:'FeS', w:['FeSO₄','Fe₂S₃','FeS₂']},
+  {q:'4Al + 3O₂ → ?', a:'2Al₂O₃', w:['Al₂O₃','4AlO','AlO₂']},
+  {q:'2Mg + O₂ → ?', a:'2MgO', w:['MgO₂','Mg₂O','Mg(OH)₂']},
+  {q:'N₂ + 3H₂ ⇌ ?', a:'2NH₃', w:['NH₃','N₂H₄','NH']},
+  {q:'2SO₂ + O₂ → ?', a:'2SO₃', w:['SO₃','S₂O₄','2SO₄']},
+  {q:'4P + 5O₂ → ?', a:'2P₂O₅', w:['P₂O₅','4PO','P₄O₆']},
+  {q:'S + O₂ → ?', a:'SO₂', w:['SO₃','S₂O','S₂O₃']},
+  {q:'2Fe + 3Cl₂ → ?', a:'2FeCl₃', w:['2FeCl₂','FeCl₃','Fe₂Cl']},
+  // Kislota oksidi + suv
+  {q:'SO₃ + H₂O → ?', a:'H₂SO₄', w:['H₂SO₃','H₂S₂O₄','H₂S']},
+  {q:'SO₂ + H₂O → ?', a:'H₂SO₃', w:['H₂SO₄','H₂S₂O₃','H₂S']},
+  {q:'CO₂ + H₂O → ?', a:'H₂CO₃', w:['H₂CO','CO(OH)₂','CO₂·H₂O']},
+  {q:'P₂O₅ + 3H₂O → ?', a:'2H₃PO₄', w:['H₃PO₄','3H₃PO₄','H₂PO₄']},
+  {q:'N₂O₅ + H₂O → ?', a:'2HNO₃', w:['HNO₃','2HNO₂','2NO₃H']},
+  // Asosli oksid + suv
+  {q:'CaO + H₂O → ?', a:'Ca(OH)₂', w:['CaH₂O','Ca₂OH','CaO₂']},
+  {q:'Na₂O + H₂O → ?', a:'2NaOH', w:['NaOH','Na₂OH₂','Na(OH)₂']},
+  {q:'BaO + H₂O → ?', a:'Ba(OH)₂', w:['BaH₂O','BaOH','BaO·H₂O']},
+  {q:'K₂O + H₂O → ?', a:'2KOH', w:['KOH','K₂OH','K(OH)₂']},
+  // Oksid + oksid
+  {q:'CaO + CO₂ → ?', a:'CaCO₃', w:['Ca(CO₃)₂','Ca₂CO₃','CaC₂O₄']},
+  {q:'CaO + SO₃ → ?', a:'CaSO₄', w:['CaSO₃','Ca(SO₄)₂','CaS']},
+  {q:'Na₂O + CO₂ → ?', a:'Na₂CO₃', w:['NaCO₃','2NaCO₃','Na₂C₂O₄']},
+  // Parchalanish
+  {q:'2H₂O → 2H₂ + ?', a:'O₂↑', w:['H₂O₂','O₃↑','OH↑']},
+  {q:'2H₂O₂ → 2H₂O + ?', a:'O₂↑', w:['H₂↑','O₃↑','2OH↑']},
+  {q:'CaCO₃ → CaO + ?', a:'CO₂↑', w:['CO↑','C↓','CO₃']},
+  {q:'2KClO₃ → 2KCl + ?', a:'3O₂↑', w:['O₂↑','2O₂↑','Cl₂ + O₂']},
+  {q:'Cu(OH)₂ → CuO + ?', a:'H₂O', w:['H₂↑','H₂O₂','2OH']},
+  {q:'2Fe(OH)₃ → Fe₂O₃ + ?', a:'3H₂O', w:['H₂O','2H₂O','3OH']},
+  {q:'Ca(OH)₂ → CaO + ?', a:'H₂O', w:['H₂↑','Ca+H₂O₂','H₂O₂']},
+  // Metal + kislota
+  {q:'Zn + H₂SO₄ → ZnSO₄ + ?', a:'H₂↑', w:['H₂O','SO₂↑','H₂S']},
+  {q:'Mg + 2HCl → MgCl₂ + ?', a:'H₂↑', w:['Cl₂↑','H₂O','MgH₂']},
+  {q:'Fe + 2HCl → FeCl₂ + ?', a:'H₂↑', w:['Cl₂↑','H₂O','FeCl₃']},
+  {q:'2Al + 3H₂SO₄ → Al₂(SO₄)₃ + ?', a:'3H₂↑', w:['H₂↑','H₂O','3SO₂↑']},
+  {q:'Ca + 2HCl → CaCl₂ + ?', a:'H₂↑', w:['Cl₂↑','H₂O','CaH₂']},
+  {q:'Zn + 2HCl → ZnCl₂ + ?', a:'H₂↑', w:['H₂O','Cl₂↑','ZnH₂']},
+  // Metal + suv
+  {q:'2Na + 2H₂O → 2NaOH + ?', a:'H₂↑', w:['O₂↑','Na₂O','H₂O₂']},
+  {q:'Ca + 2H₂O → Ca(OH)₂ + ?', a:'H₂↑', w:['O₂↑','CaO','H₂O₂']},
+  {q:'2K + 2H₂O → 2KOH + ?', a:'H₂↑', w:['O₂↑','K₂O','KOH']},
+  // Metal + tuz
+  {q:'Fe + CuSO₄ → FeSO₄ + ?', a:'Cu', w:['Cu₂','CuO','CuFe']},
+  {q:'Cu + 2AgNO₃ → Cu(NO₃)₂ + ?', a:'2Ag', w:['Ag','AgO','Ag₂O']},
+  {q:'Zn + CuSO₄ → ZnSO₄ + ?', a:'Cu', w:['CuO','Cu₂O','ZnCu']},
+  // Neytrallanish
+  {q:'NaOH + HCl → NaCl + ?', a:'H₂O', w:['H₂↑','NaClO','H₂SO₄']},
+  {q:'2NaOH + H₂SO₄ → Na₂SO₄ + ?', a:'2H₂O', w:['H₂O','H₂↑','Na₂SO₃']},
+  {q:'Ca(OH)₂ + 2HCl → CaCl₂ + ?', a:'2H₂O', w:['H₂O','H₂↑','Ca(Cl)OH']},
+  {q:'Al(OH)₃ + 3HCl → AlCl₃ + ?', a:'3H₂O', w:['H₂O','H₂↑','3OH']},
+  {q:'KOH + HNO₃ → KNO₃ + ?', a:'H₂O', w:['H₂↑','KNO₂','H₂NO₃']},
+  // Ion almashinish (cho'kma)
+  {q:'AgNO₃ + NaCl → AgCl↓ + ?', a:'NaNO₃', w:['AgNaCl','NaNO₂','Na₂NO₃']},
+  {q:'BaCl₂ + Na₂SO₄ → BaSO₄↓ + ?', a:'2NaCl', w:['NaCl','Na₂Cl₂','NaSO₄']},
+  {q:'Na₂CO₃ + 2HCl → 2NaCl + H₂O + ?', a:'CO₂↑', w:['CO↑','C↓','H₂CO₃']},
+  {q:'Ca(OH)₂ + CO₂ → CaCO₃↓ + ?', a:'H₂O', w:['H₂↑','Ca(HCO₃)₂','CO']},
+  {q:'Na₂CO₃ + Ca(OH)₂ → CaCO₃↓ + ?', a:'2NaOH', w:['NaOH','NaO₂','Na(OH)₂']},
+  {q:'Pb(NO₃)₂ + 2KI → PbI₂↓ + ?', a:'2KNO₃', w:['KNO₃','KNO₂','K₂NO₃']},
+  // Oksid + kislota
+  {q:'CuO + H₂SO₄ → CuSO₄ + ?', a:'H₂O', w:['H₂↑','Cu(OH)₂','H₂SO₃']},
+  {q:'CaO + H₂SO₄ → CaSO₄ + ?', a:'H₂O', w:['H₂↑','Ca(OH)₂','CaSO₃']},
+  {q:'Fe₂O₃ + 3H₂SO₄ → Fe₂(SO₄)₃ + ?', a:'3H₂O', w:['H₂O','H₂↑','3H₂SO₃']},
+  {q:'Al₂O₃ + 6HCl → 2AlCl₃ + ?', a:'3H₂O', w:['H₂O','H₂↑','2H₂O']},
+  {q:'MgO + 2HCl → MgCl₂ + ?', a:'H₂O', w:['H₂↑','Mg(OH)₂','H₂O₂']},
+  // Qaytarilish (reduksiya)
+  {q:'CuO + H₂ → Cu + ?', a:'H₂O', w:['H₂↑','CuH₂','OH']},
+  {q:'Fe₂O₃ + 3H₂ → 2Fe + ?', a:'3H₂O', w:['H₂O','H₂↑','2H₂O']},
+  {q:'CuO + CO → Cu + ?', a:'CO₂', w:['CO₃','C + O₂','CuCO']},
+  {q:'Fe₂O₃ + 3CO → 2Fe + ?', a:'3CO₂', w:['CO₂','CO₃','CO + O₂']},
+  {q:'WO₃ + 3H₂ → W + ?', a:'3H₂O', w:['H₂O','H₂↑','3OH']},
+  // Yonish
+  {q:'C + O₂ → ?', a:'CO₂', w:['CO','C₂O','CO₃']},
+  {q:'2C + O₂ → ?', a:'2CO', w:['2CO₂','CO₂','CO + C']},
+  {q:'CH₄ + 2O₂ → CO₂ + ?', a:'2H₂O', w:['H₂O','4H₂O','H₂O₂']},
+  {q:'2H₂S + 3O₂ → 2SO₂ + ?', a:'2H₂O', w:['H₂O','H₂O₂','3H₂O']},
+  // Azot kimyosi
+  {q:'4NH₃ + 5O₂ → 4NO + ?', a:'6H₂O', w:['4H₂O','H₂O','3H₂O']},
+  {q:'3NO₂ + H₂O → 2HNO₃ + ?', a:'NO↑', w:['NO₂','N₂O','N₂']},
+  {q:'NH₃ + HCl → ?', a:'NH₄Cl', w:['NH₃Cl','NH₂Cl','(NH₄)Cl']},
+  {q:'4NH₃ + 3O₂ → 2N₂ + ?', a:'6H₂O', w:['4H₂O','H₂O','3H₂O']},
+  {q:'4NO₂ + O₂ + 2H₂O → ?', a:'4HNO₃', w:['2HNO₃','4HNO₂','HNO₃']},
+  // Amphoter
+  {q:'Al₂O₃ + 2NaOH → 2NaAlO₂ + ?', a:'H₂O', w:['H₂↑','Na₂Al₂O₄','AlNaO']},
+  {q:'Al(OH)₃ + NaOH → NaAlO₂ + ?', a:'2H₂O', w:['H₂O','H₂↑','H₂O₂']},
+  {q:'Zn + 2NaOH → Na₂ZnO₂ + ?', a:'H₂↑', w:['O₂↑','H₂O','ZnO']},
+  {q:'ZnO + 2NaOH → Na₂ZnO₂ + ?', a:'H₂O', w:['H₂↑','NaZnO','Na₂Zn']},
+];
+var rzQueue=[],rzLevel=0,rzScore=0,rzBest=0,rzRunning=false,rzOptList=[];
+
+function rzShuffle(a){
+  var arr=a.slice();
+  for(var i=arr.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=arr[i];arr[i]=arr[j];arr[j]=t;}
+  return arr;
+}
+
+function rzStart(){
+  rzQueue=rzShuffle(RZ);
+  rzLevel=0; rzScore=0; rzRunning=true;
+  document.getElementById('rz-start').style.display='none';
+  document.getElementById('rz-over').style.display='none';
+  document.getElementById('rz-board').style.display='';
+  document.getElementById('rz-score').textContent='0';
+  document.getElementById('rz-best').textContent=rzBest;
+  rzShow();
+}
+
+function rzShow(){
+  if(rzLevel>=rzQueue.length){rzOver('🏆','Barcha reaksiyalar topildi!');return;}
+  var r=rzQueue[rzLevel];
+  document.getElementById('rz-lvl').textContent=(rzLevel+1)+'-daraja';
+  var eqHtml=r.q.replace('?','<span style="color:gold;font-size:1.2em;font-weight:900">?</span>');
+  document.getElementById('rz-eq').innerHTML='<span style="color:rgba(255,255,255,.35);font-size:.65rem;display:block;margin-bottom:8px">? — nimani bildiradi?</span>'+eqHtml;
+  var pct=Math.min(100,(rzLevel/RZ.length)*100);
+  document.getElementById('rz-bar').style.width=pct+'%';
+  rzOptList=rzShuffle([r.a].concat(r.w));
+  var bgs=['rgba(0,212,170,.12)','rgba(59,130,246,.12)','rgba(168,85,247,.12)','rgba(245,158,11,.12)'];
+  var bds=['rgba(0,212,170,.3)','rgba(59,130,246,.3)','rgba(168,85,247,.3)','rgba(245,158,11,.3)'];
+  var html='';
+  rzOptList.forEach(function(o,i){
+    html+='<button onclick="rzAnswer('+i+')" id="rzb'+i+'" style="background:'+bgs[i]+';border:1.5px solid '+bds[i]+';border-radius:14px;padding:14px 8px;color:var(--c-fg);font-size:.9rem;font-weight:600;cursor:pointer;text-align:center;width:100%;min-height:56px;line-height:1.4">'+o+'</button>';
+  });
+  document.getElementById('rz-opts').innerHTML=html;
+}
+
+function rzAnswer(idx){
+  if(!rzRunning)return;
+  var r=rzQueue[rzLevel];
+  var chosen=rzOptList[idx];
+  var correct=(chosen===r.a);
+  var btns=document.getElementById('rz-opts').querySelectorAll('button');
+  btns.forEach(function(b){b.disabled=true;});
+  if(correct){
+    document.getElementById('rzb'+idx).style.background='rgba(0,212,170,.4)';
+    document.getElementById('rzb'+idx).style.borderColor='#00d4aa';
+    rzScore++; rzBest=Math.max(rzBest,rzScore);
+    document.getElementById('rz-score').textContent=rzScore;
+    document.getElementById('rz-best').textContent=rzBest;
+    rzLevel++;
+    setTimeout(function(){rzShow();},650);
+  }else{
+    document.getElementById('rzb'+idx).style.background='rgba(239,68,68,.4)';
+    document.getElementById('rzb'+idx).style.borderColor='#ef4444';
+    rzOptList.forEach(function(o,i){
+      if(o===r.a){document.getElementById('rzb'+i).style.background='rgba(0,212,170,.4)';document.getElementById('rzb'+i).style.borderColor='#00d4aa';}
+    });
+    rzRunning=false;
+    setTimeout(function(){rzOver('😔','Noto\'g\'ri!');},1400);
+  }
+}
+
+function rzOver(ico,txt){
+  rzRunning=false;
+  document.getElementById('rz-board').style.display='none';
+  document.getElementById('rz-over').style.display='';
+  document.getElementById('rz-over-ico').textContent=ico;
+  document.getElementById('rz-over-txt').textContent=txt;
+  var sub=rzLevel+'-darajaga yetdingiz · '+rzScore+' ta to\'g\'ri';
+  if(rzScore===RZ.length)sub='🏆 Barcha '+RZ.length+' ta reaksiya topildi!';
+  document.getElementById('rz-over-sub').textContent=sub;
+  if(rzScore>0)rzSkorSaqla();
+}
+
+async function rzSkorSaqla(){
+  try{
+    if(!CU||!CU.id)return;
+    await fetch(API+'/react/natija',{method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({user_id:CU.id,name:CU.name||'Noma\'lum',max_level:rzLevel})
+    });
+  }catch(e){}
+}
+
 // p-games yuklanishida mini-reytinglar
 async function pgReytingLoad(){
   try{
@@ -2893,6 +3131,12 @@ async function pgReytingLoad(){
     var el=document.getElementById('pg-s-reyting');
     if(el){var list=(ds.reyting||[]).slice(0,10);
       el.innerHTML=list.length?list.map(function(r,i){return '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>'+(i+1)+'. '+r.name+'</span><span style="color:#ef4444;font-weight:700">'+r.max_level+'-level</span></div>';}).join(''):'<span style="opacity:.4">Hozircha yo\'q</span>';}
+  }catch(e){}
+  try{
+    var rr=await fetch(API+'/react/reyting'); var dr=await rr.json();
+    var el=document.getElementById('pg-r-reyting');
+    if(el){var list=(dr.reyting||[]).slice(0,10);
+      el.innerHTML=list.length?list.map(function(r,i){return '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>'+(i+1)+'. '+r.name+'</span><span style="color:#f59e0b;font-weight:700">'+r.max_level+'-daraja</span></div>';}).join(''):'<span style="opacity:.4">Hozircha yo\'q</span>';}
   }catch(e){}
 }
 </script>
