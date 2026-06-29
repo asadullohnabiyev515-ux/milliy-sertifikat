@@ -757,6 +757,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
       <div style="font-weight:700;font-size:1rem" id="ws-moves">0</div>
     </div>
     <button onclick="wsUndo()" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;padding:7px 14px;color:var(--c-fg);font-size:.82rem;cursor:pointer;font-weight:600">↩ Ortga</button>
+    <button onclick="wsKombinatsiya()" style="background:rgba(255,215,0,.12);border:1.5px solid rgba(255,215,0,.4);border-radius:10px;padding:7px 14px;color:gold;font-size:.82rem;cursor:pointer;font-weight:700">⭐ Aralashtir</button>
   </div>
   <div id="ws-grid" style="padding:4px 8px"></div>
   <div id="ws-win" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,15,30,.92);z-index:200;flex-direction:column;align-items:center;justify-content:center">
@@ -2325,6 +2326,20 @@ function wsUndo(){
   wsSelected=-1;
   document.getElementById('ws-moves').textContent=wsMoves;
   wsRender();
+}
+async function wsKombinatsiya(){
+  if(!tg||!CU.id){alert("Telegram orqali kirish kerak");return;}
+  try{
+    var r=await fetch(API+'/sort/invoice',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({user_id:CU.id})});
+    var d=await r.json();
+    if(!d.url){alert('Xato: invoice yaratilmadi');return;}
+    tg.openInvoice(d.url,function(status){
+      if(status==='paid'){
+        wsStart(wsLevel);
+      }
+    });
+  }catch(e){alert('Xato: '+e.message);}
 }
 function wsSorted(tube){return tube.length===0||(tube.length===4&&tube.every(function(c){return c===tube[0];}));}
 function wsCheckWin(){return wsTubes.every(wsSorted);}
