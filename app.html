@@ -125,6 +125,23 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   </div>
 </div>
 
+<!-- RO'YXATDAN O'TISH -->
+<div id="p-royxat" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px 20px;background:#0a0f1e;position:fixed;top:0;left:0;right:0;bottom:0;z-index:199">
+  <div style="width:70px;height:70px;border-radius:20px;background:linear-gradient(135deg,#00d4aa,#00a8ff);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 14px">📝</div>
+  <div style="font-size:1.2rem;font-weight:800;margin-bottom:4px">Ro'yxatdan o'tish</div>
+  <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:24px">Bir martalik — keyinchalik so'ralmaydi</div>
+  <div class="card" style="width:100%;max-width:380px">
+    <div style="font-size:.75rem;color:rgba(255,255,255,.4);margin-bottom:4px">Ism</div>
+    <input class="inp" id="rq-ism" type="text" placeholder="Masalan: Alibek" style="margin-bottom:12px"/>
+    <div style="font-size:.75rem;color:rgba(255,255,255,.4);margin-bottom:4px">Familiya</div>
+    <input class="inp" id="rq-familiya" type="text" placeholder="Masalan: Karimov" style="margin-bottom:12px"/>
+    <div style="font-size:.75rem;color:rgba(255,255,255,.4);margin-bottom:4px">Telefon raqam</div>
+    <input class="inp" id="rq-telefon" type="tel" placeholder="+998901234567" style="margin-bottom:16px"/>
+    <div id="rq-xb" style="display:none;font-size:.78rem;border-radius:10px;padding:9px 12px;margin-bottom:12px;background:rgba(255,59,48,.08);color:#ff6b6b;border:1px solid rgba(255,59,48,.2)"></div>
+    <button class="btn btn-green" id="rq-btn" onclick="royxatSaqla()">✅ Kirish</button>
+  </div>
+</div>
+
 <!-- BOSH -->
 <div id="p1" class="page" style="padding-bottom:80px">
   <div class="top"><div class="tlogo">Milliy Imtihon</div><div class="av" id="av">A</div></div>
@@ -880,34 +897,75 @@ function go(id,nav){
 }
 
 // KIRISH
-function kirish(){
-  CU={id:uid||0,name:uname};
+function appOch(){
   var ini=CU.name.charAt(0).toUpperCase();
   ['av','av2','av5','av6','av7','av8','av9','pav'].forEach(function(x){var e=document.getElementById(x);if(e)e.textContent=ini;});
   document.getElementById('bism').textContent=CU.name+'!';
   document.getElementById('pism').textContent=CU.name;
   document.getElementById('pid').textContent='ID: '+CU.id;
   if(urlkod)document.getElementById('tkod').value=urlkod;
-  // Ustoz uchun nav
   if(ADMINS.indexOf(CU.id)>=0&&!document.getElementById('n-ustoz')){
     var nav=document.getElementById('nav');
     var ni=document.createElement('div');
-    ni.id='n-ustoz';
-    ni.className='nitem';
+    ni.id='n-ustoz';ni.className='nitem';
     ni.innerHTML='<span>👨‍🏫</span><span>Ustoz</span>';
     ni.onclick=function(){go('p9',6);};
     nav.appendChild(ni);
   }
-  // p0 yashir
   document.getElementById('p0').style.display='none';
-  // nav ko'rsat
+  document.getElementById('p-royxat').style.display='none';
   document.getElementById('nav').style.display='flex';
-  // e'lon badge
   elonBadgeYanila();
   setInterval(elonBadgeYanila,5*60*1000);
-  // bosh sahifa
   go('p1',0);
   if(urltab==='tester')setTimeout(function(){go('p7',4);tTab(1);},200);
+}
+
+async function kirish(){
+  CU={id:uid||0,name:uname};
+  document.getElementById('p0').style.display='none';
+  // Avval Telegram ismini inputlarga to'ldir
+  if(CU.name&&CU.name!=='Foydalanuvchi'){
+    var parts=CU.name.trim().split(' ');
+    document.getElementById('rq-ism').value=parts[0]||'';
+    document.getElementById('rq-familiya').value=parts.slice(1).join(' ')||'';
+  }
+  try{
+    var r=await fetch(API+'/user/tekshir/'+CU.id);
+    var d=await r.json();
+    if(d.royxatdan_otgan){
+      appOch(); return;
+    }
+  }catch(e){}
+  // Ro'yxat oynasini ko'rsat
+  document.getElementById('p-royxat').style.display='flex';
+}
+
+async function royxatSaqla(){
+  var ism=document.getElementById('rq-ism').value.trim();
+  var familiya=document.getElementById('rq-familiya').value.trim();
+  var telefon=document.getElementById('rq-telefon').value.trim().replace(/\s|-/g,'');
+  var xb=document.getElementById('rq-xb');
+  if(ism.length<2){xb.style.display='block';xb.textContent='Ism kamida 2 harf bo\'lsin!';return;}
+  if(familiya.length<2){xb.style.display='block';xb.textContent='Familiya kamida 2 harf bo\'lsin!';return;}
+  if(!telefon.match(/^[+]?[0-9]{9,13}$/)){xb.style.display='block';xb.textContent='Telefon raqam noto\'g\'ri!';return;}
+  xb.style.display='none';
+  var btn=document.getElementById('rq-btn');
+  btn.disabled=true;btn.textContent='Saqlanmoqda...';
+  try{
+    var r=await fetch(API+'/user/royxat',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({user_id:CU.id,ism:ism,familiya:familiya,telefon:telefon})});
+    var d=await r.json();
+    if(d.success){
+      appOch();
+    } else {
+      xb.style.display='block';xb.textContent='Xato: '+(d.detail||'Qayta urining');
+      btn.disabled=false;btn.textContent='✅ Kirish';
+    }
+  }catch(e){
+    xb.style.display='block';xb.textContent='Internet xatosi, qayta urining';
+    btn.disabled=false;btn.textContent='✅ Kirish';
+  }
 }
 
 document.getElementById('kirish-btn').onclick=kirish;
