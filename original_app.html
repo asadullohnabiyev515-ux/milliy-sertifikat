@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Milliy Imtihon</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;background:#0a0f1e;color:#fff;min-height:100vh}
+#app{min-height:100vh}
+.page{display:none}
+.btn{width:100%;padding:14px;border:none;border-radius:14px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:12px}
+.btn-green{background:linear-gradient(135deg,#00d4aa,#00a8ff);color:#fff}
+.btn-out{background:transparent;border:2px solid rgba(255,255,255,.2);color:#fff}
+.card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:18px}
+.inp{width:100%;padding:12px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);border-radius:12px;color:#fff;font-size:1rem;margin-top:8px;outline:none}
+.inp:focus{border-color:#00d4aa}
+.nav{position:fixed;bottom:0;left:0;right:0;background:rgba(10,15,30,.97);border-top:1px solid rgba(255,255,255,.08);display:flex;padding:8px 0 20px;z-index:100}
+.nitem{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px}
+.nitem span:first-child{font-size:1.3rem;opacity:.4}
+.nitem span:last-child{font-size:.58rem;opacity:.4;font-weight:600}
+.nitem.on span{opacity:1;color:#00d4aa}
+.top{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(10,15,30,.9);border-bottom:1px solid rgba(255,255,255,.08);position:sticky;top:0;z-index:10}
+.tlogo{font-size:.9rem;font-weight:800;background:linear-gradient(90deg,#00d4aa,#00a8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#00d4aa,#00a8ff);display:flex;align-items:center;justify-content:center;font-weight:700}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sbox{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px}
+.snum{font-size:1.2rem;font-weight:800;color:#00d4aa}
+.slab{font-size:.68rem;color:rgba(255,255,255,.4);margin-top:3px;text-transform:uppercase}
+.mc{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;cursor:pointer}
+.mi{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:10px}
+.mt{font-size:.88rem;font-weight:600;margin-bottom:2px}
+.ms{font-size:.7rem;color:rgba(255,255,255,.4)}
+.prog{height:6px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden;margin-bottom:14px}
+.pf{height:100%;background:linear-gradient(90deg,#00d4aa,#00a8ff);border-radius:99px;transition:width .3s}
+.vb{padding:13px 14px;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.1);border-radius:12px;color:#fff;font-size:.9rem;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;width:100%;margin-bottom:8px}
+.vb.sel{border-color:#00d4aa;background:rgba(0,212,170,.1)}
+.vbg{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0}
+.vb.sel .vbg{background:#00d4aa;color:#000}
+.tbtns{display:flex;gap:8px;padding:12px 16px 0;overflow-x:auto}
+.tb{padding:7px 14px;border-radius:20px;font-size:.8rem;font-weight:600;cursor:pointer;white-space:nowrap;border:none}
+.tb.on{background:#00d4aa;color:#000}
+.tb.off{background:transparent;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5)}
+.ri{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:13px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.xb{padding:12px;border-radius:10px;font-size:.85rem;font-weight:500;margin-top:10px;display:none}
+.xb.err{background:rgba(255,59,48,.15);border:1px solid rgba(255,59,48,.3);color:#ff6b6b}
+.xb.ok{background:rgba(0,212,170,.15);border:1px solid rgba(0,212,170,.3);color:#00d4aa}
+.xb.inf{background:rgba(0,136,255,.15);border:1px solid rgba(0,136,255,.3);color:#4da6ff}
+.sp{display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,.1);border-top-color:#00d4aa;border-radius:50%;animation:sp .6s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- KIRISH -->
+<div id="p0" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px 20px;text-align:center;background:#0a0f1e;position:fixed;top:0;left:0;right:0;bottom:0;z-index:200">
+  <div style="width:80px;height:80px;border-radius:22px;background:linear-gradient(135deg,#00d4aa,#00a8ff);display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 16px">🎓</div>
+  <div style="font-size:1.4rem;font-weight:800;background:linear-gradient(90deg,#00d4aa,#00a8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px">Milliy Imtihon</div>
+  <div style="font-size:.82rem;color:rgba(255,255,255,.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:28px">Bilim — Kelajak</div>
+  <div class="card" style="width:100%;max-width:380px">
+    <div style="font-size:1rem;font-weight:700;margin-bottom:6px">Tizimga kirish</div>
+    <div style="font-size:.82rem;color:rgba(255,255,255,.4);margin-bottom:20px">Telegram orqali tezda ulaning</div>
+    <button class="btn btn-green" id="kirish-btn">🚀 Telegram orqali kirish</button>
+  </div>
+</div>
+
+<!-- BOSH -->
+<div id="p1" class="page" style="padding-bottom:80px">
+  <div class="top"><div class="tlogo">Milliy Imtihon</div><div class="av" id="av">A</div></div>
+  <div style="padding:16px 16px 0">
+    <div style="font-size:.82rem;color:rgba(255,255,255,.4);margin-bottom:3px">Xush kelibsiz 👋</div>
+    <div style="font-size:1.3rem;font-weight:800;margin-bottom:16px" id="bism">Foydalanuvchi!</div>
+    <div class="g2" style="margin-bottom:16px">
+      <div class="sbox"><div class="snum" id="bs1">0</div><div class="slab">Testlar</div></div>
+      <div class="sbox"><div class="snum" id="bs2">—</div><div class="slab">Ball</div></div>
+      <div class="sbox"><div class="snum" id="bs3">0</div><div class="slab">Kitoblar</div></div>
+      <div class="sbox"><div class="snum" id="bs4">—</div><div class="slab">Reyting</div></div>
+    </div>
+    <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">Bo'limlar</div>
+    <div class="g2">
+      <div class="mc" onclick="go('p2',1)"><div class="mi" style="background:rgba(0,212,170,.12)">📝</div><div class="mt">Testlar</div><div class="ms">Test ishlash</div></div>
+      <div class="mc" onclick="go('p5',2)"><div class="mi" style="background:rgba(255,107,53,.12)">📚</div><div class="mt">Kitoblar</div><div class="ms">Fanlar bo'yicha</div></div>
+      <div class="mc" onclick="go('p6',3)"><div class="mi" style="background:rgba(0,136,255,.12)">🏆</div><div class="mt">Reyting</div><div class="ms">Top o'quvchilar</div></div>
+      <div class="mc" onclick="go('p7',4)"><div class="mi" style="background:rgba(139,92,246,.12)">🎯</div><div class="mt">Tester</div><div class="ms">Mashq qilish</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TEST KIRISH -->
+<div id="p2" class="page" style="padding-bottom:80px">
+  <div class="top"><div class="tlogo">Testlar</div><div class="av" id="av2">A</div></div>
+  <div style="padding:16px">
+    <div class="card">
+      <div style="font-weight:700;margin-bottom:6px">📝 Test kodini kiriting</div>
+      <div style="font-size:.82rem;color:rgba(255,255,255,.4);margin-bottom:12px">Ustozingizdan olgan kodni kiriting</div>
+      <input class="inp" id="tkod" type="text" placeholder="Masalan: MAT2024" style="text-transform:uppercase"/>
+      <button class="btn btn-green" onclick="testBoshlash()" style="margin-top:12px">▶ Testni boshlash</button>
+      <div class="xb" id="txb"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TEST ISHLASH -->
+<div id="p3" class="page" style="padding-bottom:80px">
+  <div class="top">
+    <button onclick="go('p2',1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">✕</button>
+    <div class="tlogo" id="tfan">Test</div>
+    <div style="width:34px"></div>
+  </div>
+  <div style="padding:14px 16px 0">
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+      <span style="font-size:.8rem;color:rgba(255,255,255,.4)" id="tprog">1/40</span>
+      <span style="font-size:.85rem;font-weight:700;color:#00d4aa" id="tfoiz">0%</span>
+    </div>
+    <div class="prog"><div class="pf" id="tfill" style="width:0%"></div></div>
+    <div style="font-size:.78rem;color:rgba(255,255,255,.4);margin-bottom:4px" id="tsnum">1-savol</div>
+    <div style="font-size:.95rem;font-weight:600;margin-bottom:14px" id="tstext">Javobni tanlang:</div>
+    <div id="tvar"></div>
+    <div id="tochiq" style="display:none"><input class="inp" id="toinp" type="text" placeholder="Javobingizni yozing..."/></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 16px">
+    <button class="btn btn-out" onclick="tOld()" id="toldin">← Oldingi</button>
+    <button class="btn btn-green" onclick="tKeyin()" id="tkeyin">Keyingi →</button>
+  </div>
+</div>
+
+<!-- TEST YUBORISH -->
+<div id="p3b" class="page" style="padding-bottom:80px">
+  <div class="top">
+    <button onclick="go('p3',1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+    <div class="tlogo">Tekshirish</div>
+    <div style="width:34px"></div>
+  </div>
+  <div style="padding:16px">
+    <div class="card">
+      <div style="font-weight:700;margin-bottom:14px">📋 Ma'lumotlar</div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:rgba(255,255,255,.4);font-size:.88rem">Ism</span><span id="yism">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:rgba(255,255,255,.4);font-size:.88rem">Test kodi</span><span id="ykod">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0"><span style="color:rgba(255,255,255,.4);font-size:.88rem">To'ldirilgan</span><span id="ytoldi">—</span></div>
+      <div class="xb" id="yxb"></div>
+      <button class="btn btn-green" id="ybtn" onclick="tYubor()" style="margin-top:14px">📨 Yuborish</button>
+      <button class="btn btn-out" onclick="go('p3',1)" style="margin-top:8px">✏️ Qaytib o'zgartirish</button>
+    </div>
+  </div>
+</div>
+
+<!-- TEST TAMOM -->
+<div id="p3c" class="page" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:40px 20px">
+  <div style="font-size:5rem;margin-bottom:16px">🎉</div>
+  <div style="font-size:1.2rem;font-weight:800;margin-bottom:8px">Barakalla!</div>
+  <div style="font-size:.88rem;color:rgba(255,255,255,.4)">Javoblaringiz yuborildi.</div>
+  <button class="btn btn-green" id="boshbtn" style="margin-top:24px;max-width:200px">🏠 Bosh sahifa</button>
+</div>
+
+<!-- KITOBLAR -->
+<div id="p5" class="page" style="padding-bottom:80px">
+  <div class="top"><div class="tlogo" id="ktitle">Kitoblar</div><div class="av" id="av5">A</div></div>
+  <div id="kfanlar" style="padding:16px">
+    <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">Fanlar</div>
+    <div class="g2" id="kfgrid"><div style="grid-column:span 2;text-align:center;padding:20px"><div class="sp"></div></div></div>
+  </div>
+  <div id="klist" style="display:none;padding:16px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+      <button onclick="kBack()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.2rem;cursor:pointer">←</button>
+      <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase" id="kftitle">Fan</div>
+    </div>
+    <div id="klistinner"></div>
+  </div>
+</div>
+
+<!-- REYTING -->
+<div id="p6" class="page" style="padding-bottom:80px">
+  <div class="top"><div class="tlogo">Reyting</div><div class="av" id="av6">A</div></div>
+  <div class="tbtns">
+    <button class="tb on" id="rt1" onclick="rTab('u')">🏆 Umumiy</button>
+    <button class="tb off" id="rt2" onclick="rTab('o')">📝 Oxirgi</button>
+  </div>
+  <div style="padding:10px 16px 6px;font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px" id="rsarlavha">Umumiy reyting</div>
+  <div id="rlist" style="padding:0 16px"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
+</div>
+
+<!-- TESTER -->
+<div id="p7" class="page" style="padding-bottom:80px">
+  <div class="top"><div class="tlogo">Tester</div><div class="av" id="av7">A</div></div>
+  <div class="tbtns">
+    <button class="tb on" id="tt1" onclick="tTab(1)">📚 Tayyor</button>
+    <button class="tb off" id="tt2" onclick="tTab(2)">👥 Do'st</button>
+    <button class="tb off" id="tt3" onclick="tTab(3)">🔄 Trening</button>
+  </div>
+  <div id="tb1" style="padding:16px">
+    <div id="tfanwrap">
+      <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Fanni tanlang</div>
+      <div class="g2" id="tfgrid"><div style="grid-column:span 2;text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
+    </div>
+    <div id="tmavwrap" style="display:none">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+        <button onclick="tFanBack()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.2rem;cursor:pointer">←</button>
+        <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase" id="tfnom">Fan</div>
+      </div>
+      <div id="tmavlist"></div>
+    </div>
+  </div>
+  <div id="tb2" style="display:none;padding:16px">
+    <div class="card" style="margin-bottom:12px">
+      <div style="font-weight:700;margin-bottom:8px">👥 Do'st bilan test</div>
+      <select id="dfan" class="inp"><option value="">Fan tanlang...</option></select>
+      <select id="dsoni" class="inp" style="margin-top:8px">
+        <option value="5">5 ta</option><option value="10" selected>10 ta</option>
+        <option value="15">15 ta</option><option value="20">20 ta</option>
+      </select>
+      <button class="btn btn-green" onclick="dYarat()" style="margin-top:10px">🎯 Test yaratish</button>
+      <div class="xb" id="dxb"></div>
+    </div>
+    <div class="card">
+      <div style="font-weight:700;margin-bottom:8px">🔑 Kod orqali kirish</div>
+      <input class="inp" id="dkod" type="text" placeholder="DOST_ABC123" style="text-transform:uppercase;margin-top:8px"/>
+      <button class="btn" onclick="alert('Tez kunda!')" style="background:linear-gradient(135deg,#8b5cf6,#d946ef);color:#fff;margin-top:10px">▶ Kirish</button>
+    </div>
+  </div>
+  <div id="tb3" style="display:none;padding:16px">
+    <div class="card">
+      <div style="font-weight:700;margin-bottom:8px">🔄 Trening</div>
+      <div style="font-size:2rem;font-weight:800;color:#ff6b35;text-align:center;margin:12px 0" id="trsoni">0</div>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);text-align:center;margin-bottom:14px">ta xato savol</div>
+      <button class="btn" onclick="alert('Tez kunda!')" style="background:linear-gradient(135deg,#ff6b35,#ff9500);color:#fff">🚀 Boshlash</button>
+    </div>
+  </div>
+</div>
+
+<!-- TESTER TEST -->
+<div id="p7b" class="page" style="padding-bottom:80px">
+  <div class="top">
+    <button onclick="go('p7',4)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">✕</button>
+    <div class="tlogo" id="ttitle">Test</div>
+    <div style="width:34px"></div>
+  </div>
+  <div style="padding:14px 16px 0">
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+      <span style="font-size:.8rem;color:rgba(255,255,255,.4)" id="ttprog">1/10</span>
+      <span style="font-size:.85rem;font-weight:700;color:#00d4aa" id="ttfoiz">0%</span>
+    </div>
+    <div class="prog"><div class="pf" id="ttfill" style="width:0%"></div></div>
+    <div style="font-size:.78rem;color:rgba(255,255,255,.4);margin-bottom:4px" id="ttsnum">1-savol</div>
+    <div style="font-size:.95rem;font-weight:600;margin-bottom:14px" id="ttstext">Savol...</div>
+    <div id="ttvar"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 16px">
+    <button class="btn btn-out" onclick="ttOld()" id="ttoldin">← Oldingi</button>
+    <button class="btn btn-green" onclick="ttKeyin()" id="ttkeyin">Keyingi →</button>
+  </div>
+</div>
+
+<!-- TESTER NATIJA -->
+<div id="p7c" class="page" style="padding:16px 16px 80px">
+  <div style="text-align:center;padding:24px 0 16px">
+    <div style="font-size:4rem;margin-bottom:10px" id="ttemoji">🎉</div>
+    <div style="font-size:1.3rem;font-weight:800;margin-bottom:6px" id="ttball">0%</div>
+    <div style="font-size:.88rem;color:rgba(255,255,255,.4)" id="ttsub">Natija</div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">
+    <div class="sbox" style="text-align:center"><div class="snum" id="tttogri">0</div><div class="slab">To'g'ri</div></div>
+    <div class="sbox" style="text-align:center"><div class="snum" style="color:#ff6b6b" id="ttxato">0</div><div class="slab">Xato</div></div>
+    <div class="sbox" style="text-align:center"><div class="snum" style="color:#ff9500" id="ttjami">0</div><div class="slab">Jami</div></div>
+  </div>
+  <div id="ttxatolar" style="margin-bottom:16px"></div>
+  <button class="btn btn-green" onclick="go('p7',4)">🔄 Qayta urinish</button>
+</div>
+
+<!-- PROFIL -->
+<div id="p8" class="page" style="padding-bottom:80px">
+  <div class="top"><div class="tlogo">Profil</div><div class="av" id="av8">A</div></div>
+  <div style="padding:20px 16px;text-align:center">
+    <div class="av" id="pav" style="width:68px;height:68px;border-radius:18px;font-size:1.8rem;margin:0 auto 12px">A</div>
+    <div style="font-size:1rem;font-weight:700;margin-bottom:4px" id="pism">—</div>
+    <div style="font-size:.78rem;color:rgba(255,255,255,.4)" id="pid">ID: —</div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 16px 16px">
+    <div class="sbox" style="text-align:center"><div class="snum" id="pjami">0</div><div class="slab">Testlar</div></div>
+    <div class="sbox" style="text-align:center"><div class="snum" id="portacha">—</div><div class="slab">O'rtacha</div></div>
+    <div class="sbox" style="text-align:center"><div class="snum" id="pyuqori">—</div><div class="slab">Eng yuqori</div></div>
+  </div>
+  <div style="padding:0 16px">
+    <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">So'nggi natijalar</div>
+    <div id="pnat"><div style="text-align:center;padding:20px;color:rgba(255,255,255,.4);font-size:.85rem">Hozircha natija yo'q</div></div>
+  </div>
+</div>
+
+<!-- USTOZ -->
+<div id="p9" class="page" style="padding-bottom:80px">
+  <div class="top"><div class="tlogo">Ustoz paneli</div><div class="av" id="av9">U</div></div>
+  <div class="tbtns">
+    <button class="tb on" id="ut1" onclick="uTab(1)">📝 Testlar</button>
+    <button class="tb off" id="ut2" onclick="uTab(2)">❓ Savollar</button>
+    <button class="tb off" id="ut3" onclick="uTab(3)">📚 Kitoblar</button>
+  </div>
+  <div id="ub1" style="padding:16px">
+    <button class="btn btn-green" onclick="go('p9b',-1)" style="margin-bottom:14px">➕ Yangi test yaratish</button>
+    <div id="utlist"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
+  </div>
+  <div id="ub2" style="display:none;padding:16px">
+    <button class="btn btn-green" onclick="go('p9c',-1)" style="margin-bottom:14px">➕ Savol qo'shish</button>
+    <div id="uslist"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
+  </div>
+  <div id="ub3" style="display:none;padding:16px">
+    <button class="btn btn-green" onclick="go('p9d',-1)" style="margin-bottom:14px">➕ Kitob qo'shish</button>
+    <div id="ukitoblist"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
+  </div>
+</div>
+
+<!-- USTOZ TEST YARAT -->
+<div id="p9b" class="page" style="padding-bottom:80px">
+  <div class="top">
+    <button onclick="go('p9',6)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+    <div class="tlogo">Test yaratish</div>
+    <div style="width:34px"></div>
+  </div>
+  <div style="padding:16px">
+    <div class="card">
+      <div style="font-weight:700;margin-bottom:12px">Test turi</div>
+      <div class="g2" style="margin-bottom:14px">
+        <div id="turm" onclick="uTur('m')" class="mc" style="text-align:center;border-color:#00d4aa;background:rgba(0,212,170,.08)"><div style="font-size:1.3rem;margin-bottom:4px">🏆</div><div class="mt">Milliy</div><div class="ms">40 savol</div></div>
+        <div id="turo" onclick="uTur('o')" class="mc" style="text-align:center"><div style="font-size:1.3rem;margin-bottom:4px">📝</div><div class="mt">Oddiy</div><div class="ms">Tanlanadi</div></div>
+      </div>
+      <div id="usoniwrap" style="display:none;margin-bottom:12px">
+        <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:8px">Savollar soni</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px" id="usonigrid"></div>
+      </div>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">Fan nomi</div>
+      <input class="inp" id="ufan" type="text" placeholder="Masalan: Kimyo" style="margin-bottom:10px"/>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">Test kodi</div>
+      <input class="inp" id="ukod" type="text" placeholder="Masalan: KIM2024" style="text-transform:uppercase;margin-bottom:12px"/>
+      <button class="btn btn-green" onclick="uJavoblargaO()">Javoblarni kiritish →</button>
+      <div class="xb" id="utxb"></div>
+    </div>
+  </div>
+</div>
+
+<!-- USTOZ JAVOBLAR -->
+<div id="p9e" class="page" style="padding-bottom:80px">
+  <div class="top">
+    <button onclick="go('p9b',-1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+    <div class="tlogo" id="ujtitle">Javoblar</div>
+    <div style="width:34px"></div>
+  </div>
+  <div style="padding:16px">
+    <div id="ujlist"></div>
+    <button class="btn btn-green" onclick="uTestSaqla()" id="ujbtn" style="margin-top:14px">💾 Saqlash</button>
+    <div class="xb" id="ujxb"></div>
+  </div>
+</div>
+
+<!-- USTOZ SAVOL -->
+<div id="p9c" class="page" style="padding-bottom:80px">
+  <div class="top">
+    <button onclick="go('p9',6)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+    <div class="tlogo">Savol qo'shish</div>
+    <div style="width:34px"></div>
+  </div>
+  <div style="padding:16px">
+    <div class="card">
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">Fan</div>
+      <input class="inp" id="sfan" type="text" placeholder="Kimyo" style="margin-bottom:10px"/>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">Mavzu</div>
+      <input class="inp" id="smavzu" type="text" placeholder="Kimyoviy reaksiyalar" style="margin-bottom:10px"/>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">Savol</div>
+      <input class="inp" id="ssavol" type="text" placeholder="Savol matni..." style="margin-bottom:10px"/>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">A</div>
+      <input class="inp" id="sa" type="text" placeholder="A varianti" style="margin-bottom:8px"/>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">B</div>
+      <input class="inp" id="sb" type="text" placeholder="B varianti" style="margin-bottom:8px"/>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">C</div>
+      <input class="inp" id="sc" type="text" placeholder="C varianti" style="margin-bottom:8px"/>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">D</div>
+      <input class="inp" id="sd" type="text" placeholder="D varianti" style="margin-bottom:12px"/>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:8px">To'g'ri javob</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px">
+        <button onclick="sTog('A')" id="stA" class="vb" style="justify-content:center"><span class="vbg">A</span></button>
+        <button onclick="sTog('B')" id="stB" class="vb" style="justify-content:center"><span class="vbg">B</span></button>
+        <button onclick="sTog('C')" id="stC" class="vb" style="justify-content:center"><span class="vbg">C</span></button>
+        <button onclick="sTog('D')" id="stD" class="vb" style="justify-content:center"><span class="vbg">D</span></button>
+      </div>
+      <button class="btn btn-green" onclick="sSaqla()">✅ Saqlash</button>
+      <div class="xb" id="sxb"></div>
+    </div>
+  </div>
+</div>
+
+<!-- USTOZ KITOB -->
+<div id="p9d" class="page" style="padding-bottom:80px">
+  <div class="top">
+    <button onclick="go('p9',6)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+    <div class="tlogo">Kitob qo'shish</div>
+    <div style="width:34px"></div>
+  </div>
+  <div style="padding:16px">
+    <div class="card">
+      <div style="font-size:.85rem;color:rgba(255,255,255,.4);margin-bottom:14px;line-height:1.5">Kitobni bot orqali yuboring: Ustoz paneli → Kitob qo'shish</div>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">Fan</div>
+      <input class="inp" id="kfaninp" type="text" placeholder="Kimyo" style="margin-bottom:10px"/>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">Kitob nomi</div>
+      <input class="inp" id="knominp" type="text" placeholder="Kimyo 9-sinf" style="margin-bottom:12px"/>
+      <button class="btn btn-green" onclick="kBotYubor()">📤 Bot orqali yuklash</button>
+      <div class="xb" id="kxb"></div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav" id="nav" style="display:none">
+  <div class="nitem on" id="n0" onclick="go('p1',0)"><span>🏠</span><span>Bosh</span></div>
+  <div class="nitem" id="n1" onclick="go('p2',1)"><span>📝</span><span>Testlar</span></div>
+  <div class="nitem" id="n2" onclick="go('p5',2)"><span>📚</span><span>Kitoblar</span></div>
+  <div class="nitem" id="n3" onclick="go('p6',3)"><span>🏆</span><span>Reyting</span></div>
+  <div class="nitem" id="n4" onclick="go('p7',4)"><span>🎯</span><span>Tester</span></div>
+  <div class="nitem" id="n5" onclick="go('p8',5)"><span>👤</span><span>Profil</span></div>
+  <div class="nitem" onclick="go('p-elon',-1)"><span>📢</span><span>E'lon</span></div>
+</div>
+
+<div id="p-elon" class="page" style="padding-bottom:80px">
+  <div class="top"><div class="tl">E'lonlar</div></div>
+  <div id="elon-list" style="padding:16px">
+    <div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<script>
+var API='https://milliy-imtihon.onrender.com';
+var tg=window.Telegram&&window.Telegram.WebApp?window.Telegram.WebApp:null;
+if(tg){tg.ready();tg.expand();}
+var uid=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user?tg.initDataUnsafe.user.id:null;
+var uname=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user?tg.initDataUnsafe.user.first_name:'Foydalanuvchi';
+var urlkod=new URLSearchParams(location.search).get('kod');
+var urltab=new URLSearchParams(location.search).get('tab');
+var ADMINS=[5145005581,0];
+var CU={};
+var tJav={},tUD={},tJ=0;
+var ttS=[],ttJav={},ttJ=0,ttF='',ttM='';
+var uTurVal='m',uSoni=40,uJavoblar={};
+var sTogri='';
+
+// GO - sahifa almashtirish
+function go(id,nav){
+  var all=['p1','p2','p3','p3b','p3c','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e','p-elon'];
+  all.forEach(function(x){var e=document.getElementById(x);if(e)e.style.display='none';});
+  var el=document.getElementById(id);
+  if(el)el.style.display='block';
+  window.scrollTo(0,0);
+  if(nav>=0){
+    for(var i=0;i<7;i++){var n=document.getElementById('n'+i);if(n)n.className='nitem'+(i===nav?' on':'');}
+  }
+  if(id==='p5')kLoad();
+  if(id==='p6')rLoad();
+  if(id==='p7')tTab(1);
+  if(id==='p8')pLoad();
+  if(id==='p9')uLoad();
+  if(id==='p-elon')elonLoad();
+}
+
+// KIRISH
+function kirish(){
+  CU={id:uid||5145005581,name:uname};
+  var ini=CU.name.charAt(0).toUpperCase();
+  ['av','av2','av5','av6','av7','av8','av9','pav'].forEach(function(x){var e=document.getElementById(x);if(e)e.textContent=ini;});
+  document.getElementById('bism').textContent=CU.name+'!';
+  document.getElementById('pism').textContent=CU.name;
+  document.getElementById('pid').textContent='ID: '+CU.id;
+  if(urlkod)document.getElementById('tkod').value=urlkod;
+  // Ustoz uchun nav
+  if(ADMINS.indexOf(CU.id)>=0){
+    var nav=document.getElementById('nav');
+    var ni=document.createElement('div');
+    ni.className='nitem';
+    ni.innerHTML='<span>👨‍🏫</span><span>Ustoz</span>';
+    ni.onclick=function(){go('p9',6);};
+    nav.appendChild(ni);
+  }
+  // p0 yashir
+  document.getElementById('p0').style.display='none';
+  // nav ko'rsat
+  document.getElementById('nav').style.display='flex';
+  // bosh sahifa
+  go('p1',0);
+  if(urltab==='tester')setTimeout(function(){go('p7',4);},200);
+}
+
+document.getElementById('kirish-btn').onclick=kirish;
+document.getElementById('boshbtn').onclick=function(){go('p1',0);document.getElementById('nav').style.display='flex';};
+
+// Agar Telegram da bo'lsa avtomatik kirish
+if(uid)setTimeout(kirish,300);
+
+// TEST
+async function testBoshlash(){
+  var kod=document.getElementById('tkod').value.trim().toUpperCase();
+  if(!kod){xb('txb','err','Test kodini kiriting!');return;}
+  xb('txb','inf','Tekshirilmoqda...');
+  try{
+    var r=await fetch(API+'/test/tekshir/'+kod);
+    var d=await r.json();
+    if(!d.topildi){xb('txb','err','Test topilmadi!');return;}
+    if(d.tugadi){xb('txb','err','Bu test yakunlangan!');return;}
+    var rr=await fetch(API+'/student/royxat',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({test_kod:kod,ism:CU.name,familiya:'',telefon:'',user_id:CU.id||0})});
+    var rd=await rr.json();
+    tUD={ism:CU.name,kod:kod,fan:d.fan,tur:d.tur||'milliy',soni:d.savollar_soni||40,vid:rd.varaq_id||''};
+    document.getElementById('tfan').textContent=d.fan;
+    tJav={};tJ=0;
+    tKor();go('p3',1);
+    document.getElementById('txb').style.display='none';
+  }catch(e){xb('txb','err','Serverga ulanib bo\'lmadi!');}
+}
+
+function tKor(){
+  var n=tJ,jami=tUD.soni,tur=tUD.tur;
+  document.getElementById('tsnum').textContent=(n+1)+'-savol';
+  document.getElementById('tprog').textContent=(n+1)+'/'+jami;
+  document.getElementById('tfoiz').textContent=Math.round(n/jami*100)+'%';
+  document.getElementById('tfill').style.width=(n/jami*100)+'%';
+  document.getElementById('toldin').disabled=n===0;
+  document.getElementById('tkeyin').textContent=n===jami-1?'✅ Tekshirish':'Keyingi →';
+  var vs=['A','B','C','D'],och=false;
+  if(tur==='milliy'){if(n>=32&&n<=34)vs=['A','B','C','D','E','F'];if(n>=35)och=true;}
+  var vb=document.getElementById('tvar'),ob=document.getElementById('tochiq');
+  if(!och){
+    vb.style.display='block';ob.style.display='none';
+    vb.innerHTML=vs.map(function(v){return '<button onclick="tV(\''+v+'\')" class="vb'+(tJav[n]===v?' sel':'')+'"><span class="vbg">'+v+'</span>'+v+' variant</button>';}).join('');
+  }else{
+    vb.style.display='none';ob.style.display='block';
+    document.getElementById('toinp').value=tJav[n]||'';
+  }
+}
+function tV(v){tJav[tJ]=v;tKor();}
+function tOld(){if(tJ>0){tJ--;tKor();}}
+function tKeyin(){
+  if(tUD.tur==='milliy'&&tJ>=35){var v=document.getElementById('toinp').value.trim();if(v)tJav[tJ]=v;}
+  if(tJ===tUD.soni-1){
+    document.getElementById('yism').textContent=CU.name;
+    document.getElementById('ykod').textContent=tUD.kod;
+    document.getElementById('ytoldi').textContent=Object.keys(tJav).length+'/'+tUD.soni;
+    go('p3b',1);
+  }else{tJ++;tKor();}
+}
+async function tYubor(){
+  var btn=document.getElementById('ybtn');
+  btn.disabled=true;btn.textContent='Yuborilmoqda...';
+  for(var i=0;i<tUD.soni;i++){if(!tJav[i])tJav[i]='';}
+  try{
+    var r=await fetch(API+'/natija/yuborish',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({test_kod:tUD.kod,ism:tUD.ism,familiya:'',telefon:'',user_id:CU.id||0,javoblar:tJav,varaq_id:tUD.vid||''})});
+    var d=await r.json();
+    if(r.ok&&d.success){
+      var em=d.foiz>=80?'🏆':d.foiz>=60?'🎉':d.foiz>=40?'👍':'💪';
+      var sub=d.foiz>=80?'Ajoyib!':d.foiz>=60?'Yaxshi!':d.foiz>=40?'Davom eting!':'Qayta urining!';
+      var e1=document.getElementById('p3c-emoji');if(e1)e1.textContent=em;
+      var e2=document.getElementById('p3c-ball');if(e2)e2.textContent=d.ball+' / '+d.maks_ball+' ball';
+      var e3=document.getElementById('p3c-foiz');if(e3)e3.textContent=d.foiz+'% ('+d.togri_soni+'/'+d.jami+')';
+      var e4=document.getElementById('p3c-sub');if(e4)e4.textContent=sub;
+      document.getElementById('nav').style.display='none';
+      go('p3c',-1);
+    }else{xb('yxb','err',d.detail||'Xato');btn.disabled=false;btn.textContent='📨 Yuborish';}
+  }catch(e){xb('yxb','err','Xato');btn.disabled=false;btn.textContent='📨 Yuborish';}
+}
+
+// KITOBLAR
+async function kLoad(){
+  try{
+    var r=await fetch(API+'/kitob/fanlar');
+    var d=await r.json();
+    var fanlar=d.fanlar||[];
+    var g=document.getElementById('kfgrid');
+    var ic={'Kimyo':'🧪','Fizika':'⚡','Matematika':'📐','Biologiya':'🌿'};
+    if(!fanlar.length){g.innerHTML='<div style="grid-column:span 2;text-align:center;padding:20px;color:rgba(255,255,255,.4)">Kitoblar yo\'q</div>';return;}
+    g.innerHTML=fanlar.map(function(f){return '<div onclick="kFan(\''+f+'\')" class="mc" style="text-align:center"><div style="font-size:2rem;margin-bottom:8px">'+(ic[f]||'📚')+'</div><div class="mt">'+f+'</div></div>';}).join('');
+  }catch(e){}
+}
+async function kFan(fan){
+  document.getElementById('kftitle').textContent=fan;
+  document.getElementById('ktitle').textContent=fan;
+  document.getElementById('kfanlar').style.display='none';
+  document.getElementById('klist').style.display='block';
+  var li=document.getElementById('klistinner');
+  li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
+  try{
+    var r=await fetch(API+'/kitob/royxat/'+fan);
+    var d=await r.json();
+    var kl=d.kitoblar||[];
+    if(!kl.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Kitoblar yo\'q</div>';return;}
+    li.innerHTML=kl.map(function(k){return '<div class="ri" style="justify-content:space-between"><div style="font-size:.9rem;font-weight:600">'+k.nomi+'</div><div onclick="kYukla(\''+k.fayl_id+'\',\''+k.nomi+'\')" style="background:rgba(0,212,170,.12);border:1px solid rgba(0,212,170,.25);border-radius:8px;padding:4px 10px;font-size:.7rem;color:#00d4aa;font-weight:600;cursor:pointer">⬇</div></div>';}).join('');
+  }catch(e){}
+}
+function kBack(){document.getElementById('ktitle').textContent='Kitoblar';document.getElementById('kfanlar').style.display='block';document.getElementById('klist').style.display='none';}
+function kYukla(fid,n){if(tg)tg.sendData(JSON.stringify({action:'kitob_yukla',fayl_id:fid,nomi:n}));else alert('Bot orqali yuklanadi');}
+
+// REYTING
+async function rLoad(){await rTab('u');}
+async function rTab(t){
+  var r1=document.getElementById('rt1'),r2=document.getElementById('rt2');
+  var s=document.getElementById('rsarlavha');
+  if(t==='u'){r1.className='tb on';r2.className='tb off';s.textContent='Umumiy reyting';}
+  else{r2.className='tb on';r1.className='tb off';s.textContent='Oxirgi test';}
+  var li=document.getElementById('rlist');
+  li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
+  try{
+    var r=await fetch(API+(t==='u'?'/reyting/umumiy':'/reyting/oxirgi'));
+    var d=await r.json();
+    var rl=d.reyting||[];
+    if(t==='o'&&d.fan)s.textContent='Oxirgi: '+d.fan;
+    if(!rl.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Natija yo\'q</div>';return;}
+    li.innerHTML=rl.map(function(n){
+      var ob=n.orin===1?'🥇':n.orin===2?'🥈':n.orin===3?'🥉':n.orin+'.';
+      var b=t==='u'?n.jami_ball:n.ball||0;
+      var rng=b>=60?'#00d4aa':b>=40?'#ff9500':'#ff6b6b';
+      return '<div class="ri"><div style="font-size:1.1rem;min-width:30px;text-align:center">'+ob+'</div><div class="av" style="width:36px;height:36px;border-radius:10px;font-size:.9rem;flex-shrink:0">'+(n.ism?n.ism.charAt(0):'?')+'</div><div style="flex:1"><div style="font-size:.88rem;font-weight:600">'+(n.ism||'')+'</div></div><div style="font-size:.9rem;font-weight:800;color:'+rng+'">'+b+' b</div></div>';
+    }).join('');
+  }catch(e){}
+}
+
+// TESTER
+function tTab(n){
+  [1,2,3].forEach(function(i){
+    document.getElementById('tt'+i).className='tb '+(i===n?'on':'off');
+    document.getElementById('tb'+i).style.display=i===n?'block':'none';
+  });
+  if(n===1)ttFanLoad();
+  if(n===2)ttDostLoad();
+  if(n===3)ttTrLoad();
+}
+async function ttFanLoad(){
+  try{
+    var r=await fetch(API+'/savol/fanlar');
+    var d=await r.json();
+    var fl=d.fanlar||[];
+    var g=document.getElementById('tfgrid');
+    var ic={'Kimyo':'🧪','Fizika':'⚡','Matematika':'📐','Biologiya':'🌿'};
+    if(!fl.length){g.innerHTML='<div style="grid-column:span 2;text-align:center;padding:20px;color:rgba(255,255,255,.4)">Savollar yo\'q.<br>Ustoz savol qo\'shsin.</div>';return;}
+    g.innerHTML=fl.map(function(f){return '<div onclick="ttFan(\''+f.fan+'\')" class="mc" style="text-align:center"><div style="font-size:2rem;margin-bottom:8px">'+(ic[f.fan]||'📚')+'</div><div class="mt">'+f.fan+'</div><div class="ms">'+f.jami+' savol</div></div>';}).join('');
+  }catch(e){document.getElementById('tfgrid').innerHTML='<div style="grid-column:span 2;text-align:center;padding:20px;color:rgba(255,255,255,.4)">Server bilan ulanib bo\'lmadi</div>';}
+}
+async function ttFan(fan){
+  ttF=fan;
+  document.getElementById('tfnom').textContent=fan;
+  document.getElementById('tfanwrap').style.display='none';
+  document.getElementById('tmavwrap').style.display='block';
+  var li=document.getElementById('tmavlist');
+  li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
+  fetch(API+'/savol/mavzular/'+fan)
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var ml=d.mavzular||[];
+      if(!ml.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Mavzular yo\'q</div>';return;}
+      li.innerHTML=ml.map(function(m){return '<div onclick="ttMav(\''+m.mavzu+'\')" class="ri" style="cursor:pointer"><div style="flex:1"><div style="font-size:.9rem;font-weight:600">'+m.mavzu+'</div><div style="font-size:.72rem;color:rgba(255,255,255,.4)">'+m.soni+' savol</div></div><div style="color:#00d4aa">→</div></div>';}).join('');
+    }).catch(function(){});
+}
+function tFanBack(){document.getElementById('tfanwrap').style.display='block';document.getElementById('tmavwrap').style.display='none';}
+function ttMav(mav){
+  ttM=mav;
+  var li=document.getElementById('tmavlist');
+  li.innerHTML='<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><button onclick="tFanBack()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.2rem;cursor:pointer">←</button><div style="font-size:.85rem;font-weight:700">'+mav+'</div></div>'+
+    '<div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:12px">Nechta savol ishlaysiz?</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">'+
+    '<button onclick="ttBoshla(10)" class="mc" style="text-align:center;padding:20px 10px"><div style="font-size:1.5rem;font-weight:800;color:#00d4aa">10</div><div style="font-size:.7rem;color:rgba(255,255,255,.4)">savol</div></button>'+
+    '<button onclick="ttBoshla(15)" class="mc" style="text-align:center;padding:20px 10px"><div style="font-size:1.5rem;font-weight:800;color:#ff9500">15</div><div style="font-size:.7rem;color:rgba(255,255,255,.4)">savol</div></button>'+
+    '<button onclick="ttBoshla(20)" class="mc" style="text-align:center;padding:20px 10px"><div style="font-size:1.5rem;font-weight:800;color:#4da6ff">20</div><div style="font-size:.7rem;color:rgba(255,255,255,.4)">savol</div></button>'+
+    '</div>';
+}
+
+async function ttBoshla(soni){
+  try{
+    var r=await fetch(API+'/savol/olish/'+ttF+'/'+ttM+'?soni='+soni);
+    var d=await r.json();
+    ttS=d.savollar||[];
+    if(!ttS.length){alert('Savollar yo\'q!');return;}
+    ttJav={};ttJ=0;
+    document.getElementById('ttitle').textContent=ttF+' - '+ttM;
+    ttKor();go('p7b',-1);
+  }catch(e){alert('Xato: '+e);}
+}
+function ttKor(){
+  var n=ttJ,jami=ttS.length,s=ttS[n];
+  document.getElementById('ttsnum').textContent=(n+1)+'-savol';
+  document.getElementById('ttstext').textContent=s.savol;
+  document.getElementById('ttprog').textContent=(n+1)+'/'+jami;
+  document.getElementById('ttfoiz').textContent=Math.round(n/jami*100)+'%';
+  document.getElementById('ttfill').style.width=(n/jami*100)+'%';
+  document.getElementById('ttoldin').disabled=n===0;
+  document.getElementById('ttkeyin').textContent=n===jami-1?'✅ Natija':'Keyingi →';
+  var vs=s.variantlar||{};
+  document.getElementById('ttvar').innerHTML=Object.keys(vs).map(function(h){return '<button onclick="ttV(\''+h+'\')" class="vb'+(ttJav[s.id]===h?' sel':'')+'"><span class="vbg">'+h+'</span>'+vs[h]+'</button>';}).join('');
+}
+function ttV(h){ttJav[ttS[ttJ].id]=h;ttKor();}
+function ttOld(){if(ttJ>0){ttJ--;ttKor();}}
+function ttKeyin(){if(ttJ===ttS.length-1)ttNat();else{ttJ++;ttKor();}}
+async function ttNat(){
+  try{
+    var r=await fetch(API+'/savol/tekshir?fan='+ttF+'&mavzu='+ttM,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ttJav)});
+    var d=await r.json();
+    var b=d.ball||0;
+    document.getElementById('ttball').textContent=b+'%';
+    document.getElementById('tttogri').textContent=d.togri||0;
+    document.getElementById('ttxato').textContent=(d.jami||0)-(d.togri||0);
+    document.getElementById('ttjami').textContent=d.jami||0;
+    document.getElementById('ttemoji').textContent=b>=80?'🏆':b>=60?'🎉':b>=40?'👍':'💪';
+    document.getElementById('ttsub').textContent=b>=80?'Ajoyib!':b>=60?'Yaxshi!':b>=40?'Davom eting!':'Qayta urinib ko\'ring!';
+    var xl=d.notogri||[];
+    document.getElementById('ttxatolar').innerHTML=xl.length?'<div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Xato javoblar</div>'+xl.map(function(x){return '<div class="ri" style="flex-direction:column;align-items:flex-start"><div style="font-size:.78rem;color:rgba(255,255,255,.4)">Savol #'+x.savol_id+'</div><div style="font-size:.85rem;margin-top:4px">Sizniki: <span style="color:#ff6b6b;font-weight:600">'+x.berilgan+'</span></div><div style="font-size:.85rem">To\'g\'ri: <span style="color:#00d4aa;font-weight:600">'+x.togri+'</span></div></div>';}).join(''):'';
+    go('p7c',-1);
+  }catch(e){alert('Natija xato: '+e);}
+}
+async function ttDostLoad(){
+  try{
+    var r=await fetch(API+'/savol/fanlar');
+    var d=await r.json();
+    var sel=document.getElementById('dfan');
+    sel.innerHTML='<option value="">Fan tanlang...</option>'+(d.fanlar||[]).map(function(f){return '<option value="'+f.fan+'">'+f.fan+'</option>';}).join('');
+  }catch(e){}
+}
+async function dYarat(){
+  var fan=document.getElementById('dfan').value;
+  var soni=document.getElementById('dsoni').value;
+  if(!fan){alert('Fan tanlang!');return;}
+  try{
+    var r=await fetch(API+'/dost/yarat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({yaratuvchi_id:CU.id||0,fan:fan,savollar_soni:parseInt(soni)})});
+    var d=await r.json();
+    if(d.success){var e=document.getElementById('dxb');e.style.display='block';e.className='xb ok';e.textContent='Kod: '+d.kod;}
+  }catch(e){alert('Xato');}
+}
+async function ttTrLoad(){
+  if(!CU.id)return;
+  try{
+    var r=await fetch(API+'/trening/'+CU.id);
+    var d=await r.json();
+    document.getElementById('trsoni').textContent=d.xato_soni||0;
+  }catch(e){}
+}
+
+// PROFIL
+async function pLoad(){
+  if(!CU.id)return;
+  try{
+    var r=await fetch(API+'/profil/'+CU.id);
+    var d=await r.json();
+    document.getElementById('pjami').textContent=d.jami_test||0;
+    document.getElementById('portacha').textContent=d.ortacha_ball||'—';
+    document.getElementById('pyuqori').textContent=d.eng_yuqori||'—';
+    var li=document.getElementById('pnat');
+    if(!d.natijalar||!d.natijalar.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Natija yo\'q</div>';return;}
+    li.innerHTML=d.natijalar.map(function(n){
+      var b=n.ball||0,rng=b>=60?'#00d4aa':b>=40?'#ff9500':'#ff6b6b';
+      return '<div class="ri" style="justify-content:space-between"><div><div style="font-size:.78rem;font-weight:700;color:#00d4aa">'+n.test_kod+'</div><div style="font-size:.85rem;margin-top:2px">'+n.fan+'</div><div style="font-size:.72rem;color:rgba(255,255,255,.4)">'+n.vaqt+'</div></div><div style="font-size:.9rem;font-weight:800;color:'+rng+'">'+(n.tugadi?b+'b':'⏳')+'</div></div>';
+    }).join('');
+    document.getElementById('bs1').textContent=d.jami_test;
+    if(d.natijalar[0]&&d.natijalar[0].ball)document.getElementById('bs2').textContent=d.natijalar[0].ball;
+  }catch(e){}
+}
+
+// USTOZ
+async function uLoad(){
+  var li=document.getElementById('utlist');
+  li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
+  try{
+    var r=await fetch(API+'/ustoz/testlar/'+CU.id);
+    var d=await r.json();
+    var tl=d.testlar||[];
+    if(!tl.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Testlar yo\'q</div>';return;}
+    li.innerHTML=tl.map(function(t){
+      var h=t.tugadi?'<span style="color:#ff6b35;font-size:.72rem">✅ Tugagan</span>':'<span style="color:#00d4aa;font-size:.72rem">🟢 Aktiv</span>';
+      return '<div class="ri" style="flex-direction:column;align-items:flex-start;gap:8px"><div style="display:flex;justify-content:space-between;width:100%;align-items:center"><div style="font-size:.82rem;font-weight:700;color:#00d4aa">'+t.kod+'</div>'+h+'</div><div style="font-size:.88rem">'+t.fan+'</div><div style="display:flex;gap:10px;align-items:center"><span style="font-size:.72rem;color:rgba(255,255,255,.4)">👥 '+t.talabalar+' o\'q.</span>'+(t.tugadi?'':'<button onclick="uYakunla(\''+t.kod+'\')" style="background:rgba(255,107,53,.15);border:1px solid rgba(255,107,53,.3);border-radius:8px;padding:3px 10px;font-size:.72rem;color:#ff6b35;cursor:pointer">🏁 Yakunlash</button>')+'<button onclick="testOchir(\''+t.kod+'\')" style="background:rgba(255,59,48,.12);border:1px solid rgba(255,59,48,.25);border-radius:8px;padding:3px 10px;font-size:.72rem;color:#ff6b6b;cursor:pointer;margin-left:6px">🗑 Ochir</button></div></div>';
+    }).join('');
+  }catch(e){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Xato</div>';}
+}
+function uTab(n){
+  [1,2,3].forEach(function(i){
+    document.getElementById('ut'+i).className='tb '+(i===n?'on':'off');
+    document.getElementById('ub'+i).style.display=i===n?'block':'none';
+  });
+  if(n===1)uLoad();
+  if(n===2)uSLoad();
+  if(n===3)uKLoad();
+}
+async function uYakunla(kod){
+  if(!confirm(kod+' yakunlansinmi?'))return;
+  try{
+    var r=await fetch(API+'/test/yakunla',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({test_kod:kod,ustoz_id:CU.id})});
+    var d=await r.json();
+    if(d.success){alert('Yakunlandi! Jami: '+d.jami);uLoad();}
+    else alert('Xato: '+(d.detail||''));
+  }catch(e){alert('Xato: '+e);}
+}
+async function uSLoad(){
+  var li=document.getElementById('uslist');
+  try{
+    var r=await fetch(API+'/savol/fanlar');
+    var d=await r.json();
+    var fl=d.fanlar||[];
+    if(!fl.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Savollar yo\'q</div>';return;}
+    li.innerHTML=fl.map(function(f){
+  var mavzular=f.mavzular.map(function(m){
+    return '<div class="ri" style="justify-content:space-between;margin-top:6px">'+
+      '<div><div style="font-size:.85rem;font-weight:600">'+m+'</div>'+
+      '<div style="font-size:.7rem;color:rgba(255,255,255,.4)">'+f.fan+'</div></div>'+
+      '<button onclick="savolOchir(\''+f.fan+'\',\''+m+'\')" style="background:rgba(255,59,48,.12);border:1px solid rgba(255,59,48,.25);border-radius:8px;padding:4px 10px;font-size:.72rem;color:#ff6b6b;cursor:pointer">🗑</button>'+
+      '</div>';
+  }).join('');
+  return '<div class="ri" style="flex-direction:column;align-items:flex-start"><div style="display:flex;justify-content:space-between;width:100%"><div style="font-size:.9rem;font-weight:700;color:#00d4aa">'+f.fan+'</div><div style="font-size:.72rem;color:rgba(255,255,255,.4)">'+f.jami+' savol</div></div>'+mavzular+'</div>';
+}).join('');
+  }catch(e){}
+}
+async function uKLoad(){
+  var li=document.getElementById('ukitoblist');
+  try{
+    var r=await fetch(API+'/kitob/fanlar');
+    var d=await r.json();
+    var fl=d.fanlar||[];
+    if(!fl.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Kitoblar yo\'q</div>';return;}
+    var html='';
+    for(var i=0;i<fl.length;i++){
+      var fan=fl[i];
+      var r2=await fetch(API+'/kitob/royxat/'+fan);
+      var d2=await r2.json();
+      (d2.kitoblar||[]).forEach(function(k,idx){
+        html+='<div class="ri" style="justify-content:space-between"><div><div style="font-size:.88rem;font-weight:600">'+k.nomi+'</div><div style="font-size:.72rem;color:rgba(255,255,255,.4)">'+fan+'</div></div><button onclick="kOchir(\''+fan+'\','+idx+')" style="background:rgba(255,59,48,.12);border:1px solid rgba(255,59,48,.25);border-radius:8px;padding:4px 10px;font-size:.72rem;color:#ff6b6b;cursor:pointer">🗑</button></div>';
+      });
+    }
+    li.innerHTML=html||'<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Kitoblar yo\'q</div>';
+  }catch(e){}
+}
+async function kOchir(fan,idx){
+  if(!confirm('O\'chirilsinmi?'))return;
+  try{
+    var r=await fetch(API+'/kitob/ochir/'+fan+'/'+idx+'?ustoz_id='+CU.id,{method:'DELETE'});
+    var d=await r.json();
+    if(d.success){alert('O\'chirildi!');uKLoad();}
+    else alert('Xato');
+  }catch(e){alert('Xato');}
+}
+
+// USTOZ TEST YARAT
+function uTur(t){
+  uTurVal=t;
+  document.getElementById('turm').style.borderColor=t==='m'?'#00d4aa':'rgba(255,255,255,.08)';
+  document.getElementById('turm').style.background=t==='m'?'rgba(0,212,170,.08)':'rgba(255,255,255,.05)';
+  document.getElementById('turo').style.borderColor=t==='o'?'#00d4aa':'rgba(255,255,255,.08)';
+  document.getElementById('turo').style.background=t==='o'?'rgba(0,212,170,.08)':'rgba(255,255,255,.05)';
+  document.getElementById('usoniwrap').style.display=t==='o'?'block':'none';
+  if(t==='o'){
+    var g=document.getElementById('usonigrid');
+    uSoni=40;
+    g.innerHTML=[5,10,15,20,25,30,35,40].map(function(s){return '<button onclick="uSoniT('+s+')" id="us'+s+'" class="vb'+(s===40?' sel':'')+'" style="justify-content:center;padding:10px">'+s+'</button>';}).join('');
+  }
+}
+function uSoniT(s){
+  uSoni=s;
+  [5,10,15,20,25,30,35,40].forEach(function(x){var e=document.getElementById('us'+x);if(e)e.className='vb'+(x===s?' sel':'');});
+}
+function uJavoblargaO(){
+  var fan=document.getElementById('ufan').value.trim();
+  var kod=document.getElementById('ukod').value.trim().toUpperCase();
+  if(!fan||!kod){xb('utxb','err','Fan va kodni kiriting!');return;}
+  var jami=uTurVal==='m'?40:uSoni;
+  uJavoblar={};
+  document.getElementById('ujtitle').textContent=fan+' ('+kod+')';
+  var li=document.getElementById('ujlist');
+  var html='';
+  for(var i=0;i<jami;i++){
+    var n=i+1;
+    var hl=uTurVal==='m'&&n>=33&&n<=35?['A','B','C','D','E','F']:['A','B','C','D'];
+    var och=uTurVal==='m'&&n>=36;
+    html+='<div class="card" style="margin-bottom:10px"><div style="font-size:.8rem;color:#00d4aa;font-weight:700;margin-bottom:8px">'+n+'-savol</div>';
+    if(!och){
+      html+='<div style="display:grid;grid-template-columns:repeat('+(hl.length===4?4:3)+',1fr);gap:6px">';
+      hl.forEach(function(h){html+='<button onclick="ujT('+n+',\''+h+'\')" id="uj'+n+h+'" class="vb" style="justify-content:center;padding:10px"><span class="vbg">'+h+'</span></button>';});
+      html+='</div>';
+    }else{
+      html+='<input class="inp" id="ujoch'+n+'" type="text" placeholder="Javob..." onchange="uJavoblar[\''+n+'\']=this.value"/>';
+    }
+    html+='</div>';
+  }
+  li.innerHTML=html;
+  go('p9e',-1);
+}
+function ujT(s,h){
+  uJavoblar[String(s)]=h;
+  var hl=uTurVal==='m'&&s>=33&&s<=35?['A','B','C','D','E','F']:['A','B','C','D'];
+  hl.forEach(function(x){
+    var e=document.getElementById('uj'+s+x);
+    if(e){e.className='vb'+(x===h?' sel':'');var b=e.querySelector('.vbg');if(b){b.style.background=x===h?'#00d4aa':'rgba(255,255,255,.08)';b.style.color=x===h?'#000':'#fff';}}
+  });
+}
+async function uTestSaqla(){
+  var fan=document.getElementById('ufan').value.trim();
+  var kod=document.getElementById('ukod').value.trim().toUpperCase();
+  var jami=uTurVal==='m'?40:uSoni;
+  for(var i=36;i<=40;i++){var e=document.getElementById('ujoch'+i);if(e&&e.value.trim())uJavoblar[String(i)]=e.value.trim();}
+  var cnt=Object.keys(uJavoblar).length;
+  var min=uTurVal==='m'?35:jami;
+  if(cnt<min){xb('ujxb','err','Kamida '+min+' javob kiriting! ('+cnt+')');return;}
+  var btn=document.getElementById('ujbtn');
+  btn.disabled=true;btn.textContent='Saqlanmoqda...';
+  try{
+    var r=await fetch(API+'/test/yarat',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({kod:kod,fan:fan,ustoz_id:CU.id,javoblar:uJavoblar,tur:uTurVal==='m'?'milliy':'oddiy',savollar_soni:jami})});
+    var d=await r.json();
+    if(d.success){alert('Test yaratildi! Kod: '+kod);go('p9',6);uTab(1);}
+    else{xb('ujxb','err',d.detail||'Xato');btn.disabled=false;btn.textContent='💾 Saqlash';}
+  }catch(e){xb('ujxb','err','Xato');btn.disabled=false;btn.textContent='💾 Saqlash';}
+}
+
+// SAVOL
+function sTog(h){
+  sTogri=h;
+  ['A','B','C','D'].forEach(function(x){
+    var e=document.getElementById('st'+x);
+    if(e){e.className='vb'+(x===h?' sel':'');var b=e.querySelector('.vbg');if(b){b.style.background=x===h?'#00d4aa':'rgba(255,255,255,.08)';b.style.color=x===h?'#000':'#fff';}}
+  });
+}
+async function sSaqla(){
+  var fan=document.getElementById('sfan').value.trim();
+  var mav=document.getElementById('smavzu').value.trim();
+  var sav=document.getElementById('ssavol').value.trim();
+  var a=document.getElementById('sa').value.trim();
+  var b=document.getElementById('sb').value.trim();
+  var c=document.getElementById('sc').value.trim();
+  var d=document.getElementById('sd').value.trim();
+  if(!fan||!mav||!sav||!a||!b||!c||!d||!sTogri){xb('sxb','err','Barcha maydonlarni to\'ldiring!');return;}
+  try{
+    var r=await fetch(API+'/savol/qosh',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({fan:fan,mavzu:mav,savol:sav,variantlar:{A:a,B:b,C:c,D:d},togri_javob:sTogri,qiyinlik:'orta',ustoz_id:CU.id})});
+    var res=await r.json();
+    if(res.success){
+      xb('sxb','ok','Savol saqlandi!');
+      document.getElementById('ssavol').value='';
+      document.getElementById('sa').value='';document.getElementById('sb').value='';
+      document.getElementById('sc').value='';document.getElementById('sd').value='';
+      sTogri='';
+      ['A','B','C','D'].forEach(function(h){var e=document.getElementById('st'+h);if(e){e.className='vb';var bg=e.querySelector('.vbg');if(bg){bg.style.background='rgba(255,255,255,.08)';bg.style.color='#fff';}}});
+    }else xb('sxb','err',res.detail||'Xato');
+  }catch(e){xb('sxb','err','Xato');}
+}
+
+// KITOB BOT
+function kBotYubor(){
+  var fan=document.getElementById('kfaninp').value.trim();
+  var nom=document.getElementById('knominp').value.trim();
+  if(!fan||!nom){xb('kxb','err','Fan va nomni kiriting!');return;}
+  xb('kxb','inf','Bot orqali: Ustoz paneli → Kitob qo\'shish');
+}
+
+// E'LONLAR
+async function elonLoad(){
+  var li=document.getElementById('elon-list');
+  li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
+  fetch(API+'/elon/royxat')
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var el=d.elonlar||[];
+      if(!el.length){
+        li.innerHTML='<div style="text-align:center;padding:40px;color:rgba(255,255,255,.4)">Hozircha e\'lonlar yo\'q</div>';
+        return;
+      }
+      li.innerHTML=el.map(function(e){
+        return '<div class="ri" style="flex-direction:column;align-items:flex-start;gap:6px;margin-bottom:10px">'+
+          '<div style="display:flex;justify-content:space-between;width:100%;align-items:center">'+
+          '<div style="font-size:.9rem;font-weight:700;color:#00d4aa">'+e.sarlavha+'</div>'+
+          '<div style="font-size:.7rem;color:rgba(255,255,255,.4)">'+e.vaqt+'</div></div>'+
+          '<div style="font-size:.85rem;line-height:1.5;color:rgba(255,255,255,.85)">'+e.matn+'</div>'+
+          '</div>';
+      }).join('');
+    }).catch(function(){
+      li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Xato</div>';
+    });
+}
+
+// E'LONLAR
+function elonLoad(){
+  var li=document.getElementById('elon-list');
+  li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
+  fetch(API+'/elon/royxat')
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var el=d.elonlar||[];
+      if(!el.length){li.innerHTML='<div style="text-align:center;padding:40px;color:rgba(255,255,255,.4)">Hozircha e\'lonlar yo\'q</div>';return;}
+      li.innerHTML=el.map(function(e){
+        return '<div class="ri" style="flex-direction:column;align-items:flex-start;gap:6px;margin-bottom:10px">'+
+          '<div style="display:flex;justify-content:space-between;width:100%;align-items:center">'+
+          '<div style="font-size:.9rem;font-weight:700;color:#00d4aa">'+e.sarlavha+'</div>'+
+          '<div style="font-size:.7rem;color:rgba(255,255,255,.4)">'+e.vaqt+'</div></div>'+
+          '<div style="font-size:.85rem;line-height:1.5">'+e.matn+'</div></div>';
+      }).join('');
+    }).catch(function(){});
+}
+
+// O'CHIRISH
+async function testOchir(kod){
+  if(!confirm(kod+' testni o\'chirishni tasdiqlaysizmi?'))return;
+  try{
+    var r=await fetch(API+'/test/ochir/'+kod+'?ustoz_id='+CU.id,{method:'DELETE'});
+    var d=await r.json();
+    if(d.success){alert('Test o\'chirildi!');uLoad();}
+    else alert('Xato: '+(d.detail||''));
+  }catch(e){alert('Xato: '+e);}
+}
+
+async function savolOchir(fan,mavzu){
+  if(!confirm(fan+' - '+mavzu+' mavzusidagi barcha savollarni o\'chirishni tasdiqlaysizmi?'))return;
+  try{
+    var r=await fetch(API+'/savol/ochir/'+fan+'/'+mavzu+'?ustoz_id='+CU.id,{method:'DELETE'});
+    var d=await r.json();
+    if(d.success){alert('Savollar o\'chirildi!');uSLoad();}
+    else alert('Xato: '+(d.detail||''));
+  }catch(e){alert('Xato: '+e);}
+}
+
+// HELPER
+function xb(id,cls,txt){var e=document.getElementById(id);if(!e)return;e.style.display=txt?'block':'none';e.className='xb '+cls;e.textContent=txt;}
+</script>
+</body>
+</html>
