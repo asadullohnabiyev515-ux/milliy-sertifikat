@@ -2866,17 +2866,45 @@ function wsGoLevel(lv){
   wsStart(lv);
 }
 
+function wsGenerateSolvable(colors,empty){
+  // Saralangan holatdan boshlab, "unpour" (teskari quyish) orqali chalkashtiramiz —
+  // bu har doim yechiladigan (hal qilinadigan) daraja yaratishni kafolatlaydi,
+  // chunki har bir qadam asl saralangan holatga qaytarilishi mumkin.
+  var tubes=[];
+  for(var c=0;c<colors;c++) tubes.push([c,c,c,c]);
+  for(var i=0;i<empty;i++) tubes.push([]);
+  var n=tubes.length,walkLen=Math.max(60,colors*14);
+  for(var step=0;step<walkLen;step++){
+    var opts=[];
+    for(var ai=0;ai<n;ai++){
+      if(!tubes[ai].length)continue;
+      var top=tubes[ai][tubes[ai].length-1],blockLen=0;
+      for(var i=tubes[ai].length-1;i>=0;i--){if(tubes[ai][i]===top)blockLen++;else break;}
+      for(var bi=0;bi<n;bi++){
+        if(ai===bi)continue;
+        var space=4-tubes[bi].length;
+        if(space<=0)continue;
+        var maxK=Math.min(blockLen,space);
+        for(var k=1;k<=maxK;k++){
+          // faqat qaytarilishi kafolatlangan yurishlar: qisman blok (top hali ham
+          // shu rang) yoki butun probirka bo'shab qoladi
+          if(k<blockLen||tubes[ai].length===blockLen)opts.push([ai,bi,k]);
+        }
+      }
+    }
+    if(!opts.length)break;
+    var pick=opts[Math.floor(Math.random()*opts.length)];
+    for(var i=0;i<pick[2];i++) tubes[pick[1]].push(tubes[pick[0]].pop());
+  }
+  return tubes;
+}
 function wsStart(lv){
   if(lv)wsLevel=lv;
   var d=WS_LEVELS[wsLevel-1];
   wsMoves=0;wsSelected=-1;wsRunning=true;wsHistory=[];wsHintFrom=-1;wsHintTo=-1;
-  // Har rang 4 ta, aralashtir
-  var pool=[];
-  for(var c=0;c<d.colors;c++) for(var i=0;i<4;i++) pool.push(c);
-  for(var i=pool.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=pool[i];pool[i]=pool[j];pool[j]=t;}
-  wsTubes=[];
-  for(var t=0;t<d.colors;t++) wsTubes.push(pool.slice(t*4,t*4+4));
-  for(var i=0;i<d.empty;i++) wsTubes.push([]);
+  do{
+    wsTubes=wsGenerateSolvable(d.colors,d.empty);
+  }while(wsTubes.every(wsSorted)); // darkor bo'lsa qayta generatsiya (allaqachon yechilgan holat chiqmasin)
   document.getElementById('ws-win').style.display='none';
   document.getElementById('ws-moves').textContent=0;
   wsUpdateHeader();
@@ -2936,31 +2964,78 @@ async function wsKombinatsiya(){
     });
   }catch(e){alert('Xato: '+e.message);}
 }
-function wsFindHint(){
-  var n=wsTubes.length,best=null,bestScore=-1e9;
-  for(var fi=0;fi<n;fi++){
-    if(!wsTubes[fi].length||wsSorted(wsTubes[fi]))continue; // to'liq saralangan probirkadan quymaymiz
-    for(var ti=0;ti<n;ti++){
-      if(!wsCanPour(fi,ti))continue;
-      var cnt=wsTopCount(wsTubes[fi]),space=4-wsTubes[ti].length,amt=Math.min(cnt,space);
-      var destWasEmpty=wsTubes[ti].length===0;
-      var destBecomesFull=(wsTubes[ti].length+amt)===4;
-      var srcBecomesEmpty=(wsTubes[fi].length-amt)===0;
-      var score=amt;
-      if(destBecomesFull)score+=100;
-      if(srcBecomesEmpty)score+=40;
-      if(destWasEmpty)score-=10;
-      if(score>bestScore){bestScore=score;best={fi:fi,ti:ti};}
+// Haqiqiy yechim qidiruvchi (greedy best-first search) — topilgan yurish
+// boshqotirmani yechishga olib boradigan haqiqiy yo'lning birinchi qadami bo'ladi.
+function wsStateKey(tubes){return tubes.map(function(t){return t.join(',');}).join('|');}
+function wsHeuristic(tubes){
+  var h=0;
+  for(var i=0;i<tubes.length;i++){
+    var t=tubes[i];
+    if(!t.length)continue;
+    var blocks=1;
+    for(var j=1;j<t.length;j++) if(t[j]!==t[j-1]) blocks++;
+    if(!(t.length===4&&blocks===1)) h+=blocks;
+  }
+  return h;
+}
+function wsCanPourIn(tubes,fi,ti){
+  if(fi===ti||!tubes[fi].length||tubes[ti].length>=4)return false;
+  var ft=tubes[fi][tubes[fi].length-1];
+  if(!tubes[ti].length)return true;
+  return ft===tubes[ti][tubes[ti].length-1];
+}
+function wsPourIn(tubes,fi,ti){
+  var nt=tubes.map(function(t){return t.slice();});
+  var top=nt[fi][nt[fi].length-1],cnt=1;
+  for(var i=nt[fi].length-2;i>=0;i--){if(nt[fi][i]===top)cnt++;else break;}
+  var space=4-nt[ti].length,amt=Math.min(cnt,space);
+  for(var i=0;i<amt;i++) nt[ti].push(nt[fi].pop());
+  return nt;
+}
+function wsSolve(startTubes){
+  var n=startTubes.length,maxH=4*n+1;
+  var visited={};visited[wsStateKey(startTubes)]=true;
+  var buckets=[];for(var i=0;i<=maxH;i++)buckets.push([]);
+  buckets[Math.min(wsHeuristic(startTubes),maxH)].push({tubes:startTubes,path:[]});
+  var bi=0,maxNodes=60000,explored=0,t0=Date.now();
+  while(explored<maxNodes){
+    if((explored&511)===0&&Date.now()-t0>2000)break; // vaqt limiti — UI qotib qolmasin
+    while(bi<=maxH&&!buckets[bi].length)bi++;
+    if(bi>maxH)break;
+    var cur=buckets[bi].pop();
+    explored++;
+    if(cur.tubes.every(wsSorted))return cur.path.length?cur.path[0]:null;
+    for(var fi=0;fi<n;fi++){
+      var t=cur.tubes[fi];
+      if(!t.length||wsSorted(t))continue;
+      var emptyTried=false;
+      for(var ti=0;ti<n;ti++){
+        if(!wsCanPourIn(cur.tubes,fi,ti))continue;
+        if(!cur.tubes[ti].length){
+          if(emptyTried)continue;
+          emptyTried=true;
+        }
+        var nt=wsPourIn(cur.tubes,fi,ti);
+        var key=wsStateKey(nt);
+        if(visited[key])continue;
+        visited[key]=true;
+        var hh=Math.min(wsHeuristic(nt),maxH);
+        buckets[hh].push({tubes:nt,path:cur.path.concat([{fi:fi,ti:ti}])});
+        if(hh<bi)bi=hh;
+      }
     }
   }
-  return best;
+  return null; // budjet ichida yechim topilmadi
+}
+function wsGiveHint(){
+  return wsSolve(wsTubes); // haqiqiy yechimga olib boradigan yurish, yoki null
 }
 async function wsMaslahat(){
   if(!tg||!CU.id){alert("Telegram orqali kirish kerak");return;}
   if(!wsRunning)return;
   if(ADMINS.indexOf(CU.id)>=0){
-    var h0=wsFindHint();
-    if(!h0){alert("Yurish topilmadi");return;}
+    var h0=wsGiveHint();
+    if(!h0){alert("Bu holatdan g'alaba qozonib bo'lmaydi. Ortga qaytaring yoki qayta boshlang.");return;}
     wsHintFrom=h0.fi;wsHintTo=h0.ti;
     wsRender();
     return;
@@ -2972,8 +3047,8 @@ async function wsMaslahat(){
     if(!d.url){alert('Xato: invoice yaratilmadi');return;}
     tg.openInvoice(d.url,function(status){
       if(status==='paid'){
-        var h=wsFindHint();
-        if(!h){alert("Yurish topilmadi");return;}
+        var h=wsGiveHint();
+        if(!h){alert("Bu holatdan g'alaba qozonib bo'lmaydi. Ortga qaytaring yoki qayta boshlang.");return;}
         wsHintFrom=h.fi;wsHintTo=h.ti;
         wsRender();
       }
