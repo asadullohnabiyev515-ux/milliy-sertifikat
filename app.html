@@ -617,6 +617,8 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   <div class="top"><div class="tlogo">🎮 O'yinlar</div></div>
   <div style="padding:16px;display:flex;flex-direction:column;gap:16px">
 
+    <div style="font-size:.8rem;font-weight:800;color:#00d4aa;text-transform:uppercase;letter-spacing:1.5px;padding:4px 2px 0">🧪 Kimyo o'yinlari</div>
+
     <!-- Element 2048 -->
     <div style="background:linear-gradient(135deg,#1a2a4a,#0d1f3a);border:1.5px solid rgba(0,212,170,.3);border-radius:18px;overflow:hidden">
       <div style="padding:18px 18px 12px;display:flex;align-items:center;gap:14px">
@@ -630,8 +632,9 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
         <div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🏆 Top 10</div>
         <div id="pg-g-reyting" style="font-size:.8rem;color:rgba(255,255,255,.6)">Yuklanmoqda...</div>
       </div>
-      <div style="padding:12px 18px 18px">
-        <button onclick="go('p-game',-1);gameStart()" style="width:100%;padding:11px;background:linear-gradient(135deg,#00d4aa,#00a8ff);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
+      <div style="padding:12px 18px 18px;display:flex;gap:8px">
+        <button onclick="go('p-game',-1);gameStart()" style="flex:1;padding:11px;background:linear-gradient(135deg,#00d4aa,#00a8ff);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
+        <button onclick="reytingOch('/game/reyting','⚗️ Element 2048 reytingi','ball')" style="padding:11px 14px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:12px;color:var(--c-fg);font-size:.9rem;cursor:pointer">🏆</button>
       </div>
     </div>
 
@@ -649,8 +652,9 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
         <div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🏆 Top 10</div>
         <div id="pg-m-reyting" style="font-size:.8rem;color:rgba(255,255,255,.6)">Yuklanmoqda...</div>
       </div>
-      <div style="padding:12px 18px 18px">
-        <button onclick="go('p-memory',-1);memStart()" style="width:100%;padding:11px;background:linear-gradient(135deg,#a78bfa,#7c3aed);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
+      <div style="padding:12px 18px 18px;display:flex;gap:8px">
+        <button onclick="go('p-memory',-1);memStart()" style="flex:1;padding:11px;background:linear-gradient(135deg,#a78bfa,#7c3aed);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
+        <button onclick="reytingOch('/memory/reyting?diff=4x4','🧩 Memory reytingi (4×4)','ball')" style="padding:11px 14px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:12px;color:var(--c-fg);font-size:.9rem;cursor:pointer">🏆</button>
       </div>
     </div>
 
@@ -668,8 +672,9 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
         <div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🏆 Top 10</div>
         <div id="pg-s-reyting" style="font-size:.8rem;color:rgba(255,255,255,.6)">Yuklanmoqda...</div>
       </div>
-      <div style="padding:12px 18px 18px">
-        <button onclick="go('p-sort',-1);wsStart()" style="width:100%;padding:11px;background:linear-gradient(135deg,#ef4444,#b91c1c);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
+      <div style="padding:12px 18px 18px;display:flex;gap:8px">
+        <button onclick="go('p-sort',-1);wsStart()" style="flex:1;padding:11px;background:linear-gradient(135deg,#ef4444,#b91c1c);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
+        <button onclick="reytingOch('/sort/reyting','🧪 Probirkalar reytingi','daraja')" style="padding:11px 14px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:12px;color:var(--c-fg);font-size:.9rem;cursor:pointer">🏆</button>
       </div>
     </div>
 
@@ -706,8 +711,9 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
         <div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🏆 Top 10</div>
         <div id="pg-r-reyting" style="font-size:.8rem;color:rgba(255,255,255,.6)">Yuklanmoqda...</div>
       </div>
-      <div style="padding:12px 18px 18px">
-        <button onclick="go('p-react',-1);rzPick()" style="width:100%;padding:11px;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
+      <div style="padding:12px 18px 18px;display:flex;gap:8px">
+        <button onclick="go('p-react',-1);rzPick()" style="flex:1;padding:11px;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
+        <button onclick="reytingOch('/react/reyting?diff=easy','⛓️ Reaksiyalar Zanjiri reytingi','daraja')" style="padding:11px 14px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:12px;color:var(--c-fg);font-size:.9rem;cursor:pointer">🏆</button>
       </div>
     </div>
 
@@ -730,6 +736,8 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
       </div>
     </div>
 
+    <div style="font-size:.8rem;font-weight:800;color:#22c55e;text-transform:uppercase;letter-spacing:1.5px;padding:10px 2px 0">🧬 Biologiya o'yinlari</div>
+
     <!-- Oziq zanjiri -->
     <div style="background:linear-gradient(135deg,#1a2a4a,#0d1f3a);border:1.5px solid rgba(34,197,94,.3);border-radius:18px;overflow:hidden">
       <div style="padding:18px 18px 12px;display:flex;align-items:center;gap:14px">
@@ -745,7 +753,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
         <div id="pg-oz-best" style="font-size:.85rem;color:#22c55e;font-weight:700">—</div>
       </div>
       <div style="padding:10px 18px 18px">
-        <button onclick="go('p-oziq',-1);ozStart()" style="width:100%;padding:11px;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
+        <button onclick="go('p-oziq',-1);ozPickShow()" style="width:100%;padding:11px;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
       </div>
     </div>
 
@@ -764,7 +772,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
         <div id="pg-an-best" style="font-size:.85rem;color:#f43f5e;font-weight:700">—</div>
       </div>
       <div style="padding:10px 18px 18px">
-        <button onclick="go('p-anatomiya',-1);anStart()" style="width:100%;padding:11px;background:linear-gradient(135deg,#f43f5e,#be123c);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
+        <button onclick="go('p-anatomiya',-1);anPickShow()" style="width:100%;padding:11px;background:linear-gradient(135deg,#f43f5e,#be123c);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
       </div>
     </div>
 
@@ -1170,6 +1178,17 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <div class="tlogo">🌿 Oziq zanjiri</div>
     <div id="oz-lvl" style="font-size:.8rem;color:rgba(255,255,255,.5);font-weight:700;min-width:60px;text-align:right">—</div>
   </div>
+  <!-- Kirish ekrani -->
+  <div id="oz-pick" style="padding:8px 14px 20px;text-align:center">
+    <div style="font-size:2.8rem;margin-bottom:8px">🌿</div>
+    <div style="font-size:1.1rem;font-weight:800;margin-bottom:4px">Oziq zanjiri</div>
+    <div style="font-size:.76rem;color:rgba(255,255,255,.4);margin-bottom:18px">Ekotizim va biologiya testi. Xato — o'yin tugaydi!</div>
+    <div id="oz-pick-best" style="font-size:.8rem;color:gold;font-weight:700;margin-bottom:16px"></div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button onclick="ozStart()" style="background:linear-gradient(135deg,#22c55e,#16a34a);border:none;border-radius:16px;padding:14px 16px;color:#fff;font-size:.98rem;font-weight:800;cursor:pointer">▶ Boshlash</button>
+      <button onclick="reytingOch('/oziq/reyting','🌿 Oziq zanjiri reytingi','ta to\'g\'ri')" style="background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:16px;padding:12px 16px;color:var(--c-fg);font-size:.9rem;font-weight:700;cursor:pointer">🏆 Reytingni ko'rish</button>
+    </div>
+  </div>
   <div id="oz-board" style="display:none;padding:8px 14px">
     <div style="display:flex;gap:8px;margin-bottom:8px">
       <div style="flex:1;background:rgba(255,255,255,.06);border-radius:12px;padding:7px;text-align:center">
@@ -1206,6 +1225,17 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <div class="tlogo">🫀 Anatomiya</div>
     <div style="width:60px"></div>
   </div>
+  <!-- Kirish ekrani -->
+  <div id="an-pick" style="padding:8px 14px 20px;text-align:center">
+    <div style="font-size:2.8rem;margin-bottom:8px">🫀</div>
+    <div style="font-size:1.1rem;font-weight:800;margin-bottom:4px">Odam anatomiyasi</div>
+    <div style="font-size:.76rem;color:rgba(255,255,255,.4);margin-bottom:18px">A'zo va suyak rasmini ko'rib, nomini toping. Necha ketma-ket to'g'ri javob berasiz?</div>
+    <div id="an-pick-best" style="font-size:.8rem;color:gold;font-weight:700;margin-bottom:16px"></div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button onclick="anStart()" style="background:linear-gradient(135deg,#f43f5e,#be123c);border:none;border-radius:16px;padding:14px 16px;color:#fff;font-size:.98rem;font-weight:800;cursor:pointer">▶ Boshlash</button>
+      <button onclick="reytingOch('/anatomiya/reyting','🫀 Anatomiya reytingi','ta ketma-ket')" style="background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:16px;padding:12px 16px;color:var(--c-fg);font-size:.9rem;font-weight:700;cursor:pointer">🏆 Reytingni ko'rish</button>
+    </div>
+  </div>
   <div id="an-board" style="display:none;padding:8px 14px">
     <div style="display:flex;gap:8px;margin-bottom:8px">
       <div style="flex:1;background:rgba(255,255,255,.06);border-radius:12px;padding:7px;text-align:center">
@@ -1220,10 +1250,9 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <div style="background:rgba(255,255,255,.1);border-radius:6px;height:4px;margin-bottom:10px">
       <div id="an-bar" style="border-radius:6px;height:4px;width:0%;background:linear-gradient(90deg,#f43f5e,#be123c);transition:width .4s"></div>
     </div>
-    <div style="font-size:.78rem;color:rgba(255,255,255,.4);text-align:center;margin-bottom:8px">Belgilangan nuqta qaysi a'zo?</div>
-    <div style="position:relative;max-width:280px;margin:0 auto 14px;border-radius:16px;overflow:hidden;border:1.5px solid rgba(244,63,94,.25)">
-      <img src="assets/organs.jpg" style="width:100%;display:block" draggable="false"/>
-      <div id="an-marker" style="position:absolute;width:26px;height:26px;margin-left:-13px;margin-top:-13px;border-radius:50%;border:3px solid #f43f5e;box-shadow:0 0 0 4px rgba(244,63,94,.3),0 0 14px rgba(244,63,94,.8);animation:wsHintGlow .9s ease-in-out infinite"></div>
+    <div id="an-tur" style="font-size:.7rem;color:#f43f5e;text-align:center;margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:1px"></div>
+    <div style="max-width:260px;margin:0 auto 14px;border-radius:16px;overflow:hidden;border:1.5px solid rgba(244,63,94,.25);background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;min-height:180px">
+      <img id="an-img" src="" style="max-width:100%;max-height:220px;display:block" draggable="false"/>
     </div>
     <div id="an-opts" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
   </div>
@@ -1232,8 +1261,8 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <div id="an-over-txt" style="font-size:1.15rem;font-weight:800;margin-bottom:6px"></div>
     <div id="an-over-sub" style="font-size:.8rem;color:rgba(255,255,255,.5);margin-bottom:16px;line-height:1.6"></div>
     <div id="an-over-ans" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:12px;padding:12px;font-size:.88rem;color:#ff6b6b;margin-bottom:18px"></div>
-    <div style="display:flex;gap:10px;justify-content:center">
-      <button onclick="go('p-games',-1)" style="background:rgba(255,255,255,.1);border:none;border-radius:12px;padding:10px 18px;color:var(--c-fg);font-size:.85rem;cursor:pointer;font-weight:600">← O'yinlar</button>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button onclick="go('p-anatomiya',-1);anPickShow()" style="background:rgba(255,255,255,.1);border:none;border-radius:12px;padding:10px 18px;color:var(--c-fg);font-size:.85rem;cursor:pointer;font-weight:600">← Ortga</button>
       <button onclick="anStart()" style="background:linear-gradient(135deg,#f43f5e,#be123c);color:#fff;border:none;border-radius:12px;padding:10px 18px;font-weight:700;font-size:.85rem;cursor:pointer">🔄 Qayta</button>
     </div>
   </div>
@@ -1340,6 +1369,17 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   <div class="top"><div class="tl">E'lonlar</div></div>
   <div id="elon-list" style="padding:16px">
     <div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>
+  </div>
+</div>
+
+<!-- UMUMIY REYTING MODALI -->
+<div id="reyting-modal" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(5,8,16,.85);align-items:flex-end;justify-content:center">
+  <div style="background:#0f1424;border-radius:22px 22px 0 0;width:100%;max-width:460px;max-height:78vh;display:flex;flex-direction:column;border:1px solid rgba(255,255,255,.08)">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.08)">
+      <div id="reyting-title" style="font-size:1rem;font-weight:800">🏆 Reyting</div>
+      <button onclick="reytingYop()" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;width:32px;height:32px;color:rgba(255,255,255,.6);font-size:1rem;cursor:pointer">✕</button>
+    </div>
+    <div id="reyting-list" style="overflow-y:auto;padding:6px 18px 18px"></div>
   </div>
 </div>
 
@@ -4624,10 +4664,19 @@ var OZ_DATA=[
 
 var ozPool=[],ozLevel=0,ozBest=0,ozRunning=false,ozCur=null;
 
+function ozBestLoad(){try{return parseInt(localStorage.getItem('ozBest')||'0');}catch(e){return 0;}}
+function ozPickShow(){
+  document.getElementById('oz-pick').style.display='block';
+  document.getElementById('oz-board').style.display='none';
+  document.getElementById('oz-over').style.display='none';
+  var b=ozBestLoad();
+  document.getElementById('oz-pick-best').textContent=b?'🏆 Rekordingiz: '+b+' ta':'';
+}
 function ozStart(){
   ozPool=rzShuffle(OZ_DATA.slice());
   ozLevel=0;ozRunning=true;
-  try{ozBest=parseInt(localStorage.getItem('ozBest')||'0');}catch(e){ozBest=0;}
+  ozBest=ozBestLoad();
+  document.getElementById('oz-pick').style.display='none';
   document.getElementById('oz-over').style.display='none';
   document.getElementById('oz-board').style.display='block';
   document.getElementById('oz-best-cur').textContent=ozBest||'0';
@@ -4686,31 +4735,64 @@ function ozOver(win,ans){
     ansEl.textContent='✓ To\'g\'ri javob: '+ans;
   }
   pgOzBest();
+  if(CU.id)fetch(API+'/oziq/natija',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({user_id:CU.id,name:CU.name||"Noma'lum",score:ozLevel})}).catch(function(){});
 }
 function pgOzBest(){
-  try{
-    var b=parseInt(localStorage.getItem('ozBest')||'0');
-    var el=document.getElementById('pg-oz-best');
-    if(el)el.textContent=b?b+'/'+OZ_DATA.length+' ta to\'g\'ri':"Hali o'ynamagan";
-  }catch(e){}
+  var b=ozBestLoad();
+  var el=document.getElementById('pg-oz-best');
+  if(el)el.textContent=b?b+'/'+OZ_DATA.length+' ta to\'g\'ri':"Hali o'ynamagan";
 }
 
 // ODAM ANATOMIYASI
-var AN_DATA=[
-  {x:50,y:12,a:'Miya',w:['Yurak','Jigar','Buyrak']},
-  {x:50,y:56,a:'Yurak',w:['Miya',"O'pka",'Jigar']},
-  {x:63,y:49,a:"O'pka",w:['Yurak','Jigar','Buyrak']},
-  {x:34,y:65,a:'Jigar',w:['Buyrak','Oshqozon',"O't pufagi"]},
-  {x:40,y:74,a:"O't pufagi",w:['Jigar','Buyrak','Oshqozon']},
-  {x:63,y:67,a:'Oshqozon',w:['Jigar','Ichak','Buyrak']},
-  {x:38,y:81,a:'Buyrak',w:['Jigar',"O't pufagi",'Oshqozon']},
-  {x:37,y:88,a:'Ichak',w:['Oshqozon','Jigar','Buyrak']},
+var AN_ORGANS=[
+  {img:'assets/anatomy/heart.png',a:'Yurak'},
+  {img:'assets/anatomy/lungs.png',a:"O'pka"},
+  {img:'assets/anatomy/brain.png',a:'Miya'},
+  {img:'assets/anatomy/liver.png',a:'Jigar'},
+  {img:'assets/anatomy/stomach.png',a:'Oshqozon'},
+  {img:'assets/anatomy/pancreas.png',a:'Pankreas'},
+  {img:'assets/anatomy/kidneys.png',a:'Buyrak'},
+  {img:'assets/anatomy/bladder.png',a:'Siydik pufagi'},
+  {img:'assets/anatomy/gallbladder.png',a:"O't pufagi"},
+  {img:'assets/anatomy/intestine.png',a:'Ichak'},
+  {img:'assets/anatomy/spleen.png',a:'Taloq'},
 ];
+var AN_BONES=[
+  {img:'assets/anatomy/skull.jpg',a:'Bosh suyagi'},
+  {img:'assets/anatomy/femur.jpg',a:'Son suyagi'},
+  {img:'assets/anatomy/humerus.jpg',a:'Yelka suyagi'},
+  {img:'assets/anatomy/pelvis.jpg',a:'Chanoq suyagi'},
+  {img:'assets/anatomy/ribs.jpg',a:"Qovurg'a"},
+  {img:'assets/anatomy/vertebra.jpg',a:'Umurtqa'},
+  {img:'assets/anatomy/scapula.jpg',a:'Kurak suyagi'},
+  {img:'assets/anatomy/tibia.jpg',a:'Katta boldir suyagi'},
+  {img:'assets/anatomy/radius.jpg',a:'Bilak suyagi'},
+  {img:'assets/anatomy/ulna.jpg',a:'Tirsak suyagi'},
+  {img:'assets/anatomy/clavicle.jpg',a:"O'mrov suyagi"},
+];
+function anBuildData(list,tur){
+  return list.map(function(o){
+    var others=rzShuffle(list.filter(function(x){return x.a!==o.a;}).map(function(x){return x.a;}));
+    return {img:o.img,a:o.a,w:others.slice(0,3),tur:tur};
+  });
+}
+var AN_DATA=anBuildData(AN_ORGANS,"A'ZO").concat(anBuildData(AN_BONES,'SUYAK'));
+
 var anPool=[],anLevel=0,anBest=0,anRunning=false,anCur=null,anStreak=0;
+function anBestLoad(){try{return parseInt(localStorage.getItem('anBest')||'0');}catch(e){return 0;}}
+function anPickShow(){
+  document.getElementById('an-pick').style.display='block';
+  document.getElementById('an-board').style.display='none';
+  document.getElementById('an-over').style.display='none';
+  var b=anBestLoad();
+  document.getElementById('an-pick-best').textContent=b?'🏆 Rekordingiz: '+b+' ta ketma-ket':'';
+}
 function anStart(){
   anPool=rzShuffle(AN_DATA.slice());
   anLevel=0;anStreak=0;anRunning=true;
-  try{anBest=parseInt(localStorage.getItem('anBest')||'0');}catch(e){anBest=0;}
+  anBest=anBestLoad();
+  document.getElementById('an-pick').style.display='none';
   document.getElementById('an-over').style.display='none';
   document.getElementById('an-board').style.display='block';
   document.getElementById('an-best-cur').textContent=anBest||'0';
@@ -4721,8 +4803,8 @@ function anNext(){
   anCur=anPool[anLevel];
   document.getElementById('an-score').textContent=anStreak;
   document.getElementById('an-bar').style.width=Math.round((anLevel/AN_DATA.length)*100)+'%';
-  document.getElementById('an-marker').style.left=anCur.x+'%';
-  document.getElementById('an-marker').style.top=anCur.y+'%';
+  document.getElementById('an-tur').textContent=anCur.tur;
+  document.getElementById('an-img').src=anCur.img;
   var opts=rzShuffle([anCur.a].concat(anCur.w));
   var html='';
   opts.forEach(function(o){
@@ -4758,14 +4840,41 @@ function anOver(ans){
   document.getElementById('an-over-sub').textContent='Rekord: '+anBest+' ta';
   document.getElementById('an-over-ans').textContent='✓ To\'g\'ri javob: '+ans;
   pgAnBest();
+  if(CU.id)fetch(API+'/anatomiya/natija',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({user_id:CU.id,name:CU.name||"Noma'lum",score:anStreak})}).catch(function(){});
 }
 function pgAnBest(){
-  try{
-    var b=parseInt(localStorage.getItem('anBest')||'0');
-    var el=document.getElementById('pg-an-best');
-    if(el)el.textContent=b?b+' ta ketma-ket':"Hali o'ynamagan";
-  }catch(e){}
+  var b=anBestLoad();
+  var el=document.getElementById('pg-an-best');
+  if(el)el.textContent=b?b+' ta ketma-ket':"Hali o'ynamagan";
 }
+
+// UMUMIY REYTING OYNASI (barcha o'yinlar uchun)
+async function reytingOch(url,titleText,unit){
+  var m=document.getElementById('reyting-modal');
+  document.getElementById('reyting-title').textContent=titleText;
+  document.getElementById('reyting-list').innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
+  m.style.display='flex';
+  try{
+    var r=await fetch(API+url);
+    var d=await r.json();
+    var list=d.reyting||[];
+    if(!list.length){document.getElementById('reyting-list').innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Hali natija yo\'q</div>';return;}
+    var html='';
+    list.forEach(function(s,i){
+      var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
+      var val=(s.score!==undefined?s.score:s.max_level)||0;
+      html+='<div style="display:flex;align-items:center;gap:10px;padding:9px 6px;border-bottom:1px solid rgba(128,128,128,.15)">'+
+        '<div style="width:26px;text-align:center;font-weight:700">'+medal+'</div>'+
+        '<div style="flex:1;font-size:.88rem">'+(s.name||"Noma'lum")+'</div>'+
+        '<div style="font-weight:700;color:gold">'+val+' '+unit+'</div></div>';
+    });
+    document.getElementById('reyting-list').innerHTML=html;
+  }catch(e){
+    document.getElementById('reyting-list').innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Server bilan ulanib bo\'lmadi</div>';
+  }
+}
+function reytingYop(){document.getElementById('reyting-modal').style.display='none';}
 
 // p-games yuklanishida mini-reytinglar
 async function pgReytingLoad(){
