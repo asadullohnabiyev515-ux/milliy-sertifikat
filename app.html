@@ -1245,9 +1245,9 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
 <script>
 var API='https://milliy-imtihon.onrender.com';
 function esc(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
-function apiFetch(url,opts){
+function apiFetch(url,opts,ms){
   var ctrl=new AbortController();
-  var t=setTimeout(function(){ctrl.abort();},12000);
+  var t=setTimeout(function(){ctrl.abort();},ms||12000);
   return fetch(url,Object.assign({},opts||{},{signal:ctrl.signal})).finally(function(){clearTimeout(t);});
 }
 var tg=window.Telegram&&window.Telegram.WebApp?window.Telegram.WebApp:null;
@@ -2249,7 +2249,7 @@ async function aiGeneratsiya(){
   document.getElementById('ainatija').innerHTML='';
   try{
     var r=await apiFetch(API+'/ai/savol_yarat',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({matn:matn,fan:fan,mavzu:mav,soni:aiSoniQty})});
+      body:JSON.stringify({matn:matn,fan:fan,mavzu:mav,soni:aiSoniQty})},120000);
     var d=await r.json();
     btn.disabled=false;btn.textContent='🤖 Generatsiya qilish';
     if(!d.success){xb('aixb','err',d.detail||'Xato yuz berdi');return;}
@@ -2258,7 +2258,8 @@ async function aiGeneratsiya(){
     aiNatijaChiz();
   }catch(e){
     btn.disabled=false;btn.textContent='🤖 Generatsiya qilish';
-    xb('aixb','err','Internet xatosi, qayta urining');
+    if(e&&e.name==='AbortError')xb('aixb','err','Generatsiya juda uzoq davom etdi (2 daq.), savollar sonini kamaytirib qayta urining');
+    else xb('aixb','err','Internet xatosi, qayta urining');
   }
 }
 function aiNatijaChiz(){
