@@ -847,7 +847,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     </div>
     <button onclick="wsUndo()" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;padding:7px 14px;color:var(--c-fg);font-size:.82rem;cursor:pointer;font-weight:600">↩ Ortga</button>
     <button onclick="wsKombinatsiya()" style="background:rgba(255,215,0,.12);border:1.5px solid rgba(255,215,0,.4);border-radius:10px;padding:7px 14px;color:gold;font-size:.82rem;cursor:pointer;font-weight:700">⭐ Aralashtir</button>
-    <button onclick="wsMaslahat()" style="background:rgba(0,212,170,.12);border:1.5px solid rgba(0,212,170,.4);border-radius:10px;padding:7px 14px;color:#00d4aa;font-size:.82rem;cursor:pointer;font-weight:700">💡 5</button>
+    <button onclick="wsMaslahat()" id="ws-hint-btn" style="background:rgba(0,212,170,.12);border:1.5px solid rgba(0,212,170,.4);border-radius:10px;padding:7px 14px;color:#00d4aa;font-size:.82rem;cursor:pointer;font-weight:700">💡 5</button>
   </div>
   <div id="ws-grid" style="padding:4px 8px"></div>
   <div id="ws-win" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,15,30,.92);z-index:200;flex-direction:column;align-items:center;justify-content:center">
@@ -1375,6 +1375,10 @@ function appOch(){
     ni.innerHTML='<span>👨‍🏫</span><span>Ustoz</span>';
     ni.onclick=function(){go('p9',6);};
     nav.appendChild(ni);
+  }
+  if(ADMINS.indexOf(CU.id)>=0){
+    var hb=document.getElementById('ws-hint-btn');
+    if(hb)hb.textContent='💡 Bepul';
   }
   document.getElementById('p0').style.display='none';
   document.getElementById('p-royxat').style.display='none';
@@ -2954,6 +2958,13 @@ function wsFindHint(){
 async function wsMaslahat(){
   if(!tg||!CU.id){alert("Telegram orqali kirish kerak");return;}
   if(!wsRunning)return;
+  if(ADMINS.indexOf(CU.id)>=0){
+    var h0=wsFindHint();
+    if(!h0){alert("Yurish topilmadi");return;}
+    wsHintFrom=h0.fi;wsHintTo=h0.ti;
+    wsRender();
+    return;
+  }
   try{
     var r=await fetch(API+'/sort/hint-invoice',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({user_id:CU.id})});
