@@ -51,6 +51,8 @@ body{font-family:sans-serif;background:#0a0f1e;color:#fff;min-height:100vh}
 @keyframes sp{to{transform:rotate(360deg)}}
 @keyframes mdBlink{0%,100%{opacity:1}50%{opacity:0}}
 .md-caret{animation:mdBlink 1s step-end infinite;color:#a855f7}
+@keyframes wsHintGlow{0%,100%{opacity:1}50%{opacity:.35}}
+.ws-hint{animation:wsHintGlow .9s ease-in-out infinite}
 /* YORUG' REJIM */
 /* ── CSS O'ZGARUVCHILAR (TEMA TIZIMI) ── */
 :root{
@@ -845,6 +847,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     </div>
     <button onclick="wsUndo()" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;padding:7px 14px;color:var(--c-fg);font-size:.82rem;cursor:pointer;font-weight:600">↩ Ortga</button>
     <button onclick="wsKombinatsiya()" style="background:rgba(255,215,0,.12);border:1.5px solid rgba(255,215,0,.4);border-radius:10px;padding:7px 14px;color:gold;font-size:.82rem;cursor:pointer;font-weight:700">⭐ Aralashtir</button>
+    <button onclick="wsMaslahat()" style="background:rgba(0,212,170,.12);border:1.5px solid rgba(0,212,170,.4);border-radius:10px;padding:7px 14px;color:#00d4aa;font-size:.82rem;cursor:pointer;font-weight:700">💡 5</button>
   </div>
   <div id="ws-grid" style="padding:4px 8px"></div>
   <div id="ws-win" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,15,30,.92);z-index:200;flex-direction:column;align-items:center;justify-content:center">
@@ -2851,6 +2854,7 @@ var WS_LEVELS=[
 ];
 var wsLevel=1,wsMaxLevel=+(localStorage.getItem('ws_max')||1);
 var wsTubes=[],wsSelected=-1,wsMoves=0,wsRunning=false,wsHistory=[];
+var wsHintFrom=-1,wsHintTo=-1;
 
 function wsGoLevel(lv){
   if(lv<1||lv>WS_LEVELS.length)return;
@@ -2861,7 +2865,7 @@ function wsGoLevel(lv){
 function wsStart(lv){
   if(lv)wsLevel=lv;
   var d=WS_LEVELS[wsLevel-1];
-  wsMoves=0;wsSelected=-1;wsRunning=true;wsHistory=[];
+  wsMoves=0;wsSelected=-1;wsRunning=true;wsHistory=[];wsHintFrom=-1;wsHintTo=-1;
   // Har rang 4 ta, aralashtir
   var pool=[];
   for(var c=0;c<d.colors;c++) for(var i=0;i<4;i++) pool.push(c);
@@ -2902,6 +2906,7 @@ function wsPour(fi,ti){
   var cnt=wsTopCount(wsTubes[fi]),space=4-wsTubes[ti].length,amt=Math.min(cnt,space);
   for(var i=0;i<amt;i++) wsTubes[ti].push(wsTubes[fi].pop());
   wsMoves++;
+  wsHintFrom=-1;wsHintTo=-1;
   document.getElementById('ws-moves').textContent=wsMoves;
   return true;
 }
@@ -2909,7 +2914,7 @@ function wsUndo(){
   if(!wsHistory.length)return;
   wsTubes=wsHistory.pop();
   wsMoves=Math.max(0,wsMoves-1);
-  wsSelected=-1;
+  wsSelected=-1;wsHintFrom=-1;wsHintTo=-1;
   document.getElementById('ws-moves').textContent=wsMoves;
   wsRender();
 }
@@ -2923,6 +2928,43 @@ async function wsKombinatsiya(){
     tg.openInvoice(d.url,function(status){
       if(status==='paid'){
         wsStart(wsLevel);
+      }
+    });
+  }catch(e){alert('Xato: '+e.message);}
+}
+function wsFindHint(){
+  var n=wsTubes.length,best=null,bestScore=-1e9;
+  for(var fi=0;fi<n;fi++){
+    if(!wsTubes[fi].length||wsSorted(wsTubes[fi]))continue; // to'liq saralangan probirkadan quymaymiz
+    for(var ti=0;ti<n;ti++){
+      if(!wsCanPour(fi,ti))continue;
+      var cnt=wsTopCount(wsTubes[fi]),space=4-wsTubes[ti].length,amt=Math.min(cnt,space);
+      var destWasEmpty=wsTubes[ti].length===0;
+      var destBecomesFull=(wsTubes[ti].length+amt)===4;
+      var srcBecomesEmpty=(wsTubes[fi].length-amt)===0;
+      var score=amt;
+      if(destBecomesFull)score+=100;
+      if(srcBecomesEmpty)score+=40;
+      if(destWasEmpty)score-=10;
+      if(score>bestScore){bestScore=score;best={fi:fi,ti:ti};}
+    }
+  }
+  return best;
+}
+async function wsMaslahat(){
+  if(!tg||!CU.id){alert("Telegram orqali kirish kerak");return;}
+  if(!wsRunning)return;
+  try{
+    var r=await fetch(API+'/sort/hint-invoice',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({user_id:CU.id})});
+    var d=await r.json();
+    if(!d.url){alert('Xato: invoice yaratilmadi');return;}
+    tg.openInvoice(d.url,function(status){
+      if(status==='paid'){
+        var h=wsFindHint();
+        if(!h){alert("Yurish topilmadi");return;}
+        wsHintFrom=h.fi;wsHintTo=h.ti;
+        wsRender();
       }
     });
   }catch(e){alert('Xato: '+e.message);}
@@ -2953,11 +2995,12 @@ function wsRender(){
     if(s>=n)break;
     html+='<div style="display:flex;gap:'+gap+'px;justify-content:center;padding:4px 0">';
     for(var i=s;i<e;i++){
-      var tube=wsTubes[i],sel=i===wsSelected;
+      var tube=wsTubes[i],sel=i===wsSelected,hintF=i===wsHintFrom,hintT=i===wsHintTo;
       var ty=sel?'-10px':'0px';
-      var wc=sel?'rgba(255,255,255,.85)':'rgba(255,255,255,.22)';
-      var sh=sel?'box-shadow:0 0 14px rgba(255,255,255,.3);':'';
-      html+='<div onclick="wsTubeClick('+i+')" style="display:flex;flex-direction:column;align-items:center;cursor:pointer;transform:translateY('+ty+');transition:transform .13s">';
+      var wc=sel?'rgba(255,255,255,.85)':hintF?'#ffd700':hintT?'#00d4aa':'rgba(255,255,255,.22)';
+      var sh=sel?'box-shadow:0 0 14px rgba(255,255,255,.3);':(hintF||hintT)?'box-shadow:0 0 14px '+(hintF?'rgba(255,215,0,.5)':'rgba(0,212,170,.5)')+';':'';
+      var hintCls=(!sel&&(hintF||hintT))?' ws-hint':'';
+      html+='<div onclick="wsTubeClick('+i+')" class="'+hintCls.trim()+'" style="display:flex;flex-direction:column;align-items:center;cursor:pointer;transform:translateY('+ty+');transition:transform .13s">';
       html+='<div style="width:'+(tw+4)+'px;height:5px;background:'+wc+';border-radius:3px 3px 0 0;margin-bottom:1px"></div>';
       html+='<div style="width:'+tw+'px;height:'+(ch*4)+'px;border:2.5px solid '+wc+';border-top:none;border-radius:0 0 '+br+'px '+br+'px;overflow:hidden;background:rgba(0,0,0,.15);box-sizing:border-box;display:flex;flex-direction:column;'+sh+'">';
       var empty=4-tube.length;
