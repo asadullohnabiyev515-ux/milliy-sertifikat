@@ -414,6 +414,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   </div>
   <div id="ub2" style="display:none;padding:16px">
     <button class="btn btn-green" onclick="go('p9c',-1)" style="margin-bottom:8px">➕ Savol qo'shish</button>
+    <button class="btn btn-out" onclick="go('p9h',-1)" style="margin-bottom:8px">🤖 AI bilan yaratish</button>
     <div id="uslist"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
   </div>
   <div id="ub3" style="display:none;padding:16px">
@@ -517,6 +518,35 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
       <button class="btn btn-green" onclick="sSaqla()">✅ Saqlash</button>
       <div class="xb" id="sxb"></div>
     </div>
+  </div>
+</div>
+
+<!-- USTOZ AI SAVOL -->
+<div id="p9h" class="page" style="padding-bottom:80px">
+  <div class="top">
+    <button onclick="go('p9',6);uTab(2)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+    <div class="tlogo">AI bilan savol yaratish</div>
+    <div style="width:34px"></div>
+  </div>
+  <div style="padding:16px">
+    <div class="card" style="margin-bottom:14px">
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">Fan</div>
+      <input class="inp" id="aifan" type="text" placeholder="Kimyo" style="margin-bottom:10px"/>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">Mavzu</div>
+      <input class="inp" id="aimavzu" type="text" placeholder="Kimyoviy reaksiyalar" style="margin-bottom:10px"/>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">Matn (darslik, konspekt va h.k.)</div>
+      <textarea class="inp" id="aimatn" placeholder="Test savollari shu matn asosida tuziladi..." style="margin-bottom:10px;resize:vertical;min-height:140px;font-family:inherit"></textarea>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:8px">Savollar soni</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px">
+        <button onclick="aiSoni(5)" id="ais5" class="vb sel" style="justify-content:center">5</button>
+        <button onclick="aiSoni(10)" id="ais10" class="vb" style="justify-content:center">10</button>
+        <button onclick="aiSoni(15)" id="ais15" class="vb" style="justify-content:center">15</button>
+        <button onclick="aiSoni(20)" id="ais20" class="vb" style="justify-content:center">20</button>
+      </div>
+      <button class="btn btn-green" id="aigenbtn" onclick="aiGeneratsiya()">🤖 Generatsiya qilish</button>
+      <div class="xb" id="aixb"></div>
+    </div>
+    <div id="ainatija"></div>
   </div>
 </div>
 
@@ -1305,7 +1335,7 @@ var sTogri='';
 
 // GO - sahifa almashtirish
 function go(id,nav){
-  var all=['p1','p2','p3','p3b','p3c','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e','p9f','p9g','p-elon','p-games','p-game','p-memory','p-sort','p-modd','p-react','p-tarix','p-jadval'];
+  var all=['p1','p2','p3','p3b','p3c','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e','p9f','p9g','p9h','p-elon','p-games','p-game','p-memory','p-sort','p-modd','p-react','p-tarix','p-jadval'];
   all.forEach(function(x){var e=document.getElementById(x);if(e)e.style.display='none';});
   var el=document.getElementById(id);
   if(el)el.style.display='block';
@@ -2197,6 +2227,76 @@ async function sSaqla(){
       ['A','B','C','D'].forEach(function(h){var e=document.getElementById('st'+h);if(e){e.className='vb';var bg=e.querySelector('.vbg');if(bg){bg.style.background='rgba(255,255,255,.08)';bg.style.color='#fff';}}});
     }else xb('sxb','err',res.detail||'Xato');
   }catch(e){xb('sxb','err','Xato');}
+}
+
+// AI SAVOL YARATISH
+var aiSoniQty=5, aiGenSavollar=[];
+function aiSoni(n){
+  aiSoniQty=n;
+  [5,10,15,20].forEach(function(x){
+    var e=document.getElementById('ais'+x);
+    if(e)e.className='vb'+(x===n?' sel':'');
+  });
+}
+async function aiGeneratsiya(){
+  var fan=document.getElementById('aifan').value.trim();
+  var mav=document.getElementById('aimavzu').value.trim();
+  var matn=document.getElementById('aimatn').value.trim();
+  if(!fan||!mav||!matn){xb('aixb','err',"Fan, mavzu va matnni to'ldiring!");return;}
+  var btn=document.getElementById('aigenbtn');
+  btn.disabled=true;btn.textContent='Generatsiya qilinmoqda...';
+  xb('aixb','inf','');
+  document.getElementById('ainatija').innerHTML='';
+  try{
+    var r=await apiFetch(API+'/ai/savol_yarat',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({matn:matn,fan:fan,mavzu:mav,soni:aiSoniQty})});
+    var d=await r.json();
+    btn.disabled=false;btn.textContent='🤖 Generatsiya qilish';
+    if(!d.success){xb('aixb','err',d.detail||'Xato yuz berdi');return;}
+    xb('aixb','ok','');
+    aiGenSavollar=(d.savollar||[]).map(function(s){s._tanlangan=true;return s;});
+    aiNatijaChiz();
+  }catch(e){
+    btn.disabled=false;btn.textContent='🤖 Generatsiya qilish';
+    xb('aixb','err','Internet xatosi, qayta urining');
+  }
+}
+function aiNatijaChiz(){
+  var el=document.getElementById('ainatija');
+  if(!aiGenSavollar.length){el.innerHTML='';return;}
+  var html=aiGenSavollar.map(function(s,i){
+    var vv=['A','B','C','D'].map(function(h){
+      var tog=h===s.togri_javob;
+      return '<div style="font-size:.8rem;padding:6px 10px;border-radius:8px;margin-bottom:4px;'+(tog?'background:rgba(0,212,170,.12);color:#00d4aa;font-weight:700':'color:rgba(255,255,255,.6)')+'">'+h+') '+esc((s.variantlar||{})[h]||'')+'</div>';
+    }).join('');
+    return '<div class="card" style="margin-bottom:10px">'+
+      '<label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer">'+
+      '<input type="checkbox" '+(s._tanlangan?'checked':'')+' onchange="aiTanlash('+i+',this.checked)" style="margin-top:3px"/>'+
+      '<div style="flex:1"><div style="font-weight:700;margin-bottom:8px">'+(i+1)+'. '+esc(s.savol)+'</div>'+vv+'</div>'+
+      '</label></div>';
+  }).join('');
+  el.innerHTML=html+'<button class="btn btn-green" onclick="aiTanlanganSaqla()" style="margin-top:4px">✅ Tanlanganlarni saqlash</button><div class="xb" id="aisaqlaxb"></div>';
+}
+function aiTanlash(i,val){if(aiGenSavollar[i])aiGenSavollar[i]._tanlangan=val;}
+async function aiTanlanganSaqla(){
+  var fan=document.getElementById('aifan').value.trim();
+  var mav=document.getElementById('aimavzu').value.trim();
+  var tanlangan=aiGenSavollar.filter(function(s){return s._tanlangan;});
+  if(!tanlangan.length){xb('aisaqlaxb','err','Kamida bitta savol tanlang!');return;}
+  var muvaffaqiyat=0;
+  for(var i=0;i<tanlangan.length;i++){
+    var s=tanlangan[i];
+    try{
+      var r=await apiFetch(API+'/savol/qosh',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({fan:fan,mavzu:mav,savol:s.savol,variantlar:s.variantlar,togri_javob:s.togri_javob,qiyinlik:'orta',ustoz_id:CU.id})});
+      var d=await r.json();
+      if(d.success)muvaffaqiyat++;
+    }catch(e){}
+  }
+  xb('aisaqlaxb','ok',muvaffaqiyat+'/'+tanlangan.length+" savol saqlandi!");
+  aiGenSavollar=[];
+  document.getElementById('ainatija').innerHTML='';
+  document.getElementById('aimatn').value='';
 }
 
 // E'LONLAR
