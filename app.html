@@ -125,6 +125,18 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   </div>
 </div>
 
+<!-- KANALGA OBUNA -->
+<div id="p-obuna" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px 20px;background:#0a0f1e;position:fixed;top:0;left:0;right:0;bottom:0;z-index:199">
+  <div style="width:70px;height:70px;border-radius:20px;background:linear-gradient(135deg,#00d4aa,#00a8ff);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 14px">📣</div>
+  <div style="font-size:1.2rem;font-weight:800;margin-bottom:4px">Kirish cheklangan</div>
+  <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:24px">Platformadan foydalanish uchun kanalga obuna bo'ling</div>
+  <div class="card" style="width:100%;max-width:380px">
+    <button class="btn btn-green" id="obuna-kanal-btn" style="margin-bottom:10px">📢 Kanalga obuna bo'lish</button>
+    <button class="btn btn-primary" id="obuna-tekshir-btn">✅ Tekshirish</button>
+    <div id="obuna-xb" style="display:none;margin-top:12px;font-size:.78rem;border-radius:10px;padding:9px 12px;background:rgba(255,59,48,.08);color:#ff6b6b;border:1px solid rgba(255,59,48,.2)"></div>
+  </div>
+</div>
+
 <!-- RO'YXATDAN O'TISH -->
 <div id="p-royxat" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px 20px;background:#0a0f1e;position:fixed;top:0;left:0;right:0;bottom:0;z-index:199">
   <div style="width:70px;height:70px;border-radius:20px;background:linear-gradient(135deg,#00d4aa,#00a8ff);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 14px">📝</div>
@@ -947,6 +959,7 @@ function appOch(){
   }
   document.getElementById('p0').style.display='none';
   document.getElementById('p-royxat').style.display='none';
+  document.getElementById('p-obuna').style.display='none';
   document.getElementById('nav').style.display='flex';
   elonBadgeYanila();
   setInterval(elonBadgeYanila,5*60*1000);
@@ -954,10 +967,33 @@ function appOch(){
   if(urltab==='tester')setTimeout(function(){go('p7',4);tTab(1);},200);
 }
 
+var KANAL='kimyo_corner';
+
 async function kirish(){
   CU={id:uid||0,name:uname};
   document.getElementById('p0').style.display='none';
+  if(ADMINS.indexOf(CU.id)<0){
+    var obunaOk=false;
+    try{
+      var ro=await fetch(API+'/user/obuna/'+CU.id);
+      var dobuna=await ro.json();
+      obunaOk=!!dobuna.obuna;
+    }catch(e){obunaOk=false;}
+    if(!obunaOk){
+      document.getElementById('p-obuna').style.display='flex';
+      return;
+    }
+  }
+  kirishDavomEt();
+}
+
+function kirishDavomEt(){
+  document.getElementById('p-obuna').style.display='none';
   // Avval Telegram ismini inputlarga to'ldir
+  royxatOchishTayyorla();
+}
+
+async function royxatOchishTayyorla(){
   if(CU.name&&CU.name!=='Foydalanuvchi'){
     var parts=CU.name.trim().split(' ');
     document.getElementById('rq-ism').value=parts[0]||'';
@@ -973,6 +1009,31 @@ async function kirish(){
   // Ro'yxat oynasini ko'rsat
   document.getElementById('p-royxat').style.display='flex';
 }
+
+document.getElementById('obuna-kanal-btn').onclick=function(){
+  var url='https://t.me/'+KANAL;
+  if(tg&&tg.openTelegramLink)tg.openTelegramLink(url);
+  else window.open(url,'_blank');
+};
+document.getElementById('obuna-tekshir-btn').onclick=async function(){
+  var xb=document.getElementById('obuna-xb');
+  var btn=document.getElementById('obuna-tekshir-btn');
+  btn.disabled=true;btn.textContent='Tekshirilmoqda...';
+  var obunaOk=false;
+  try{
+    var ro=await fetch(API+'/user/obuna/'+CU.id);
+    var dobuna=await ro.json();
+    obunaOk=!!dobuna.obuna;
+  }catch(e){obunaOk=false;}
+  btn.disabled=false;btn.textContent='✅ Tekshirish';
+  if(obunaOk){
+    xb.style.display='none';
+    kirishDavomEt();
+  }else{
+    xb.style.display='block';
+    xb.textContent="Hali @"+KANAL+" kanaliga obuna bo'lmagansiz!";
+  }
+};
 
 async function royxatSaqla(){
   var ism=document.getElementById('rq-ism').value.trim();
