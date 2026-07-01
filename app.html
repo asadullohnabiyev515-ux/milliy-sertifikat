@@ -173,7 +173,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
       <div class="mc" onclick="go('p2',1)"><div class="mi" style="background:rgba(0,212,170,.12)">📝</div><div class="mt">Testlar</div><div class="ms">Test ishlash</div></div>
       <div class="mc" onclick="go('p5',2)"><div class="mi" style="background:rgba(255,107,53,.12)">📚</div><div class="mt">Kitoblar</div><div class="ms">Fanlar bo'yicha</div></div>
       <div class="mc" onclick="go('p6',3)"><div class="mi" style="background:rgba(0,136,255,.12)">🏆</div><div class="mt">Reyting</div><div class="ms">Top o'quvchilar</div></div>
-      <div class="mc" onclick="go('p7',4);tTab(1)"><div class="mi" style="background:rgba(139,92,246,.12)">🎯</div><div class="mt">Tester</div><div class="ms">Mashq qilish</div></div>
+      <div class="mc" onclick="go('p7',4);tTab(2)"><div class="mi" style="background:rgba(139,92,246,.12)">🎯</div><div class="mt">Tester</div><div class="ms">Mashq qilish</div></div>
     </div>
     <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:1px;text-transform:uppercase;margin:18px 0 12px">Qo'shimcha</div>
     <div class="g2">
@@ -299,24 +299,10 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
 <div id="p7" class="page" style="padding-bottom:80px">
   <div class="top"><div class="tlogo">Tester</div><div class="av" id="av7">A</div></div>
   <div class="tbtns">
-    <button class="tb on" id="tt1" onclick="tTab(1)">📚 Tayyor</button>
-    <button class="tb off" id="tt2" onclick="tTab(2)">📋 Mavzulashgan testlar to'plami</button>
+    <button class="tb on" id="tt2" onclick="tTab(2)">📋 Mavzulashgan testlar to'plami</button>
     <button class="tb off" id="tt3" onclick="tTab(3)">🔄 Trening</button>
   </div>
-  <div id="tb1" style="padding:16px">
-    <div id="tfanwrap">
-      <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Fanni tanlang</div>
-      <div class="g2" id="tfgrid"><div style="grid-column:span 2;text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
-    </div>
-    <div id="tmavwrap" style="display:none">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
-        <button onclick="tFanBack()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.2rem;cursor:pointer">←</button>
-        <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase" id="tfnom">Fan</div>
-      </div>
-      <div id="tmavlist"></div>
-    </div>
-  </div>
-  <div id="tb2" style="display:none;padding:16px">
+  <div id="tb2" style="padding:16px">
     <div id="tseqfanwrap">
       <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Fanni tanlang</div>
       <div class="g2" id="tseqfangrid"><div style="grid-column:span 2;text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
@@ -342,7 +328,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
 <!-- TESTER TEST -->
 <div id="p7b" class="page" style="padding-bottom:80px">
   <div class="top">
-    <button onclick="go('p7',4);tTab(ttMode==='seq'?2:1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">✕</button>
+    <button onclick="go('p7',4);tTab(2)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">✕</button>
     <div class="tlogo" id="ttitle">Test</div>
     <div style="width:34px"></div>
   </div>
@@ -1394,7 +1380,7 @@ function appOch(){
   elonBadgeYanila();
   setInterval(elonBadgeYanila,5*60*1000);
   go('p1',0);
-  if(urltab==='tester')setTimeout(function(){go('p7',4);tTab(1);},200);
+  if(urltab==='tester')setTimeout(function(){go('p7',4);tTab(2);},200);
 }
 
 var KANAL='kimyo_corner';
@@ -1658,11 +1644,10 @@ async function rTab(t){
 
 // TESTER
 function tTab(n){
-  [1,2,3].forEach(function(i){
+  [2,3].forEach(function(i){
     document.getElementById('tt'+i).className='tb '+(i===n?'on':'off');
     document.getElementById('tb'+i).style.display=i===n?'block':'none';
   });
-  if(n===1){ttMode='';ttFanLoad();}
   if(n===2){ttMode='seq';ttSeqFanLoad();}
 }
 async function ttFanGridLoad(gridId,onclickFn){
@@ -1676,46 +1661,6 @@ async function ttFanGridLoad(gridId,onclickFn){
     if(!fl.length){g.innerHTML='<div style="grid-column:span 2;text-align:center;padding:20px;color:rgba(255,255,255,.4)">Savollar yo\'q.<br>Ustoz savol qo\'shsin.</div>';return;}
     g.innerHTML=fl.map(function(f){return '<div onclick="'+onclickFn+'(\''+esc(f.fan)+'\')" class="mc" style="text-align:center"><div style="font-size:2rem;margin-bottom:8px">'+(ic[f.fan]||'📚')+'</div><div class="mt">'+f.fan+'</div><div class="ms">'+f.jami+' savol</div></div>';}).join('');
   }catch(e){g.innerHTML='<div style="grid-column:span 2;text-align:center;padding:20px;color:rgba(255,255,255,.4)">Server bilan ulanib bo\'lmadi</div>';}
-}
-function ttFanLoad(){ttFanGridLoad('tfgrid','ttFan');}
-async function ttFan(fan){
-  ttF=fan;
-  document.getElementById('tfnom').textContent=fan;
-  document.getElementById('tfanwrap').style.display='none';
-  document.getElementById('tmavwrap').style.display='block';
-  var li=document.getElementById('tmavlist');
-  li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
-  apiFetch(API+'/savol/mavzular/'+fan)
-    .then(function(r){return r.json();})
-    .then(function(d){
-      var ml=d.mavzular||[];
-      if(!ml.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Mavzular yo\'q</div>';return;}
-      li.innerHTML=ml.map(function(m){return '<div onclick="ttMav(\''+esc(m.mavzu)+'\')" class="ri" style="cursor:pointer"><div style="flex:1"><div style="font-size:.9rem;font-weight:600">'+m.mavzu+'</div><div style="font-size:.72rem;color:rgba(255,255,255,.4)">'+m.soni+' savol</div></div><div style="color:#00d4aa">→</div></div>';}).join('');
-    }).catch(function(){});
-}
-function tFanBack(){document.getElementById('tfanwrap').style.display='block';document.getElementById('tmavwrap').style.display='none';}
-function ttMav(mav){
-  ttM=mav;
-  var li=document.getElementById('tmavlist');
-  li.innerHTML='<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><button onclick="tFanBack()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.2rem;cursor:pointer">←</button><div style="font-size:.85rem;font-weight:700">'+mav+'</div></div>'+
-    '<div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:12px">Nechta savol ishlaysiz?</div>'+
-    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">'+
-    '<button onclick="ttBoshla(10)" class="mc" style="text-align:center;padding:20px 10px"><div style="font-size:1.5rem;font-weight:800;color:#00d4aa">10</div><div style="font-size:.7rem;color:rgba(255,255,255,.4)">savol</div></button>'+
-    '<button onclick="ttBoshla(15)" class="mc" style="text-align:center;padding:20px 10px"><div style="font-size:1.5rem;font-weight:800;color:#ff9500">15</div><div style="font-size:.7rem;color:rgba(255,255,255,.4)">savol</div></button>'+
-    '<button onclick="ttBoshla(20)" class="mc" style="text-align:center;padding:20px 10px"><div style="font-size:1.5rem;font-weight:800;color:#4da6ff">20</div><div style="font-size:.7rem;color:rgba(255,255,255,.4)">savol</div></button>'+
-    '</div>';
-}
-
-async function ttBoshla(soni){
-  try{
-    var r=await apiFetch(API+'/savol/olish/'+ttF+'/'+ttM+'?soni='+soni);
-    var d=await r.json();
-    ttS=d.savollar||[];
-    if(!ttS.length){alert('Savollar yo\'q!');return;}
-    ttJav={};ttJ=0;
-    document.getElementById('ttitle').textContent=ttF+' - '+ttM;
-    ttKor();go('p7b',-1);
-  }catch(e){alert('Xato: '+e);}
 }
 function ttKor(){
   var n=ttJ,jami=ttS.length,s=ttS[n];
@@ -1747,20 +1692,16 @@ async function ttNat(){
     document.getElementById('ttxatolar').innerHTML=xl.length?'<div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Xato javoblar</div>'+xl.map(function(x){return '<div class="ri" style="flex-direction:column;align-items:flex-start"><div style="font-size:.78rem;color:rgba(255,255,255,.4)">Savol #'+x.savol_id+'</div><div style="font-size:.85rem;margin-top:4px">Sizniki: <span style="color:#ff6b6b;font-weight:600">'+x.berilgan+'</span></div><div style="font-size:.85rem">To\'g\'ri: <span style="color:#00d4aa;font-weight:600">'+x.togri+'</span></div></div>';}).join(''):'';
     go('p7c',-1);
     var bArea=document.getElementById('ttnatbtnlar');
-    if(ttMode==='seq'){
-      if(b>=60){
-        seqSave(ttSeqFan_,ttSeqMavzular[ttSeqIdx]);
-        if(typeof renderSeqMavzular==='function')renderSeqMavzular();
-        if(ttSeqIdx>=ttSeqMavzular.length-1){
-          bArea.innerHTML='<div style="text-align:center;padding:12px;color:#00d4aa;font-weight:700;font-size:.95rem;margin-bottom:12px">🏆 Barcha mavzular muvaffaqiyatli o\'tildi!</div><button class="btn btn-out" onclick="go(\'p7\',4);tTab(2)">📋 Mavzular ro\'yxati</button>';
-        }else{
-          bArea.innerHTML='<button class="btn btn-green" onclick="ttSeqStart('+(ttSeqIdx+1)+')">→ Keyingi mavzu</button><button class="btn btn-out" style="margin-top:8px" onclick="go(\'p7\',4);tTab(2)">📋 Mavzular ro\'yxati</button>';
-        }
+    if(b>=60){
+      seqSave(ttSeqFan_,ttSeqMavzular[ttSeqIdx]);
+      if(typeof renderSeqMavzular==='function')renderSeqMavzular();
+      if(ttSeqIdx>=ttSeqMavzular.length-1){
+        bArea.innerHTML='<div style="text-align:center;padding:12px;color:#00d4aa;font-weight:700;font-size:.95rem;margin-bottom:12px">🏆 Barcha mavzular muvaffaqiyatli o\'tildi!</div><button class="btn btn-out" onclick="go(\'p7\',4);tTab(2)">📋 Mavzular ro\'yxati</button>';
       }else{
-        bArea.innerHTML='<div style="background:rgba(255,59,48,.1);border:1px solid rgba(255,59,48,.25);border-radius:10px;padding:10px;font-size:.82rem;color:#ff6b6b;margin-bottom:10px;text-align:center">Keyingi mavzu uchun 60%+ ball kerak!</div><button class="btn btn-green" onclick="ttSeqStart('+ttSeqIdx+')">🔄 Qayta urinish</button><button class="btn btn-out" style="margin-top:8px" onclick="go(\'p7\',4);tTab(2)">📋 Mavzular ro\'yxati</button>';
+        bArea.innerHTML='<button class="btn btn-green" onclick="ttSeqStart('+(ttSeqIdx+1)+')">→ Keyingi mavzu</button><button class="btn btn-out" style="margin-top:8px" onclick="go(\'p7\',4);tTab(2)">📋 Mavzular ro\'yxati</button>';
       }
     }else{
-      bArea.innerHTML='<button class="btn btn-green" onclick="go(\'p7\',4);tTab(1)">🔄 Qayta urinish</button>';
+      bArea.innerHTML='<div style="background:rgba(255,59,48,.1);border:1px solid rgba(255,59,48,.25);border-radius:10px;padding:10px;font-size:.82rem;color:#ff6b6b;margin-bottom:10px;text-align:center">Keyingi mavzu uchun 60%+ ball kerak!</div><button class="btn btn-green" onclick="ttSeqStart('+ttSeqIdx+')">🔄 Qayta urinish</button><button class="btn btn-out" style="margin-top:8px" onclick="go(\'p7\',4);tTab(2)">📋 Mavzular ro\'yxati</button>';
     }
   }catch(e){alert('Natija xato: '+e);}
 }
