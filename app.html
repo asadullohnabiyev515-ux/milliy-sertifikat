@@ -1913,9 +1913,15 @@ async function ttNat(){
     var bArea=document.getElementById('ttnatbtnlar');
     if(ttMode==='kurs'){
       if(b>=60){
-        bArea.innerHTML='<div style="text-align:center;padding:12px;color:#00d4aa;font-weight:700;font-size:.95rem;margin-bottom:12px">🏆 Mavzu muvaffaqiyatli topshirildi!</div><button class="btn btn-out" onclick="go(\'p-kurs\',-1)">📐 Mavzular ro\'yxati</button>';
+        seqSave(KURS_FAN,kursMavzuCur);
+        if(typeof kursRenderRoyxat==='function')kursRenderRoyxat();
+        if(kursMavzuIdx>=kursMavzuData.length-1){
+          bArea.innerHTML='<div style="text-align:center;padding:12px;color:#00d4aa;font-weight:700;font-size:.95rem;margin-bottom:12px">🏆 Barcha mavzular muvaffaqiyatli tugallandi!</div><button class="btn btn-out" onclick="go(\'p-kurs\',-1)">📐 Mavzular ro\'yxati</button>';
+        }else{
+          bArea.innerHTML='<button class="btn btn-green" onclick="kursMavzuOch('+(kursMavzuIdx+1)+')">→ Keyingi mavzu</button><button class="btn btn-out" style="margin-top:8px" onclick="go(\'p-kurs\',-1)">📐 Mavzular ro\'yxati</button>';
+        }
       }else{
-        bArea.innerHTML='<button class="btn btn-green" onclick="kursTestBoshla()">🔄 Qayta urinish</button><button class="btn btn-out" style="margin-top:8px" onclick="go(\'p-kurs\',-1)">📐 Mavzular ro\'yxati</button>';
+        bArea.innerHTML='<div style="background:rgba(255,59,48,.1);border:1px solid rgba(255,59,48,.25);border-radius:10px;padding:10px;font-size:.82rem;color:#ff6b6b;margin-bottom:10px;text-align:center">Keyingi mavzu uchun 60%+ ball kerak!</div><button class="btn btn-green" onclick="kursTestBoshla()">🔄 Qayta urinish</button><button class="btn btn-out" style="margin-top:8px" onclick="go(\'p-kurs\',-1)">📐 Mavzular ro\'yxati</button>';
       }
     }else if(b>=60){
       seqSave(ttSeqFan_,ttSeqMavzular[ttSeqIdx]);
@@ -2005,9 +2011,9 @@ function ttCloseBtn(){
   else{go('p7',4);tTab(2);}
 }
 
-// MATEMATIKA KURSI (nazariya + mavzu bo'yicha test)
+// MATEMATIKA KURSI (nazariya + mavzu bo'yicha test, ketma-ket ochiladi)
 var KURS_FAN='Matematika';
-var kursMavzuData=[],kursMavzuCur='';
+var kursMavzuData=[],kursMavzuCur='',kursMavzuIdx=-1;
 async function kursRoyxatLoad(){
   var li=document.getElementById('kurs-mavzu-list');
   li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
@@ -2016,14 +2022,37 @@ async function kursRoyxatLoad(){
     var d=await r.json();
     kursMavzuData=d.mavzular||[];
     if(!kursMavzuData.length){li.innerHTML='<div style="text-align:center;padding:30px;color:rgba(255,255,255,.4)">Hozircha mavzular yo\'q.<br>Tez orada qo\'shiladi.</div>';return;}
-    li.innerHTML=kursMavzuData.map(function(m,i){
-      return '<div class="ri" style="cursor:pointer" onclick="kursMavzuOch('+i+')"><div style="width:32px;height:32px;border-radius:10px;background:rgba(245,158,11,.12);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;color:#f59e0b;flex-shrink:0">'+(i+1)+'</div><div style="flex:1;margin-left:10px"><div style="font-size:.9rem;font-weight:600">'+m.mavzu+'</div></div><div style="color:#f59e0b">→</div></div>';
-    }).join('');
+    kursRenderRoyxat();
   }catch(e){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Server bilan ulanib bo\'lmadi</div>';}
+}
+function kursRenderRoyxat(){
+  var li=document.getElementById('kurs-mavzu-list');
+  var p=seqProgress(KURS_FAN);
+  li.innerHTML=kursMavzuData.map(function(m,i){
+    var prev=i===0?true:!!p[kursMavzuData[i-1].mavzu];
+    var done=!!p[m.mavzu];
+    var locked=!prev;
+    var clr=done?'#00d4aa':locked?'rgba(255,255,255,.25)':'#fff';
+    var icon=done?'✅':locked?'🔒':'▶';
+    var bg=done?'rgba(0,212,170,.08)':locked?'rgba(255,255,255,.02)':'rgba(255,255,255,.04)';
+    var bd=done?'rgba(0,212,170,.2)':locked?'rgba(255,255,255,.05)':'rgba(245,158,11,.15)';
+    var oc=locked?'':'onclick="kursMavzuOch('+i+')"';
+    return '<div '+oc+' style="background:'+bg+';border:1px solid '+bd+';border-radius:14px;padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:'+(locked?'default':'pointer')+'">'+
+      '<div style="width:32px;height:32px;border-radius:10px;background:rgba(245,158,11,.12);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;color:'+clr+';flex-shrink:0">'+(i+1)+'</div>'+
+      '<div style="flex:1"><div style="font-size:.9rem;font-weight:600;color:'+clr+'">'+m.mavzu+'</div>'+
+      (done?'<div style="font-size:.72rem;color:#00d4aa;margin-top:2px">✓ Muvaffaqiyatli topshirildi</div>':
+       locked?'<div style="font-size:.72rem;color:rgba(255,255,255,.3);margin-top:2px">Avvalgi mavzuni tugatish kerak</div>':
+       '<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:2px">Ochish uchun bosing</div>')+
+      '</div><div style="font-size:1.2rem">'+icon+'</div></div>';
+  }).join('');
 }
 function kursMavzuOch(i){
   var m=kursMavzuData[i];
   if(!m)return;
+  var p=seqProgress(KURS_FAN);
+  var prev=i===0?true:!!p[kursMavzuData[i-1].mavzu];
+  if(!prev)return; // qulflangan — o'tib bo'lmaydi
+  kursMavzuIdx=i;
   kursMavzuCur=m.mavzu;
   document.getElementById('kurs-mavzu-nom').textContent=m.mavzu;
   document.getElementById('kurs-mavzu-matn').textContent=m.matn||'';
