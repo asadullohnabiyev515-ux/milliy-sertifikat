@@ -176,6 +176,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
       <div class="mc" onclick="go('p5',2)"><div class="mi" style="background:rgba(255,107,53,.12)">📚</div><div class="mt">Kitoblar</div><div class="ms">Fanlar bo'yicha</div></div>
       <div class="mc" onclick="go('p6',3)"><div class="mi" style="background:rgba(0,136,255,.12)">🏆</div><div class="mt">Reyting</div><div class="ms">Top o'quvchilar</div></div>
       <div class="mc" onclick="go('p7',4);tTab(2)"><div class="mi" style="background:rgba(139,92,246,.12)">🎯</div><div class="mt">Tester</div><div class="ms">Mashq qilish</div></div>
+      <div class="mc" onclick="go('p-kurs',-1);kursRoyxatLoad()"><div class="mi" style="background:rgba(245,158,11,.12)">📐</div><div class="mt">Matematika</div><div class="ms">Kimyo uchun kurs</div></div>
     </div>
     <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:1px;text-transform:uppercase;margin:18px 0 12px">Qo'shimcha</div>
     <div class="g2">
@@ -330,7 +331,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
 <!-- TESTER TEST -->
 <div id="p7b" class="page" style="padding-bottom:80px">
   <div class="top">
-    <button onclick="go('p7',4);tTab(2)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">✕</button>
+    <button onclick="ttCloseBtn()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">✕</button>
     <div class="tlogo" id="ttitle">Test</div>
     <div style="width:34px"></div>
   </div>
@@ -395,6 +396,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <button class="tb off" id="ut4" onclick="uTab(4)">📄 Varaqlar</button>
     <button class="tb off" id="ut5" onclick="uTab(5)">📢 E'lonlar</button>
     <button class="tb off" id="ut6" onclick="uTab(6)">👥 O'quvchilar</button>
+    <button class="tb off" id="ut7" onclick="uTab(7)">📐 Kurs</button>
   </div>
   <div id="ub1" style="padding:16px">
     <button class="btn btn-green" onclick="go('p9b',-1)" style="margin-bottom:14px">➕ Yangi test yaratish</button>
@@ -428,6 +430,10 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <div id="ubill_xb" style="display:none;font-size:.78rem;border-radius:10px;padding:10px 12px;margin-bottom:10px;background:rgba(0,212,170,.08);color:#00d4aa;border:1px solid rgba(0,212,170,.2)"></div>
     <input class="inp" id="uoqsearch" type="text" placeholder="🔍 Ism yoki telefon qidirish..." oninput="uOqSearch()" style="margin-bottom:12px;margin-top:0"/>
     <div id="uoqlist"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
+  </div>
+  <div id="ub7" style="display:none;padding:16px">
+    <button class="btn btn-green" onclick="go('p9i',-1);uKursFormTozala()" style="margin-bottom:14px">➕ Mavzu qo'shish</button>
+    <div id="ukurslist"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
   </div>
 </div>
 
@@ -505,6 +511,28 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
       </div>
       <button class="btn btn-green" onclick="sSaqla()">✅ Saqlash</button>
       <div class="xb" id="sxb"></div>
+    </div>
+  </div>
+</div>
+
+<!-- USTOZ KURS MAVZU QO'SHISH -->
+<div id="p9i" class="page" style="padding-bottom:80px">
+  <div class="top">
+    <button onclick="go('p9',6);uTab(7)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+    <div class="tlogo">Kurs mavzusi</div>
+    <div style="width:34px"></div>
+  </div>
+  <div style="padding:16px">
+    <div class="card">
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">Mavzu nomi</div>
+      <input class="inp" id="kmnomi" type="text" placeholder="Masalan: Foizlar va ulushlar" style="margin-bottom:10px"/>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">Tartib raqami (kichigi birinchi ko'rinadi)</div>
+      <input class="inp" id="kmtartib" type="number" placeholder="1" style="margin-bottom:10px"/>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">Nazariy ma'lumot</div>
+      <textarea class="inp" id="kmmatn" placeholder="Mavzu bo'yicha tushuntirish, formulalar, misollar..." style="margin-bottom:12px;resize:vertical;min-height:180px;font-family:inherit"></textarea>
+      <div style="font-size:.75rem;color:rgba(255,255,255,.35);margin-bottom:12px">💡 Test savollarini "❓ Savollar" bo'limidan shu mavzu nomi bilan (Fan: Matematika) qo'shing.</div>
+      <button class="btn btn-green" onclick="uKursSaqla()">✅ Saqlash</button>
+      <div class="xb" id="kmxb"></div>
     </div>
   </div>
 </div>
@@ -1268,6 +1296,36 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   </div>
 </div>
 
+<!-- MATEMATIKA KURSI: MAVZULAR RO'YXATI -->
+<div id="p-kurs" class="page" style="padding-bottom:80px">
+  <div class="top">
+    <button onclick="go('p1',0)" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
+    <div class="tlogo">📐 Matematika</div>
+    <div style="width:60px"></div>
+  </div>
+  <div style="padding:16px 16px 6px">
+    <div style="font-size:.78rem;color:rgba(255,255,255,.4);line-height:1.5">Kimyo uchun kerakli matematik mavzular — nazariya o'qing, so'ng testdan o'ting.</div>
+  </div>
+  <div id="kurs-mavzu-list" style="padding:10px 16px">
+    <div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>
+  </div>
+</div>
+
+<!-- MATEMATIKA KURSI: MAVZU ICHI (NAZARIYA) -->
+<div id="p-kurs-mavzu" class="page" style="padding-bottom:80px">
+  <div class="top">
+    <button onclick="go('p-kurs',-1)" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
+    <div class="tlogo" id="kurs-mavzu-nom">Mavzu</div>
+    <div style="width:60px"></div>
+  </div>
+  <div style="padding:16px">
+    <div class="card" style="margin-bottom:14px">
+      <div id="kurs-mavzu-matn" style="font-size:.9rem;line-height:1.8;white-space:pre-wrap"></div>
+    </div>
+    <button class="btn btn-green" id="kurs-test-btn" onclick="kursTestBoshla()">✅ Testni boshlash</button>
+  </div>
+</div>
+
 <!-- KIMYO JADVALLARI -->
 <div id="p-jadval" class="page" style="padding-bottom:80px">
   <div class="top">
@@ -1478,7 +1536,7 @@ var sTogri='';
 
 // GO - sahifa almashtirish
 function go(id,nav){
-  var all=['p1','p2','p3','p3b','p3c','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e','p9f','p9g','p9h','p-elon','p-games','p-game','p-memory','p-sort','p-modd','p-react','p-tarix','p-jadval','p-oziq','p-anatomiya'];
+  var all=['p1','p2','p3','p3b','p3c','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e','p9f','p9g','p9h','p9i','p-elon','p-games','p-game','p-memory','p-sort','p-modd','p-react','p-tarix','p-jadval','p-oziq','p-anatomiya','p-kurs','p-kurs-mavzu'];
   all.forEach(function(x){var e=document.getElementById(x);if(e)e.style.display='none';});
   var el=document.getElementById(id);
   if(el)el.style.display='block';
@@ -1853,7 +1911,13 @@ async function ttNat(){
     document.getElementById('ttxatolar').innerHTML=xl.length?'<div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Xato javoblar</div>'+xl.map(function(x){return '<div class="ri" style="flex-direction:column;align-items:flex-start"><div style="font-size:.78rem;color:rgba(255,255,255,.4)">Savol #'+x.savol_id+'</div><div style="font-size:.85rem;margin-top:4px">Sizniki: <span style="color:#ff6b6b;font-weight:600">'+x.berilgan+'</span></div><div style="font-size:.85rem">To\'g\'ri: <span style="color:#00d4aa;font-weight:600">'+x.togri+'</span></div></div>';}).join(''):'';
     go('p7c',-1);
     var bArea=document.getElementById('ttnatbtnlar');
-    if(b>=60){
+    if(ttMode==='kurs'){
+      if(b>=60){
+        bArea.innerHTML='<div style="text-align:center;padding:12px;color:#00d4aa;font-weight:700;font-size:.95rem;margin-bottom:12px">🏆 Mavzu muvaffaqiyatli topshirildi!</div><button class="btn btn-out" onclick="go(\'p-kurs\',-1)">📐 Mavzular ro\'yxati</button>';
+      }else{
+        bArea.innerHTML='<button class="btn btn-green" onclick="kursTestBoshla()">🔄 Qayta urinish</button><button class="btn btn-out" style="margin-top:8px" onclick="go(\'p-kurs\',-1)">📐 Mavzular ro\'yxati</button>';
+      }
+    }else if(b>=60){
       seqSave(ttSeqFan_,ttSeqMavzular[ttSeqIdx]);
       if(typeof renderSeqMavzular==='function')renderSeqMavzular();
       if(ttSeqIdx>=ttSeqMavzular.length-1){
@@ -1936,6 +2000,91 @@ async function ttSeqStart(idx){
     ttKor();go('p7b',-1);
   }catch(e){alert('Xato: '+e);}
 }
+function ttCloseBtn(){
+  if(ttMode==='kurs'){go('p-kurs-mavzu',-1);}
+  else{go('p7',4);tTab(2);}
+}
+
+// MATEMATIKA KURSI (nazariya + mavzu bo'yicha test)
+var KURS_FAN='Matematika';
+var kursMavzuData=[],kursMavzuCur='';
+async function kursRoyxatLoad(){
+  var li=document.getElementById('kurs-mavzu-list');
+  li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
+  try{
+    var r=await apiFetch(API+'/kurs/mavzular/'+KURS_FAN);
+    var d=await r.json();
+    kursMavzuData=d.mavzular||[];
+    if(!kursMavzuData.length){li.innerHTML='<div style="text-align:center;padding:30px;color:rgba(255,255,255,.4)">Hozircha mavzular yo\'q.<br>Tez orada qo\'shiladi.</div>';return;}
+    li.innerHTML=kursMavzuData.map(function(m,i){
+      return '<div class="ri" style="cursor:pointer" onclick="kursMavzuOch('+i+')"><div style="width:32px;height:32px;border-radius:10px;background:rgba(245,158,11,.12);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;color:#f59e0b;flex-shrink:0">'+(i+1)+'</div><div style="flex:1;margin-left:10px"><div style="font-size:.9rem;font-weight:600">'+m.mavzu+'</div></div><div style="color:#f59e0b">→</div></div>';
+    }).join('');
+  }catch(e){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Server bilan ulanib bo\'lmadi</div>';}
+}
+function kursMavzuOch(i){
+  var m=kursMavzuData[i];
+  if(!m)return;
+  kursMavzuCur=m.mavzu;
+  document.getElementById('kurs-mavzu-nom').textContent=m.mavzu;
+  document.getElementById('kurs-mavzu-matn').textContent=m.matn||'';
+  go('p-kurs-mavzu',-1);
+}
+async function kursTestBoshla(){
+  if(!kursMavzuCur)return;
+  ttMode='kurs';ttF=KURS_FAN;ttM=kursMavzuCur;
+  try{
+    var r=await apiFetch(API+'/savol/olish/'+encodeURIComponent(KURS_FAN)+'/'+encodeURIComponent(kursMavzuCur)+'?soni=20');
+    var d=await r.json();
+    ttS=d.savollar||[];
+    if(!ttS.length){alert('Bu mavzu uchun hali test savollari qo\'shilmagan!');return;}
+    ttJav={};ttJ=0;
+    document.getElementById('ttitle').textContent=KURS_FAN+' — '+kursMavzuCur;
+    ttKor();go('p7b',-1);
+  }catch(e){alert('Xato: '+e);}
+}
+
+// USTOZ: KURS MAVZULARINI BOSHQARISH
+function uKursFormTozala(){
+  document.getElementById('kmnomi').value='';
+  document.getElementById('kmtartib').value='';
+  document.getElementById('kmmatn').value='';
+  xb('kmxb','','');
+}
+async function uKursSaqla(){
+  var nomi=document.getElementById('kmnomi').value.trim();
+  var tartib=parseInt(document.getElementById('kmtartib').value)||0;
+  var matn=document.getElementById('kmmatn').value.trim();
+  if(!nomi||!matn){xb('kmxb','err','Mavzu nomi va matnni to\'ldiring!');return;}
+  try{
+    var r=await apiFetch(API+'/kurs/mavzu/qosh',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({fan:KURS_FAN,mavzu:nomi,matn:matn,tartib:tartib,ustoz_id:CU.id})});
+    var d=await r.json();
+    if(d.success){alert('Mavzu saqlandi!');go('p9',6);uTab(7);}
+    else xb('kmxb','err',d.detail||'Xato');
+  }catch(e){xb('kmxb','err','Xato: '+e);}
+}
+async function uKursTabLoad(){
+  var li=document.getElementById('ukurslist');
+  li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
+  try{
+    var r=await apiFetch(API+'/kurs/mavzular/'+KURS_FAN);
+    var d=await r.json();
+    var ml=d.mavzular||[];
+    if(!ml.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Mavzular yo\'q</div>';return;}
+    li.innerHTML=ml.map(function(m){
+      return '<div class="ri" style="justify-content:space-between"><div><div style="font-size:.88rem;font-weight:600">'+m.mavzu+'</div><div style="font-size:.72rem;color:rgba(255,255,255,.4)">Tartib: '+(m.tartib||0)+'</div></div><button onclick="uKursOchir(\''+esc(m.mavzu)+'\')" style="background:rgba(255,59,48,.12);border:1px solid rgba(255,59,48,.25);border-radius:8px;padding:4px 10px;font-size:.72rem;color:#ff6b6b;cursor:pointer">🗑</button></div>';
+    }).join('');
+  }catch(e){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Xato</div>';}
+}
+async function uKursOchir(mavzu){
+  if(!confirm('"'+mavzu+'" mavzusi o\'chirilsinmi?'))return;
+  try{
+    var r=await apiFetch(API+'/kurs/mavzu/ochir/'+encodeURIComponent(KURS_FAN)+'/'+encodeURIComponent(mavzu)+'?ustoz_id='+CU.id,{method:'DELETE'});
+    var d=await r.json();
+    if(d.success){uKursTabLoad();}
+    else alert('Xato');
+  }catch(e){alert('Xato');}
+}
 
 // PROFIL
 async function pLoad(){
@@ -1974,7 +2123,7 @@ async function uLoad(){
 }
 var _uoqAll=[];
 function uTab(n){
-  [1,2,3,4,5,6].forEach(function(i){
+  [1,2,3,4,5,6,7].forEach(function(i){
     document.getElementById('ut'+i).className='tb '+(i===n?'on':'off');
     document.getElementById('ub'+i).style.display=i===n?'block':'none';
   });
@@ -1984,6 +2133,7 @@ function uTab(n){
   if(n===4)uVLoad();
   if(n===5)uELoad();
   if(n===6)uOqLoad();
+  if(n===7)uKursTabLoad();
 }
 async function uOqLoad(){
   var li=document.getElementById('uoqlist');
