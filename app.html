@@ -3239,7 +3239,7 @@ async function memReytingLoad(){
 // ============================================================
 // PROBIRKALAR (WATER SORT) — LEVELLAR
 // ============================================================
-var WS_COLORS=['#ef4444','#3b82f6','#22c55e','#f59e0b','#a855f7','#06b6d4','#f97316','#ec4899','#84cc16','#14b8a6','#6366f1','#d946ef','#0ea5e9','#78716c','#7c3aed'];
+var WS_COLORS=['#ef4444','#3b82f6','#22c55e','#f59e0b','#a855f7','#06b6d4','#f97316','#ec4899','#84cc16','#14b8a6','#6366f1','#d946ef','#0ea5e9','#78716c','#7c3aed','#eab308','#f43f5e','#10b981','#64748b','#1e3a8a'];
 // Level konfiguratsiyasi: {colors, empty} — 30 level
 var WS_LEVELS=[
   {colors:2,empty:2},{colors:3,empty:2},{colors:3,empty:1},{colors:4,empty:2}, // 1-4
@@ -3249,8 +3249,15 @@ var WS_LEVELS=[
   {colors:10,empty:1},{colors:11,empty:2},{colors:11,empty:1},{colors:12,empty:2},// 17-20
   {colors:12,empty:1},{colors:13,empty:2},{colors:13,empty:1},{colors:14,empty:2},// 21-24
   {colors:14,empty:1},{colors:15,empty:2},{colors:15,empty:1},{colors:15,empty:1},// 25-28
-  {colors:15,empty:1},{colors:15,empty:1}                                         // 29-30
+  {colors:15,empty:1},{colors:15,empty:1},                                        // 29-30
+  // ── 2-qism ──
+  {colors:16,empty:2},{colors:16,empty:1},{colors:17,empty:2},{colors:17,empty:1},// 31-34
+  {colors:18,empty:2},{colors:18,empty:1},{colors:19,empty:2},{colors:19,empty:1},// 35-38
+  {colors:20,empty:2},{colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1},// 39-42
+  {colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1},// 43-46
+  {colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1} // 47-50
 ];
+var WS_PART2_START=31;
 var wsLevel=1,wsMaxLevel=+(localStorage.getItem('ws_max')||1);
 var wsTubes=[],wsSelected=-1,wsMoves=0,wsRunning=false,wsHistory=[];
 var wsHintFrom=-1,wsHintTo=-1;
@@ -3309,8 +3316,9 @@ function wsStart(lv){
 function wsUpdateHeader(){
   var d=WS_LEVELS[wsLevel-1];
   var n=d.colors+d.empty;
+  var qism=wsLevel>=WS_PART2_START?'2-qism · ':'1-qism · ';
   document.getElementById('ws-level-txt').textContent='Level '+wsLevel;
-  document.getElementById('ws-level-sub').textContent=d.colors+' rang · '+n+' probirka';
+  document.getElementById('ws-level-sub').textContent=qism+d.colors+' rang · '+n+' probirka';
   var pct=Math.round(wsLevel/WS_LEVELS.length*100);
   document.getElementById('ws-progress').style.width=pct+'%';
 }
@@ -3466,7 +3474,8 @@ function wsTubeClick(idx){
 function wsRender(){
   var g=document.getElementById('ws-grid');if(!g)return;
   var n=wsTubes.length,tw=48,ch=38,br=24,gap=8;
-  if(n>=16){tw=34;ch=28;br=17;gap=4;}
+  if(n>=20){tw=28;ch=24;br=14;gap=3;}
+  else if(n>=16){tw=34;ch=28;br=17;gap=4;}
   else if(n>=12){tw=40;ch=32;br=20;gap=5;}
   else if(n>=10){tw=42;ch=34;br=21;gap=6;}
   var perRow=Math.ceil(n/2);
@@ -3503,7 +3512,9 @@ function wsWin(){
     coinBer(15,'Probirkalar — '+wsLevel+'-daraja topshirildi');
   }
   document.getElementById('ws-win-moves').textContent=wsMoves;
-  document.getElementById('ws-win-lvl').textContent='Level '+wsLevel+' tugadi'+(isLast?' — Barcha levellar!':'');
+  var lvlTxt='Level '+wsLevel+' tugadi'+(isLast?' — Barcha levellar!':'');
+  if(wsLevel===WS_PART2_START-1&&!isLast)lvlTxt='🎉 1-qism tugadi! 2-qism ochildi';
+  document.getElementById('ws-win-lvl').textContent=lvlTxt;
   var nb=document.getElementById('ws-next-btn');
   if(nb)nb.style.display=isLast?'none':'block';
   document.getElementById('ws-win').style.display='flex';
