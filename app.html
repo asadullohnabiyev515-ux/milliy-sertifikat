@@ -666,10 +666,6 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
           <div style="font-size:.75rem;opacity:.5;margin-top:3px">H→He→Li→...→Na→...→Og 👑 (118 element)</div>
         </div>
       </div>
-      <div style="padding:0 18px 6px">
-        <div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🏆 Top 10</div>
-        <div id="pg-g-reyting" style="font-size:.8rem;color:rgba(255,255,255,.6)">Yuklanmoqda...</div>
-      </div>
       <div style="padding:12px 18px 18px;display:flex;gap:8px">
         <button onclick="go('p-game',-1);gameStart()" style="flex:1;padding:11px;background:linear-gradient(135deg,#00d4aa,#00a8ff);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
         <button onclick="reytingOch('/game/reyting','⚗️ Element 2048 reytingi','ball')" style="padding:11px 14px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:12px;color:var(--c-fg);font-size:.9rem;cursor:pointer">🏆</button>
@@ -686,10 +682,6 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
           <div style="font-size:.7rem;color:#a78bfa;margin-top:4px;font-weight:600">4×4 · 6×6 · 8×8</div>
         </div>
       </div>
-      <div style="padding:0 18px 6px">
-        <div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🏆 Top 10</div>
-        <div id="pg-m-reyting" style="font-size:.8rem;color:rgba(255,255,255,.6)">Yuklanmoqda...</div>
-      </div>
       <div style="padding:12px 18px 18px;display:flex;gap:8px">
         <button onclick="go('p-memory',-1);memStart()" style="flex:1;padding:11px;background:linear-gradient(135deg,#a78bfa,#7c3aed);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
         <button onclick="reytingOch('/memory/reyting?diff=4x4','🧩 Memory reytingi (4×4)','ball')" style="padding:11px 14px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:12px;color:var(--c-fg);font-size:.9rem;cursor:pointer">🏆</button>
@@ -705,10 +697,6 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
           <div style="font-size:.75rem;opacity:.5;margin-top:3px">Ranglarni tartiblash</div>
           <div style="font-size:.7rem;color:#ef4444;margin-top:4px;font-weight:600">Oson · O'rta · Qiyin</div>
         </div>
-      </div>
-      <div style="padding:0 18px 6px">
-        <div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🏆 Top 10</div>
-        <div id="pg-s-reyting" style="font-size:.8rem;color:rgba(255,255,255,.6)">Yuklanmoqda...</div>
       </div>
       <div style="padding:12px 18px 18px;display:flex;gap:8px">
         <button onclick="go('p-sort',-1);wsStart()" style="flex:1;padding:11px;background:linear-gradient(135deg,#ef4444,#b91c1c);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
@@ -744,10 +732,6 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
           <div style="font-size:.75rem;opacity:.5;margin-top:3px">Har darajada bitta reaksiya toping</div>
           <div style="font-size:.7rem;color:#f59e0b;margin-top:4px;font-weight:600">Necha darajagacha borasiz?</div>
         </div>
-      </div>
-      <div style="padding:0 18px 6px">
-        <div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🏆 Top 10</div>
-        <div id="pg-r-reyting" style="font-size:.8rem;color:rgba(255,255,255,.6)">Yuklanmoqda...</div>
       </div>
       <div style="padding:12px 18px 18px;display:flex;gap:8px">
         <button onclick="go('p-react',-1);rzPick()" style="flex:1;padding:11px;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
@@ -5147,30 +5131,6 @@ async function pgReytingLoad(){
   pgTnBest();
   pgOzBest();
   pgAnBest();
-  try{
-    var rg=await fetch(API+'/game/reyting'); var dg=await rg.json();
-    var el=document.getElementById('pg-g-reyting');
-    if(el){var list=(dg.reyting||[]).slice(0,10);
-      el.innerHTML=list.length?list.map(function(r,i){return '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>'+(i+1)+'. '+r.name+'</span><span style="color:#00d4aa;font-weight:700">'+r.score+'</span></div>';}).join(''):'<span style="opacity:.4">Hozircha yo\'q</span>';}
-  }catch(e){}
-  try{
-    var rm=await fetch(API+'/memory/reyting?diff=4x4'); var dm=await rm.json();
-    var el=document.getElementById('pg-m-reyting');
-    if(el){var list=(Array.isArray(dm)?dm:dm.reyting||[]).slice(0,10);
-      el.innerHTML=list.length?list.map(function(r,i){return '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>'+(i+1)+'. '+r.name+'</span><span style="color:#a78bfa;font-weight:700">'+r.score+'</span></div>';}).join(''):'<span style="opacity:.4">Hozircha yo\'q</span>';}
-  }catch(e){}
-  try{
-    var rs=await fetch(API+'/sort/reyting'); var ds=await rs.json();
-    var el=document.getElementById('pg-s-reyting');
-    if(el){var list=(ds.reyting||[]).slice(0,10);
-      el.innerHTML=list.length?list.map(function(r,i){return '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>'+(i+1)+'. '+r.name+'</span><span style="color:#ef4444;font-weight:700">'+r.max_level+'-level</span></div>';}).join(''):'<span style="opacity:.4">Hozircha yo\'q</span>';}
-  }catch(e){}
-  try{
-    var rr=await fetch(API+'/react/reyting?diff=easy'); var dr=await rr.json();
-    var el=document.getElementById('pg-r-reyting');
-    if(el){var list=(dr.reyting||[]).slice(0,10);
-      el.innerHTML=list.length?list.map(function(r,i){return '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>'+(i+1)+'. '+r.name+'</span><span style="color:#f59e0b;font-weight:700">'+r.max_level+'-daraja</span></div>';}).join(''):'<span style="opacity:.4">Hozircha yo\'q</span>';}
-  }catch(e){}
 }
 </script>
 </body>
