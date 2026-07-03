@@ -7,6 +7,7 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
+:root{--tg-safe-top:0px}
 body{font-family:sans-serif;background:#0a0f1e;color:#fff;min-height:100vh}
 #app{min-height:100vh}
 .page{display:none}
@@ -21,7 +22,7 @@ body{font-family:sans-serif;background:#0a0f1e;color:#fff;min-height:100vh}
 .nitem span:first-child{font-size:1.3rem;opacity:.4}
 .nitem span:last-child{font-size:.58rem;opacity:.4;font-weight:600}
 .nitem.on span{opacity:1;color:#00d4aa}
-.top{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(10,15,30,.9);border-bottom:1px solid rgba(255,255,255,.08);position:sticky;top:0;z-index:10}
+.top{display:flex;align-items:center;justify-content:space-between;padding:calc(14px + var(--tg-safe-top)) 16px 14px;background:rgba(10,15,30,.9);border-bottom:1px solid rgba(255,255,255,.08);position:sticky;top:0;z-index:10}
 .tlogo{font-size:.9rem;font-weight:800;background:linear-gradient(90deg,#00d4aa,#00a8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#00d4aa,#00a8ff);display:flex;align-items:center;justify-content:center;font-weight:700}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -54,7 +55,7 @@ body{font-family:sans-serif;background:#0a0f1e;color:#fff;min-height:100vh}
 @keyframes wsHintGlow{0%,100%{opacity:1}50%{opacity:.35}}
 .ws-hint{animation:wsHintGlow .9s ease-in-out infinite}
 @keyframes coinToastIn{0%{transform:translateY(-16px);opacity:0}12%{transform:translateY(0);opacity:1}82%{transform:translateY(0);opacity:1}100%{transform:translateY(-10px);opacity:0}}
-#coin-toast-wrap{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);left:0;right:0;z-index:600;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
+#coin-toast-wrap{position:fixed;top:calc(env(safe-area-inset-top,0px) + var(--tg-safe-top) + 10px);left:0;right:0;z-index:600;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
 .coin-toast{display:flex;align-items:center;gap:8px;background:rgba(15,20,36,.95);border:1px solid rgba(255,215,0,.35);border-radius:14px;padding:8px 14px;box-shadow:0 6px 18px rgba(0,0,0,.35);animation:coinToastIn 3.2s ease forwards}
 /* YORUG' REJIM */
 /* ── CSS O'ZGARUVCHILAR (TEMA TIZIMI) ── */
@@ -1448,12 +1449,24 @@ function apiFetch(url,opts,ms){
   return fetch(url,Object.assign({},opts||{},{signal:ctrl.signal})).finally(function(){clearTimeout(t);});
 }
 var tg=window.Telegram&&window.Telegram.WebApp?window.Telegram.WebApp:null;
+function tgSafeTopApply(){
+  if(!tg)return;
+  var sa=tg.safeAreaInset||{},csa=tg.contentSafeAreaInset||{};
+  var top=(sa.top||0)+(csa.top||0);
+  document.documentElement.style.setProperty('--tg-safe-top',top+'px');
+}
 if(tg){
   tg.ready();
   tg.expand();
   if(tg.disableVerticalSwipes) tg.disableVerticalSwipes();
   if(tg.enableClosingConfirmation) tg.enableClosingConfirmation();
   if(tg.requestFullscreen) tg.requestFullscreen();
+  tgSafeTopApply();
+  if(tg.onEvent){
+    tg.onEvent('safeAreaChanged',tgSafeTopApply);
+    tg.onEvent('contentSafeAreaChanged',tgSafeTopApply);
+    tg.onEvent('fullscreenChanged',tgSafeTopApply);
+  }
 }
 var uid=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user?tg.initDataUnsafe.user.id:null;
 var uname=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user?tg.initDataUnsafe.user.first_name:'Foydalanuvchi';
