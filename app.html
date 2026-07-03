@@ -699,9 +699,12 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
           <div style="font-size:.7rem;color:#ef4444;margin-top:4px;font-weight:600">Oson · O'rta · Qiyin</div>
         </div>
       </div>
-      <div style="padding:12px 18px 18px;display:flex;gap:8px">
-        <button onclick="go('p-sort',-1);wsStart()" style="flex:1;padding:11px;background:linear-gradient(135deg,#ef4444,#b91c1c);border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer">▶ O'ynash</button>
-        <button onclick="reytingOch('/sort/reyting','🧪 Probirkalar reytingi','daraja')" style="padding:11px 14px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:12px;color:var(--c-fg);font-size:.9rem;cursor:pointer">🏆</button>
+      <div style="padding:0 18px 12px;display:flex;gap:8px">
+        <button onclick="wsPlayPart(1)" style="flex:1;padding:11px;background:linear-gradient(135deg,#ef4444,#b91c1c);border:none;border-radius:12px;color:#fff;font-size:.9rem;font-weight:700;cursor:pointer">▶ 1-qism</button>
+        <button id="pg-ws-part2" onclick="wsPlayPart(2)" style="flex:1;padding:11px;background:rgba(255,255,255,.08);border:1.5px solid rgba(239,68,68,.3);border-radius:12px;color:var(--c-fg);font-size:.9rem;font-weight:700;cursor:pointer">🔒 2-qism</button>
+      </div>
+      <div style="padding:0 18px 18px;display:flex;gap:8px">
+        <button onclick="reytingOch('/sort/reyting','🧪 Probirkalar reytingi','daraja')" style="flex:1;padding:9px;background:rgba(255,255,255,.06);border:none;border-radius:10px;color:var(--c-fg);font-size:.82rem;cursor:pointer">🏆 Reytingni ko'rish</button>
       </div>
     </div>
 
@@ -1577,7 +1580,7 @@ function go(id,nav){
   if(id==='p8')pLoad();
   if(id==='p9')uTab(1);
   if(id==='p-elon')elonLoad();
-  if(id==='p-games')pgReytingLoad();
+  if(id==='p-games'){pgReytingLoad();wsPartBtnUpdate();}
   if(id==='p-modd')mdShowPick();
 }
 
@@ -3279,6 +3282,21 @@ function wsGoLevel(lv){
   if(lv<1||lv>WS_LEVELS.length)return;
   if(lv>wsMaxLevel)return; // hali ochilmagan
   wsStart(lv);
+}
+function wsPlayPart(part){
+  if(part===2&&wsMaxLevel<WS_PART2_START){
+    alert("🔒 2-qism hali ochilmagan!\n\nAvval 1-qismning barcha 30 darajasini yakunlang.");
+    return;
+  }
+  var lv=part===1?Math.min(wsMaxLevel,WS_PART2_START-1):Math.min(wsMaxLevel,WS_LEVELS.length);
+  go('p-sort',-1);
+  wsStart(lv);
+}
+function wsPartBtnUpdate(){
+  var b=document.getElementById('pg-ws-part2');if(!b)return;
+  var ochiq=wsMaxLevel>=WS_PART2_START;
+  b.textContent=ochiq?'▶ 2-qism':'🔒 2-qism';
+  b.style.opacity=ochiq?'1':'.55';
 }
 
 function wsGenerateSolvable(colors,empty){
