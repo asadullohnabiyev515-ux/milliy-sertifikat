@@ -53,6 +53,9 @@ body{font-family:sans-serif;background:#0a0f1e;color:#fff;min-height:100vh}
 .md-caret{animation:mdBlink 1s step-end infinite;color:#a855f7}
 @keyframes wsHintGlow{0%,100%{opacity:1}50%{opacity:.35}}
 .ws-hint{animation:wsHintGlow .9s ease-in-out infinite}
+@keyframes coinToastIn{0%{transform:translateY(-16px);opacity:0}12%{transform:translateY(0);opacity:1}82%{transform:translateY(0);opacity:1}100%{transform:translateY(-10px);opacity:0}}
+#coin-toast-wrap{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);left:0;right:0;z-index:600;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
+.coin-toast{display:flex;align-items:center;gap:8px;background:rgba(15,20,36,.95);border:1px solid rgba(255,215,0,.35);border-radius:14px;padding:8px 14px;box-shadow:0 6px 18px rgba(0,0,0,.35);animation:coinToastIn 3.2s ease forwards}
 /* YORUG' REJIM */
 /* ── CSS O'ZGARUVCHILAR (TEMA TIZIMI) ── */
 :root{
@@ -160,7 +163,12 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
 
 <!-- BOSH -->
 <div id="p1" class="page" style="padding-bottom:80px">
-  <div class="top"><div class="tlogo">Milliy Imtihon</div><div class="av" id="av">A</div></div>
+  <div class="top"><div class="tlogo">Milliy Imtihon</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div id="coin-badge-p1" onclick="reytingOch('/coin/reyting','🪙 Coin reytingi','coin')" style="background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.3);border-radius:20px;padding:5px 11px;font-size:.78rem;font-weight:800;color:gold;cursor:pointer">🪙 0</div>
+      <div class="av" id="av">A</div>
+    </div>
+  </div>
   <div style="padding:16px 16px 0">
     <div style="font-size:.82rem;color:rgba(255,255,255,.4);margin-bottom:3px">Xush kelibsiz 👋</div>
     <div style="font-size:1.3rem;font-weight:800;margin-bottom:16px" id="bism">Foydalanuvchi!</div>
@@ -293,6 +301,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   <div class="tbtns">
     <button class="tb on" id="rt1" onclick="rTab('u')">🏆 Umumiy</button>
     <button class="tb off" id="rt2" onclick="rTab('o')">📝 Oxirgi</button>
+    <button class="tb off" id="rt3" onclick="rTab('c')">🪙 Coin</button>
   </div>
   <div style="padding:10px 16px 6px;font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px" id="rsarlavha">Umumiy reyting</div>
   <div id="rlist" style="padding:0 16px"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
@@ -373,7 +382,8 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   <div style="padding:20px 16px;text-align:center">
     <div class="av" id="pav" style="width:68px;height:68px;border-radius:18px;font-size:1.8rem;margin:0 auto 12px">A</div>
     <div style="font-size:1rem;font-weight:700;margin-bottom:4px" id="pism">—</div>
-    <div style="font-size:.78rem;color:rgba(255,255,255,.4)" id="pid">ID: —</div>
+    <div style="font-size:.78rem;color:rgba(255,255,255,.4);margin-bottom:10px" id="pid">ID: —</div>
+    <div id="coin-badge-p8" onclick="reytingOch('/coin/reyting','🪙 Coin reytingi','coin')" style="display:inline-block;background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.3);border-radius:20px;padding:6px 14px;font-size:.85rem;font-weight:800;color:gold;cursor:pointer">🪙 0</div>
   </div>
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 16px 16px">
     <div class="sbox" style="text-align:center"><div class="snum" id="pjami">0</div><div class="slab">Testlar</div></div>
@@ -1441,6 +1451,8 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   </div>
 </div>
 
+<div id="coin-toast-wrap"></div>
+
 </div><!-- /app -->
 
 <script>
@@ -1598,6 +1610,8 @@ function appOch(){
   document.getElementById('nav').style.display='flex';
   elonBadgeYanila();
   setInterval(elonBadgeYanila,5*60*1000);
+  coinBadgeLoad();
+  coinKunlikTekshir();
   go('p1',0);
   if(urltab==='tester')setTimeout(function(){go('p7',4);tTab(2);},200);
 }
@@ -1840,23 +1854,28 @@ async function kYukla(fid,n){
 // REYTING
 async function rLoad(){await rTab('u');}
 async function rTab(t){
-  var r1=document.getElementById('rt1'),r2=document.getElementById('rt2');
+  var r1=document.getElementById('rt1'),r2=document.getElementById('rt2'),r3=document.getElementById('rt3');
   var s=document.getElementById('rsarlavha');
-  if(t==='u'){r1.className='tb on';r2.className='tb off';s.textContent='Umumiy reyting';}
-  else{r2.className='tb on';r1.className='tb off';s.textContent='Oxirgi test';}
+  r1.className='tb '+(t==='u'?'on':'off');
+  r2.className='tb '+(t==='o'?'on':'off');
+  if(r3)r3.className='tb '+(t==='c'?'on':'off');
+  s.textContent=t==='u'?'Umumiy reyting':(t==='o'?'Oxirgi test':'Coin reytingi');
   var li=document.getElementById('rlist');
   li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
   try{
-    var r=await apiFetch(API+(t==='u'?'/reyting/umumiy':'/reyting/oxirgi'));
+    var url=t==='u'?'/reyting/umumiy':(t==='o'?'/reyting/oxirgi':'/coin/reyting');
+    var r=await apiFetch(API+url);
     var d=await r.json();
     var rl=d.reyting||[];
     if(t==='o'&&d.fan)s.textContent='Oxirgi: '+d.fan;
     if(!rl.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Natija yo\'q</div>';return;}
-    li.innerHTML=rl.map(function(n){
-      var ob=n.orin===1?'🥇':n.orin===2?'🥈':n.orin===3?'🥉':n.orin+'.';
-      var b=t==='u'?n.jami_ball:n.ball||0;
-      var rng=b>=60?'#00d4aa':b>=40?'#ff9500':'#ff6b6b';
-      return '<div class="ri"><div style="font-size:1.1rem;min-width:30px;text-align:center">'+ob+'</div><div class="av" style="width:36px;height:36px;border-radius:10px;font-size:.9rem;flex-shrink:0">'+(n.ism?n.ism.charAt(0):'?')+'</div><div style="flex:1"><div style="font-size:.88rem;font-weight:600">'+(n.ism||'')+'</div></div><div style="font-size:.9rem;font-weight:800;color:'+rng+'">'+b+' b</div></div>';
+    li.innerHTML=rl.map(function(n,i){
+      var ob=t==='c'?(i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.'):(n.orin===1?'🥇':n.orin===2?'🥈':n.orin===3?'🥉':n.orin+'.');
+      var nm=t==='c'?n.name:n.ism;
+      var b=t==='u'?n.jami_ball:(t==='o'?(n.ball||0):(n.coin||0));
+      var rng=t==='c'?'gold':(b>=60?'#00d4aa':b>=40?'#ff9500':'#ff6b6b');
+      var suffix=t==='c'?' 🪙':' b';
+      return '<div class="ri"><div style="font-size:1.1rem;min-width:30px;text-align:center">'+ob+'</div><div class="av" style="width:36px;height:36px;border-radius:10px;font-size:.9rem;flex-shrink:0">'+(nm?nm.charAt(0):'?')+'</div><div style="flex:1"><div style="font-size:.88rem;font-weight:600">'+(nm||'')+'</div></div><div style="font-size:.9rem;font-weight:800;color:'+rng+'">'+b+suffix+'</div></div>';
     }).join('');
   }catch(e){}
 }
@@ -1913,6 +1932,7 @@ async function ttNat(){
     var bArea=document.getElementById('ttnatbtnlar');
     if(ttMode==='kurs'){
       if(b>=60){
+        if(!seqProgress(KURS_FAN)[kursMavzuCur])coinBer(10,'Mavzu topshirildi: '+kursMavzuCur);
         seqSave(KURS_FAN,kursMavzuCur);
         if(typeof kursRenderRoyxat==='function')kursRenderRoyxat();
         if(kursMavzuIdx>=kursMavzuData.length-1){
@@ -1924,6 +1944,7 @@ async function ttNat(){
         bArea.innerHTML='<div style="background:rgba(255,59,48,.1);border:1px solid rgba(255,59,48,.25);border-radius:10px;padding:10px;font-size:.82rem;color:#ff6b6b;margin-bottom:10px;text-align:center">Keyingi mavzu uchun 60%+ ball kerak!</div><button class="btn btn-green" onclick="kursTestBoshla()">🔄 Qayta urinish</button><button class="btn btn-out" style="margin-top:8px" onclick="go(\'p-kurs\',-1)">📐 Mavzular ro\'yxati</button>';
       }
     }else if(b>=60){
+      if(!seqProgress(ttSeqFan_)[ttSeqMavzular[ttSeqIdx]])coinBer(10,'Mavzu topshirildi: '+ttSeqMavzular[ttSeqIdx]);
       seqSave(ttSeqFan_,ttSeqMavzular[ttSeqIdx]);
       if(typeof renderSeqMavzular==='function')renderSeqMavzular();
       if(ttSeqIdx>=ttSeqMavzular.length-1){
@@ -2011,6 +2032,57 @@ function ttCloseBtn(){
   else{go('p7',4);tTab(2);}
 }
 
+// COIN TIZIMI — mehnat evaziga to'planadigan valyuta, umumiy reyting uchun
+async function coinBer(miqdor,sabab){
+  if(!CU.id||!miqdor)return;
+  try{
+    var r=await fetch(API+'/coin/qosh',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({user_id:CU.id,name:CU.name||"Noma'lum",miqdor:miqdor})});
+    var d=await r.json();
+    if(d.success){
+      coinToast(miqdor,sabab);
+      coinBadgeYangila(d.jami);
+    }
+  }catch(e){}
+}
+function coinToast(miqdor,sabab){
+  var wrap=document.getElementById('coin-toast-wrap');
+  if(!wrap)return;
+  var el=document.createElement('div');
+  el.className='coin-toast';
+  el.innerHTML='<span style="font-size:1.1rem">🪙</span><div><div style="font-weight:800;color:gold">+'+miqdor+' coin</div>'+(sabab?'<div style="font-size:.68rem;opacity:.6">'+sabab+'</div>':'')+'</div>';
+  wrap.appendChild(el);
+  setTimeout(function(){el.remove();},3200);
+}
+function coinBadgeYangila(jami){
+  ['coin-badge-p1','coin-badge-p8'].forEach(function(id){
+    var e=document.getElementById(id);
+    if(e)e.textContent='🪙 '+jami;
+  });
+}
+async function coinBadgeLoad(){
+  if(!CU.id)return;
+  try{
+    var r=await fetch(API+'/coin/'+CU.id);
+    var d=await r.json();
+    coinBadgeYangila(d.coin||0);
+  }catch(e){}
+}
+function coinKunlikTekshir(){
+  if(!CU.id)return;
+  try{
+    var lastKey='coinLastLogin_'+CU.id, streakKey='coinStreak_'+CU.id;
+    var today=new Date().toISOString().slice(0,10);
+    var last=localStorage.getItem(lastKey);
+    if(last===today)return;
+    var yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);
+    var streak=(last===yesterday)?(parseInt(localStorage.getItem(streakKey)||'0')+1):1;
+    localStorage.setItem(lastKey,today);
+    localStorage.setItem(streakKey,String(streak));
+    var bonus=5+Math.min(streak-1,10);
+    coinBer(bonus,"Kunlik kirish ("+streak+"-kun ketma-ket)");
+  }catch(e){}
+}
 // MATEMATIKA KURSI (nazariya + mavzu bo'yicha test, ketma-ket ochiladi)
 var KURS_FAN='Matematika';
 var kursMavzuData=[],kursMavzuCur='',kursMavzuIdx=-1;
@@ -2754,7 +2826,7 @@ var _ED=[
 ];
 var ELEM=_ED.map(function(e,i){return {v:Math.pow(2,i+1),sym:e[0],nom:e[1],bg:e[2],fg:e[3]};});
 
-var gBoard=[], gScore=0, gBest=+(localStorage.getItem('g2048best')||0), gRunning=false;
+var gBoard=[], gScore=0, gBest=+(localStorage.getItem('g2048best')||0), gRunning=false, gNewRecord=false;
 var G=4;
 
 function gElem(v){
@@ -2764,7 +2836,7 @@ function gElem(v){
 
 function gameStart(){
   gBoard=Array.from({length:G},()=>Array(G).fill(0));
-  gScore=0; gRunning=true;
+  gScore=0; gRunning=true; gNewRecord=false;
   gRender();
   gAdd(); gAdd();
   _gMaxV=0;
@@ -2817,7 +2889,7 @@ function gSlide(row){
     if(arr[i]===arr[i+1]){
       arr[i]*=2;
       gScore+=arr[i];
-      if(gScore>gBest){gBest=gScore;localStorage.setItem('g2048best',gBest);}
+      if(gScore>gBest){gBest=gScore;gNewRecord=true;localStorage.setItem('g2048best',gBest);}
       arr.splice(i+1,1);
     }
   }
@@ -2881,6 +2953,7 @@ function gShowOver(ico,txt){
     davomBtn.style.display='none';
   }
   gSkorSaqla();
+  if(gNewRecord){coinBer(15,"Element 2048 — yangi rekord");gNewRecord=false;}
 }
 
 async function gDavomEt(){
@@ -3136,6 +3209,11 @@ function memWin(){
   document.getElementById('m-win-att').textContent=mAttempts;
   document.getElementById('m-win').style.display='flex';
   memSkorSaqla(score);
+  try{
+    var bk='memBest_'+mDiff;
+    var prev=parseInt(localStorage.getItem(bk)||'0');
+    if(score>prev){localStorage.setItem(bk,score);coinBer(15,'Memory ('+mDiff+') — yangi rekord');}
+  }catch(e){}
 }
 
 async function memSkorSaqla(score){
@@ -3438,6 +3516,7 @@ function wsWin(){
   if(wsLevel>=wsMaxLevel&&!isLast){
     wsMaxLevel=wsLevel+1;
     localStorage.setItem('ws_max',wsMaxLevel);
+    coinBer(15,'Probirkalar — '+wsLevel+'-daraja topshirildi');
   }
   document.getElementById('ws-win-moves').textContent=wsMoves;
   document.getElementById('ws-win-lvl').textContent='Level '+wsLevel+' tugadi'+(isLast?' — Barcha levellar!':'');
@@ -3888,6 +3967,7 @@ var RZ_H=[
 
 var rzDiff='easy',rzQueue=[],rzLevel=0,rzScore=0,rzOptList=[],rzAns='',rzRunning=false;
 var rzBests={easy:0,mid:0,hard:0};
+var rzNewRecord=false;
 try{var _rbs=JSON.parse(localStorage.getItem('rzBests')||'{}');rzBests.easy=_rbs.easy||0;rzBests.mid=_rbs.mid||0;rzBests.hard=_rbs.hard||0;}catch(e){}
 
 function rzShuffle(a){
@@ -3913,7 +3993,7 @@ function rzStartDiff(diff){
   rzDiff=diff;
   var pool=diff==='easy'?RZ_E:diff==='mid'?RZ_M:RZ_H;
   rzQueue=rzShuffle(pool);
-  rzLevel=0;rzScore=0;rzRunning=true;
+  rzLevel=0;rzScore=0;rzRunning=true;rzNewRecord=false;
   document.getElementById('rz-pick').style.display='none';
   document.getElementById('rz-over').style.display='none';
   document.getElementById('rz-board').style.display='';
@@ -3966,6 +4046,7 @@ function rzAnswer(idx){
     document.getElementById('rzb'+idx).style.background='rgba(0,212,170,.4)';
     document.getElementById('rzb'+idx).style.borderColor='#00d4aa';
     rzScore++;
+    if(rzScore>rzBests[rzDiff])rzNewRecord=true;
     rzBests[rzDiff]=Math.max(rzBests[rzDiff],rzScore);
     try{localStorage.setItem('rzBests',JSON.stringify(rzBests));}catch(e){}
     document.getElementById('rz-score').textContent=rzScore;
@@ -3993,6 +4074,7 @@ function rzOver(ico,txt){
   document.getElementById('rz-over-sub').innerHTML=
     dLabel[rzDiff]+' · '+rzLevel+'-darajaga yetdingiz<br>'+rzScore+' ta to\'g\'ri javob';
   if(rzScore>0)rzSkorSaqla();
+  if(rzNewRecord){coinBer(15,'Reaksiyalar Zanjiri ('+rzDiff+') — yangi rekord');rzNewRecord=false;}
 }
 
 async function rzSkorSaqla(){
@@ -4321,7 +4403,7 @@ var MD_CLASS={
 };
 
 // State
-var mdCurClass='oksid',mdPool=[],mdLevel=0,mdBest=0,mdRunning=false,mdOptList=[],mdAns='',mdDir='name';
+var mdCurClass='oksid',mdPool=[],mdLevel=0,mdBest=0,mdRunning=false,mdOptList=[],mdAns='',mdDir='name',mdNewRecord=false;
 
 function mdStart(){mdShowPick();}
 
@@ -4350,7 +4432,7 @@ function mdStartClass(cls){
   mdCurClass=cls;
   var c=MD_CLASS[cls];
   mdPool=rzShuffle(c.items.slice());
-  mdLevel=0; mdRunning=true;
+  mdLevel=0; mdRunning=true; mdNewRecord=false;
   try{mdBest=parseInt(localStorage.getItem('mdBest_'+cls)||'0');}catch(e){mdBest=0;}
   document.getElementById('md-pick').style.display='none';
   document.getElementById('md-over').style.display='none';
@@ -4472,7 +4554,7 @@ function mdSubmit(){
     if(ni.style.display!=='none')ni.style.borderColor='#00d4aa';
     sb.style.background='#00d4aa';
     mdLevel++;
-    if(mdLevel>mdBest){mdBest=mdLevel;try{localStorage.setItem('mdBest_'+mdCurClass,mdBest);}catch(e){}}
+    if(mdLevel>mdBest){mdBest=mdLevel;mdNewRecord=true;try{localStorage.setItem('mdBest_'+mdCurClass,mdBest);}catch(e){}}
     document.getElementById('md-best').textContent=mdBest;
     setTimeout(function(){mdShow();},700);
   }else{
@@ -4565,6 +4647,7 @@ function mdOver(ico,txt){
     document.getElementById('md-over-ans').textContent='';
   }
   pgNfBest();
+  if(mdNewRecord){coinBer(15,'Nom va Formula ('+mdCurClass+') — yangi rekord');mdNewRecord=false;}
 }
 
 function pgNfBest(){
@@ -4694,11 +4777,11 @@ var TN_DATA=[
   {q:'Al₂O₃ ning tarixiy nomi?',a:'Korund',w:['Kvarts','Bauxit','Magnezit']},
 ];
 
-var tnPool=[],tnLevel=0,tnBest=0,tnRunning=false,tnCur=null;
+var tnPool=[],tnLevel=0,tnBest=0,tnRunning=false,tnCur=null,tnNewRecord=false;
 
 function tnStart(){
   tnPool=rzShuffle(TN_DATA.slice());
-  tnLevel=0;tnRunning=true;
+  tnLevel=0;tnRunning=true;tnNewRecord=false;
   try{tnBest=parseInt(localStorage.getItem('tnBest')||'0');}catch(e){tnBest=0;}
   document.getElementById('tn-over').style.display='none';
   document.getElementById('tn-board').style.display='block';
@@ -4730,7 +4813,7 @@ function tnAns(val){
   if(val===tnCur.a){
     btns.forEach(function(b){if(b.textContent===val)b.style.background='rgba(16,185,129,.35)';});
     tnLevel++;
-    if(tnLevel>tnBest){tnBest=tnLevel;try{localStorage.setItem('tnBest',tnBest);}catch(e){}}
+    if(tnLevel>tnBest){tnBest=tnLevel;tnNewRecord=true;try{localStorage.setItem('tnBest',tnBest);}catch(e){}}
     document.getElementById('tn-best-cur').textContent=tnBest;
     setTimeout(tnNext,600);
   }else{
@@ -4761,6 +4844,7 @@ function tnOver(win,ans){
     ansEl.textContent='✓ To\'g\'ri javob: '+ans;
   }
   pgTnBest();
+  if(tnNewRecord){coinBer(15,'Tarixiy Nomlar — yangi rekord');tnNewRecord=false;}
 }
 
 function pgTnBest(){
@@ -4841,7 +4925,7 @@ var OZ_DATA=[
   {q:'Geterotrof organizmlar o\'z oziqasini qanday oladi?',a:'Boshqa organizmlardan',w:['Fotosintez orqali','Quyosh energiyasidan','Havodan']},
 ];
 
-var ozPool=[],ozLevel=0,ozBest=0,ozRunning=false,ozCur=null;
+var ozPool=[],ozLevel=0,ozBest=0,ozRunning=false,ozCur=null,ozNewRecord=false;
 
 function ozBestLoad(){try{return parseInt(localStorage.getItem('ozBest')||'0');}catch(e){return 0;}}
 function ozPickShow(){
@@ -4853,7 +4937,7 @@ function ozPickShow(){
 }
 function ozStart(){
   ozPool=rzShuffle(OZ_DATA.slice());
-  ozLevel=0;ozRunning=true;
+  ozLevel=0;ozRunning=true;ozNewRecord=false;
   ozBest=ozBestLoad();
   document.getElementById('oz-pick').style.display='none';
   document.getElementById('oz-over').style.display='none';
@@ -4884,7 +4968,7 @@ function ozAns(val){
   if(val===ozCur.a){
     btns.forEach(function(b){if(b.textContent===val)b.style.background='rgba(34,197,94,.35)';});
     ozLevel++;
-    if(ozLevel>ozBest){ozBest=ozLevel;try{localStorage.setItem('ozBest',ozBest);}catch(e){}}
+    if(ozLevel>ozBest){ozBest=ozLevel;ozNewRecord=true;try{localStorage.setItem('ozBest',ozBest);}catch(e){}}
     document.getElementById('oz-best-cur').textContent=ozBest;
     setTimeout(ozNext,600);
   }else{
@@ -4916,6 +5000,7 @@ function ozOver(win,ans){
   pgOzBest();
   if(CU.id)fetch(API+'/oziq/natija',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({user_id:CU.id,name:CU.name||"Noma'lum",score:ozLevel})}).catch(function(){});
+  if(ozNewRecord){coinBer(15,'Oziq zanjiri — yangi rekord');ozNewRecord=false;}
 }
 function pgOzBest(){
   var b=ozBestLoad();
@@ -4958,7 +5043,7 @@ function anBuildData(list,tur){
 }
 var AN_DATA=anBuildData(AN_ORGANS,"A'ZO").concat(anBuildData(AN_BONES,'SUYAK'));
 
-var anPool=[],anLevel=0,anBest=0,anRunning=false,anCur=null,anStreak=0;
+var anPool=[],anLevel=0,anBest=0,anRunning=false,anCur=null,anStreak=0,anNewRecord=false;
 function anBestLoad(){try{return parseInt(localStorage.getItem('anBest')||'0');}catch(e){return 0;}}
 function anPickShow(){
   document.getElementById('an-pick').style.display='block';
@@ -4969,7 +5054,7 @@ function anPickShow(){
 }
 function anStart(){
   anPool=rzShuffle(AN_DATA.slice());
-  anLevel=0;anStreak=0;anRunning=true;
+  anLevel=0;anStreak=0;anRunning=true;anNewRecord=false;
   anBest=anBestLoad();
   document.getElementById('an-pick').style.display='none';
   document.getElementById('an-over').style.display='none';
@@ -4998,7 +5083,7 @@ function anAns(val){
   if(val===anCur.a){
     btns.forEach(function(b){if(b.textContent===val)b.style.background='rgba(34,197,94,.35)';});
     anStreak++;anLevel++;
-    if(anStreak>anBest){anBest=anStreak;try{localStorage.setItem('anBest',anBest);}catch(e){}}
+    if(anStreak>anBest){anBest=anStreak;anNewRecord=true;try{localStorage.setItem('anBest',anBest);}catch(e){}}
     document.getElementById('an-best-cur').textContent=anBest;
     setTimeout(anNext,600);
   }else{
@@ -5021,6 +5106,7 @@ function anOver(ans){
   pgAnBest();
   if(CU.id)fetch(API+'/anatomiya/natija',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({user_id:CU.id,name:CU.name||"Noma'lum",score:anStreak})}).catch(function(){});
+  if(anNewRecord){coinBer(15,'Anatomiya — yangi rekord');anNewRecord=false;}
 }
 function pgAnBest(){
   var b=anBestLoad();
@@ -5042,7 +5128,7 @@ async function reytingOch(url,titleText,unit){
     var html='';
     list.forEach(function(s,i){
       var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
-      var val=(s.score!==undefined?s.score:s.max_level)||0;
+      var val=(s.score!==undefined?s.score:(s.max_level!==undefined?s.max_level:s.coin))||0;
       html+='<div style="display:flex;align-items:center;gap:10px;padding:9px 6px;border-bottom:1px solid rgba(128,128,128,.15)">'+
         '<div style="width:26px;text-align:center;font-weight:700">'+medal+'</div>'+
         '<div style="flex:1;font-size:.88rem">'+(s.name||"Noma'lum")+'</div>'+
