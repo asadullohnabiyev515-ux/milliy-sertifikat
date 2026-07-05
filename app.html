@@ -304,6 +304,11 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <button class="tb off" id="rt2" onclick="rTab('o')">📝 Oxirgi</button>
     <button class="tb off" id="rt3" onclick="rTab('c')">🪙 Coin</button>
   </div>
+  <div id="coin-davr-tabs" style="display:none;padding:8px 16px 0;gap:8px">
+    <button class="tb off" id="cd1" onclick="coinDavrTab('hafta')" style="flex:1;font-size:.75rem;padding:7px 0">Hafta</button>
+    <button class="tb off" id="cd2" onclick="coinDavrTab('oy')" style="flex:1;font-size:.75rem;padding:7px 0">Oy</button>
+    <button class="tb on" id="cd3" onclick="coinDavrTab('umumiy')" style="flex:1;font-size:.75rem;padding:7px 0">Umumiy</button>
+  </div>
   <div style="padding:10px 16px 6px;font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px" id="rsarlavha">Umumiy reyting</div>
   <div id="rlist" style="padding:0 16px"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
 </div>
@@ -1917,17 +1922,30 @@ async function kYukla(fid,n){
 
 // REYTING
 async function rLoad(){await rTab('u');}
+var coinDavr='umumiy';
+function coinDavrTab(d){
+  coinDavr=d;
+  var map={hafta:'cd1',oy:'cd2',umumiy:'cd3'};
+  ['cd1','cd2','cd3'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el)el.className='tb '+(map[d]===id?'on':'off');
+  });
+  rTab('c');
+}
 async function rTab(t){
   var r1=document.getElementById('rt1'),r2=document.getElementById('rt2'),r3=document.getElementById('rt3');
   var s=document.getElementById('rsarlavha');
+  var dt=document.getElementById('coin-davr-tabs');
   r1.className='tb '+(t==='u'?'on':'off');
   r2.className='tb '+(t==='o'?'on':'off');
   if(r3)r3.className='tb '+(t==='c'?'on':'off');
-  s.textContent=t==='u'?'Umumiy reyting':(t==='o'?'Oxirgi test':'Coin reytingi');
+  if(dt)dt.style.display=(t==='c')?'flex':'none';
+  var davrNom=coinDavr==='hafta'?'Haftalik ':(coinDavr==='oy'?'Oylik ':'');
+  s.textContent=t==='u'?'Umumiy reyting':(t==='o'?'Oxirgi test':davrNom+'Coin reytingi');
   var li=document.getElementById('rlist');
   li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
   try{
-    var url=t==='u'?'/reyting/umumiy':(t==='o'?'/reyting/oxirgi':'/coin/reyting');
+    var url=t==='u'?'/reyting/umumiy':(t==='o'?'/reyting/oxirgi':'/coin/reyting?davr='+coinDavr);
     var r=await apiFetch(API+url);
     var d=await r.json();
     var rl=d.reyting||[];
