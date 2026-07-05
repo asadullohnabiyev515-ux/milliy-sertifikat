@@ -148,6 +148,16 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   </div>
 </div>
 
+<!-- YUKLANMOQDA -->
+<div id="p-loading" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px 20px;text-align:center;background:#0a0f1e;position:fixed;top:0;left:0;right:0;bottom:0;z-index:201">
+  <div class="sp" style="width:36px;height:36px;border-width:3px;margin-bottom:16px"></div>
+  <div style="font-size:.9rem;color:rgba(255,255,255,.5)" id="p-loading-txt">Yuklanmoqda...</div>
+  <div id="p-loading-retry" style="display:none;margin-top:18px">
+    <div style="font-size:.82rem;color:rgba(255,255,255,.4);margin-bottom:14px;max-width:280px">Serverga ulanish biroz vaqt oldi. Internet aloqangizni tekshirib, qayta urinib ko'ring.</div>
+    <button class="btn btn-green" style="width:auto;padding:10px 24px" onclick="kirish()">🔄 Qayta urinish</button>
+  </div>
+</div>
+
 <!-- KANALGA OBUNA -->
 <div id="p-obuna" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px 20px;background:#0a0f1e;position:fixed;top:0;left:0;right:0;bottom:0;z-index:199">
   <div style="width:70px;height:70px;border-radius:20px;background:linear-gradient(135deg,#00d4aa,#00a8ff);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 14px">📣</div>
@@ -1782,17 +1792,30 @@ function appOch(){
 
 var KANAL='kimyo_corner';
 
+function kirishXatoKorsat(){
+  document.getElementById('p-loading-txt').textContent="Ulanib bo'lmadi";
+  document.getElementById('p-loading-retry').style.display='block';
+}
 async function kirish(){
   CU={id:uid||0,name:uname};
   document.getElementById('p0').style.display='none';
+  document.getElementById('p-obuna').style.display='none';
+  document.getElementById('p-royxat').style.display='none';
+  document.getElementById('p-loading-txt').textContent='Yuklanmoqda...';
+  document.getElementById('p-loading-retry').style.display='none';
+  document.getElementById('p-loading').style.display='flex';
   if(ADMINS.indexOf(CU.id)<0){
     var obunaOk=false;
     try{
-      var ro=await fetch(API+'/user/obuna/'+CU.id);
+      var ro=await apiFetch(API+'/user/obuna/'+CU.id,{},20000);
       var dobuna=await ro.json();
       obunaOk=!!dobuna.obuna;
-    }catch(e){obunaOk=false;}
+    }catch(e){
+      kirishXatoKorsat();
+      return;
+    }
     if(!obunaOk){
+      document.getElementById('p-loading').style.display='none';
       document.getElementById('p-obuna').style.display='flex';
       return;
     }
@@ -1813,13 +1836,18 @@ async function royxatOchishTayyorla(){
     document.getElementById('rq-familiya').value=parts.slice(1).join(' ')||'';
   }
   try{
-    var r=await fetch(API+'/user/tekshir/'+CU.id);
+    var r=await apiFetch(API+'/user/tekshir/'+CU.id,{},20000);
     var d=await r.json();
     if(d.royxatdan_otgan){
+      document.getElementById('p-loading').style.display='none';
       appOch(); return;
     }
-  }catch(e){}
+  }catch(e){
+    kirishXatoKorsat();
+    return;
+  }
   // Ro'yxat oynasini ko'rsat
+  document.getElementById('p-loading').style.display='none';
   document.getElementById('p-royxat').style.display='flex';
 }
 
@@ -1832,16 +1860,19 @@ document.getElementById('obuna-tekshir-btn').onclick=async function(){
   var xb=document.getElementById('obuna-xb');
   var btn=document.getElementById('obuna-tekshir-btn');
   btn.disabled=true;btn.textContent='Tekshirilmoqda...';
-  var obunaOk=false;
+  var obunaOk=false,xato=false;
   try{
-    var ro=await fetch(API+'/user/obuna/'+CU.id);
+    var ro=await apiFetch(API+'/user/obuna/'+CU.id,{},20000);
     var dobuna=await ro.json();
     obunaOk=!!dobuna.obuna;
-  }catch(e){obunaOk=false;}
+  }catch(e){xato=true;}
   btn.disabled=false;btn.textContent='✅ Tekshirish';
   if(obunaOk){
     xb.style.display='none';
     kirishDavomEt();
+  }else if(xato){
+    xb.style.display='block';
+    xb.textContent="Serverga ulanib bo'lmadi, qayta urinib ko'ring";
   }else{
     xb.style.display='block';
     xb.textContent="Hali @"+KANAL+" kanaliga obuna bo'lmagansiz!";
