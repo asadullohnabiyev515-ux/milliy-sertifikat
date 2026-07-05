@@ -1319,7 +1319,10 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   <div class="top">
     <button onclick="go('p-games',-1)" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
     <div class="tlogo">🧮 Kimyo Nerdle</div>
-    <button onclick="reytingOch('/nerdle/reyting','🧮 Kimyo Nerdle reytingi','kun')" style="background:none;border:none;color:#facc15;font-size:1.15rem;cursor:pointer">🏆</button>
+    <div style="display:flex;gap:6px">
+      <button onclick="ndQoidaOch()" style="background:none;border:none;color:rgba(255,255,255,.6);font-size:1.15rem;cursor:pointer">❓</button>
+      <button onclick="reytingOch('/nerdle/reyting','🧮 Kimyo Nerdle reytingi','kun')" style="background:none;border:none;color:#facc15;font-size:1.15rem;cursor:pointer">🏆</button>
+    </div>
   </div>
   <div style="padding:10px 16px 2px;text-align:center;font-size:.72rem;color:rgba(255,255,255,.4)">Kunlik son-tenglama jumboqni 6 urinishda toping</div>
   <div id="nd-grid" style="display:flex;flex-direction:column;gap:6px;align-items:center;padding:10px 8px"></div>
@@ -1331,6 +1334,20 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <div id="nd-over-sub" style="font-size:.95rem;color:#facc15;font-weight:700;margin-bottom:20px;text-align:center"></div>
     <button onclick="go('p-games',-1)" style="background:rgba(255,255,255,.08);border:none;border-radius:12px;padding:10px 24px;color:var(--c-fg);font-size:.9rem;cursor:pointer;margin-bottom:10px">← O'yinlar</button>
     <div style="font-size:.7rem;color:rgba(255,255,255,.3)">Ertaga yangi jumboq!</div>
+  </div>
+  <div id="nd-qoida" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,15,30,.94);z-index:210;align-items:center;justify-content:center;padding:20px">
+    <div style="background:#141a2e;border:1.5px solid rgba(250,204,21,.3);border-radius:20px;padding:22px 20px;max-width:340px;max-height:80vh;overflow-y:auto">
+      <div style="font-size:1.15rem;font-weight:800;margin-bottom:14px;text-align:center">🧮 Qoidalar</div>
+      <div style="font-size:.85rem;line-height:1.7;color:rgba(255,255,255,.8)">
+        Yashiringan <b>8 belgili son-tenglamani</b> (raqamlar va <b>+ − × =</b>) <b>6 urinishda</b> toping.<br><br>
+        Har urinishdan keyin katakchalar rangga bo'yaladi:<br>
+        <div style="display:flex;align-items:center;gap:8px;margin:8px 0"><span style="width:26px;height:26px;background:#00d4aa;border-radius:5px;display:inline-block"></span> To'g'ri belgi, to'g'ri joyda</div>
+        <div style="display:flex;align-items:center;gap:8px;margin:8px 0"><span style="width:26px;height:26px;background:#facc15;border-radius:5px;display:inline-block"></span> Bu belgi bor, lekin joyi noto'g'ri</div>
+        <div style="display:flex;align-items:center;gap:8px;margin:8px 0"><span style="width:26px;height:26px;background:rgba(255,255,255,.15);border-radius:5px;display:inline-block"></span> Bu belgi umuman yo'q</div>
+        Taxminingiz matematik jihatdan to'g'ri bo'lishi shart emas — shunchaki 8 ta belgi va bitta <b>=</b> yetarli. Shuning uchun boshida tasodifiy raqamlar bilan qaysi belgilar borligini "tekshirib" chiqish ham yaxshi strategiya!
+      </div>
+      <button onclick="document.getElementById('nd-qoida').style.display='none'" style="width:100%;margin-top:16px;padding:12px;background:linear-gradient(135deg,#facc15,#ca8a04);border:none;border-radius:12px;color:#1a1a1a;font-weight:800;cursor:pointer">Tushunarli!</button>
+    </div>
   </div>
 </div>
 
@@ -5226,10 +5243,15 @@ async function pgNdBest(){
 
 // KIMYO NERDLE
 var ndLen=8,ndGuesses=[],ndColors=[],ndCurrent='',ndTugadi=false,ndYutdi=false,ndBusy=false;
+function ndQoidaOch(){document.getElementById('nd-qoida').style.display='flex';}
 async function ndLoad(){
   ndCurrent='';ndBusy=false;
   document.getElementById('nd-over').style.display='none';
   document.getElementById('nd-msg').textContent='';
+  if(!localStorage.getItem('nd_qoida_korsatildi')){
+    localStorage.setItem('nd_qoida_korsatildi','1');
+    ndQoidaOch();
+  }
   try{
     var r=await apiFetch(API+'/nerdle/bugungi?user_id='+(CU.id||0));
     var d=await r.json();
