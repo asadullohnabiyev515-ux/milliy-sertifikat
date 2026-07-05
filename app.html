@@ -1344,9 +1344,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     </div>
     <div id="kalk-q" style="background:rgba(255,255,255,.06);border:1.5px solid rgba(129,140,248,.25);border-radius:18px;padding:20px 16px;text-align:center;font-size:1rem;font-weight:700;min-height:90px;display:flex;align-items:center;justify-content:center;line-height:1.6;margin-bottom:10px"></div>
     <div id="kalk-birlik" style="text-align:center;font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:14px"></div>
-    <input id="kalk-input" type="text" inputmode="decimal" placeholder="Javobni kiriting..." style="width:100%;padding:14px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.15);border-radius:12px;color:#fff;font-size:1.05rem;text-align:center;margin-bottom:12px" onkeydown="if(event.key==='Enter')kalkTekshir()"/>
-    <button onclick="kalkTekshir()" style="width:100%;padding:13px;background:linear-gradient(135deg,#818cf8,#4f46e5);border:none;border-radius:14px;color:#fff;font-size:.98rem;font-weight:800;cursor:pointer">✓ Tekshirish</button>
-    <div id="kalk-fb" style="text-align:center;font-size:.85rem;margin-top:10px;min-height:20px;font-weight:700"></div>
+    <div id="kalk-opts" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
   </div>
   <div id="kalk-over" style="display:none;margin:30px 20px;text-align:center">
     <div id="kalk-over-ico" style="font-size:3rem;margin-bottom:10px">😔</div>
@@ -5251,7 +5249,7 @@ var KALK_MODDA=[
   {f:'C2H5OH',m:46,gaz:false},{f:'C6H12O6',m:180,gaz:false},{f:'SO2',m:64,gaz:true},
   {f:'Cl2',m:71,gaz:true},{f:'MgO',m:40,gaz:false}
 ];
-var KALK_MOLLAR=[0.1,0.2,0.125,2.35,0.5,1.5,0.05,3,0.25,4.4,0.4,1.2,0.75,2.5,0.02,0.6,1.8,0.3];
+var KALK_MOLLAR=[0.1,0.2,0.3,0.5,1,1.5,2,2.5,3,4,5];
 var kalkScore=0,kalkBest=0,kalkCur=null,kalkNewRecord=false;
 function kalkBestLoad(){return parseInt(localStorage.getItem('kalkBest')||'0');}
 function pgKalkBest(){
@@ -5297,33 +5295,56 @@ function kalkNext(){
     birlik='Javobni ×10²³ birligida kiriting (Avogadro doimiysi: 1 mol = 6.02×10²³ ta)';
     javob=mol*6.02;
   }
-  kalkCur={tur:tur,javob:Math.round(javob*1000)/1000};
+  javob=Math.round(javob*1000)/1000;
+  kalkCur={tur:tur,javob:javob};
   document.getElementById('kalk-q').textContent=savol;
   document.getElementById('kalk-birlik').textContent=birlik;
-  document.getElementById('kalk-input').value='';
-  document.getElementById('kalk-fb').textContent='';
   document.getElementById('kalk-lvl').textContent=(kalkScore+1)+'-savol';
-  setTimeout(function(){var el=document.getElementById('kalk-input');if(el)el.focus();},50);
+  var opts=kalkOptions(javob);
+  var html='';
+  opts.forEach(function(o){
+    html+='<button onclick="kalkAns('+o+')" style="padding:13px 8px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);border-radius:14px;color:var(--c-fg);font-size:.95rem;font-weight:700;cursor:pointer;text-align:center">'+o+'</button>';
+  });
+  document.getElementById('kalk-opts').innerHTML=html;
 }
-function kalkTekshir(){
-  if(!kalkCur)return;
-  var raw=document.getElementById('kalk-input').value.trim().replace(',','.');
-  var val=parseFloat(raw);
-  if(isNaN(val)){
-    document.getElementById('kalk-fb').innerHTML='<span style="color:#ff9500">Raqam kiriting</span>';
-    return;
+function kalkOptions(javob){
+  var opts=[javob],tries=0;
+  while(opts.length<4&&tries<60){
+    tries++;
+    var r=Math.random(),variant;
+    if(r<0.34)variant=javob*2;
+    else if(r<0.67)variant=javob/2;
+    else variant=javob+(Math.random()<0.5?1:-1)*(javob*0.3+0.5);
+    variant=Math.round(variant*1000)/1000;
+    if(variant<=0)continue;
+    var dup=opts.some(function(o){return Math.abs(o-variant)<=Math.max(javob*0.02,0.03);});
+    if(!dup)opts.push(variant);
   }
+  while(opts.length<4){
+    var extra=Math.round((javob*(0.3+Math.random()*2))*1000)/1000;
+    if(extra>0&&!opts.some(function(o){return Math.abs(o-extra)<=Math.max(javob*0.02,0.03);}))opts.push(extra);
+  }
+  return rzShuffle(opts);
+}
+function kalkAns(val){
+  if(!kalkCur)return;
   var javob=kalkCur.javob;
   var tol=Math.max(javob*0.02,0.03);
   var togri=Math.abs(val-javob)<=tol;
+  var btns=document.getElementById('kalk-opts').querySelectorAll('button');
+  btns.forEach(function(b){
+    b.disabled=true;
+    var bv=parseFloat(b.textContent);
+    if(Math.abs(bv-javob)<=tol)b.style.background='rgba(34,197,94,.35)';
+    else if(bv===val)b.style.background='rgba(239,68,68,.35)';
+  });
   if(togri){
     kalkScore++;
     document.getElementById('kalk-score').textContent=kalkScore;
     if(kalkScore>kalkBest){kalkBest=kalkScore;kalkNewRecord=true;document.getElementById('kalk-best-cur').textContent=kalkBest;}
-    document.getElementById('kalk-fb').innerHTML='<span style="color:#00d4aa">✓ To\'g\'ri!</span>';
-    setTimeout(kalkNext,650);
+    setTimeout(kalkNext,600);
   }else{
-    kalkOver(javob);
+    setTimeout(function(){kalkOver(javob);},900);
   }
 }
 function kalkOver(togriJavob){
