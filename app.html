@@ -1560,22 +1560,26 @@ function apiFetch(url,opts,ms){
 var tg=window.Telegram&&window.Telegram.WebApp?window.Telegram.WebApp:null;
 function tgSafeTopApply(){
   if(!tg)return;
-  var sa=tg.safeAreaInset||{},csa=tg.contentSafeAreaInset||{};
-  var top=(sa.top||0)+(csa.top||0);
-  document.documentElement.style.setProperty('--tg-safe-top',top+'px');
+  try{
+    var sa=tg.safeAreaInset||{},csa=tg.contentSafeAreaInset||{};
+    var top=(sa.top||0)+(csa.top||0);
+    document.documentElement.style.setProperty('--tg-safe-top',top+'px');
+  }catch(e){}
 }
 if(tg){
-  tg.ready();
-  tg.expand();
-  if(tg.disableVerticalSwipes) tg.disableVerticalSwipes();
-  if(tg.enableClosingConfirmation) tg.enableClosingConfirmation();
-  if(tg.requestFullscreen) tg.requestFullscreen();
+  try{tg.ready();}catch(e){}
+  try{tg.expand();}catch(e){}
+  try{if(tg.disableVerticalSwipes)tg.disableVerticalSwipes();}catch(e){}
+  try{if(tg.enableClosingConfirmation)tg.enableClosingConfirmation();}catch(e){}
+  try{if(tg.requestFullscreen)tg.requestFullscreen();}catch(e){}
   tgSafeTopApply();
-  if(tg.onEvent){
-    tg.onEvent('safeAreaChanged',tgSafeTopApply);
-    tg.onEvent('contentSafeAreaChanged',tgSafeTopApply);
-    tg.onEvent('fullscreenChanged',tgSafeTopApply);
-  }
+  try{
+    if(tg.onEvent){
+      tg.onEvent('safeAreaChanged',tgSafeTopApply);
+      tg.onEvent('contentSafeAreaChanged',tgSafeTopApply);
+      tg.onEvent('fullscreenChanged',tgSafeTopApply);
+    }
+  }catch(e){}
 }
 var uid=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user?tg.initDataUnsafe.user.id:null;
 var uname=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user?tg.initDataUnsafe.user.first_name:'Foydalanuvchi';
