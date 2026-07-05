@@ -1994,12 +1994,18 @@ async function ttNat(){
     go('p7c',-1);
     var bArea=document.getElementById('ttnatbtnlar');
     if(ttMode==='kurs'){
+      kursBallSave(kursMavzuCur,b);
       if(b>=60){
         if(!seqProgress(KURS_FAN)[kursMavzuCur])coinBer(10,'Mavzu topshirildi: '+kursMavzuCur);
         seqSave(KURS_FAN,kursMavzuCur);
         if(typeof kursRenderRoyxat==='function')kursRenderRoyxat();
         if(kursMavzuIdx>=kursMavzuData.length-1){
-          bArea.innerHTML='<div style="text-align:center;padding:12px;color:#00d4aa;font-weight:700;font-size:.95rem;margin-bottom:12px">🏆 Barcha mavzular muvaffaqiyatli tugallandi!</div><button class="btn btn-out" onclick="go(\'p-kurs\',-1)">📐 Mavzular ro\'yxati</button>';
+          var ortacha=kursOrtachaBall();
+          var sertHtml='';
+          if(ortacha!==null&&ortacha>=70){
+            sertHtml='<button class="btn" style="background:linear-gradient(135deg,gold,#ca8a04);color:#1a1a1a" onclick="kursSertifikatOl()">🎓 Sertifikatni olish ('+ortacha+'%)</button>';
+          }
+          bArea.innerHTML='<div style="text-align:center;padding:12px;color:#00d4aa;font-weight:700;font-size:.95rem;margin-bottom:12px">🏆 Barcha mavzular muvaffaqiyatli tugallandi!</div>'+sertHtml+'<button class="btn btn-out" onclick="go(\'p-kurs\',-1)">📐 Mavzular ro\'yxati</button>';
         }else{
           bArea.innerHTML='<button class="btn btn-green" onclick="kursMavzuOch('+(kursMavzuIdx+1)+')">→ Keyingi mavzu</button><button class="btn btn-out" style="margin-top:8px" onclick="go(\'p-kurs\',-1)">📐 Mavzular ro\'yxati</button>';
         }
@@ -2149,6 +2155,40 @@ function coinKunlikTekshir(){
 // MATEMATIKA KURSI (nazariya + mavzu bo'yicha test, ketma-ket ochiladi)
 var KURS_FAN='Matematika';
 var kursMavzuData=[],kursMavzuCur='',kursMavzuIdx=-1;
+function kursBallLar(){
+  try{return JSON.parse(localStorage.getItem('kursBall_'+KURS_FAN+'_'+(CU.id||0))||'{}');}catch(e){return{};}
+}
+function kursBallSave(mavzu,ball){
+  var b=kursBallLar();
+  if(!(mavzu in b)||ball>b[mavzu])b[mavzu]=ball;
+  localStorage.setItem('kursBall_'+KURS_FAN+'_'+(CU.id||0),JSON.stringify(b));
+}
+function kursOrtachaBall(){
+  var b=kursBallLar();
+  if(!kursMavzuData.length)return null;
+  var sum=0,n=0;
+  for(var i=0;i<kursMavzuData.length;i++){
+    var m=kursMavzuData[i].mavzu;
+    if(!(m in b))return null;
+    sum+=b[m];n++;
+  }
+  return n?Math.round((sum/n)*10)/10:null;
+}
+async function kursSertifikatOl(){
+  if(!CU.id){alert('Telegram orqali kirish kerak');return;}
+  var foiz=kursOrtachaBall();
+  if(foiz===null||foiz<70){alert("Sertifikat uchun kursning barcha mavzularini o'rtacha kamida 70% natija bilan tugatish kerak");return;}
+  try{
+    var r=await apiFetch(API+'/sertifikat/yarat',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({user_id:CU.id,name:CU.name||"Noma'lum",fan:'Kimyo uchun matematika',foiz:foiz})},20000);
+    if(!r.ok){var e=await r.json().catch(function(){return{};});alert(e.detail||'Xato yuz berdi');return;}
+    var blob=await r.blob();
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');
+    a.href=url;a.download='sertifikat.pdf';document.body.appendChild(a);a.click();document.body.removeChild(a);
+    setTimeout(function(){URL.revokeObjectURL(url);},4000);
+  }catch(e){alert('Xato: '+e.message);}
+}
 async function kursRoyxatLoad(){
   var li=document.getElementById('kurs-mavzu-list');
   li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
