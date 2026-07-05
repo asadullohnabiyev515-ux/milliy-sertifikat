@@ -529,6 +529,23 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     </div>
     <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">A'zolar (<span id="uguruhSoni">0</span>)</div>
     <div id="uguruhAzolar"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:22px 0 10px">
+      <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px">Test natijalari</div>
+      <a id="uguruhNatijaExcelLink" href="#" target="_blank" style="color:#00d4aa;font-size:.75rem;font-weight:700;text-decoration:none">⬇️ Excel</a>
+    </div>
+    <button onclick="uGuruhNatijaFormToggle()" style="width:100%;padding:10px;background:rgba(0,212,170,.08);border:1px solid rgba(0,212,170,.25);border-radius:12px;color:#00d4aa;font-size:.82rem;font-weight:700;cursor:pointer;margin-bottom:10px">➕ Natija kiritish</button>
+    <div id="uguruhNatijaForm" style="display:none;background:rgba(255,255,255,.04);border-radius:12px;padding:12px;margin-bottom:16px">
+      <select class="inp" id="uguruhNatijaOquvchi" style="margin-top:0;margin-bottom:8px"></select>
+      <input class="inp" id="uguruhNatijaTest" type="text" placeholder="Test nomi (masalan 1-nazorat ishi)" style="margin-top:0;margin-bottom:8px"/>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <input class="inp" id="uguruhNatijaSoni" type="number" placeholder="Savollar soni" style="margin-top:0"/>
+        <input class="inp" id="uguruhNatijaTogri" type="number" placeholder="To'g'ri javob" style="margin-top:0"/>
+      </div>
+      <button class="btn btn-green" style="margin-top:0" onclick="uGuruhNatijaQosh()">Saqlash</button>
+      <div id="uguruhNatijaXb" style="font-size:.78rem;margin-top:8px;color:rgba(255,255,255,.5)"></div>
+    </div>
+    <div id="uguruhNatijalar"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
   </div>
 </div>
 
@@ -2612,8 +2629,12 @@ function uGuruhOch(gid,nomi){
   document.getElementById('uguruhOqSearch').value='';
   document.getElementById('uguruhKutishForm').style.display='none';
   document.getElementById('uguruhKutishXb').textContent='';
+  document.getElementById('uguruhNatijaForm').style.display='none';
+  document.getElementById('uguruhNatijaXb').textContent='';
+  document.getElementById('uguruhNatijaExcelLink').href=API+'/guruh/natijalar/excel/'+gid;
   go('p9j',-1);
   uGuruhDetailLoad();
+  uGuruhNatijalarLoad();
 }
 async function uGuruhDetailLoad(){
   var el=document.getElementById('uguruhAzolar');
@@ -2635,6 +2656,73 @@ async function uGuruhDetailLoad(){
         '<button onclick="'+chiqar+'" style="background:rgba(255,59,48,.12);border:none;border-radius:8px;color:#ff6b6b;padding:6px 10px;font-size:.75rem;cursor:pointer;font-weight:700">Chiqarish</button></div>';
     }).join('');
   }catch(e){el.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Xato</div>';}
+}
+function uGuruhNatijaFormToggle(){
+  var f=document.getElementById('uguruhNatijaForm');
+  var willShow=f.style.display==='none';
+  f.style.display=willShow?'block':'none';
+  if(willShow){
+    var sel=document.getElementById('uguruhNatijaOquvchi');
+    if(!_uguruhAzolarCache.length){
+      sel.innerHTML='<option value="">A\'zo yo\'q</option>';
+    }else{
+      sel.innerHTML=_uguruhAzolarCache.map(function(u,i){
+        return '<option value="'+i+'">'+esc((u.ism+' '+u.familiya).trim())+'</option>';
+      }).join('');
+    }
+  }
+}
+async function uGuruhNatijaQosh(){
+  var idx=document.getElementById('uguruhNatijaOquvchi').value;
+  var u=_uguruhAzolarCache[idx];
+  var testNomi=document.getElementById('uguruhNatijaTest').value.trim();
+  var soni=parseInt(document.getElementById('uguruhNatijaSoni').value);
+  var togri=parseInt(document.getElementById('uguruhNatijaTogri').value);
+  var xb=document.getElementById('uguruhNatijaXb');
+  if(!u){xb.textContent="O'quvchini tanlang";xb.style.color='#ff6b6b';return;}
+  if(!testNomi){xb.textContent="Test nomini kiriting";xb.style.color='#ff6b6b';return;}
+  if(!soni||soni<=0){xb.textContent="Savollar sonini to'g'ri kiriting";xb.style.color='#ff6b6b';return;}
+  if(isNaN(togri)||togri<0||togri>soni){xb.textContent="To'g'ri javoblar soni noto'g'ri";xb.style.color='#ff6b6b';return;}
+  xb.textContent='Saqlanmoqda...';xb.style.color='rgba(255,255,255,.5)';
+  try{
+    var r=await apiFetch(API+'/guruh/natija/qosh',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      guruh_id:_uguruhCur,ism:(u.ism+' '+u.familiya).trim(),user_id:u.user_id,test_nomi:testNomi,savollar_soni:soni,togri_soni:togri,ustoz_id:CU.id
+    })});
+    var d=await r.json();
+    if(!r.ok){xb.textContent='Xato: '+(d.detail||'');xb.style.color='#ff6b6b';return;}
+    xb.textContent='✅ Saqlandi';xb.style.color='#00d4aa';
+    document.getElementById('uguruhNatijaTest').value='';
+    document.getElementById('uguruhNatijaSoni').value='';
+    document.getElementById('uguruhNatijaTogri').value='';
+    uGuruhNatijalarLoad();
+  }catch(e){xb.textContent='Xato: '+e;xb.style.color='#ff6b6b';}
+}
+async function uGuruhNatijalarLoad(){
+  var el=document.getElementById('uguruhNatijalar');
+  el.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
+  try{
+    var r=await apiFetch(API+'/guruh/natijalar/'+_uguruhCur);
+    var d=await r.json();
+    var list=d.natijalar||[];
+    if(!list.length){el.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Hali natija kiritilmagan</div>';return;}
+    el.innerHTML=list.map(function(n,i){
+      var rng=n.foiz>=60?'#00d4aa':n.foiz>=40?'#ff9500':'#ff6b6b';
+      return '<div class="ri" style="gap:10px;align-items:center">'+
+        '<div style="width:22px;text-align:center;font-weight:700;color:rgba(255,255,255,.4);flex-shrink:0">'+(i+1)+'.</div>'+
+        '<div style="flex:1"><div style="font-size:.88rem;font-weight:600">'+n.ism+'</div><div style="font-size:.72rem;color:rgba(255,255,255,.4)">'+n.test_nomi+' · '+n.togri_soni+'/'+n.savollar_soni+'</div></div>'+
+        '<div style="font-weight:800;color:'+rng+'">'+n.foiz+'%</div>'+
+        '<button onclick="uGuruhNatijaOchir(\''+n.natija_id+'\')" style="background:rgba(255,59,48,.12);border:none;border-radius:8px;color:#ff6b6b;padding:5px 8px;font-size:.7rem;cursor:pointer">✕</button></div>';
+    }).join('');
+  }catch(e){el.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Xato</div>';}
+}
+async function uGuruhNatijaOchir(nid){
+  if(!confirm("Bu natija o'chirilsinmi?"))return;
+  try{
+    var r=await apiFetch(API+'/guruh/natija/ochir/'+nid+'?ustoz_id='+CU.id,{method:'DELETE'});
+    var d=await r.json();
+    if(d.success)uGuruhNatijalarLoad();
+    else alert('Xato: '+(d.detail||''));
+  }catch(e){alert('Xato: '+e);}
 }
 async function uGuruhOqSearch(){
   var q=document.getElementById('uguruhOqSearch').value.trim().toLowerCase();
