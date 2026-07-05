@@ -109,6 +109,7 @@ body{background:var(--c-bg);color:var(--c-fg)}
 .sp{border-color:var(--c-border);border-top-color:#00d4aa}
 /* Tema tugmasi */
 #tema-tog{position:fixed;bottom:85px;right:14px;z-index:9999;width:36px;height:36px;border-radius:50%;border:1px solid var(--c-border3);background:var(--c-card3);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);transition:background .2s}
+#bg-tog{position:fixed;bottom:85px;right:58px;z-index:9999;width:36px;height:36px;border-radius:50%;border:1px solid var(--c-border3);background:var(--c-card3);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);transition:background .2s}
 /* Inline style override - umumiy yozuvlar */
 body[data-tema="yorug"] [style*="color:rgba(255,255,255"]{color:rgba(0,0,0,.5)!important}
 body[data-tema="yorug"] [style*="color:#fff"]:not([style*="background:#"]):not([style*="background:linear"]):not([style*="background:rgb("]){color:#1a1a2e!important}
@@ -124,7 +125,15 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
 </head>
 <body>
 <button id="tema-tog" onclick="temaToggle()" title="Rejim almashtirish">🌙</button>
+<button id="bg-tog" onclick="bgGalleryOch()" title="Fon tanlash">🎨</button>
 <div id="kimyo-bg"></div>
+<div id="bg-gallery-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,15,30,.85);z-index:9998;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#141a2e;border:1.5px solid rgba(255,255,255,.12);border-radius:20px;padding:20px;max-width:340px;width:100%">
+    <div style="font-size:1.05rem;font-weight:800;margin-bottom:14px;text-align:center">🎨 Fon tanlash</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px" id="bg-gallery-grid"></div>
+    <button onclick="document.getElementById('bg-gallery-modal').style.display='none'" style="width:100%;margin-top:14px;padding:11px;background:rgba(255,255,255,.08);border:none;border-radius:12px;color:#fff;cursor:pointer;font-weight:700">Yopish</button>
+  </div>
+</div>
 <div id="app">
 
 <!-- KIRISH -->
@@ -2911,24 +2920,49 @@ function temaToggle(){
   if(btn)btn.textContent=t==='yorug'?'🌙':'☀️';
 })();
 
-(function(){
+var BG_TEMALAR={
+  kimyo:{nom:'🧪 Kimyo',rang:'#00d4aa',rgb:'0,212,170',belgi:['🧪','🧪','⚗️','⚗️','⚗️','🔬','🧫','🧬','H₂O','CO₂','NaCl','O₂','NH₃','HCl','CH₄','H₂SO₄','KOH','NaOH','CaCO₃','SO₂','KMnO₄','Fe','Na','Ca']},
+  matematika:{nom:'📐 Matematika',rang:'#a855f7',rgb:'168,85,247',belgi:['π','∑','√','∞','∫','Δ','+','×','÷','=','θ','%','∂','≈']},
+  yulduz:{nom:'✨ Yulduzlar',rang:'#facc15',rgb:'250,204,21',belgi:['✨','⭐','🌟','💫','✦','✧','·','·']},
+  yopiq:{nom:'⬛ Fonsiz',rang:'#888',rgb:'136,136,136',belgi:[]}
+};
+function bgYarat(tur){
+  var t=BG_TEMALAR[tur]||BG_TEMALAR.kimyo;
   var bg=document.getElementById('kimyo-bg');
-  var EL=['🧪','🧪','⚗️','⚗️','⚗️','🔬','🧫','🧬','H₂O','CO₂','NaCl','O₂','NH₃','HCl','CH₄','H₂SO₄','KOH','NaOH','CaCO₃','SO₂','KMnO₄','Fe','Na','Ca'];
-  EL.forEach(function(el){
+  if(!bg)return;
+  bg.innerHTML='';
+  t.belgi.forEach(function(el){
     var d=document.createElement('div');
     d.className='zarracha';
     d.textContent=el;
-    d.style.cssText='left:'+Math.random()*94+'%;font-size:'+(0.65+Math.random()*0.9)+'rem;animation-duration:'+(12+Math.random()*14)+'s;animation-delay:'+(-(Math.random()*22))+'s';
+    d.style.cssText='color:rgba('+t.rgb+',0.5);left:'+Math.random()*94+'%;font-size:'+(0.65+Math.random()*0.9)+'rem;animation-duration:'+(12+Math.random()*14)+'s;animation-delay:'+(-(Math.random()*22))+'s';
     bg.appendChild(d);
   });
+  if(!t.belgi.length)return;
   for(var i=0;i<15;i++){
     var d=document.createElement('div');
     d.className='pufakcha';
     var s=10+Math.random()*35;
-    d.style.cssText='left:'+Math.random()*94+'%;width:'+s+'px;height:'+s+'px;animation-duration:'+(14+Math.random()*16)+'s;animation-delay:'+(-(Math.random()*25))+'s';
+    d.style.cssText='border-color:rgba('+t.rgb+',0.12);background:rgba('+t.rgb+',0.03);left:'+Math.random()*94+'%;width:'+s+'px;height:'+s+'px;animation-duration:'+(14+Math.random()*16)+'s;animation-delay:'+(-(Math.random()*25))+'s';
     bg.appendChild(d);
   }
-})();
+}
+function bgGalleryOch(){
+  var g=document.getElementById('bg-gallery-grid');
+  var joriy=localStorage.getItem('bgTur')||'kimyo';
+  g.innerHTML=Object.keys(BG_TEMALAR).map(function(k){
+    var t=BG_TEMALAR[k];
+    var on=k===joriy;
+    return '<button onclick="bgTanla(\''+k+'\')" style="padding:16px 8px;background:'+(on?'rgba('+t.rgb+',.18)':'rgba(255,255,255,.05)')+';border:1.5px solid '+(on?t.rang:'rgba(255,255,255,.12)')+';border-radius:14px;color:#fff;cursor:pointer;text-align:center;font-size:.85rem;font-weight:700">'+t.nom+(on?'<div style="font-size:.65rem;opacity:.6;margin-top:4px">✓ Tanlangan</div>':'')+'</button>';
+  }).join('');
+  document.getElementById('bg-gallery-modal').style.display='flex';
+}
+function bgTanla(tur){
+  localStorage.setItem('bgTur',tur);
+  bgYarat(tur);
+  document.getElementById('bg-gallery-modal').style.display='none';
+}
+bgYarat(localStorage.getItem('bgTur')||'kimyo');
 
 // ═══════════════════════════════════════════════════════
 // ELEMENT 2048 O'YINI
