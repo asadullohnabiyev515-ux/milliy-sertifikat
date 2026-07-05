@@ -119,7 +119,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
 #kimyo-bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;overflow:hidden;pointer-events:none}
 .zarracha{position:absolute;opacity:0;animation:suzib linear infinite;color:rgba(0,212,170,0.5);user-select:none;font-weight:700}
 .pufakcha{position:absolute;border-radius:50%;border:1.5px solid rgba(0,212,170,0.12);background:rgba(0,212,170,0.03);animation:suzib linear infinite}
-@keyframes suzib{0%{transform:translateY(110vh) rotate(0deg);opacity:0}5%{opacity:0.07}95%{opacity:0.07}100%{transform:translateY(-15vh) rotate(360deg);opacity:0}}
+@keyframes suzib{0%{transform:translateY(110vh) rotate(0deg);opacity:0}5%{opacity:0.14}95%{opacity:0.14}100%{transform:translateY(-15vh) rotate(360deg);opacity:0}}
 #app{position:relative;z-index:1}
 </style>
 </head>
@@ -2947,15 +2947,15 @@ function bgYarat(tur){
     var d=document.createElement('div');
     d.className='zarracha';
     d.textContent=el;
-    d.style.cssText='color:rgba('+t.rgb+',0.5);left:'+Math.random()*94+'%;font-size:'+(0.65+Math.random()*0.9)+'rem;animation-duration:'+(12+Math.random()*14)+'s;animation-delay:'+(-(Math.random()*22))+'s';
+    d.style.cssText='color:rgba('+t.rgb+',1);left:'+Math.random()*94+'%;font-size:'+(1.3+Math.random()*1.8)+'rem;animation-duration:'+(12+Math.random()*14)+'s;animation-delay:'+(-(Math.random()*22))+'s';
     bg.appendChild(d);
   });
   if(!t.belgi.length)return;
   for(var i=0;i<15;i++){
     var d=document.createElement('div');
     d.className='pufakcha';
-    var s=10+Math.random()*35;
-    d.style.cssText='border-color:rgba('+t.rgb+',0.12);background:rgba('+t.rgb+',0.03);left:'+Math.random()*94+'%;width:'+s+'px;height:'+s+'px;animation-duration:'+(14+Math.random()*16)+'s;animation-delay:'+(-(Math.random()*25))+'s';
+    var s=20+Math.random()*70;
+    d.style.cssText='border-color:rgba('+t.rgb+',0.24);background:rgba('+t.rgb+',0.06);left:'+Math.random()*94+'%;width:'+s+'px;height:'+s+'px;animation-duration:'+(14+Math.random()*16)+'s;animation-delay:'+(-(Math.random()*25))+'s';
     bg.appendChild(d);
   }
 }
