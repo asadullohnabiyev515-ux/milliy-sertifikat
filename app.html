@@ -507,8 +507,16 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <button onclick="uGuruhOchir()" style="background:none;border:none;color:#ff6b6b;font-size:.85rem;cursor:pointer;font-weight:700">O'chirish</button>
   </div>
   <div style="padding:16px">
-    <input class="inp" id="uguruhOqSearch" type="text" placeholder="🔍 Qo'shish uchun ism/telefon qidirish..." oninput="uGuruhOqSearch()" style="margin-top:0;margin-bottom:10px"/>
-    <div id="uguruhOqTanlov" style="display:none;max-height:220px;overflow-y:auto;margin-bottom:14px;background:rgba(255,255,255,.04);border-radius:12px;padding:6px"></div>
+    <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">O'quvchi qo'shish</div>
+    <input class="inp" id="uguruhOqSearch" type="text" placeholder="🔍 Ro'yxatdan o'tganlar orasidan qidirish..." oninput="uGuruhOqSearch()" style="margin-top:0;margin-bottom:8px"/>
+    <div id="uguruhOqTanlov" style="max-height:220px;overflow-y:auto;margin-bottom:10px;background:rgba(255,255,255,.04);border-radius:12px;padding:6px"></div>
+    <button onclick="uGuruhKutishFormToggle()" style="width:100%;padding:10px;background:rgba(255,180,0,.08);border:1px solid rgba(255,180,0,.25);border-radius:12px;color:#ffb400;font-size:.82rem;font-weight:700;cursor:pointer;margin-bottom:14px">📱 Ro'yxatdan o'tmagan o'quvchini telefon orqali qo'shish</button>
+    <div id="uguruhKutishForm" style="display:none;background:rgba(255,255,255,.04);border-radius:12px;padding:12px;margin-bottom:16px">
+      <input class="inp" id="uguruhKutishIsm" type="text" placeholder="Ism familiya" style="margin-top:0;margin-bottom:8px"/>
+      <input class="inp" id="uguruhKutishTel" type="tel" placeholder="+998901234567" style="margin-top:0;margin-bottom:10px"/>
+      <button class="btn btn-green" style="margin-top:0" onclick="uGuruhKutishQosh()">Qo'shish</button>
+      <div id="uguruhKutishXb" style="font-size:.78rem;margin-top:8px;color:rgba(255,255,255,.5)"></div>
+    </div>
     <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">A'zolar (<span id="uguruhSoni">0</span>)</div>
     <div id="uguruhAzolar"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
   </div>
@@ -2566,11 +2574,13 @@ async function uGuruhYarat(){
     else alert('Xato: '+(d.detail||''));
   }catch(e){alert('Xato: '+e);}
 }
+var _uguruhAzolarCache=[];
 function uGuruhOch(gid,nomi){
   _uguruhCur=gid;
   document.getElementById('uguruhTitle').textContent=nomi;
   document.getElementById('uguruhOqSearch').value='';
-  document.getElementById('uguruhOqTanlov').style.display='none';
+  document.getElementById('uguruhKutishForm').style.display='none';
+  document.getElementById('uguruhKutishXb').textContent='';
   go('p9j',-1);
   uGuruhDetailLoad();
 }
@@ -2581,39 +2591,36 @@ async function uGuruhDetailLoad(){
     var r=await apiFetch(API+'/guruh/'+_uguruhCur);
     var d=await r.json();
     var list=d.oquvchilar||[];
+    _uguruhAzolarCache=list;
     document.getElementById('uguruhSoni').textContent=list.length;
+    uGuruhOqSearch();
     if(!list.length){el.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Hali o\'quvchi qo\'shilmagan</div>';return;}
     el.innerHTML=list.map(function(u){
+      var kutilmoqda=u.holat==='kutilmoqda';
+      var chiqar=kutilmoqda?"uGuruhOqChiqar(null,'"+esc(u.telefon)+"')":"uGuruhOqChiqar("+u.user_id+",null)";
       return '<div class="ri" style="gap:10px;align-items:center">'+
-        '<div class="av" style="width:36px;height:36px;border-radius:10px;font-size:.85rem;flex-shrink:0">'+(u.ism?u.ism.charAt(0):'?')+'</div>'+
-        '<div style="flex:1"><div style="font-size:.88rem;font-weight:600">'+u.ism+' '+u.familiya+'</div><div style="font-size:.72rem;color:rgba(255,255,255,.4)">'+u.telefon+'</div></div>'+
-        '<button onclick="uGuruhOqChiqar('+u.user_id+')" style="background:rgba(255,59,48,.12);border:none;border-radius:8px;color:#ff6b6b;padding:6px 10px;font-size:.75rem;cursor:pointer;font-weight:700">Chiqarish</button></div>';
+        '<div class="av" style="width:36px;height:36px;border-radius:10px;font-size:.85rem;flex-shrink:0;'+(kutilmoqda?'opacity:.5':'')+'">'+(u.ism?u.ism.charAt(0):'?')+'</div>'+
+        '<div style="flex:1"><div style="font-size:.88rem;font-weight:600">'+u.ism+' '+u.familiya+(kutilmoqda?' <span style="color:#ffb400;font-size:.7rem;font-weight:700">⏳ Kutilmoqda</span>':'')+'</div><div style="font-size:.72rem;color:rgba(255,255,255,.4)">'+u.telefon+'</div></div>'+
+        '<button onclick="'+chiqar+'" style="background:rgba(255,59,48,.12);border:none;border-radius:8px;color:#ff6b6b;padding:6px 10px;font-size:.75rem;cursor:pointer;font-weight:700">Chiqarish</button></div>';
     }).join('');
   }catch(e){el.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Xato</div>';}
 }
 async function uGuruhOqSearch(){
   var q=document.getElementById('uguruhOqSearch').value.trim().toLowerCase();
   var tanlov=document.getElementById('uguruhOqTanlov');
-  if(!q){tanlov.style.display='none';tanlov.innerHTML='';return;}
   if(!_uoqAll.length){
     try{var r=await apiFetch(API+'/users/royxat');var d=await r.json();_uoqAll=d.users||[];}catch(e){}
   }
-  var mavjud=await uGuruhMavjudIDlar();
+  var mavjud=_uguruhAzolarCache.filter(function(u){return u.holat!=='kutilmoqda';}).map(function(u){return u.user_id;});
   var filtered=_uoqAll.filter(function(u){
-    return mavjud.indexOf(u.user_id)===-1&&((u.ism||'').toLowerCase().indexOf(q)>-1||(u.familiya||'').toLowerCase().indexOf(q)>-1||(u.telefon||'').indexOf(q)>-1);
-  }).slice(0,15);
-  tanlov.style.display='block';
-  if(!filtered.length){tanlov.innerHTML='<div style="padding:10px;text-align:center;font-size:.8rem;color:rgba(255,255,255,.4)">Topilmadi</div>';return;}
+    if(mavjud.indexOf(u.user_id)>-1)return false;
+    if(!q)return true;
+    return (u.ism||'').toLowerCase().indexOf(q)>-1||(u.familiya||'').toLowerCase().indexOf(q)>-1||(u.telefon||'').indexOf(q)>-1;
+  }).slice(0,30);
+  if(!filtered.length){tanlov.innerHTML='<div style="padding:10px;text-align:center;font-size:.8rem;color:rgba(255,255,255,.4)">'+(q?'Topilmadi':"Ro'yxatdan o'tgan o'quvchilar yo'q")+'</div>';return;}
   tanlov.innerHTML=filtered.map(function(u){
     return '<div onclick="uGuruhOqQosh('+u.user_id+')" style="padding:10px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:.85rem">➕ '+u.ism+' '+u.familiya+' <span style="color:rgba(255,255,255,.4);font-size:.75rem">'+u.telefon+'</span></div>';
   }).join('');
-}
-async function uGuruhMavjudIDlar(){
-  try{
-    var r=await apiFetch(API+'/guruh/'+_uguruhCur);
-    var d=await r.json();
-    return (d.oquvchilar||[]).map(function(u){return u.user_id;});
-  }catch(e){return [];}
 }
 async function uGuruhOqQosh(uid){
   try{
@@ -2621,15 +2628,42 @@ async function uGuruhOqQosh(uid){
     var d=await r.json();
     if(d.success){
       document.getElementById('uguruhOqSearch').value='';
-      document.getElementById('uguruhOqTanlov').style.display='none';
       uGuruhDetailLoad();
     }else alert('Xato: '+(d.detail||''));
   }catch(e){alert('Xato: '+e);}
 }
-async function uGuruhOqChiqar(uid){
+function uGuruhKutishFormToggle(){
+  var f=document.getElementById('uguruhKutishForm');
+  f.style.display=f.style.display==='none'?'block':'none';
+}
+async function uGuruhKutishQosh(){
+  var ism=document.getElementById('uguruhKutishIsm').value.trim();
+  var tel=document.getElementById('uguruhKutishTel').value.trim();
+  var xb=document.getElementById('uguruhKutishXb');
+  if(!tel){xb.textContent="Telefon raqamini kiriting";xb.style.color='#ff6b6b';return;}
+  xb.textContent='Yuklanmoqda...';xb.style.color='rgba(255,255,255,.5)';
+  try{
+    var r=await apiFetch(API+'/guruh/oquvchi/kutish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({guruh_id:_uguruhCur,telefon:tel,ism:ism,ustoz_id:CU.id})});
+    var d=await r.json();
+    if(!r.ok){xb.textContent='Xato: '+(d.detail||'');xb.style.color='#ff6b6b';return;}
+    if(d.holat==='faol'){
+      xb.textContent='✅ Bu raqam allaqachon ro\'yxatdan o\'tgan — to\'g\'ridan-to\'g\'ri qo\'shildi!';
+    }else{
+      xb.innerHTML='⏳ Kutish ro\'yxatiga qo\'shildi. O\'quvchiga quyidagi havolani yuboring:<br><b style="word-break:break-all;color:#00d4aa">https://t.me/AK_akademy_bot</b><br>U shu <b>'+esc(tel)+'</b> raqami bilan botda ro\'yxatdan o\'tsa, avtomatik guruhga qo\'shiladi.';
+    }
+    xb.style.color='rgba(255,255,255,.7)';
+    document.getElementById('uguruhKutishIsm').value='';
+    document.getElementById('uguruhKutishTel').value='';
+    uGuruhDetailLoad();
+  }catch(e){xb.textContent='Xato: '+e;xb.style.color='#ff6b6b';}
+}
+async function uGuruhOqChiqar(uid,tel){
   if(!confirm('Bu o\'quvchi guruhdan chiqarilsinmi?'))return;
   try{
-    var r=await apiFetch(API+'/guruh/oquvchi/ochir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({guruh_id:_uguruhCur,user_id:uid,ustoz_id:CU.id})});
+    var body={guruh_id:_uguruhCur,ustoz_id:CU.id};
+    if(uid)body.user_id=uid;
+    if(tel)body.telefon=tel;
+    var r=await apiFetch(API+'/guruh/oquvchi/ochir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     var d=await r.json();
     if(d.success)uGuruhDetailLoad();
     else alert('Xato: '+(d.detail||''));
