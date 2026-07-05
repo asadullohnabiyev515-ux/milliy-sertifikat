@@ -2912,6 +2912,7 @@ function temaToggle(){
   localStorage.setItem('tema',t);
   document.getElementById('tema-tog').textContent=t==='yorug'?'🌙':'☀️';
   if(gActive()&&gBoard.length) gRender();
+  bgYarat(localStorage.getItem('bgTur')||'kimyo');
 }
 (function(){
   var t=localStorage.getItem('tema')||'qorongu';
@@ -2931,6 +2932,14 @@ var BG_TEMALAR={
 };
 function bgYarat(tur){
   var t=BG_TEMALAR[tur]||BG_TEMALAR.kimyo;
+  var yorug=document.body.getAttribute('data-tema')==='yorug';
+  if(yorug){
+    document.body.style.background='';
+  }else if(tur==='yopiq'){
+    document.body.style.background='';
+  }else{
+    document.body.style.background='radial-gradient(circle at 50% -10%,rgba('+t.rgb+',0.22),transparent 55%),radial-gradient(circle at 100% 100%,rgba('+t.rgb+',0.1),transparent 50%),#0a0f1e';
+  }
   var bg=document.getElementById('kimyo-bg');
   if(!bg)return;
   bg.innerHTML='';
