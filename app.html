@@ -1675,6 +1675,7 @@ function appOch(){
   setInterval(elonBadgeYanila,5*60*1000);
   coinBadgeLoad();
   coinKunlikTekshir();
+  faollikBelgila();
   go('p1',0);
   if(urltab==='tester')setTimeout(function(){go('p7',4);tTab(2);},200);
 }
@@ -2135,6 +2136,13 @@ async function coinBadgeLoad(){
     var r=await fetch(API+'/coin/'+CU.id);
     var d=await r.json();
     coinBadgeYangila(d.coin||0);
+  }catch(e){}
+}
+async function faollikBelgila(){
+  if(!CU.id)return;
+  try{
+    await fetch(API+'/user/faollik',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({user_id:CU.id})});
   }catch(e){}
 }
 function coinKunlikTekshir(){
