@@ -363,7 +363,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
       <div style="font-weight:700;margin-bottom:8px">🔄 Trening</div>
       <div style="font-size:2rem;font-weight:800;color:#ff6b35;text-align:center;margin:12px 0" id="trsoni">0</div>
       <div style="font-size:.8rem;color:rgba(255,255,255,.4);text-align:center;margin-bottom:14px">ta xato savol</div>
-      <button class="btn" onclick="alert('Tez kunda!')" style="background:linear-gradient(135deg,#ff6b35,#ff9500);color:#fff">🚀 Boshlash</button>
+      <button class="btn" onclick="treningBoshla()" style="background:linear-gradient(135deg,#ff6b35,#ff9500);color:#fff">🚀 Boshlash</button>
     </div>
   </div>
 </div>
@@ -2093,6 +2093,29 @@ function tTab(n){
     document.getElementById('tb'+i).style.display=i===n?'block':'none';
   });
   if(n===2){ttMode='seq';ttSeqFanLoad();}
+  if(n===3)treningYuklash();
+}
+async function treningYuklash(){
+  var el=document.getElementById('trsoni');
+  if(!CU.id){el.textContent='0';return;}
+  try{
+    var r=await apiFetch(API+'/trening/'+CU.id);
+    var d=await r.json();
+    el.textContent=d.xato_soni||0;
+  }catch(e){el.textContent='0';}
+}
+async function treningBoshla(){
+  if(!CU.id)return;
+  try{
+    var r=await apiFetch(API+'/trening/'+CU.id);
+    var d=await r.json();
+    var savollar=d.savollar||[];
+    if(!savollar.length){alert("Sizda hozircha xato savol yo'q. Ajoyib natija! 🎉");return;}
+    ttMode='trening';
+    ttS=savollar;ttJav={};ttJ=0;
+    document.getElementById('ttitle').textContent='🔄 Trening';
+    ttKor();go('p7b',-1);
+  }catch(e){alert('Xato: '+e);}
 }
 async function ttFanGridLoad(gridId,onclickFn){
   var g=document.getElementById(gridId);
@@ -2123,7 +2146,9 @@ function ttOld(){if(ttJ>0){ttJ--;ttKor();}}
 function ttKeyin(){if(ttJ===ttS.length-1)ttNat();else{ttJ++;ttKor();}}
 async function ttNat(){
   try{
-    var r=await apiFetch(API+'/savol/tekshir?fan='+ttF+'&mavzu='+ttM,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ttJav)});
+    var r=ttMode==='trening'
+      ?await apiFetch(API+'/trening/tekshir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:CU.id,javoblar:ttJav})})
+      :await apiFetch(API+'/savol/tekshir?fan='+ttF+'&mavzu='+ttM+'&user_id='+(CU.id||0),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ttJav)});
     var d=await r.json();
     var b=d.ball||0;
     document.getElementById('ttball').textContent=b+'%';
@@ -2133,10 +2158,17 @@ async function ttNat(){
     document.getElementById('ttemoji').textContent=b>=80?'🏆':b>=60?'🎉':b>=40?'👍':'💪';
     document.getElementById('ttsub').textContent=b>=80?'Ajoyib!':b>=60?'Yaxshi!':b>=40?'Davom eting!':'Qayta urinib ko\'ring!';
     var xl=d.notogri||[];
-    document.getElementById('ttxatolar').innerHTML=xl.length?'<div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Xato javoblar</div>'+xl.map(function(x){return '<div class="ri" style="flex-direction:column;align-items:flex-start"><div style="font-size:.78rem;color:rgba(255,255,255,.4)">Savol #'+x.savol_id+'</div><div style="font-size:.85rem;margin-top:4px">Sizniki: <span style="color:#ff6b6b;font-weight:600">'+x.berilgan+'</span></div><div style="font-size:.85rem">To\'g\'ri: <span style="color:#00d4aa;font-weight:600">'+x.togri+'</span></div></div>';}).join(''):'';
+    document.getElementById('ttxatolar').innerHTML=xl.length?'<div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Xato javoblar</div>'+xl.map(function(x,xi){return '<div class="ri" style="flex-direction:column;align-items:flex-start"><div style="font-size:.78rem;color:rgba(255,255,255,.4)">'+(ttMode==='trening'?(xi+1)+'-savol':'Savol #'+x.savol_id)+'</div><div style="font-size:.85rem;margin-top:4px">Sizniki: <span style="color:#ff6b6b;font-weight:600">'+x.berilgan+'</span></div><div style="font-size:.85rem">To\'g\'ri: <span style="color:#00d4aa;font-weight:600">'+x.togri+'</span></div></div>';}).join(''):'';
     go('p7c',-1);
     var bArea=document.getElementById('ttnatbtnlar');
-    if(ttMode==='kurs'){
+    if(ttMode==='trening'){
+      var qoldi=d.qoldi||0;
+      if(qoldi>0){
+        bArea.innerHTML='<div style="text-align:center;padding:12px;color:#ff9500;font-weight:700;font-size:.95rem;margin-bottom:12px">Yana '+qoldi+" ta xato savol qoldi</div><button class=\"btn btn-green\" onclick=\"treningBoshla()\">🔄 Davom etish</button><button class=\"btn btn-out\" style=\"margin-top:8px\" onclick=\"go('p7',4);tTab(3)\">🔄 Trening</button>";
+      }else{
+        bArea.innerHTML='<div style="text-align:center;padding:12px;color:#00d4aa;font-weight:700;font-size:.95rem;margin-bottom:12px">🏆 Barcha xatolaringizni tuzatdingiz!</div><button class="btn btn-out" onclick="go(\'p7\',4);tTab(3)">🔄 Trening</button>';
+      }
+    }else if(ttMode==='kurs'){
       kursBallSave(kursMavzuCur,b);
       if(b>=60){
         if(!seqProgress(KURS_FAN)[kursMavzuCur])coinBer(10,'Mavzu topshirildi: '+kursMavzuCur);
