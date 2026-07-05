@@ -2923,19 +2923,12 @@ function temaToggle(){
 
 var BG_TEMALAR={
   kimyo:{nom:'🧪 Kimyo',rang:'#00d4aa',rgb:'0,212,170',belgi:['🧪','🧪','⚗️','⚗️','⚗️','🔬','🧫','🧬','H₂O','CO₂','NaCl','O₂','NH₃','HCl','CH₄','H₂SO₄','KOH','NaOH','CaCO₃','SO₂','KMnO₄','Fe','Na','Ca']},
-  matematika:{nom:'📐 Matematika',rang:'#a855f7',rgb:'168,85,247',belgi:['π','∑','√','∞','∫','Δ','+','×','÷','=','θ','%','∂','≈']},
-  biologiya:{nom:'🧬 Biologiya',rang:'#22c55e',rgb:'34,197,94',belgi:['🧬','🌿','🍃','🦠','🌱','🐛','🌻','🍀','DNA']},
-  kosmos:{nom:'🪐 Kosmos',rang:'#6366f1',rgb:'99,102,241',belgi:['🪐','🌌','🚀','☄️','🛰️','🌠','·','·']},
-  coin:{nom:'🪙 Oltin',rang:'#eab308',rgb:'234,179,8',belgi:['🪙','🪙','🪙','💰','💎','✦']},
-  yulduz:{nom:'✨ Yulduzlar',rang:'#facc15',rgb:'250,204,21',belgi:['✨','⭐','🌟','💫','✦','✧','·','·']},
-  yopiq:{nom:'⬛ Fonsiz',rang:'#888',rgb:'136,136,136',belgi:[]}
+  biologiya:{nom:'🧬 Biologiya',rang:'#22c55e',rgb:'34,197,94',belgi:['🧬','🌿','🍃','🦠','🌱','🐛','🌻','🍀','DNA']}
 };
 function bgYarat(tur){
   var t=BG_TEMALAR[tur]||BG_TEMALAR.kimyo;
   var yorug=document.body.getAttribute('data-tema')==='yorug';
   if(yorug){
-    document.body.style.background='';
-  }else if(tur==='yopiq'){
     document.body.style.background='';
   }else{
     document.body.style.background='radial-gradient(circle at 50% -10%,rgba('+t.rgb+',0.22),transparent 55%),radial-gradient(circle at 100% 100%,rgba('+t.rgb+',0.1),transparent 50%),#0a0f1e';
@@ -2962,6 +2955,7 @@ function bgYarat(tur){
 function bgGalleryOch(){
   var g=document.getElementById('bg-gallery-grid');
   var joriy=localStorage.getItem('bgTur')||'kimyo';
+  if(!BG_TEMALAR[joriy])joriy='kimyo';
   g.innerHTML=Object.keys(BG_TEMALAR).map(function(k){
     var t=BG_TEMALAR[k];
     var on=k===joriy;
