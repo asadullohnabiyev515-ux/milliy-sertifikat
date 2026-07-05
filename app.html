@@ -1557,6 +1557,28 @@ function apiFetch(url,opts,ms){
   var t=setTimeout(function(){ctrl.abort();},ms||12000);
   return fetch(url,Object.assign({},opts||{},{signal:ctrl.signal})).finally(function(){clearTimeout(t);});
 }
+function xatoJoriySahifa(){
+  var s='';
+  try{
+    document.querySelectorAll('.page').forEach(function(p){if(p.style.display==='block')s=p.id;});
+  }catch(e){}
+  return s;
+}
+function xatoYubor(xabar,manba,satr,stack){
+  try{
+    fetch(API+'/xato/qayd',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({xabar:String(xabar||''),manba:String(manba||''),satr:satr||0,
+        sahifa:xatoJoriySahifa(),user_id:(typeof CU!=='undefined'&&CU&&CU.id)||0,stack:String(stack||'')})});
+  }catch(e){}
+}
+window.onerror=function(msg,src,line,col,err){
+  xatoYubor(msg,src,line,err&&err.stack?err.stack:'');
+  return false;
+};
+window.addEventListener('unhandledrejection',function(ev){
+  var r=ev.reason;
+  xatoYubor('Promise rejection: '+(r&&r.message?r.message:String(r)),'',0,r&&r.stack?r.stack:'');
+});
 var tg=window.Telegram&&window.Telegram.WebApp?window.Telegram.WebApp:null;
 function tgSafeTopApply(){
   if(!tg)return;
