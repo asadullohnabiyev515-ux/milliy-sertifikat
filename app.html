@@ -452,18 +452,22 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
 
 <!-- USTOZ -->
 <div id="p9" class="page" style="padding-bottom:80px">
-  <div class="top"><div class="tlogo">Ustoz paneli</div><div class="av" id="av9">U</div></div>
-  <div class="tbtns" style="overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch">
-    <button class="tb on" id="ut1" onclick="uTab(1)">📝 Testlar</button>
-    <button class="tb off" id="ut2" onclick="uTab(2)">❓ Savollar</button>
-    <button class="tb off" id="ut3" onclick="uTab(3)">📚 Kitoblar</button>
-    <button class="tb off" id="ut4" onclick="uTab(4)">📄 Varaqlar</button>
-    <button class="tb off" id="ut5" onclick="uTab(5)">📢 E'lonlar</button>
-    <button class="tb off" id="ut6" onclick="uTab(6)">👥 O'quvchilar</button>
-    <button class="tb off" id="ut7" onclick="uTab(7)">📐 Kurs</button>
-    <button class="tb off" id="ut8" onclick="uTab(8)">👨‍👩‍👧‍👦 Guruhlar</button>
+  <div class="top">
+    <button id="u-back-btn" onclick="uBoshga()" style="display:none;background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
+    <div class="tlogo" id="u-panel-title">Ustoz paneli</div>
+    <div class="av" id="av9">U</div>
   </div>
-  <div id="ub1" style="padding:16px">
+  <div id="u-menu-grid" class="g2" style="padding:16px">
+    <div class="mc" onclick="uTab(1)"><div class="mi" style="background:rgba(0,212,170,.2)">📝</div><div class="mt">Testlar</div><div class="ms">Test yaratish va boshqarish</div></div>
+    <div class="mc" onclick="uTab(2)"><div class="mi" style="background:rgba(139,92,246,.2)">❓</div><div class="mt">Savollar</div><div class="ms">Savollar bazasi</div></div>
+    <div class="mc" onclick="uTab(3)"><div class="mi" style="background:rgba(255,107,53,.2)">📚</div><div class="mt">Kitoblar</div><div class="ms">O'quv adabiyotlar</div></div>
+    <div class="mc" onclick="uTab(4)"><div class="mi" style="background:rgba(0,136,255,.2)">📄</div><div class="mt">Varaqlar</div><div class="ms">Javob varaqalari</div></div>
+    <div class="mc" onclick="uTab(5)"><div class="mi" style="background:rgba(255,71,87,.2)">📢</div><div class="mt">E'lonlar</div><div class="ms">Yangiliklar joylash</div></div>
+    <div class="mc" onclick="uTab(6)"><div class="mi" style="background:rgba(99,102,241,.2)">👥</div><div class="mt">O'quvchilar</div><div class="ms">Ro'yxatdan o'tganlar</div></div>
+    <div class="mc" onclick="uTab(7)"><div class="mi" style="background:rgba(245,158,11,.2)">📐</div><div class="mt">Kurs</div><div class="ms">Matematika mavzulari</div></div>
+    <div class="mc" onclick="uTab(8)"><div class="mi" style="background:rgba(34,197,94,.2)">👨‍👩‍👧‍👦</div><div class="mt">Guruhlar</div><div class="ms">Sinf/guruh boshqaruvi</div></div>
+  </div>
+  <div id="ub1" style="display:none;padding:16px">
     <button class="btn btn-green" onclick="go('p9b',-1)" style="margin-bottom:14px">➕ Yangi test yaratish</button>
     <div id="utlist"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
   </div>
@@ -2526,9 +2530,12 @@ async function uLoad(){
   }catch(e){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Xato</div>';}
 }
 var _uoqAll=[];
+var U_TAB_NOMLARI={1:'📝 Testlar',2:'❓ Savollar',3:'📚 Kitoblar',4:'📄 Varaqlar',5:"📢 E'lonlar",6:"👥 O'quvchilar",7:'📐 Kurs',8:'👨‍👩‍👧‍👦 Guruhlar'};
 function uTab(n){
+  document.getElementById('u-menu-grid').style.display='none';
+  document.getElementById('u-back-btn').style.display='block';
+  document.getElementById('u-panel-title').textContent=U_TAB_NOMLARI[n]||'Ustoz paneli';
   [1,2,3,4,5,6,7,8].forEach(function(i){
-    document.getElementById('ut'+i).className='tb '+(i===n?'on':'off');
     document.getElementById('ub'+i).style.display=i===n?'block':'none';
   });
   if(n===1)uLoad();
@@ -2539,6 +2546,14 @@ function uTab(n){
   if(n===6)uOqLoad();
   if(n===7)uKursTabLoad();
   if(n===8)uGuruhLoad();
+}
+function uBoshga(){
+  [1,2,3,4,5,6,7,8].forEach(function(i){
+    document.getElementById('ub'+i).style.display='none';
+  });
+  document.getElementById('u-menu-grid').style.display='grid';
+  document.getElementById('u-back-btn').style.display='none';
+  document.getElementById('u-panel-title').textContent='Ustoz paneli';
 }
 async function uOqLoad(){
   var li=document.getElementById('uoqlist');
