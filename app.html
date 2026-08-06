@@ -5393,7 +5393,7 @@ function mdNorm(s){
     .replace(/\(([IVXLCDMivxlcdm,\s]+)\)/g,function(m,inner){
       return '('+inner.split(',').map(function(p){return mdRomAr(p.trim());}).join(',')+')'
     })
-    .replace(/\s+/g,' ')
+    .replace(/\s+/g,'')
     .toLowerCase();
 }
 
