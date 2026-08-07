@@ -5775,16 +5775,28 @@ function rfFind(){
   else if(partial.length)rfRenderResult(partial.map(function(p){return p.r;}),false);
   else rfRenderResult([],true);
 }
-function rfRenderResult(list,exact){
+function rfRenderResult(list,exact,ai){
   var wrap=document.getElementById('rf-result');
   wrap.innerHTML='';
   if(!list||!list.length){
-    wrap.innerHTML='<div style="text-align:center;padding:20px 0;opacity:.5;font-size:.82rem;line-height:1.6">'+
-      (rfInputs.length?"Mos reaksiya topilmadi 😕":"Formula(lar)ni kiriting va 'Aniqlash' tugmasini bosing")+
-      '</div>';
+    var msg=rfInputs.length?"Bazada mos reaksiya topilmadi 😕":"Formula(lar)ni kiriting va 'Aniqlash' tugmasini bosing";
+    wrap.innerHTML='<div style="text-align:center;padding:20px 0 10px;opacity:.5;font-size:.82rem;line-height:1.6">'+msg+'</div>';
+    if(rfInputs.length){
+      var btn=document.createElement('button');
+      btn.id='rf-ai-btn';
+      btn.textContent="🤖 AI orqali qidirish";
+      btn.style.cssText='width:100%;padding:11px;border-radius:12px;border:none;background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff;font-size:.86rem;font-weight:800;cursor:pointer';
+      btn.onclick=rfFindAI;
+      wrap.appendChild(btn);
+    }
     return;
   }
-  if(!exact){
+  if(ai){
+    var note=document.createElement('div');
+    note.style.cssText='font-size:.72rem;color:#c084fc;padding:2px 2px 4px';
+    note.textContent="🤖 Sun'iy intellekt tomonidan topildi — tekshirib ko'rish tavsiya etiladi:";
+    wrap.appendChild(note);
+  }else if(!exact){
     var note=document.createElement('div');
     note.style.cssText='font-size:.72rem;color:#facc15;padding:2px 2px 4px';
     note.textContent="⚠️ Aniq mos kelmadi, yaqin reaksiyalar ko'rsatilmoqda:";
@@ -5804,6 +5816,27 @@ function rfRenderResult(list,exact){
     d.innerHTML=html;
     wrap.appendChild(d);
   });
+}
+async function rfFindAI(){
+  var btn=document.getElementById('rf-ai-btn');
+  if(btn){btn.disabled=true;btn.textContent='⏳ AI qidiryapti...';btn.style.opacity='.6';}
+  try{
+    var res=await fetch(API+'/ai/reaksiya',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({formulas:rfInputs,dir:rfDir})});
+    var j=await res.json();
+    if(!res.ok||!j.success){throw new Error(j.detail||'xato');}
+    if(!j.topildi){
+      var wrap=document.getElementById('rf-result');
+      wrap.innerHTML='<div style="text-align:center;padding:20px 0;opacity:.5;font-size:.82rem;line-height:1.6">AI ham mos reaksiya topa olmadi 😕<br>Formulalarni tekshirib qayta urinib ko\'ring.</div>';
+      return;
+    }
+    var entry={eq:j.eq,reag:j.reag,mah:j.mah,tur:j.tur,shart:j.shart};
+    REAKSIYA_DB.push(entry);
+    rfRenderResult([entry],true,true);
+  }catch(e){
+    var wrap=document.getElementById('rf-result');
+    wrap.innerHTML='<div style="text-align:center;padding:20px 0;opacity:.5;font-size:.82rem;line-height:1.6">⚠️ AI bilan bog\'lanishda xatolik yuz berdi. Birozdan so\'ng qayta urinib ko\'ring.</div>';
+  }
 }
 function rrPageInit(){
   rrTab('search');
