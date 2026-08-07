@@ -235,7 +235,9 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <div class="card">
       <div style="font-weight:700;margin-bottom:6px">📝 Test kodini kiriting</div>
       <div style="font-size:.82rem;color:rgba(255,255,255,.4);margin-bottom:12px">Ustozingizdan olgan kodni kiriting</div>
-      <input class="inp" id="tkod" type="text" placeholder="Masalan: MAT2024" style="text-transform:uppercase"/>
+      <input class="inp" id="tkod" type="text" placeholder="Masalan: MAT2024" style="text-transform:uppercase;margin-bottom:12px"/>
+      <input class="inp" id="tism" type="text" placeholder="Ismingiz" style="margin-bottom:8px"/>
+      <input class="inp" id="tfamiliya" type="text" placeholder="Familiyangiz" style="margin-bottom:4px"/>
       <button class="btn btn-green" onclick="testBoshlash()" style="margin-top:12px">▶ Testni boshlash (dastur orqali)</button>
       <button class="btn btn-out" onclick="testFaqatRoyxat()" style="margin-top:8px">🖨️ Faqat ro'yxatdan o'tish (qog'ozda topshiraman)</button>
       <div class="xb" id="txb"></div>
@@ -1831,6 +1833,17 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
 <script>
 var API='https://milliy-imtihon.onrender.com';
 function esc(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
+// Ism/familiya kabi maydonlarni haqiqiy ism-familiyaga o'xshaydimi deb tekshiradi:
+// bo'sh/juda qisqa, faqat tinish belgisi (masalan "..") va 5+ ketma-ket bir xil
+// harf (masalan "aaaaa") — barchasi rad etiladi.
+function ismYaroqlimi(s){
+  s=(s||'').trim();
+  if(s.length<2)return false;
+  var harflar=s.replace(/[^a-zA-Zа-яА-ЯёЁʻʼ'’]/g,'');
+  if(harflar.length<2)return false;
+  if(/(.)\1{4,}/i.test(s))return false;
+  return true;
+}
 function apiFetch(url,opts,ms){
   var ctrl=new AbortController();
   var t=setTimeout(function(){ctrl.abort();},ms||12000);
@@ -1986,6 +1999,7 @@ function go(id,nav){
     var nj=document.getElementById('n-jadval');if(nj)nj.className='nitem on';
     var nu=document.getElementById('n-ustoz');if(nu)nu.className='nitem';
   }
+  if(id==='p2')tIsmFamiliyaOldindanTold();
   if(id==='p5')kLoad();
   if(id==='p6')rLoad();
   if(id==='p8')pLoad();
@@ -2124,8 +2138,8 @@ async function royxatSaqla(){
   var familiya=document.getElementById('rq-familiya').value.trim();
   var telefon=document.getElementById('rq-telefon').value.trim().replace(/\s|-/g,'');
   var xb=document.getElementById('rq-xb');
-  if(ism.length<2){xb.style.display='block';xb.textContent='Ism kamida 2 harf bo\'lsin!';return;}
-  if(familiya.length<2){xb.style.display='block';xb.textContent='Familiya kamida 2 harf bo\'lsin!';return;}
+  if(!ismYaroqlimi(ism)){xb.style.display='block';xb.textContent='Ismni to\'g\'ri kiriting!';return;}
+  if(!ismYaroqlimi(familiya)){xb.style.display='block';xb.textContent='Familiyani to\'g\'ri kiriting!';return;}
   if(!telefon.match(/^[+]?[0-9]{9,13}$/)){xb.style.display='block';xb.textContent='Telefon raqam noto\'g\'ri!';return;}
   xb.style.display='none';
   var btn=document.getElementById('rq-btn');
@@ -2153,9 +2167,26 @@ document.getElementById('boshbtn').onclick=function(){go('p1',0);document.getEle
 if(uid)setTimeout(kirish,300);
 
 // TEST
+function tIsmFamiliyaOldindanTold(){
+  var ei=document.getElementById('tism'), ef=document.getElementById('tfamiliya');
+  if(ei&&!ei.value&&ef&&!ef.value&&CU.name){
+    var parts=CU.name.trim().split(' ');
+    ei.value=parts[0]||'';
+    ef.value=parts.slice(1).join(' ')||'';
+  }
+}
+function tIsmFamiliyaOl(){
+  var ism=document.getElementById('tism').value.trim();
+  var familiya=document.getElementById('tfamiliya').value.trim();
+  if(!ismYaroqlimi(ism)){xb('txb','err','Ismingizni to\'g\'ri kiriting!');return null;}
+  if(!ismYaroqlimi(familiya)){xb('txb','err','Familiyangizni to\'g\'ri kiriting!');return null;}
+  return {ism:ism,familiya:familiya};
+}
 async function testBoshlash(){
   var kod=document.getElementById('tkod').value.trim().toUpperCase();
   if(!kod){xb('txb','err','Test kodini kiriting!');return;}
+  var if_=tIsmFamiliyaOl();
+  if(!if_)return;
   xb('txb','inf','Tekshirilmoqda...');
   try{
     var r=await apiFetch(API+'/test/tekshir/'+kod);
@@ -2163,9 +2194,9 @@ async function testBoshlash(){
     if(!d.topildi){xb('txb','err','Test topilmadi!');return;}
     if(d.tugadi){xb('txb','err','Bu test yakunlangan!');return;}
     var rr=await apiFetch(API+'/student/royxat',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({test_kod:kod,ism:CU.name,familiya:'',telefon:'',user_id:CU.id||0})});
+      body:JSON.stringify({test_kod:kod,ism:if_.ism,familiya:if_.familiya,telefon:'',user_id:CU.id||0})});
     var rd=await rr.json();
-    tUD={ism:CU.name,kod:kod,fan:d.fan,tur:d.tur||'milliy',soni:d.savollar_soni||40,vaqt:d.vaqt||90,vid:rd.varaq_id||'',savollar:null};
+    tUD={ism:if_.ism,kod:kod,fan:d.fan,tur:d.tur||'milliy',soni:d.savollar_soni||40,vaqt:d.vaqt||90,vid:rd.varaq_id||'',savollar:null};
     document.getElementById('tfan').textContent=d.fan;
     try{var sq=await apiFetch(API+'/test/savollar/'+kod);var sd=await sq.json();if(sd.bor)tUD.savollar=sd.savollar;}catch(e){}
     tJav={};tJ=0;tBelgi={};
@@ -2183,6 +2214,8 @@ async function testBoshlash(){
 async function testFaqatRoyxat(){
   var kod=document.getElementById('tkod').value.trim().toUpperCase();
   if(!kod){xb('txb','err','Test kodini kiriting!');return;}
+  var if_=tIsmFamiliyaOl();
+  if(!if_)return;
   document.getElementById('tfaqatroyxat-natija').style.display='none';
   xb('txb','inf','Tekshirilmoqda...');
   try{
@@ -2191,7 +2224,7 @@ async function testFaqatRoyxat(){
     if(!d.topildi){xb('txb','err','Test topilmadi!');return;}
     if(d.tugadi){xb('txb','err','Bu test yakunlangan!');return;}
     var rr=await apiFetch(API+'/student/royxat',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({test_kod:kod,ism:CU.name,familiya:'',telefon:'',user_id:CU.id||0})});
+      body:JSON.stringify({test_kod:kod,ism:if_.ism,familiya:if_.familiya,telefon:'',user_id:CU.id||0})});
     var rd=await rr.json();
     if(!rd.success){xb('txb','err',rd.xabar||"Ro'yxatdan o'tishda xatolik");return;}
     document.getElementById('txb').style.display='none';
