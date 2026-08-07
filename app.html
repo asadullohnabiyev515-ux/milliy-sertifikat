@@ -5718,7 +5718,7 @@ function rfAdd(){
   var inp=document.getElementById('rf-q');
   var v=inp.value.trim();
   if(!v)return;
-  rfInputs.push(v);
+  v.split(/[+,]|\bva\b/i).map(function(s){return s.trim();}).filter(function(s){return s;}).forEach(function(s){rfInputs.push(s);});
   inp.value='';
   rfRenderChips();
 }
@@ -5758,6 +5758,7 @@ function rfFormulaMatchCount(a,b){
   return matched;
 }
 function rfFind(){
+  if(document.getElementById('rf-q').value.trim())rfAdd();
   if(!rfInputs.length){rfRenderResult(null,true);return;}
   var side=rfDir==='fwd'?'reag':'mah';
   var exact=[],partial=[];
