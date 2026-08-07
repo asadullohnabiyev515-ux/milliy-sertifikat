@@ -440,11 +440,9 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   <div style="padding:0 16px 16px">
     <button onclick="pGuruhFormToggle()" style="width:100%;padding:13px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);border-radius:14px;color:#3b82f6;font-size:.92rem;font-weight:800;cursor:pointer">👨‍👩‍👧‍👦 Guruhga qo'shilish</button>
     <div id="pGuruhForm" style="display:none;margin-top:10px;background:rgba(255,255,255,.04);border-radius:14px;padding:14px">
-      <div style="font-size:.78rem;color:rgba(255,255,255,.5);margin-bottom:10px">Ustozingiz bergan guruh kodini kiriting</div>
-      <div style="display:flex;gap:8px">
-        <input class="inp" id="pGuruhKod" type="text" placeholder="Masalan: 9T48IX" style="margin:0;flex:1;text-transform:uppercase"/>
-        <button onclick="pGuruhSorovYubor()" style="width:auto;padding:0 16px;background:#3b82f6;border:none;border-radius:12px;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer">➤</button>
-      </div>
+      <div style="font-size:.78rem;color:rgba(255,255,255,.5);margin-bottom:10px">O'zingizning guruhingizni tanlang</div>
+      <input class="inp" id="pGuruhQidir" type="text" placeholder="🔍 Guruh yoki ustoz ismi bo'yicha qidirish..." oninput="pGuruhRoyxatFilter()" style="margin:0 0 10px"/>
+      <div id="pGuruhRoyxat" style="display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto"></div>
       <div id="pGuruhXb" style="font-size:.76rem;margin-top:8px"></div>
     </div>
   </div>
@@ -565,10 +563,6 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <button onclick="uGuruhOchir()" style="background:none;border:none;color:#ff6b6b;font-size:.85rem;cursor:pointer;font-weight:700">O'chirish</button>
   </div>
   <div style="padding:16px">
-    <div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:14px;padding:12px 14px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center">
-      <div><div style="font-size:.68rem;color:rgba(255,255,255,.4)">Qo'shilish kodi (o'quvchilarga bering)</div><div id="uguruhKodTxt" style="font-size:1.15rem;font-weight:800;color:#3b82f6;letter-spacing:2px">—</div></div>
-      <button onclick="uGuruhKodNusxa()" style="background:rgba(59,130,246,.15);border:none;border-radius:8px;color:#3b82f6;padding:7px 12px;font-size:.72rem;font-weight:700;cursor:pointer">📋 Nusxa</button>
-    </div>
     <div style="display:flex;gap:8px;margin-bottom:18px">
       <button onclick="uGuruhOqQoshOch()" style="flex:1;padding:13px;background:rgba(255,180,0,.1);border:1px solid rgba(255,180,0,.3);border-radius:12px;color:#ffb400;font-size:.85rem;font-weight:700;cursor:pointer">➕ O'quvchi qo'shish</button>
       <button onclick="uGuruhReytingOch()" style="flex:1;padding:13px;background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.3);border-radius:12px;color:gold;font-size:.85rem;font-weight:700;cursor:pointer">🏆 Reyting</button>
@@ -2670,29 +2664,58 @@ function refUlash(){
     alert('Havola nusxalandi!');
   }
 }
+var _pGuruhAll=[];
 function pGuruhFormToggle(){
   var f=document.getElementById('pGuruhForm');
-  f.style.display=f.style.display==='none'?'block':'none';
+  var willShow=f.style.display==='none';
+  f.style.display=willShow?'block':'none';
   document.getElementById('pGuruhXb').textContent='';
+  if(willShow)pGuruhRoyxatYukla();
 }
-async function pGuruhSorovYubor(){
-  var kod=document.getElementById('pGuruhKod').value.trim().toUpperCase();
+async function pGuruhRoyxatYukla(){
+  var wrap=document.getElementById('pGuruhRoyxat');
+  wrap.innerHTML='<div style="text-align:center;padding:16px"><div class="sp" style="margin:0 auto"></div></div>';
+  try{
+    var r=await fetch(API+'/guruh/hammasi?user_id='+(CU.id||0));
+    var d=await r.json();
+    _pGuruhAll=d.guruhlar||[];
+    pGuruhRoyxatFilter();
+  }catch(e){wrap.innerHTML='<div style="text-align:center;padding:16px;color:rgba(255,255,255,.4);font-size:.82rem">Xato</div>';}
+}
+function pGuruhRoyxatFilter(){
+  var q=(document.getElementById('pGuruhQidir').value||'').toLowerCase().trim();
+  var wrap=document.getElementById('pGuruhRoyxat');
+  var list=_pGuruhAll.filter(function(g){
+    return !q||g.nomi.toLowerCase().includes(q)||g.ustoz_ism.toLowerCase().includes(q);
+  });
+  if(!list.length){wrap.innerHTML='<div style="text-align:center;padding:16px;color:rgba(255,255,255,.4);font-size:.82rem">Guruh topilmadi</div>';return;}
+  wrap.innerHTML=list.map(function(g){
+    var holat=g.mening_holatim;
+    var tugma;
+    if(holat==='faol')tugma='<span style="font-size:.72rem;color:#00d4aa;font-weight:700">✅ A\'zosiz</span>';
+    else if(holat==='sorov')tugma='<span style="font-size:.72rem;color:#ffb400;font-weight:700">⏳ Kutilmoqda</span>';
+    else tugma='<button onclick="pGuruhSorovYubor(\''+g.guruh_id+'\',\''+esc(g.nomi)+'\')" style="background:#3b82f6;border:none;border-radius:8px;color:#fff;padding:6px 12px;font-size:.75rem;font-weight:700;cursor:pointer;white-space:nowrap">So\'rov yuborish</button>';
+    return '<div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border-radius:12px;padding:10px 12px">'+
+      '<div style="flex:1;min-width:0"><div style="font-size:.88rem;font-weight:700">'+esc(g.nomi)+'</div><div style="font-size:.7rem;color:rgba(255,255,255,.4)">👨‍🏫 '+esc(g.ustoz_ism)+' · '+g.oquvchilar_soni+" o'quvchi</div></div>"+
+      tugma+'</div>';
+  }).join('');
+}
+async function pGuruhSorovYubor(gid,nomi){
   var xb=document.getElementById('pGuruhXb');
-  if(!kod){xb.style.color='#ff6b6b';xb.textContent="Guruh kodini kiriting";return;}
   if(!CU.id){xb.style.color='#ff6b6b';xb.textContent="Avval ilovaga kiring";return;}
   xb.style.color='rgba(255,255,255,.5)';xb.textContent='Yuborilmoqda...';
   try{
     var r=await apiFetch(API+'/guruh/sorov',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({kod:kod,user_id:CU.id})});
+      body:JSON.stringify({guruh_id:gid,user_id:CU.id})});
     var d=await r.json();
     if(!r.ok){xb.style.color='#ff6b6b';xb.textContent=d.detail||'Xato';return;}
     if(d.holat==='faol'){
       xb.style.color='#00d4aa';xb.textContent="✅ "+(d.xabar||'Siz allaqachon a\'zosiz');
     }else{
       xb.style.color='#00d4aa';
-      xb.textContent="✅ So'rov yuborildi"+(d.guruh_nomi?' ("'+d.guruh_nomi+'")':'')+" — ustoz tasdiqlashini kuting.";
-      document.getElementById('pGuruhKod').value='';
+      xb.textContent="✅ \""+nomi+"\" guruhiga so'rov yuborildi — ustoz tasdiqlashini kuting.";
     }
+    pGuruhRoyxatYukla();
   }catch(e){xb.style.color='#ff6b6b';xb.textContent='Tarmoq xatosi';}
 }
 function coinKunlikTekshir(){
@@ -3125,6 +3148,7 @@ async function uBildirishnoma(){
 }
 // GURUHLAR
 var _uguruhCur='';
+var _ustozGuruhlarCache=[];
 async function uGuruhLoad(){
   var li=document.getElementById('uguruhlist');
   li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
@@ -3132,6 +3156,7 @@ async function uGuruhLoad(){
     var r=await apiFetch(API+'/guruh/royxat/'+CU.id);
     var d=await r.json();
     var list=d.guruhlar||[];
+    _ustozGuruhlarCache=list;
     if(!list.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Hozircha guruh yo\'q</div>';return;}
     li.innerHTML=list.map(function(g){
       var sorovBadge=g.sorovlar_soni?' <span style="background:rgba(255,180,0,.2);color:#ffb400;border-radius:20px;padding:2px 8px;font-size:.68rem;font-weight:800">'+g.sorovlar_soni+' so\'rov</span>':'';
@@ -3199,20 +3224,12 @@ async function uGuruhReytingLoad(){
     }).join('');
   }catch(e){el.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Xato</div>';}
 }
-var _uguruhKod='';
-function uGuruhKodNusxa(){
-  if(!_uguruhKod)return;
-  try{navigator.clipboard.writeText(_uguruhKod);}catch(e){}
-  alert('Kod nusxalandi: '+_uguruhKod);
-}
 async function uGuruhDetailLoad(){
   var el=document.getElementById('uguruhAzolar');
   el.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
   try{
     var r=await apiFetch(API+'/guruh/'+_uguruhCur);
     var d=await r.json();
-    _uguruhKod=d.kod||'';
-    document.getElementById('uguruhKodTxt').textContent=_uguruhKod||'—';
     var list=d.oquvchilar||[];
     _uguruhAzolarCache=list.filter(function(u){return u.holat==='faol';});
     document.getElementById('uguruhSoni').textContent=_uguruhAzolarCache.length;
@@ -3222,13 +3239,25 @@ async function uGuruhDetailLoad(){
     var boshqalar=list.filter(function(u){return u.holat!=='sorov';});
     var html='';
     if(sorovlar.length){
+      var boshqaGuruhlar=_ustozGuruhlarCache.filter(function(g){return g.guruh_id!==_uguruhCur;});
       html+='<div style="font-size:.72rem;font-weight:700;color:#ffb400;margin-bottom:8px">⏳ Qo\'shilish so\'rovlari ('+sorovlar.length+')</div>';
       html+=sorovlar.map(function(u){
-        return '<div class="ri" style="gap:10px;align-items:center;background:rgba(255,180,0,.06);border:1px solid rgba(255,180,0,.2)">'+
+        var kochirHtml='';
+        if(boshqaGuruhlar.length){
+          kochirHtml='<div style="display:flex;gap:6px;margin-top:8px">'+
+            '<select id="kochir-sel-'+u.user_id+'" style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:var(--c-fg);font-size:.72rem;padding:5px 6px">'+
+            boshqaGuruhlar.map(function(g){return '<option value="'+g.guruh_id+'">'+esc(g.nomi)+'</option>';}).join('')+
+            '</select>'+
+            '<button onclick="uGuruhSorovKochir('+u.user_id+')" style="background:rgba(59,130,246,.15);border:none;border-radius:8px;color:#3b82f6;padding:5px 10px;font-size:.7rem;cursor:pointer;font-weight:700;white-space:nowrap">🔄 Boshqa guruhga</button>'+
+            '</div>';
+        }
+        return '<div class="ri" style="flex-direction:column;align-items:stretch;gap:0;background:rgba(255,180,0,.06);border:1px solid rgba(255,180,0,.2)">'+
+          '<div style="display:flex;gap:10px;align-items:center">'+
           '<div class="av" style="width:36px;height:36px;border-radius:10px;font-size:.85rem;flex-shrink:0">'+(u.ism?u.ism.charAt(0):'?')+'</div>'+
           '<div style="flex:1"><div style="font-size:.88rem;font-weight:600">'+esc(u.ism||'Noma\'lum')+' '+esc(u.familiya||'')+'</div><div style="font-size:.72rem;color:rgba(255,255,255,.4)">'+esc(u.telefon||'')+'</div></div>'+
           '<button onclick="uGuruhSorovTasdiq('+u.user_id+')" style="background:rgba(0,212,170,.15);border:none;border-radius:8px;color:#00d4aa;padding:6px 10px;font-size:.72rem;cursor:pointer;font-weight:700;margin-right:4px">✅ Qabul</button>'+
-          '<button onclick="uGuruhOqChiqar('+u.user_id+',null)" style="background:rgba(255,59,48,.12);border:none;border-radius:8px;color:#ff6b6b;padding:6px 10px;font-size:.72rem;cursor:pointer;font-weight:700">✕ Rad</button></div>';
+          '<button onclick="uGuruhOqChiqar('+u.user_id+',null)" style="background:rgba(255,59,48,.12);border:none;border-radius:8px;color:#ff6b6b;padding:6px 10px;font-size:.72rem;cursor:pointer;font-weight:700">✕ Rad</button>'+
+          '</div>'+kochirHtml+'</div>';
       }).join('');
       html+='<div style="height:14px"></div>';
     }
@@ -3247,6 +3276,19 @@ async function uGuruhSorovTasdiq(uid){
   try{
     var r=await apiFetch(API+'/guruh/sorov/tasdiq',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({guruh_id:_uguruhCur,user_id:uid,ustoz_id:CU.id})});
+    var d=await r.json();
+    if(d.success){uGuruhDetailLoad();uGuruhLoad();}
+    else alert('Xato: '+(d.detail||''));
+  }catch(e){alert('Xato: '+e);}
+}
+async function uGuruhSorovKochir(uid){
+  var sel=document.getElementById('kochir-sel-'+uid);
+  if(!sel)return;
+  var yangiGid=sel.value;
+  if(!yangiGid)return;
+  try{
+    var r=await apiFetch(API+'/guruh/sorov/kochir',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({eski_guruh_id:_uguruhCur,yangi_guruh_id:yangiGid,user_id:uid,ustoz_id:CU.id})});
     var d=await r.json();
     if(d.success){uGuruhDetailLoad();uGuruhLoad();}
     else alert('Xato: '+(d.detail||''));
