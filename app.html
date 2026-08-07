@@ -236,8 +236,15 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
       <div style="font-weight:700;margin-bottom:6px">📝 Test kodini kiriting</div>
       <div style="font-size:.82rem;color:rgba(255,255,255,.4);margin-bottom:12px">Ustozingizdan olgan kodni kiriting</div>
       <input class="inp" id="tkod" type="text" placeholder="Masalan: MAT2024" style="text-transform:uppercase"/>
-      <button class="btn btn-green" onclick="testBoshlash()" style="margin-top:12px">▶ Testni boshlash</button>
+      <button class="btn btn-green" onclick="testBoshlash()" style="margin-top:12px">▶ Testni boshlash (dastur orqali)</button>
+      <button class="btn btn-out" onclick="testFaqatRoyxat()" style="margin-top:8px">🖨️ Faqat ro'yxatdan o'tish (qog'ozda topshiraman)</button>
       <div class="xb" id="txb"></div>
+      <div id="tfaqatroyxat-natija" style="display:none;margin-top:12px;background:rgba(0,212,170,.08);border:1px solid rgba(0,212,170,.25);border-radius:14px;padding:16px;text-align:center">
+        <div style="font-size:.8rem;color:rgba(255,255,255,.6);margin-bottom:6px">✅ Ro'yxatdan o'tdingiz!</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:4px">Sizning ID raqamingiz</div>
+        <div id="tfaqatroyxat-id" style="font-size:2rem;font-weight:800;color:#00d4aa;letter-spacing:2px"></div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:8px;line-height:1.5">Bu raqamni eslab qoling — agar ustoz sizga alohida ID bilan chop etilgan varaq bermagan bo'lsa, javob varag'ida shu raqamni doiralarga belgilaysiz.</div>
+      </div>
     </div>
   </div>
 </div>
@@ -2169,6 +2176,25 @@ async function testBoshlash(){
     }
     tKor();go('p3',1);
     document.getElementById('txb').style.display='none';
+  }catch(e){xb('txb','err','Serverga ulanib bo\'lmadi!');}
+}
+async function testFaqatRoyxat(){
+  var kod=document.getElementById('tkod').value.trim().toUpperCase();
+  if(!kod){xb('txb','err','Test kodini kiriting!');return;}
+  document.getElementById('tfaqatroyxat-natija').style.display='none';
+  xb('txb','inf','Tekshirilmoqda...');
+  try{
+    var r=await apiFetch(API+'/test/tekshir/'+kod);
+    var d=await r.json();
+    if(!d.topildi){xb('txb','err','Test topilmadi!');return;}
+    if(d.tugadi){xb('txb','err','Bu test yakunlangan!');return;}
+    var rr=await apiFetch(API+'/student/royxat',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({test_kod:kod,ism:CU.name,familiya:'',telefon:'',user_id:CU.id||0})});
+    var rd=await rr.json();
+    if(!rd.success){xb('txb','err',rd.xabar||"Ro'yxatdan o'tishda xatolik");return;}
+    document.getElementById('txb').style.display='none';
+    document.getElementById('tfaqatroyxat-id').textContent=rd.varaq_id||'—';
+    document.getElementById('tfaqatroyxat-natija').style.display='block';
   }catch(e){xb('txb','err','Serverga ulanib bo\'lmadi!');}
 }
 
