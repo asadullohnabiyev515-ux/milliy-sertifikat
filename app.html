@@ -514,11 +514,12 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   </div>
   <div id="ub9" style="display:none;padding:16px">
     <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:14px;line-height:1.5">
-      1) Test kodini kiriting va shablonni yuklab chop eting → 2) O'quvchilarga tarqating, ular doiralarni to'liq bo'yaydi → 3) To'ldirilgan varaqni tekis, yorug' joyda suratga olib, shu yerda skanerlang.
+      1) Test kodini kiriting → "🆔 Hammasi (ID bilan)" tugmasini bosing — har bir ro'yxatdan o'tgan o'quvchi uchun ismi va ID raqami allaqachon belgilangan alohida sahifali PDF yuklanadi (o'quvchi ID'ni o'zi bo'yashi shart emas). 2) Chop etib tarqating, ular faqat javob doiralarini bo'yaydi. 3) To'ldirilgan varaqni tekis, yorug' joyda suratga olib, shu yerda skanerlang.
     </div>
+    <input class="inp" id="uskan-test-kod" type="text" placeholder="Test kodi (masalan MATH01)" style="margin-bottom:8px"/>
     <div style="display:flex;gap:8px;margin-bottom:14px">
-      <input class="inp" id="uskan-test-kod" type="text" placeholder="Test kodi (masalan MATH01)" style="margin-top:0;flex:1"/>
-      <button class="btn btn-out" style="width:auto;margin-top:0;padding:0 16px;white-space:nowrap" onclick="uSkanShablonYukla()">📄 Shablon</button>
+      <button class="btn btn-out" style="margin-top:0;flex:1;font-size:.78rem" onclick="uSkanShablonYukla()">📄 Bo'sh shablon</button>
+      <button class="btn btn-out" style="margin-top:0;flex:1;font-size:.78rem;color:#3b82f6;border-color:rgba(59,130,246,.4)" onclick="uSkanRoyxatYukla()">🆔 Hammasi (ID bilan)</button>
     </div>
 
     <label for="uskan-file" style="display:block;width:100%;padding:14px;background:rgba(59,130,246,.1);border:1.5px dashed rgba(59,130,246,.4);border-radius:14px;color:#3b82f6;font-size:.88rem;font-weight:700;text-align:center;cursor:pointer;box-sizing:border-box">
@@ -2809,6 +2810,11 @@ function uSkanShablonYukla(){
   var kod=document.getElementById('uskan-test-kod').value.trim().toUpperCase();
   if(!kod){alert("Avval test kodini kiriting");return;}
   window.open(API+'/varaq/pdf/'+encodeURIComponent(kod),'_blank');
+}
+function uSkanRoyxatYukla(){
+  var kod=document.getElementById('uskan-test-kod').value.trim().toUpperCase();
+  if(!kod){alert("Avval test kodini kiriting");return;}
+  window.open(API+'/varaq/pdf_royxat/'+encodeURIComponent(kod),'_blank');
 }
 function uSkanFileTanlandi(ev){
   var f=ev.target.files&&ev.target.files[0];
