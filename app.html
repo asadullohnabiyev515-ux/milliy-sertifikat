@@ -5637,15 +5637,18 @@ function mbSearch(q){
 }
 
 // ── KIMYOVIY REAKSIYALAR BAZASI ─────────────────────────────────────────────
+// Qidiruv/topish uchun bog' belgilarini (=, ≡) ham e'tiborsiz qoldiradigan normalizatsiya
+// (mdNormF o'zi o'zgarmaydi — u "Nom va Formula" o'yinida aniq formulani tekshirish uchun ishlatiladi)
+function rrNormLoose(s){return mdNormF(s).replace(/[=≡]/g,'');}
 var RR_NAME_MAP=null;
 function rrNameMap(){
   if(RR_NAME_MAP)return RR_NAME_MAP;
   var map={};
-  mbBuildAll().forEach(function(it){map[mdNormF(it.f)]=it.n;});
+  mbBuildAll().forEach(function(it){map[rrNormLoose(it.f)]=it.n;});
   RR_NAME_MAP=map;
   return map;
 }
-function rrFormulaName(f){return rrNameMap()[mdNormF(f)]||'';}
+function rrFormulaName(f){return rrNameMap()[rrNormLoose(f)]||'';}
 function rrCard(r,role,formula){
   var d=document.createElement('div');
   d.style.cssText='background:linear-gradient(135deg,#132a1a,#0d1f14);border:1.5px solid #22c55e4d;border-radius:14px;padding:14px 16px';
@@ -5674,19 +5677,19 @@ function rrBoshga(){
 function rrSearch(q){
   q=q.trim();
   if(!q){rrBoshga();return;}
-  var qn=mdNormF(q).toLowerCase();
+  var qn=rrNormLoose(q).toLowerCase();
   var matches=[];
   REAKSIYA_DB.forEach(function(r){
     var hitReag=null,hitMah=null;
     r.reag.forEach(function(f){
       if(hitReag)return;
-      var fn=mdNormF(f).toLowerCase();
+      var fn=rrNormLoose(f).toLowerCase();
       var nm=rrFormulaName(f).toLowerCase();
       if(fn.indexOf(qn)!==-1||(nm&&nm.indexOf(qn)!==-1))hitReag=f;
     });
     r.mah.forEach(function(f){
       if(hitMah)return;
-      var fn=mdNormF(f).toLowerCase();
+      var fn=rrNormLoose(f).toLowerCase();
       var nm=rrFormulaName(f).toLowerCase();
       if(fn.indexOf(qn)!==-1||(nm&&nm.indexOf(qn)!==-1))hitMah=f;
     });
@@ -5738,8 +5741,8 @@ function rfRenderChips(){
 }
 function rfFormulaEqSet(a,b){
   if(a.length!==b.length)return false;
-  var bn=b.map(function(x){return mdNormF(x).toLowerCase();});
-  var an=a.map(function(x){return mdNormF(x).toLowerCase();});
+  var bn=b.map(function(x){return rrNormLoose(x).toLowerCase();});
+  var an=a.map(function(x){return rrNormLoose(x).toLowerCase();});
   for(var i=0;i<an.length;i++){
     var idx=bn.indexOf(an[i]);
     if(idx===-1)return false;
@@ -5748,10 +5751,10 @@ function rfFormulaEqSet(a,b){
   return true;
 }
 function rfFormulaMatchCount(a,b){
-  var bn=b.map(function(x){return mdNormF(x).toLowerCase();});
+  var bn=b.map(function(x){return rrNormLoose(x).toLowerCase();});
   var matched=0;
   a.forEach(function(x){
-    var xn=mdNormF(x).toLowerCase();
+    var xn=rrNormLoose(x).toLowerCase();
     var idx=bn.indexOf(xn);
     if(idx!==-1){bn.splice(idx,1);matched++;}
   });
