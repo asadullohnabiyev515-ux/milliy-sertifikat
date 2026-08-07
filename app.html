@@ -5831,12 +5831,24 @@ async function rfFindAI(){
       return;
     }
     var entry={eq:j.eq,reag:j.reag,mah:j.mah,tur:j.tur,shart:j.shart};
-    REAKSIYA_DB.push(entry);
+    if(!REAKSIYA_DB.some(function(r){return r.eq===entry.eq;}))REAKSIYA_DB.push(entry);
     rfRenderResult([entry],true,true);
   }catch(e){
     var wrap=document.getElementById('rf-result');
     wrap.innerHTML='<div style="text-align:center;padding:20px 0;opacity:.5;font-size:.82rem;line-height:1.6">⚠️ AI bilan bog\'lanishda xatolik yuz berdi. Birozdan so\'ng qayta urinib ko\'ring.</div>';
   }
+}
+var AI_CACHE_LOADED=false;
+function rrLoadAICache(){
+  if(AI_CACHE_LOADED)return;
+  AI_CACHE_LOADED=true;
+  fetch(API+'/ai/reaksiya_royxat').then(function(r){return r.json();}).then(function(j){
+    var existing={};
+    REAKSIYA_DB.forEach(function(r){existing[r.eq]=true;});
+    (j.reaksiyalar||[]).forEach(function(r){
+      if(!existing[r.eq]){REAKSIYA_DB.push(r);existing[r.eq]=true;}
+    });
+  }).catch(function(){AI_CACHE_LOADED=false;});
 }
 function rrPageInit(){
   rrTab('search');
@@ -5847,6 +5859,7 @@ function rrPageInit(){
   rfSetDir('fwd');
   rfRenderResult(null,true);
   rrBoshga();
+  rrLoadAICache();
 }
 
 // State
