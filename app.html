@@ -469,6 +469,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <div class="mc" onclick="uTab(6)"><div class="mi" style="background:rgba(99,102,241,.2)">👥</div><div class="mt">O'quvchilar</div><div class="ms">Ro'yxatdan o'tganlar</div></div>
     <div class="mc" onclick="uTab(7)"><div class="mi" style="background:rgba(245,158,11,.2)">📐</div><div class="mt">Kurs</div><div class="ms">Matematika mavzulari</div></div>
     <div class="mc" onclick="uTab(8)"><div class="mi" style="background:rgba(34,197,94,.2)">👨‍👩‍👧‍👦</div><div class="mt">Guruhlar</div><div class="ms">Sinf/guruh boshqaruvi</div></div>
+    <div class="mc" onclick="uTab(9)"><div class="mi" style="background:rgba(59,130,246,.2)">🖨️</div><div class="mt">Varaq skaneri</div><div class="ms">Javob varag'ini tekshirish</div></div>
   </div>
   <div id="ub1" style="display:none;padding:16px">
     <button class="btn btn-green" onclick="go('p9b',-1)" style="margin-bottom:8px">➕ Yangi test yaratish</button>
@@ -510,6 +511,26 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
       <button class="btn btn-green" style="width:auto;margin-top:0;padding:0 18px" onclick="uGuruhYarat()">➕</button>
     </div>
     <div id="uguruhlist"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
+  </div>
+  <div id="ub9" style="display:none;padding:16px">
+    <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:14px;line-height:1.5">
+      1) Test kodini kiriting va shablonni yuklab chop eting → 2) O'quvchilarga tarqating, ular doiralarni to'liq bo'yaydi → 3) To'ldirilgan varaqni tekis, yorug' joyda suratga olib, shu yerda skanerlang.
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <input class="inp" id="uskan-test-kod" type="text" placeholder="Test kodi (masalan MATH01)" style="margin-top:0;flex:1"/>
+      <button class="btn btn-out" style="width:auto;margin-top:0;padding:0 16px;white-space:nowrap" onclick="uSkanShablonYukla()">📄 Shablon</button>
+    </div>
+
+    <label for="uskan-file" style="display:block;width:100%;padding:14px;background:rgba(59,130,246,.1);border:1.5px dashed rgba(59,130,246,.4);border-radius:14px;color:#3b82f6;font-size:.88rem;font-weight:700;text-align:center;cursor:pointer;box-sizing:border-box">
+      📷 Varaq suratini oling / tanlang
+    </label>
+    <input type="file" id="uskan-file" accept="image/*" capture="environment" style="display:none" onchange="uSkanFileTanlandi(event)"/>
+    <div id="uskan-preview" style="display:none;margin-top:10px;text-align:center">
+      <img id="uskan-preview-img" style="max-width:100%;max-height:220px;border-radius:12px;border:1px solid rgba(255,255,255,.1)"/>
+    </div>
+    <button class="btn btn-green" id="uskan-btn" style="margin-top:12px;display:none" onclick="uSkanBoshla()">🔍 Skanerlash</button>
+
+    <div id="uskan-natija" style="margin-top:18px"></div>
   </div>
 </div>
 
@@ -2749,12 +2770,12 @@ async function uLoad(){
   }catch(e){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Xato</div>';}
 }
 var _uoqAll=[];
-var U_TAB_NOMLARI={1:'📝 Testlar',2:'❓ Savollar',3:'📚 Kitoblar',5:"📢 E'lonlar",6:"👥 O'quvchilar",7:'📐 Kurs',8:'👨‍👩‍👧‍👦 Guruhlar'};
+var U_TAB_NOMLARI={1:'📝 Testlar',2:'❓ Savollar',3:'📚 Kitoblar',5:"📢 E'lonlar",6:"👥 O'quvchilar",7:'📐 Kurs',8:'👨‍👩‍👧‍👦 Guruhlar',9:'🖨️ Varaq skaneri'};
 function uTab(n){
   document.getElementById('u-menu-grid').style.display='none';
   document.getElementById('u-back-btn').style.display='block';
   document.getElementById('u-panel-title').textContent=U_TAB_NOMLARI[n]||'Ustoz paneli';
-  [1,2,3,5,6,7,8].forEach(function(i){
+  [1,2,3,5,6,7,8,9].forEach(function(i){
     document.getElementById('ub'+i).style.display=i===n?'block':'none';
   });
   if(n===1)uLoad();
@@ -2764,15 +2785,142 @@ function uTab(n){
   if(n===6)uOqLoad();
   if(n===7)uKursTabLoad();
   if(n===8)uGuruhLoad();
+  if(n===9)uSkanReset();
 }
 function uBoshga(){
-  [1,2,3,5,6,7,8].forEach(function(i){
+  [1,2,3,5,6,7,8,9].forEach(function(i){
     document.getElementById('ub'+i).style.display='none';
   });
   document.getElementById('u-menu-grid').style.display='grid';
   document.getElementById('u-back-btn').style.display='none';
   document.getElementById('u-panel-title').textContent='Ustoz paneli';
 }
+
+// ── Varaq skaneri ────────────────────────────────────────────────────────
+var uSkanFile=null, uSkanJavoblar={}, uSkanTogri={}, uSkanVaraqId='', uSkanOquvchi=null;
+function uSkanReset(){
+  uSkanFile=null; uSkanJavoblar={}; uSkanTogri={}; uSkanVaraqId=''; uSkanOquvchi=null;
+  document.getElementById('uskan-file').value='';
+  document.getElementById('uskan-preview').style.display='none';
+  document.getElementById('uskan-btn').style.display='none';
+  document.getElementById('uskan-natija').innerHTML='';
+}
+function uSkanShablonYukla(){
+  var kod=document.getElementById('uskan-test-kod').value.trim().toUpperCase();
+  if(!kod){alert("Avval test kodini kiriting");return;}
+  window.open(API+'/varaq/pdf/'+encodeURIComponent(kod),'_blank');
+}
+function uSkanFileTanlandi(ev){
+  var f=ev.target.files&&ev.target.files[0];
+  if(!f)return;
+  uSkanFile=f;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    document.getElementById('uskan-preview-img').src=e.target.result;
+    document.getElementById('uskan-preview').style.display='block';
+  };
+  reader.readAsDataURL(f);
+  document.getElementById('uskan-btn').style.display='block';
+  document.getElementById('uskan-natija').innerHTML='';
+}
+async function uSkanBoshla(){
+  var kod=document.getElementById('uskan-test-kod').value.trim().toUpperCase();
+  if(!kod){alert("Test kodini kiriting");return;}
+  if(!uSkanFile){alert("Avval surat tanlang");return;}
+  var btn=document.getElementById('uskan-btn');
+  btn.disabled=true; btn.textContent='⏳ Skanerlanmoqda...';
+  var natija=document.getElementById('uskan-natija');
+  natija.innerHTML='';
+  try{
+    var fd=new FormData();
+    fd.append('test_kod', kod);
+    fd.append('n_savol', '40');
+    fd.append('rasm', uSkanFile);
+    var r=await fetch(API+'/skaner/rasm',{method:'POST',body:fd});
+    var d=await r.json();
+    if(!r.ok||!d.success){
+      natija.innerHTML='<div style="text-align:center;padding:16px;color:#ff6b6b;font-size:.85rem">⚠️ '+esc(d.detail||"Skanerlashda xatolik")+'</div>';
+      return;
+    }
+    uSkanJavoblar=d.javoblar||{};
+    uSkanTogri=d.togri_javoblar||{};
+    uSkanVaraqId=d.varaq_id||'';
+    uSkanOquvchi=d.oquvchi||null;
+    uSkanNatijaRender();
+  }catch(e){
+    natija.innerHTML='<div style="text-align:center;padding:16px;color:#ff6b6b;font-size:.85rem">⚠️ Tarmoq xatosi</div>';
+  }finally{
+    btn.disabled=false; btn.textContent='🔍 Skanerlash';
+  }
+}
+function uSkanJavobOzgardi(savol,val){ uSkanJavoblar[savol]=val; }
+function uSkanNatijaRender(){
+  var wrap=document.getElementById('uskan-natija');
+  var savollar=Object.keys(uSkanJavoblar).map(Number).sort(function(a,b){return a-b;});
+  var togriSoni=0, jamiBaholanadigan=0;
+  savollar.forEach(function(s){
+    var tj=(uSkanTogri[s]||'').toUpperCase();
+    if(tj){jamiBaholanadigan++; if((uSkanJavoblar[s]||'')===tj)togriSoni++;}
+  });
+
+  var html='';
+  html+='<div style="background:rgba(255,255,255,.05);border-radius:14px;padding:14px;margin-bottom:14px">';
+  html+='<div style="font-size:.78rem;color:rgba(255,255,255,.5);margin-bottom:4px">Varaq raqami (ID)</div>';
+  html+='<div style="font-size:1.1rem;font-weight:800;color:#3b82f6;margin-bottom:10px">'+(uSkanVaraqId||'Aniqlanmadi')+'</div>';
+  if(uSkanOquvchi){
+    html+='<div style="font-size:.85rem">👤 <b>'+esc(uSkanOquvchi.ism||'')+' '+esc(uSkanOquvchi.familiya||'')+'</b> (ro\'yxatdan aniqlandi)</div>';
+  }else{
+    html+='<div style="font-size:.78rem;color:#facc15;margin-bottom:8px">⚠️ O\'quvchi ro\'yxatdan avtomatik aniqlanmadi — ism familiyasini kiriting:</div>';
+    html+='<div style="display:flex;gap:6px">';
+    html+='<input class="inp" id="uskan-ism" type="text" placeholder="Ism" style="margin:0;flex:1"/>';
+    html+='<input class="inp" id="uskan-familiya" type="text" placeholder="Familiya" style="margin:0;flex:1"/>';
+    html+='</div>';
+  }
+  if(jamiBaholanadigan>0){
+    html+='<div style="font-size:.85rem;margin-top:10px">✅ To\'g\'ri: <b style="color:#00d4aa">'+togriSoni+'/'+jamiBaholanadigan+'</b></div>';
+  }
+  html+='</div>';
+
+  html+='<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:8px">Aniqlangan javoblar (xato bo\'lsa tuzating):</div>';
+  html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:6px;margin-bottom:16px">';
+  savollar.forEach(function(s){
+    var val=uSkanJavoblar[s]||'';
+    var tj=(uSkanTogri[s]||'').toUpperCase();
+    var xato=tj && val!==tj;
+    var brd=xato?'#ff6b6b':(val?'#00d4aa':'rgba(255,255,255,.15)');
+    html+='<div style="background:rgba(255,255,255,.04);border:1px solid '+brd+';border-radius:10px;padding:6px;text-align:center">';
+    html+='<div style="font-size:.65rem;color:rgba(255,255,255,.4);margin-bottom:3px">'+s+'</div>';
+    html+='<select onchange="uSkanJavobOzgardi('+s+',this.value)" style="width:100%;background:transparent;border:none;color:var(--c-fg);font-size:.85rem;font-weight:700;text-align:center">';
+    ['','A','B','C','D','E','F'].forEach(function(h){
+      html+='<option value="'+h+'"'+(val===h?' selected':'')+'>'+(h||'—')+'</option>';
+    });
+    html+='</select></div>';
+  });
+  html+='</div>';
+  html+='<button class="btn btn-green" onclick="uSkanSaqlash()">✅ Natijani saqlash</button>';
+  wrap.innerHTML=html;
+}
+async function uSkanSaqlash(){
+  var kod=document.getElementById('uskan-test-kod').value.trim().toUpperCase();
+  var body={test_kod:kod, varaq_id:uSkanVaraqId||'', javoblar:uSkanJavoblar};
+  if(!uSkanOquvchi){
+    var ism=(document.getElementById('uskan-ism')||{}).value||'';
+    var familiya=(document.getElementById('uskan-familiya')||{}).value||'';
+    if(!ism.trim()){alert("O'quvchi ismini kiriting");return;}
+    body.ism=ism.trim(); body.familiya=familiya.trim();
+  }
+  try{
+    var r=await fetch(API+'/natija/skaner',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    var d=await r.json();
+    if(!r.ok||!d.success){alert(d.detail||"Xatolik yuz berdi");return;}
+    var oq=d.oquvchi||{};
+    alert('✅ Saqlandi!\n'+(oq.ism||'')+' '+(oq.familiya||'')+'\nBall: '+d.ball+' ('+d.togri_soni+' to\'g\'ri)');
+    uSkanReset();
+  }catch(e){
+    alert("Tarmoq xatosi");
+  }
+}
+
 async function uOqLoad(){
   var li=document.getElementById('uoqlist');
   li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
