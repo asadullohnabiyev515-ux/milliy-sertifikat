@@ -1723,17 +1723,14 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
 <!-- KIMYOVIY MODDALAR BAZASI -->
 <div id="p-moddabaza" class="page" style="padding-bottom:80px">
   <div class="top">
-    <button id="mb-back-btn" onclick="mbBoshga()" style="display:none;background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
     <div class="tlogo" id="mb-title">📖 Moddalar bazasi</div>
-    <div style="width:34px"></div>
   </div>
   <div style="padding:4px 16px 6px">
     <input id="mb-q" type="search" placeholder="🔍 Formula, nomi yoki sinonimi bo'yicha qidirish..."
       oninput="mbSearch(this.value)"
       style="width:100%;background:rgba(255,255,255,.08);border:none;border-radius:12px;padding:9px 14px;color:var(--c-fg);font-size:.88rem;box-sizing:border-box;outline:none">
   </div>
-  <div id="mb-classes" class="g2" style="padding:16px"></div>
-  <div id="mb-items" style="display:none;padding:16px;flex-direction:column;gap:10px"></div>
+  <div id="mb-items" style="display:flex;padding:16px;flex-direction:column;gap:10px"></div>
 </div>
 
 <div id="p-elon" class="page" style="padding-bottom:80px">
@@ -5221,74 +5218,279 @@ var MD_CLASS={
   ]},
 };
 
-// ── MODDALAR BAZASI (MD_CLASS asosida) ─────────────────────────────────────
-function mbCard(it,col){
+// ── MODDALAR BAZASI uchun qo'shimcha (sinflanmagan) moddalar ──────────────────
+var MD_EXTRA=[
+  {f:'H',n:'Vodorod',a:'Kimyoviy element · Davriy sistema №1',t:'Kimyoviy elementlar'},
+  {f:'He',n:'Geliy',a:'Kimyoviy element · Davriy sistema №2',t:'Kimyoviy elementlar'},
+  {f:'Li',n:'Litiy',a:'Kimyoviy element · Davriy sistema №3',t:'Kimyoviy elementlar'},
+  {f:'Be',n:'Berilliy',a:'Kimyoviy element · Davriy sistema №4',t:'Kimyoviy elementlar'},
+  {f:'B',n:'Bor',a:'Kimyoviy element · Davriy sistema №5',t:'Kimyoviy elementlar'},
+  {f:'C',n:'Uglerod',a:'Kimyoviy element · Davriy sistema №6',t:'Kimyoviy elementlar'},
+  {f:'N',n:'Azot',a:'Kimyoviy element · Davriy sistema №7',t:'Kimyoviy elementlar'},
+  {f:'O',n:'Kislorod',a:'Kimyoviy element · Davriy sistema №8',t:'Kimyoviy elementlar'},
+  {f:'F',n:'Ftor',a:'Kimyoviy element · Davriy sistema №9',t:'Kimyoviy elementlar'},
+  {f:'Ne',n:'Neon',a:'Kimyoviy element · Davriy sistema №10',t:'Kimyoviy elementlar'},
+  {f:'Na',n:'Natriy',a:'Kimyoviy element · Davriy sistema №11',t:'Kimyoviy elementlar'},
+  {f:'Mg',n:'Magniy',a:'Kimyoviy element · Davriy sistema №12',t:'Kimyoviy elementlar'},
+  {f:'Al',n:'Alyuminiy',a:'Kimyoviy element · Davriy sistema №13',t:'Kimyoviy elementlar'},
+  {f:'Si',n:'Kremniy',a:'Kimyoviy element · Davriy sistema №14',t:'Kimyoviy elementlar'},
+  {f:'P',n:'Fosfor',a:'Kimyoviy element · Davriy sistema №15',t:'Kimyoviy elementlar'},
+  {f:'S',n:'Oltingugurt',a:'Kimyoviy element · Davriy sistema №16',t:'Kimyoviy elementlar'},
+  {f:'Cl',n:'Xlor',a:'Kimyoviy element · Davriy sistema №17',t:'Kimyoviy elementlar'},
+  {f:'Ar',n:'Argon',a:'Kimyoviy element · Davriy sistema №18',t:'Kimyoviy elementlar'},
+  {f:'K',n:'Kaliy',a:'Kimyoviy element · Davriy sistema №19',t:'Kimyoviy elementlar'},
+  {f:'Ca',n:'Kalsiy',a:'Kimyoviy element · Davriy sistema №20',t:'Kimyoviy elementlar'},
+  {f:'Sc',n:'Skandiy',a:'Kimyoviy element · Davriy sistema №21',t:'Kimyoviy elementlar'},
+  {f:'Ti',n:'Titan',a:'Kimyoviy element · Davriy sistema №22',t:'Kimyoviy elementlar'},
+  {f:'V',n:'Vanadiy',a:'Kimyoviy element · Davriy sistema №23',t:'Kimyoviy elementlar'},
+  {f:'Cr',n:'Xrom',a:'Kimyoviy element · Davriy sistema №24',t:'Kimyoviy elementlar'},
+  {f:'Mn',n:'Marganes',a:'Kimyoviy element · Davriy sistema №25',t:'Kimyoviy elementlar'},
+  {f:'Fe',n:'Temir',a:'Kimyoviy element · Davriy sistema №26',t:'Kimyoviy elementlar'},
+  {f:'Co',n:'Kobalt',a:'Kimyoviy element · Davriy sistema №27',t:'Kimyoviy elementlar'},
+  {f:'Ni',n:'Nikel',a:'Kimyoviy element · Davriy sistema №28',t:'Kimyoviy elementlar'},
+  {f:'Cu',n:'Mis',a:'Kimyoviy element · Davriy sistema №29',t:'Kimyoviy elementlar'},
+  {f:'Zn',n:'Rux',a:'Kimyoviy element · Davriy sistema №30',t:'Kimyoviy elementlar'},
+  {f:'Ga',n:'Galliy',a:'Kimyoviy element · Davriy sistema №31',t:'Kimyoviy elementlar'},
+  {f:'Ge',n:'Germaniy',a:'Kimyoviy element · Davriy sistema №32',t:'Kimyoviy elementlar'},
+  {f:'As',n:'Mishyak',a:'Kimyoviy element · Davriy sistema №33',t:'Kimyoviy elementlar'},
+  {f:'Se',n:'Selen',a:'Kimyoviy element · Davriy sistema №34',t:'Kimyoviy elementlar'},
+  {f:'Br',n:'Brom',a:'Kimyoviy element · Davriy sistema №35',t:'Kimyoviy elementlar'},
+  {f:'Kr',n:'Kripton',a:'Kimyoviy element · Davriy sistema №36',t:'Kimyoviy elementlar'},
+  {f:'Rb',n:'Rubidiy',a:'Kimyoviy element · Davriy sistema №37',t:'Kimyoviy elementlar'},
+  {f:'Sr',n:'Stronsiy',a:'Kimyoviy element · Davriy sistema №38',t:'Kimyoviy elementlar'},
+  {f:'Y',n:'Ittriy',a:'Kimyoviy element · Davriy sistema №39',t:'Kimyoviy elementlar'},
+  {f:'Zr',n:'Sirkoniy',a:'Kimyoviy element · Davriy sistema №40',t:'Kimyoviy elementlar'},
+  {f:'Nb',n:'Niobiy',a:'Kimyoviy element · Davriy sistema №41',t:'Kimyoviy elementlar'},
+  {f:'Mo',n:'Molibden',a:'Kimyoviy element · Davriy sistema №42',t:'Kimyoviy elementlar'},
+  {f:'Tc',n:'Texnetsiy',a:'Kimyoviy element · Davriy sistema №43',t:'Kimyoviy elementlar'},
+  {f:'Ru',n:'Ruteniy',a:'Kimyoviy element · Davriy sistema №44',t:'Kimyoviy elementlar'},
+  {f:'Rh',n:'Rodiy',a:'Kimyoviy element · Davriy sistema №45',t:'Kimyoviy elementlar'},
+  {f:'Pd',n:'Palladiy',a:'Kimyoviy element · Davriy sistema №46',t:'Kimyoviy elementlar'},
+  {f:'Ag',n:'Kumush',a:'Kimyoviy element · Davriy sistema №47',t:'Kimyoviy elementlar'},
+  {f:'Cd',n:'Kadmiy',a:'Kimyoviy element · Davriy sistema №48',t:'Kimyoviy elementlar'},
+  {f:'In',n:'Indiy',a:'Kimyoviy element · Davriy sistema №49',t:'Kimyoviy elementlar'},
+  {f:'Sn',n:'Qalay',a:'Kimyoviy element · Davriy sistema №50',t:'Kimyoviy elementlar'},
+  {f:'Sb',n:'Surma',a:'Kimyoviy element · Davriy sistema №51',t:'Kimyoviy elementlar'},
+  {f:'Te',n:'Tellur',a:'Kimyoviy element · Davriy sistema №52',t:'Kimyoviy elementlar'},
+  {f:'I',n:'Yod',a:'Kimyoviy element · Davriy sistema №53',t:'Kimyoviy elementlar'},
+  {f:'Xe',n:'Ksenon',a:'Kimyoviy element · Davriy sistema №54',t:'Kimyoviy elementlar'},
+  {f:'Cs',n:'Seziy',a:'Kimyoviy element · Davriy sistema №55',t:'Kimyoviy elementlar'},
+  {f:'Ba',n:'Bariy',a:'Kimyoviy element · Davriy sistema №56',t:'Kimyoviy elementlar'},
+  {f:'La',n:'Lantan',a:'Kimyoviy element · Davriy sistema №57',t:'Kimyoviy elementlar'},
+  {f:'Ce',n:'Seriy',a:'Kimyoviy element · Davriy sistema №58',t:'Kimyoviy elementlar'},
+  {f:'Pr',n:'Praseodim',a:'Kimyoviy element · Davriy sistema №59',t:'Kimyoviy elementlar'},
+  {f:'Nd',n:'Neodim',a:'Kimyoviy element · Davriy sistema №60',t:'Kimyoviy elementlar'},
+  {f:'Pm',n:'Prometiy',a:'Kimyoviy element · Davriy sistema №61',t:'Kimyoviy elementlar'},
+  {f:'Sm',n:'Samariy',a:'Kimyoviy element · Davriy sistema №62',t:'Kimyoviy elementlar'},
+  {f:'Eu',n:'Yevropiy',a:'Kimyoviy element · Davriy sistema №63',t:'Kimyoviy elementlar'},
+  {f:'Gd',n:'Gadoliniy',a:'Kimyoviy element · Davriy sistema №64',t:'Kimyoviy elementlar'},
+  {f:'Tb',n:'Terbiy',a:'Kimyoviy element · Davriy sistema №65',t:'Kimyoviy elementlar'},
+  {f:'Dy',n:'Disproziy',a:'Kimyoviy element · Davriy sistema №66',t:'Kimyoviy elementlar'},
+  {f:'Ho',n:'Golmiy',a:'Kimyoviy element · Davriy sistema №67',t:'Kimyoviy elementlar'},
+  {f:'Er',n:'Erbiy',a:'Kimyoviy element · Davriy sistema №68',t:'Kimyoviy elementlar'},
+  {f:'Tm',n:'Tuliy',a:'Kimyoviy element · Davriy sistema №69',t:'Kimyoviy elementlar'},
+  {f:'Yb',n:'Itterbiy',a:'Kimyoviy element · Davriy sistema №70',t:'Kimyoviy elementlar'},
+  {f:'Lu',n:'Lyutetsiy',a:'Kimyoviy element · Davriy sistema №71',t:'Kimyoviy elementlar'},
+  {f:'Hf',n:'Gafniy',a:'Kimyoviy element · Davriy sistema №72',t:'Kimyoviy elementlar'},
+  {f:'Ta',n:'Tantal',a:'Kimyoviy element · Davriy sistema №73',t:'Kimyoviy elementlar'},
+  {f:'W',n:'Volfram',a:'Kimyoviy element · Davriy sistema №74',t:'Kimyoviy elementlar'},
+  {f:'Re',n:'Reniy',a:'Kimyoviy element · Davriy sistema №75',t:'Kimyoviy elementlar'},
+  {f:'Os',n:'Osmiy',a:'Kimyoviy element · Davriy sistema №76',t:'Kimyoviy elementlar'},
+  {f:'Ir',n:'Iridiy',a:'Kimyoviy element · Davriy sistema №77',t:'Kimyoviy elementlar'},
+  {f:'Pt',n:'Platina',a:'Kimyoviy element · Davriy sistema №78',t:'Kimyoviy elementlar'},
+  {f:'Au',n:'Oltin',a:'Kimyoviy element · Davriy sistema №79',t:'Kimyoviy elementlar'},
+  {f:'Hg',n:'Simob',a:'Kimyoviy element · Davriy sistema №80',t:'Kimyoviy elementlar'},
+  {f:'Tl',n:'Talliy',a:'Kimyoviy element · Davriy sistema №81',t:'Kimyoviy elementlar'},
+  {f:'Pb',n:"Qo'rg'oshin",a:'Kimyoviy element · Davriy sistema №82',t:'Kimyoviy elementlar'},
+  {f:'Bi',n:'Vismut',a:'Kimyoviy element · Davriy sistema №83',t:'Kimyoviy elementlar'},
+  {f:'Po',n:'Poloniy',a:'Kimyoviy element · Davriy sistema №84',t:'Kimyoviy elementlar'},
+  {f:'At',n:'Astat',a:'Kimyoviy element · Davriy sistema №85',t:'Kimyoviy elementlar'},
+  {f:'Rn',n:'Radon',a:'Kimyoviy element · Davriy sistema №86',t:'Kimyoviy elementlar'},
+  {f:'Fr',n:'Fransiy',a:'Kimyoviy element · Davriy sistema №87',t:'Kimyoviy elementlar'},
+  {f:'Ra',n:'Radiy',a:'Kimyoviy element · Davriy sistema №88',t:'Kimyoviy elementlar'},
+  {f:'Ac',n:'Aktiniy',a:'Kimyoviy element · Davriy sistema №89',t:'Kimyoviy elementlar'},
+  {f:'Th',n:'Toriy',a:'Kimyoviy element · Davriy sistema №90',t:'Kimyoviy elementlar'},
+  {f:'Pa',n:'Protaktiniy',a:'Kimyoviy element · Davriy sistema №91',t:'Kimyoviy elementlar'},
+  {f:'U',n:'Uran',a:'Kimyoviy element · Davriy sistema №92',t:'Kimyoviy elementlar'},
+  {f:'Np',n:'Neptuniy',a:'Kimyoviy element · Davriy sistema №93',t:'Kimyoviy elementlar'},
+  {f:'Pu',n:'Plutoniy',a:'Kimyoviy element · Davriy sistema №94',t:'Kimyoviy elementlar'},
+  {f:'Am',n:'Amerisiy',a:'Kimyoviy element · Davriy sistema №95',t:'Kimyoviy elementlar'},
+  {f:'Cm',n:'Kyuriy',a:'Kimyoviy element · Davriy sistema №96',t:'Kimyoviy elementlar'},
+  {f:'Bk',n:'Berkliy',a:'Kimyoviy element · Davriy sistema №97',t:'Kimyoviy elementlar'},
+  {f:'Cf',n:'Kaliforniy',a:'Kimyoviy element · Davriy sistema №98',t:'Kimyoviy elementlar'},
+  {f:'Es',n:'Enshteyniy',a:'Kimyoviy element · Davriy sistema №99',t:'Kimyoviy elementlar'},
+  {f:'Fm',n:'Fermiy',a:'Kimyoviy element · Davriy sistema №100',t:'Kimyoviy elementlar'},
+  {f:'Md',n:'Mendeleviy',a:'Kimyoviy element · Davriy sistema №101',t:'Kimyoviy elementlar'},
+  {f:'No',n:'Nobeliy',a:'Kimyoviy element · Davriy sistema №102',t:'Kimyoviy elementlar'},
+  {f:'Lr',n:'Lourensiy',a:'Kimyoviy element · Davriy sistema №103',t:'Kimyoviy elementlar'},
+  {f:'Rf',n:'Rezerfordiy',a:'Kimyoviy element · Davriy sistema №104',t:'Kimyoviy elementlar'},
+  {f:'Db',n:'Dubniy',a:'Kimyoviy element · Davriy sistema №105',t:'Kimyoviy elementlar'},
+  {f:'Sg',n:'Siborgiy',a:'Kimyoviy element · Davriy sistema №106',t:'Kimyoviy elementlar'},
+  {f:'Bh',n:'Boriy',a:'Kimyoviy element · Davriy sistema №107',t:'Kimyoviy elementlar'},
+  {f:'Hs',n:'Xassiy',a:'Kimyoviy element · Davriy sistema №108',t:'Kimyoviy elementlar'},
+  {f:'Mt',n:'Meytneriy',a:'Kimyoviy element · Davriy sistema №109',t:'Kimyoviy elementlar'},
+  {f:'Ds',n:'Darmshtatiy',a:'Kimyoviy element · Davriy sistema №110',t:'Kimyoviy elementlar'},
+  {f:'Rg',n:'Rentgeniy',a:'Kimyoviy element · Davriy sistema №111',t:'Kimyoviy elementlar'},
+  {f:'Cn',n:'Kopernitsiy',a:'Kimyoviy element · Davriy sistema №112',t:'Kimyoviy elementlar'},
+  {f:'Nh',n:'Nixoniy',a:'Kimyoviy element · Davriy sistema №113',t:'Kimyoviy elementlar'},
+  {f:'Fl',n:'Fleroviy',a:'Kimyoviy element · Davriy sistema №114',t:'Kimyoviy elementlar'},
+  {f:'Mc',n:'Moskoviy',a:'Kimyoviy element · Davriy sistema №115',t:'Kimyoviy elementlar'},
+  {f:'Lv',n:'Livermoriy',a:'Kimyoviy element · Davriy sistema №116',t:'Kimyoviy elementlar'},
+  {f:'Ts',n:'Tennesin',a:'Kimyoviy element · Davriy sistema №117',t:'Kimyoviy elementlar'},
+  {f:'Og',n:'Oganeson',a:'Kimyoviy element · Davriy sistema №118',t:'Kimyoviy elementlar'},
+  {f:'LiCl',n:'Litiy xlorid',a:'',t:'Tuzlar'},
+  {f:'Li₂SO₄',n:'Litiy sulfat',a:'',t:'Tuzlar'},
+  {f:'LiNO₃',n:'Litiy nitrat',a:'',t:'Tuzlar'},
+  {f:'Li₂CO₃',n:'Litiy karbonat',a:'',t:'Tuzlar'},
+  {f:'SrCl₂',n:'Stronsiy xlorid',a:'',t:'Tuzlar'},
+  {f:'SrSO₄',n:'Stronsiy sulfat',a:'Selestin',t:'Tuzlar'},
+  {f:'Sr(NO₃)₂',n:'Stronsiy nitrat',a:'',t:'Tuzlar'},
+  {f:'SrCO₃',n:'Stronsiy karbonat',a:'Stronsianit',t:'Tuzlar'},
+  {f:'NiCl₂',n:'Nikel(II) xlorid',a:'',t:'Tuzlar'},
+  {f:'NiSO₄',n:'Nikel(II) sulfat',a:'',t:'Tuzlar'},
+  {f:'Ni(NO₃)₂',n:'Nikel(II) nitrat',a:'',t:'Tuzlar'},
+  {f:'CoCl₂',n:'Kobalt(II) xlorid',a:'',t:'Tuzlar'},
+  {f:'CoSO₄',n:'Kobalt(II) sulfat',a:'',t:'Tuzlar'},
+  {f:'Co(NO₃)₂',n:'Kobalt(II) nitrat',a:'',t:'Tuzlar'},
+  {f:'CrCl₃',n:'Xrom(III) xlorid',a:'',t:'Tuzlar'},
+  {f:'Cr₂(SO₄)₃',n:'Xrom(III) sulfat',a:'',t:'Tuzlar'},
+  {f:'Cr(NO₃)₃',n:'Xrom(III) nitrat',a:'',t:'Tuzlar'},
+  {f:'SnCl₂',n:'Qalay(II) xlorid',a:'',t:'Tuzlar'},
+  {f:'SnSO₄',n:'Qalay(II) sulfat',a:'',t:'Tuzlar'},
+  {f:'MnCl₂',n:'Marganes(II) xlorid',a:'',t:'Tuzlar'},
+  {f:'MnSO₄',n:'Marganes(II) sulfat',a:'',t:'Tuzlar'},
+  {f:'Mn(NO₃)₂',n:'Marganes(II) nitrat',a:'',t:'Tuzlar'},
+  {f:'Ag₂SO₄',n:'Kumush sulfat',a:'',t:'Tuzlar'},
+  {f:'Ag₂CO₃',n:'Kumush karbonat',a:'',t:'Tuzlar'},
+  {f:'Ag₂S',n:'Kumush sulfid',a:'Argentit (qorayish sababchisi)',t:'Tuzlar'},
+  {f:'Zn(NO₃)₂',n:'Rux nitrat',a:'',t:'Tuzlar'},
+  {f:'ZnS',n:'Rux sulfid',a:'Sfalerit (rux rudasi)',t:'Tuzlar'},
+  {f:'ZnCO₃',n:'Rux karbonat',a:'Smitsonit',t:'Tuzlar'},
+  {f:'CuS',n:'Mis(II) sulfid',a:'',t:'Tuzlar'},
+  {f:'Cu(NO₃)₂',n:'Mis(II) nitrat',a:'',t:'Tuzlar'},
+  {f:'Al(NO₃)₃',n:'Alyuminiy nitrat',a:'',t:'Tuzlar'},
+  {f:'Al₂S₃',n:'Alyuminiy sulfid',a:'',t:'Tuzlar'},
+  {f:'AlPO₄',n:'Alyuminiy fosfat',a:'',t:'Tuzlar'},
+  {f:'Fe(NO₃)₂',n:'Temir(II) nitrat',a:'',t:'Tuzlar'},
+  {f:'FeS',n:'Temir(II) sulfid',a:'Troilit',t:'Tuzlar'},
+  {f:'FeCO₃',n:'Temir(II) karbonat',a:'Siderit',t:'Tuzlar'},
+  {f:'Fe(NO₃)₃',n:'Temir(III) nitrat',a:'',t:'Tuzlar'},
+  {f:'PbSO₄',n:"Qo'rg'oshin(II) sulfat",a:'Anglezit',t:'Tuzlar'},
+  {f:'Pb(NO₃)₂',n:"Qo'rg'oshin(II) nitrat",a:'',t:'Tuzlar'},
+  {f:'PbS',n:"Qo'rg'oshin(II) sulfid",a:"Galenit (qo'rg'oshin rudasi)",t:'Tuzlar'},
+  {f:'PbCO₃',n:"Qo'rg'oshin(II) karbonat",a:'Serussit',t:'Tuzlar'},
+  {f:'CaS',n:'Kalsiy sulfid',a:'',t:'Tuzlar'},
+  {f:'Ca₃(PO₄)₂',n:'Kalsiy fosfat',a:'Suyak va tish mineral asosi',t:'Tuzlar'},
+  {f:'CaSiO₃',n:'Kalsiy silikat',a:'Vollastonit',t:'Tuzlar'},
+  {f:'Mg₃(PO₄)₂',n:'Magniy fosfat',a:'',t:'Tuzlar'},
+  {f:'MgSiO₃',n:'Magniy silikat',a:'',t:'Tuzlar'},
+  {f:'Ba(NO₃)₂',n:'Bariy nitrat',a:'',t:'Tuzlar'},
+  {f:'BaS',n:'Bariy sulfid',a:'',t:'Tuzlar'},
+  {f:'Na₂S',n:'Natriy sulfid',a:'',t:'Tuzlar'},
+  {f:'K₂S',n:'Kaliy sulfid',a:'',t:'Tuzlar'},
+  {f:'(NH₄)₂CO₃',n:'Ammoniy karbonat',a:'',t:'Tuzlar'},
+  {f:'(NH₄)₃PO₄',n:'Ammoniy fosfat',a:'',t:'Tuzlar'},
+  {f:'(NH₄)₂S',n:'Ammoniy sulfid',a:'',t:'Tuzlar'},
+  {f:'CaC₂',n:'Kalsiy karbid',a:'Atsetilen olishda ishlatiladi',t:'Tuzlar'},
+  {f:'CaF₂',n:'Kalsiy ftorid',a:'Flyuorit',t:'Tuzlar'},
+  {f:'Na₂SO₃',n:'Natriy sulfit',a:'',t:'Tuzlar'},
+  {f:'NaF',n:'Natriy ftorid',a:'Tish pastasi tarkibida',t:'Tuzlar'},
+  {f:'Na₂O₂',n:'Natriy peroksid',a:'',t:'Tuzlar'},
+  {f:'Na₂HPO₄',n:'Natriy gidrofosfat',a:'',t:'Tuzlar'},
+  {f:'NaH₂PO₄',n:'Natriy digidrofosfat',a:'',t:'Tuzlar'},
+  {f:'KBr',n:'Kaliy bromid',a:'',t:'Tuzlar'},
+  {f:'KI',n:'Kaliy yodid',a:'Yodlangan tuz tarkibida',t:'Tuzlar'},
+  {f:'KClO₃',n:'Kaliy xlorat',a:'Bertolet tuzi',t:'Tuzlar'},
+  {f:'K₃PO₄',n:'Kaliy fosfat',a:'',t:'Tuzlar'},
+  {f:'KHCO₃',n:'Kaliy gidrokarbonat',a:'',t:'Tuzlar'},
+  {f:'NH₄HCO₃',n:'Ammoniy gidrokarbonat',a:"Oziq-ovqat qo'shimchasi E503",t:'Tuzlar'},
+  {f:'CaSO₃',n:'Kalsiy sulfit',a:'',t:'Tuzlar'},
+  {f:'Cu₂S',n:'Mis(I) sulfid',a:'Xalkozin',t:'Tuzlar'},
+  {f:'FeS₂',n:'Temir disulfid',a:'Pirit · "Ahmoq oltin"',t:'Tuzlar'},
+  {f:'PbCrO₄',n:"Qo'rg'oshin xromat",a:'Krokoit, sariq pigment',t:'Tuzlar'},
+  {f:'SnCl₄',n:'Qalay(IV) xlorid',a:'',t:'Tuzlar'},
+  {f:'Co(OH)₂',n:'Kobalt(II) gidroksid',a:'',t:'Tuzlar'},
+  {f:'C₃H₇NO₂',n:'Alanin',a:'',t:'Aminokislotalar'},
+  {f:'C₅H₁₁NO₂',n:'Valin',a:'',t:'Aminokislotalar'},
+  {f:'C₆H₁₃NO₂',n:'Leysin',a:'',t:'Aminokislotalar'},
+  {f:'C₆H₁₃NO₂',n:'Izoleysin',a:'',t:'Aminokislotalar'},
+  {f:'C₅H₉NO₂',n:'Prolin',a:'',t:'Aminokislotalar'},
+  {f:'C₉H₁₁NO₂',n:'Fenilalanin',a:'',t:'Aminokislotalar'},
+  {f:'C₁₁H₁₂N₂O₂',n:'Triptofan',a:'',t:'Aminokislotalar'},
+  {f:'C₅H₁₁NO₂S',n:'Metionin',a:'',t:'Aminokislotalar'},
+  {f:'C₃H₇NO₃',n:'Serin',a:'',t:'Aminokislotalar'},
+  {f:'C₄H₉NO₃',n:'Treonin',a:'',t:'Aminokislotalar'},
+  {f:'C₃H₇NO₂S',n:'Sistein',a:'',t:'Aminokislotalar'},
+  {f:'C₉H₁₁NO₃',n:'Tirozin',a:'',t:'Aminokislotalar'},
+  {f:'C₄H₈N₂O₃',n:'Asparagin',a:'',t:'Aminokislotalar'},
+  {f:'C₅H₁₀N₂O₃',n:'Glutamin',a:'',t:'Aminokislotalar'},
+  {f:'C₄H₇NO₄',n:'Asparagin kislota',a:'',t:'Aminokislotalar'},
+  {f:'C₅H₉NO₄',n:'Glutamin kislota',a:'',t:'Aminokislotalar'},
+  {f:'C₆H₁₄N₂O₂',n:'Lizin',a:'',t:'Aminokislotalar'},
+  {f:'C₆H₁₄N₄O₂',n:'Arginin',a:'',t:'Aminokislotalar'},
+  {f:'C₆H₉N₃O₂',n:'Gistidin',a:'',t:'Aminokislotalar'},
+  {f:'CO(NH₂)₂',n:'Mochevina',a:'Karbamid · Urea',t:'Dori va biomolekulalar'},
+  {f:'C₉H₈O₄',n:'Atsetilsalitsil kislota',a:'Aspirin',t:'Dori va biomolekulalar'},
+  {f:'C₈H₉NO₂',n:'Paratsetamol',a:'Atsetaminofen',t:'Dori va biomolekulalar'},
+  {f:'C₈H₁₀N₄O₂',n:'Kofein',a:'',t:'Dori va biomolekulalar'},
+  {f:'C₆H₈O₇',n:'Limon kislota',a:'Sitrat kislota',t:'Dori va biomolekulalar'},
+  {f:'C₃H₆O₃',n:'Sut kislota',a:'Laktat kislota',t:'Dori va biomolekulalar'},
+  {f:'C₆H₈O₆',n:'Askorbin kislota',a:'Vitamin C',t:'Dori va biomolekulalar'},
+  {f:'C₅H₄N₄O₃',n:'Siydik kislota',a:'Urat kislota',t:'Dori va biomolekulalar'},
+  {f:'C₂₇H₄₆O',n:'Xolesterin',a:'',t:'Dori va biomolekulalar'},
+  {f:'C₁₀H₁₄N₂',n:'Nikotin',a:'',t:'Dori va biomolekulalar'},
+  {f:'O₃',n:'Ozon',a:'Kislorod allotropi',t:'Kundalik va sanoat moddalari'},
+  {f:'NH₃',n:'Ammiak',a:'Nashatir spirti hidi',t:'Kundalik va sanoat moddalari'},
+  {f:'Na₂B₄O₇',n:'Bura',a:'Boraks',t:'Kundalik va sanoat moddalari'},
+  {f:'KAl(SO₄)₂',n:'Achchiqtosh',a:'Kaliy alyuminiy sulfat',t:'Kundalik va sanoat moddalari'},
+  {f:'SiO₂·nH₂O',n:'Silikagel',a:'Namlik yutuvchi',t:'Kundalik va sanoat moddalari'},
+];
+
+// ── MODDALAR BAZASI (yagona, sinflanmagan ro'yxat: MD_CLASS + MD_EXTRA) ────────
+var MD_ALL=null;
+function mbBuildAll(){
+  if(MD_ALL)return MD_ALL;
+  var arr=[];
+  Object.keys(MD_CLASS).forEach(function(k){
+    var c=MD_CLASS[k];
+    c.items.forEach(function(it){arr.push({f:it.f,n:it.n,a:it.a,t:c.title});});
+  });
+  (MD_EXTRA||[]).forEach(function(it){arr.push(it);});
+  MD_ALL=arr;
+  return arr;
+}
+function mbCard(it){
   var d=document.createElement('div');
-  d.style.cssText='background:linear-gradient(135deg,#1a2a4a,#0d1f3a);border:1.5px solid '+col+'4d;border-radius:14px;padding:14px 16px';
-  var html='<div style="font-size:1.1rem;font-weight:800;color:'+col+'">'+it.f+'</div>'+
+  d.style.cssText='background:linear-gradient(135deg,#1a2a4a,#0d1f3a);border:1.5px solid #a855f74d;border-radius:14px;padding:14px 16px';
+  var html='<div style="font-size:1.1rem;font-weight:800;color:#a855f7">'+it.f+'</div>'+
     '<div style="font-size:.92rem;font-weight:700;margin-top:4px">'+it.n+'</div>';
   if(it.a) html+='<div style="font-size:.75rem;opacity:.5;margin-top:4px">'+it.a+'</div>';
+  if(it.t) html+='<div style="font-size:.65rem;color:rgba(255,255,255,.35);margin-top:6px;text-transform:uppercase;letter-spacing:.5px">'+it.t+'</div>';
   d.innerHTML=html;
   return d;
 }
-function mbRenderClasses(){
-  var wrap=document.getElementById('mb-classes');
-  wrap.innerHTML='';
-  Object.keys(MD_CLASS).forEach(function(k){
-    var c=MD_CLASS[k];
-    var d=document.createElement('div');
-    d.className='mc';
-    d.style.cssText='border-left:3px solid '+c.col+';background:linear-gradient(135deg,'+c.col+'1a,rgba(255,255,255,.03));text-align:center;cursor:pointer';
-    d.onclick=function(kk){return function(){mbOpenClass(kk)}}(k);
-    d.innerHTML='<div style="font-size:2rem;margin-bottom:6px">'+c.ico+'</div><div class="mt">'+c.title+'</div><div class="ms">'+c.items.length+" ta modda</div>";
-    wrap.appendChild(d);
-  });
-}
-function mbOpenClass(k){
-  var c=MD_CLASS[k];
-  document.getElementById('mb-q').value='';
-  document.getElementById('mb-classes').style.display='none';
-  document.getElementById('mb-back-btn').style.display='block';
-  document.getElementById('mb-title').textContent=c.ico+' '+c.title;
+function mbRenderList(list){
   var wrap=document.getElementById('mb-items');
   wrap.style.display='flex';
   wrap.innerHTML='';
-  c.items.forEach(function(it){wrap.appendChild(mbCard(it,c.col));});
+  if(!list.length){wrap.innerHTML='<div style="text-align:center;padding:30px 0;opacity:.5;font-size:.85rem">Hech narsa topilmadi</div>';return;}
+  list.forEach(function(it){wrap.appendChild(mbCard(it));});
 }
 function mbBoshga(){
-  document.getElementById('mb-back-btn').style.display='none';
-  document.getElementById('mb-title').textContent="📖 Moddalar bazasi";
   document.getElementById('mb-q').value='';
-  document.getElementById('mb-items').style.display='none';
-  document.getElementById('mb-items').innerHTML='';
-  document.getElementById('mb-classes').style.display='grid';
-  mbRenderClasses();
+  var all=mbBuildAll();
+  document.getElementById('mb-title').textContent="📖 Moddalar bazasi ("+all.length+" ta)";
+  mbRenderList(all);
 }
 function mbSearch(q){
   q=q.trim().toLowerCase();
   if(!q){mbBoshga();return;}
-  document.getElementById('mb-classes').style.display='none';
-  document.getElementById('mb-back-btn').style.display='block';
   document.getElementById('mb-title').textContent='🔎 Qidiruv natijalari';
-  var wrap=document.getElementById('mb-items');
-  wrap.style.display='flex';
-  wrap.innerHTML='';
-  var topildi=0;
-  Object.keys(MD_CLASS).forEach(function(k){
-    var c=MD_CLASS[k];
-    c.items.forEach(function(it){
-      var hay=(it.f+' '+it.n+' '+(it.a||'')).toLowerCase();
-      if(hay.indexOf(q)===-1)return;
-      topildi++;
-      var card=mbCard(it,c.col);
-      var tag=document.createElement('div');
-      tag.style.cssText='font-size:.65rem;color:rgba(255,255,255,.35);margin-top:6px;text-transform:uppercase;letter-spacing:.5px';
-      tag.textContent=c.ico+' '+c.title;
-      card.appendChild(tag);
-      wrap.appendChild(card);
-    });
+  var res=mbBuildAll().filter(function(it){
+    var hay=(it.f+' '+it.n+' '+(it.a||'')+' '+(it.t||'')).toLowerCase();
+    return hay.indexOf(q)!==-1;
   });
-  if(!topildi)wrap.innerHTML='<div style="text-align:center;padding:30px 0;opacity:.5;font-size:.85rem">Hech narsa topilmadi</div>';
+  mbRenderList(res);
 }
 
 // State
