@@ -2325,7 +2325,7 @@ async function tYubor(){
   for(var i=0;i<tUD.soni;i++){if(!tJav[i])tJav[i]='';}
   try{
     var r=await apiFetch(API+'/natija/yuborish',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({test_kod:tUD.kod,ism:tUD.ism,familiya:'',telefon:'',user_id:CU.id||0,javoblar:tJav,varaq_id:tUD.vid||''})});
+      body:JSON.stringify({test_kod:tUD.kod,ism:tUD.ism,familiya:'',telefon:'',user_id:CU.id||0,javoblar:tJav,varaq_id:tUD.vid||''})},25000);
     var d=await r.json();
     if(r.ok&&d.success){
       var em=d.foiz>=80?'🏆':d.foiz>=60?'🎉':d.foiz>=40?'👍':'💪';
@@ -2338,7 +2338,7 @@ async function tYubor(){
       document.getElementById('nav').style.display='none';
       go('p3c',-1);document.getElementById('p3c').style.display='flex';
     }else{xb('yxb','err',d.detail||'Xato');btn.disabled=false;btn.textContent='📨 Yuborish';}
-  }catch(e){xb('yxb','err','Xato');btn.disabled=false;btn.textContent='📨 Yuborish';}
+  }catch(e){xb('yxb','err',e&&e.name==='AbortError'?"Server uyg'onmoqda, 20-30soniyadan so'ng qayta urining":'Xato');btn.disabled=false;btn.textContent='📨 Yuborish';}
 }
 
 // KITOBLAR
@@ -3829,11 +3829,11 @@ async function uTestSaqla(){
   btn.disabled=true;btn.textContent='Saqlanmoqda...';
   try{
     var r=await apiFetch(API+'/test/yarat',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({kod:kod,fan:fan,ustoz_id:CU.id,javoblar:uJavoblar,tur:uTurVal==='m'?'milliy':'oddiy',savollar_soni:jami})});
+      body:JSON.stringify({kod:kod,fan:fan,ustoz_id:CU.id,javoblar:uJavoblar,tur:uTurVal==='m'?'milliy':'oddiy',savollar_soni:jami})},25000);
     var d=await r.json();
     if(d.success){alert('Test yaratildi! Kod: '+kod);go('p9',6);uTab(1);}
     else{xb('ujxb','err',d.detail||'Xato');btn.disabled=false;btn.textContent='💾 Saqlash';}
-  }catch(e){xb('ujxb','err','Xato');btn.disabled=false;btn.textContent='💾 Saqlash';}
+  }catch(e){xb('ujxb','err',e&&e.name==='AbortError'?"Server uyg'onmoqda, 20-30soniyadan so'ng qayta urining":'Xato');btn.disabled=false;btn.textContent='💾 Saqlash';}
 }
 
 // SAVOL
