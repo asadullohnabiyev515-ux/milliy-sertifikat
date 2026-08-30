@@ -299,6 +299,10 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <img id="tsrasm" style="display:none;max-width:100%;border-radius:10px;margin-bottom:14px"/>
     <div id="tvar"></div>
     <div id="tochiq" style="display:none"><input class="inp" id="toinp" type="text" placeholder="Javobingizni yozing..."/></div>
+    <div id="tkop" style="display:none">
+      <div id="tkop-list" style="display:flex;flex-direction:column;gap:8px"></div>
+      <button type="button" onclick="tKopQosh()" style="margin-top:8px;background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.3);border-radius:8px;padding:8px;width:100%;color:#00d4aa;font-weight:700;cursor:pointer">+ Yana javob qo'shish</button>
+    </div>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 16px">
     <button class="btn btn-out" onclick="tOld()" id="toldin">← Oldingi</button>
@@ -1872,6 +1876,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
 <script>
 var API='https://milliy-imtihon.onrender.com';
 function esc(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
+function escAttr(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
 // Ism/familiya kabi maydonlarni haqiqiy ism-familiyaga o'xshaydimi deb tekshiradi:
 // bo'sh/juda qisqa, faqat tinish belgisi (masalan "..") va 5+ ketma-ket bir xil
 // harf (masalan "aaaaa") — barchasi rad etiladi.
@@ -1997,7 +2002,10 @@ function tXaritaYangi(){
   g.innerHTML=html;
 }
 function tSakra(i){
-  if(tUD.tur==='milliy'&&tJ>=35){var v=document.getElementById('toinp').value.trim();if(v)tJav[tJ+1]=v;}
+  if(tUD.tur==='milliy'&&tJ>=35){
+    if(tJ>=40){var j=tKopYigish(tJ+1);if(j)tJav[tJ+1]=j;}
+    else{var v=document.getElementById('toinp').value.trim();if(v)tJav[tJ+1]=v;}
+  }
   tJ=i;tKor();
 }
 function tChiq(){
@@ -2280,22 +2288,29 @@ function tKor(){
   document.getElementById('tfill').style.width=(n/jami*100)+'%';
   document.getElementById('toldin').disabled=n===0;
   document.getElementById('tkeyin').textContent=n===jami-1?'✅ Tekshirish':'Keyingi →';
-  var vs=['A','B','C','D'],och=false;
-  if(tur==='milliy'){if(n>=32&&n<=34)vs=['A','B','C','D','E','F'];if(n>=35)och=true;}
+  var vs=['A','B','C','D'],och=false,kop=false;
+  if(tur==='milliy'){
+    if(n>=32&&n<=34)vs=['A','B','C','D','E','F'];
+    if(n>=35&&n<=39)och=true;
+    if(n>=40)kop=true;
+  }
   var savol=tUD.savollar&&tUD.savollar[n]?tUD.savollar[n]:null;
-  document.getElementById('tstext').textContent=savol?savol.savol:'Javobni tanlang:';
+  document.getElementById('tstext').textContent=savol?savol.savol:(kop?"Bilgan barcha javoblaringizni kiriting:":'Javobni tanlang:');
   document.getElementById('tstext').style.fontSize=savol?'.9rem':'1rem';
   var tsr=document.getElementById('tsrasm');
   if(savol&&savol.rasm_url){tsr.src=savol.rasm_url;tsr.style.display='block';}else{tsr.style.display='none';tsr.src='';}
-  var vb=document.getElementById('tvar'),ob=document.getElementById('tochiq');
-  if(!och){
-    vb.style.display='block';ob.style.display='none';
+  var vb=document.getElementById('tvar'),ob=document.getElementById('tochiq'),kb=document.getElementById('tkop');
+  if(kop){
+    vb.style.display='none';ob.style.display='none';kb.style.display='block';
+    tKopRender(n+1);
+  }else if(!och){
+    vb.style.display='block';ob.style.display='none';kb.style.display='none';
     vb.innerHTML=vs.map(function(v){
       var vtxt=savol&&savol.variantlar&&savol.variantlar[v]?savol.variantlar[v]:v+' variant';
       return '<button onclick="tV(\''+v+'\')" class="vb'+(tJav[n+1]===v?' sel':'')+'"><span class="vbg">'+v+'</span>'+vtxt+'</button>';
     }).join('');
   }else{
-    vb.style.display='none';ob.style.display='block';
+    vb.style.display='none';ob.style.display='block';kb.style.display='none';
     document.getElementById('toinp').value=tJav[n+1]||'';
   }
   var bb=document.getElementById('tbelgiBtn');
@@ -2304,8 +2319,22 @@ function tKor(){
 }
 function tV(v){tJav[tJ+1]=v;tKor();}
 function tOld(){if(tJ>0){tJ--;tKor();}}
+var tKopJav={};
+function tKopRender(n){
+  if(!tKopJav[n]||!tKopJav[n].length)tKopJav[n]=[''];
+  var list=document.getElementById('tkop-list');
+  list.innerHTML=tKopJav[n].map(function(v,i){
+    return '<input class="inp" value="'+escAttr(v)+'" oninput="tKopYoz('+n+','+i+',this.value)" placeholder="'+(i+1)+'-javob..."/>';
+  }).join('');
+}
+function tKopYoz(n,i,v){if(!tKopJav[n])tKopJav[n]=[];tKopJav[n][i]=v;}
+function tKopQosh(){var n=tJ+1;if(!tKopJav[n])tKopJav[n]=[''];tKopJav[n].push('');tKopRender(n);}
+function tKopYigish(n){return (tKopJav[n]||[]).map(function(s){return (s||'').trim();}).filter(Boolean).join('|');}
 function tKeyin(){
-  if(tUD.tur==='milliy'&&tJ>=35){var v=document.getElementById('toinp').value.trim();if(v)tJav[tJ+1]=v;}
+  if(tUD.tur==='milliy'&&tJ>=35){
+    if(tJ>=40){var j=tKopYigish(tJ+1);if(j)tJav[tJ+1]=j;}
+    else{var v=document.getElementById('toinp').value.trim();if(v)tJav[tJ+1]=v;}
+  }
   if(tJ===tUD.soni-1){
     document.getElementById('yism').textContent=CU.name;
     document.getElementById('ykod').textContent=tUD.kod;
@@ -3880,21 +3909,36 @@ function uSoniT(s){
   uSoni=s;
   [5,10,15,20,25,30,35,40].forEach(function(x){var e=document.getElementById('us'+x);if(e)e.className='vb'+(x===s?' sel':'');});
 }
+var uKopJav={};
+function uKopRender(n){
+  if(!uKopJav[n]||!uKopJav[n].length)uKopJav[n]=[''];
+  var list=document.getElementById('ujkop'+n+'-list');
+  if(!list)return;
+  list.innerHTML=uKopJav[n].map(function(v,i){
+    return '<input class="inp" value="'+escAttr(v)+'" oninput="uKopYoz('+n+','+i+',this.value)" placeholder="'+(i+1)+'-to\'g\'ri javob..." style="margin-bottom:6px"/>';
+  }).join('');
+}
+function uKopYoz(n,i,v){if(!uKopJav[n])uKopJav[n]=[];uKopJav[n][i]=v;}
+function uKopQosh(n){if(!uKopJav[n])uKopJav[n]=[''];uKopJav[n].push('');uKopRender(n);}
 function uJavoblargaO(){
   var fan=document.getElementById('ufan').value.trim();
   var kod=document.getElementById('ukod').value.trim().toUpperCase();
   if(!fan||!kod){xb('utxb','err','Fan va kodni kiriting!');return;}
-  var jami=uTurVal==='m'?40:uSoni;
-  uJavoblar={};
+  var jami=uTurVal==='m'?43:uSoni;
+  uJavoblar={};uKopJav={};
   document.getElementById('ujtitle').textContent=fan+' ('+kod+')';
   var li=document.getElementById('ujlist');
   var html='';
   for(var i=0;i<jami;i++){
     var n=i+1;
     var hl=uTurVal==='m'&&n>=33&&n<=35?['A','B','C','D','E','F']:['A','B','C','D'];
-    var och=uTurVal==='m'&&n>=36;
-    html+='<div class="card" style="margin-bottom:10px"><div style="font-size:.8rem;color:#00d4aa;font-weight:700;margin-bottom:8px">'+n+'-savol</div>';
-    if(!och){
+    var och=uTurVal==='m'&&n>=36&&n<=40;
+    var kop=uTurVal==='m'&&n>=41;
+    html+='<div class="card" style="margin-bottom:10px"><div style="font-size:.8rem;color:#00d4aa;font-weight:700;margin-bottom:8px">'+n+'-savol'+(kop?' <span style="color:rgba(255,255,255,.4);font-weight:400">(bir nechta to\'g\'ri javob)</span>':'')+'</div>';
+    if(kop){
+      html+='<div id="ujkop'+n+'-list" style="display:flex;flex-direction:column;gap:6px"></div>'+
+            '<button type="button" onclick="uKopQosh('+n+')" style="margin-top:6px;background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.3);border-radius:8px;padding:8px;width:100%;color:#00d4aa;font-weight:700;cursor:pointer">+ Yana to\'g\'ri javob qo\'shish</button>';
+    }else if(!och){
       html+='<div style="display:grid;grid-template-columns:repeat('+(hl.length===4?4:3)+',1fr);gap:6px">';
       hl.forEach(function(h){html+='<button onclick="ujT('+n+',\''+h+'\')" id="uj'+n+h+'" class="vb" style="justify-content:center;padding:10px"><span class="vbg">'+h+'</span></button>';});
       html+='</div>';
@@ -3904,6 +3948,7 @@ function uJavoblargaO(){
     html+='</div>';
   }
   li.innerHTML=html;
+  if(uTurVal==='m'){for(var kn=41;kn<=43;kn++)uKopRender(kn);}
   go('p9e',-1);
 }
 function ujT(s,h){
@@ -3917,10 +3962,16 @@ function ujT(s,h){
 async function uTestSaqla(){
   var fan=document.getElementById('ufan').value.trim();
   var kod=document.getElementById('ukod').value.trim().toUpperCase();
-  var jami=uTurVal==='m'?40:uSoni;
+  var jami=uTurVal==='m'?43:uSoni;
   for(var i=36;i<=40;i++){var e=document.getElementById('ujoch'+i);if(e&&e.value.trim())uJavoblar[String(i)]=e.value.trim();}
+  if(uTurVal==='m'){
+    for(var ki=41;ki<=43;ki++){
+      var joined=(uKopJav[ki]||[]).map(function(s){return (s||'').trim();}).filter(Boolean).join('|');
+      if(joined)uJavoblar[String(ki)]=joined;
+    }
+  }
   var cnt=Object.keys(uJavoblar).length;
-  var min=uTurVal==='m'?35:jami;
+  var min=uTurVal==='m'?38:jami;
   if(cnt<min){xb('ujxb','err','Kamida '+min+' javob kiriting! ('+cnt+')');return;}
   var btn=document.getElementById('ujbtn');
   btn.disabled=true;btn.textContent='Saqlanmoqda...';

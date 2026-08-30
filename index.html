@@ -77,7 +77,7 @@ input:focus{border-color:#1d4ed8}
 <div id="s-test" class="sahifa">
 <div class="karta">
 <div class="progress-info">
-<span id="prog-matn">1 / 40</span>
+<span id="prog-matn">1 / 43</span>
 <span id="prog-foiz">0%</span>
 </div>
 <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
@@ -87,6 +87,10 @@ input:focus{border-color:#1d4ed8}
 <div id="variantlar-blok" class="variantlar"></div>
 <div id="ochiq-blok" style="display:none">
 <input class="ochiq-input" id="ochiq-input" type="text" placeholder="Javobingizni yozing..."/>
+</div>
+<div id="kop-blok" style="display:none">
+<div id="kop-list" style="display:flex;flex-direction:column;gap:8px"></div>
+<button type="button" class="btn btn-outline" style="margin-top:8px" onclick="kopQosh()">+ Yana javob qo'shish</button>
 </div>
 <div class="nav-btns">
 <button class="btn btn-outline" onclick="oldinga()" id="btn-oldin">Oldingi</button>
@@ -126,7 +130,9 @@ const userId = tg?.initDataUnsafe?.user?.id ?? null;
 const urlKod = new URLSearchParams(window.location.search).get('kod');
 if(urlKod) document.getElementById('test-kod').value = urlKod;
 
-let joriyAvol = 1, javoblar = {}, userData = {};
+let joriyAvol = 1, javoblar = {}, userData = {}, kopJav = {};
+const JAMI_SAVOL = 43;
+function escAttr(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
 
 function sahifaOch(id){
   document.querySelectorAll('.sahifa').forEach(s=>s.classList.remove('aktiv'));
@@ -147,30 +153,44 @@ async function kirish(){
     if(!d.topildi){xabarKo('kirish-xabar','error','Test topilmadi!');return;}
     if(d.tugadi){xabarKo('kirish-xabar','error','Bu test yakunlangan!');return;}
     userData={ism,familiya,telefon,kod};
-    joriyAvol=1;javoblar={};
+    joriyAvol=1;javoblar={};kopJav={};
     savolKorsat();
     sahifaOch('s-test');
   }catch(e){xabarKo('kirish-xabar','error','Serverga ulanib bolmadi!');}
 }
 
+function kopRender(n){
+  if(!kopJav[n]||!kopJav[n].length)kopJav[n]=[''];
+  const list=document.getElementById('kop-list');
+  list.innerHTML=kopJav[n].map((v,i)=>`<input class="ochiq-input" style="margin-top:0" value="${escAttr(v)}" oninput="kopYoz(${n},${i},this.value)" placeholder="${i+1}-javob..."/>`).join('');
+}
+function kopYoz(n,i,v){if(!kopJav[n])kopJav[n]=[];kopJav[n][i]=v;}
+function kopQosh(){const n=joriyAvol;if(!kopJav[n])kopJav[n]=[''];kopJav[n].push('');kopRender(n);}
+function kopYigish(n){return (kopJav[n]||[]).map(s=>(s||'').trim()).filter(Boolean).join('|');}
+
 function savolKorsat(){
   const n=joriyAvol;
   document.getElementById('savol-raqam').textContent=`${n}-savol`;
-  document.getElementById('prog-matn').textContent=`${n} / 40`;
-  document.getElementById('prog-foiz').textContent=`${Math.round((n-1)/40*100)}%`;
-  document.getElementById('prog-fill').style.width=`${(n-1)/40*100}%`;
+  document.getElementById('prog-matn').textContent=`${n} / ${JAMI_SAVOL}`;
+  document.getElementById('prog-foiz').textContent=`${Math.round((n-1)/JAMI_SAVOL*100)}%`;
+  document.getElementById('prog-fill').style.width=`${(n-1)/JAMI_SAVOL*100}%`;
   document.getElementById('btn-oldin').disabled=n===1;
-  document.getElementById('btn-keyin').textContent=n===40?'Tekshirish':'Keyingi';
+  document.getElementById('btn-keyin').textContent=n===JAMI_SAVOL?'Tekshirish':'Keyingi';
   const vBlok=document.getElementById('variantlar-blok');
   const oBlok=document.getElementById('ochiq-blok');
+  const kBlok=document.getElementById('kop-blok');
   if(n<=35){
-    vBlok.style.display='grid';oBlok.style.display='none';
+    vBlok.style.display='grid';oBlok.style.display='none';kBlok.style.display='none';
     const variantlar=n<=32?['A','B','C','D']:['A','B','C','D','E','F'];
     vBlok.innerHTML=variantlar.map(v=>`<button class="variant-btn ${javoblar[n]===v?'tanlandi':''}" onclick="variant('${v}')"><span class="variant-badge">${v}</span>${v} variant</button>`).join('');
-  }else{
-    vBlok.style.display='none';oBlok.style.display='block';
+  }else if(n<=40){
+    vBlok.style.display='none';oBlok.style.display='block';kBlok.style.display='none';
     document.getElementById('savol-title').textContent='Javobingizni yozing:';
     document.getElementById('ochiq-input').value=javoblar[n]||'';
+  }else{
+    vBlok.style.display='none';oBlok.style.display='none';kBlok.style.display='block';
+    document.getElementById('savol-title').textContent="Bilgan barcha javoblaringizni kiriting:";
+    kopRender(n);
   }
 }
 
@@ -178,12 +198,13 @@ function variant(v){javoblar[joriyAvol]=v;savolKorsat();}
 
 function keyingi(){
   const n=joriyAvol;
-  if(n>35){const val=document.getElementById('ochiq-input').value.trim();if(val)javoblar[n]=val;}
-  if(n===40){
+  if(n>=36&&n<=40){const val=document.getElementById('ochiq-input').value.trim();if(val)javoblar[n]=val;}
+  else if(n>=41){const j=kopYigish(n);if(j)javoblar[n]=j;}
+  if(n===JAMI_SAVOL){
     document.getElementById('sum-ism').textContent=`${userData.ism} ${userData.familiya}`;
     document.getElementById('sum-tel').textContent=userData.telefon;
     document.getElementById('sum-kod').textContent=userData.kod;
-    document.getElementById('sum-toldirilgan').textContent=`${Object.keys(javoblar).length} / 40`;
+    document.getElementById('sum-toldirilgan').textContent=`${Object.keys(javoblar).length} / ${JAMI_SAVOL}`;
     sahifaOch('s-yuborish');return;
   }
   joriyAvol++;savolKorsat();
@@ -194,7 +215,7 @@ function oldinga(){if(joriyAvol>1){joriyAvol--;savolKorsat();}}
 async function yuborish(){
   const btn=document.getElementById('yuborish-btn');
   btn.disabled=true;btn.textContent='Yuborilmoqda...';
-  for(let i=1;i<=40;i++){if(!javoblar[i])javoblar[i]='';}
+  for(let i=1;i<=JAMI_SAVOL;i++){if(!javoblar[i])javoblar[i]='';}
   try{
     const r=await fetch(`${API}/natija/yuborish`,{
       method:'POST',headers:{'Content-Type':'application/json'},
