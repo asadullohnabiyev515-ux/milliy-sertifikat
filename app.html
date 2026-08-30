@@ -1989,15 +1989,15 @@ function tXaritaYangi(){
   if(!g||document.getElementById('txarita').style.display==='none')return;
   var jami=tUD.soni||40,html='';
   for(var i=0;i<jami;i++){
-    var bg=tBelgi[i]?'rgba(255,200,0,.3)':tJav[i]?'rgba(0,212,170,.25)':'rgba(255,255,255,.08)';
-    var bd=tBelgi[i]?'rgba(255,200,0,.5)':tJav[i]?'rgba(0,212,170,.4)':'rgba(255,255,255,.1)';
+    var bg=tBelgi[i]?'rgba(255,200,0,.3)':tJav[i+1]?'rgba(0,212,170,.25)':'rgba(255,255,255,.08)';
+    var bd=tBelgi[i]?'rgba(255,200,0,.5)':tJav[i+1]?'rgba(0,212,170,.4)':'rgba(255,255,255,.1)';
     var akt=i===tJ?';outline:2px solid #fff;outline-offset:1px':'';
     html+='<button onclick="tSakra('+i+')" style="background:'+bg+';border:1px solid '+bd+';border-radius:5px;padding:5px 2px;font-size:.68rem;cursor:pointer;color:#fff'+akt+'">'+(i+1)+'</button>';
   }
   g.innerHTML=html;
 }
 function tSakra(i){
-  if(tUD.tur==='milliy'&&tJ>=35){var v=document.getElementById('toinp').value.trim();if(v)tJav[tJ]=v;}
+  if(tUD.tur==='milliy'&&tJ>=35){var v=document.getElementById('toinp').value.trim();if(v)tJav[tJ+1]=v;}
   tJ=i;tKor();
 }
 function tChiq(){
@@ -2292,20 +2292,20 @@ function tKor(){
     vb.style.display='block';ob.style.display='none';
     vb.innerHTML=vs.map(function(v){
       var vtxt=savol&&savol.variantlar&&savol.variantlar[v]?savol.variantlar[v]:v+' variant';
-      return '<button onclick="tV(\''+v+'\')" class="vb'+(tJav[n]===v?' sel':'')+'"><span class="vbg">'+v+'</span>'+vtxt+'</button>';
+      return '<button onclick="tV(\''+v+'\')" class="vb'+(tJav[n+1]===v?' sel':'')+'"><span class="vbg">'+v+'</span>'+vtxt+'</button>';
     }).join('');
   }else{
     vb.style.display='none';ob.style.display='block';
-    document.getElementById('toinp').value=tJav[n]||'';
+    document.getElementById('toinp').value=tJav[n+1]||'';
   }
   var bb=document.getElementById('tbelgiBtn');
   if(bb)bb.style.background=tBelgi[tJ]?'rgba(255,200,0,.3)':'rgba(255,200,0,.1)';
   tXaritaYangi();
 }
-function tV(v){tJav[tJ]=v;tKor();}
+function tV(v){tJav[tJ+1]=v;tKor();}
 function tOld(){if(tJ>0){tJ--;tKor();}}
 function tKeyin(){
-  if(tUD.tur==='milliy'&&tJ>=35){var v=document.getElementById('toinp').value.trim();if(v)tJav[tJ]=v;}
+  if(tUD.tur==='milliy'&&tJ>=35){var v=document.getElementById('toinp').value.trim();if(v)tJav[tJ+1]=v;}
   if(tJ===tUD.soni-1){
     document.getElementById('yism').textContent=CU.name;
     document.getElementById('ykod').textContent=tUD.kod;
@@ -2322,7 +2322,7 @@ function tKeyin(){
 async function tYubor(){
   var btn=document.getElementById('ybtn');
   btn.disabled=true;btn.textContent='Yuborilmoqda...';
-  for(var i=0;i<tUD.soni;i++){if(!tJav[i])tJav[i]='';}
+  for(var i=1;i<=tUD.soni;i++){if(!tJav[i])tJav[i]='';}
   try{
     var r=await apiFetch(API+'/natija/yuborish',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({test_kod:tUD.kod,ism:tUD.ism,familiya:'',telefon:'',user_id:CU.id||0,javoblar:tJav,varaq_id:tUD.vid||''})},45000);
