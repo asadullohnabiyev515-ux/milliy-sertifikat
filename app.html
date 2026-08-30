@@ -3566,6 +3566,67 @@ async function uYakunla(kod){
     else alert('Xato: '+(d.detail||''));
   }catch(e){alert('Xato: '+e);}
 }
+// ---------- RASCH (1PL IRT, PROX usuli) MODELI BILAN TEKSHIRISH ----------
+function raschIsCorrect(given,correct){
+  if(given===undefined||given===null||String(given).trim()==='')return NaN;
+  var g=String(given).trim().toUpperCase(),c=String(correct).trim().toUpperCase();
+  var isNum=function(x){return /^-?[\d.,]+$/.test(x);};
+  if(isNum(g)&&isNum(c)){
+    var gNum=parseFloat(g.replace(',','.')),cNum=parseFloat(c.replace(',','.'));
+    if(!isNaN(gNum)&&!isNaN(cNum)){var tol=Math.max(Math.abs(cNum)*0.01,0.02);return Math.abs(gNum-cNum)<=tol?1:0;}
+  }
+  return g===c?1:0;
+}
+function raschMeanOf(arr){var v=arr.filter(function(x){return !isNaN(x);});return v.length?v.reduce(function(a,b){return a+b;},0)/v.length:0;}
+function raschLogit(p){p=Math.min(0.999,Math.max(0.001,p));return Math.log(p/(1-p));}
+function raschCompute(students,key){
+  var L=key.length,N=students.length;
+  var scored=students.map(function(s){return key.map(function(k,j){return raschIsCorrect(s.answers[j],k);});});
+  var personCorrect=scored.map(function(row){return row.filter(function(v){return !isNaN(v);}).reduce(function(a,b){return a+b;},0);});
+  var personAnswered=scored.map(function(row){return row.filter(function(v){return !isNaN(v);}).length;});
+  var personP=personCorrect.map(function(c,i){return personAnswered[i]>0?c/personAnswered[i]:NaN;});
+  var itemCorrect=key.map(function(_,j){return scored.reduce(function(sum,row){return sum+(isNaN(row[j])?0:row[j]);},0);});
+  var itemAnswered=key.map(function(_,j){return scored.reduce(function(sum,row){return sum+(isNaN(row[j])?0:1);},0);});
+  var itemQ=itemCorrect.map(function(c,j){return itemAnswered[j]>0?c/itemAnswered[j]:NaN;});
+  return {L:L,N:N,scored:scored,personCorrect:personCorrect,personAnswered:personAnswered,personP:personP,itemAnswered:itemAnswered,itemQ:itemQ};
+}
+function raschAnalyze(students,key,maksBall){
+  var r=raschCompute(students,key),L=r.L,N=r.N;
+  function adj(p,n){if(isNaN(p)||n===0)return NaN;if(p<=0)return 0.5/n;if(p>=1)return (n-0.5)/n;return p;}
+  var pAdj=r.personP.map(function(p,i){return adj(p,r.personAnswered[i]);});
+  var qAdj=r.itemQ.map(function(q,j){return adj(q,r.itemAnswered[j]);});
+  var W=pAdj.map(function(p){return isNaN(p)?NaN:raschLogit(p);});
+  var Yr=qAdj.map(function(q){return isNaN(q)?NaN:raschLogit(1-q);});
+  function varOf(arr){var v=arr.filter(function(x){return !isNaN(x);});var m=raschMeanOf(v);return v.length?v.reduce(function(a,b){return a+(b-m)*(b-m);},0)/v.length:0;}
+  var meanW=raschMeanOf(W),meanY=raschMeanOf(Yr),varW=varOf(W),varY=varOf(Yr);
+  var xExpand=Math.sqrt(1+varY/2.89),yExpand=Math.sqrt(1+varW/2.89);
+  var ability=W.map(function(w){return isNaN(w)?NaN:xExpand*(w-meanW);});
+  var difficulty=Yr.map(function(y){return isNaN(y)?NaN:yExpand*(y-meanY);});
+  var infit=new Array(L).fill(NaN),outfit=new Array(L).fill(NaN);
+  for(var j=0;j<L;j++){
+    var sumResidSq=0,sumW=0,sumOutfit=0,n=0;
+    for(var i=0;i<N;i++){
+      var x=r.scored[i][j];
+      if(isNaN(x)||isNaN(ability[i]))continue;
+      var p=1/(1+Math.exp(-(ability[i]-difficulty[j])));
+      var pc=Math.min(0.999,Math.max(0.001,p)),w=pc*(1-pc),resid2=(x-pc)*(x-pc);
+      sumResidSq+=resid2;sumW+=w;sumOutfit+=resid2/w;n++;
+    }
+    if(n>=3){infit[j]=sumResidSq/sumW;outfit[j]=sumOutfit/n;}
+  }
+  var mb=maksBall||L;
+  var scoreOut=ability.map(function(a){return isNaN(a)?NaN:mb/(1+Math.exp(-a));});
+  function flagItem(dd,inf,outf){
+    var flags=[];
+    if(!isNaN(outf)&&(outf>1.5||outf<0.5))flags.push('Outfit chetlashgan');
+    if(!isNaN(inf)&&(inf>1.3||inf<0.7))flags.push('Infit chetlashgan');
+    if(!isNaN(dd)&&dd>3)flags.push('Juda qiyin');else if(!isNaN(dd)&&dd<-3)flags.push('Juda oson');
+    return flags.length?flags.join('; '):'Yaxshi';
+  }
+  var itemsReport=key.map(function(k,j){return {item:j+1,pcorrect:r.itemAnswered[j]>0?Math.round(r.itemQ[j]*1000)/10:NaN,difficulty:difficulty[j],infit:infit[j],outfit:outfit[j],flag:flagItem(difficulty[j],infit[j],outfit[j])};});
+  var studentsReport=students.map(function(s,i){return {name:s.name,correct:r.personCorrect[i],answered:r.personAnswered[i],theta:ability[i],score:scoreOut[i]};});
+  return {itemsReport:itemsReport,studentsReport:studentsReport,N:N,L:L,maksBall:mb};
+}
 async function uNatijalarKor(kod){
   go('p9f',-1);
   var body=document.getElementById('natStatBody');
@@ -3635,6 +3696,42 @@ async function uNatijalarKor(kod){
         '</div>';
       });
       html+='</div>';
+    }
+
+    // Rasch (IRT) modeli bo'yicha tahlil — har bir o'quvchining har bir savolga bergan javobi asosida
+    if(jami>=8){
+      var rKey=[];for(var ri=1;ri<=d.n_savol;ri++)rKey.push(togri[String(ri)]||'');
+      var rStudents=nl.map(function(n){var ans=[];for(var qi=1;qi<=d.n_savol;qi++)ans.push((n.javoblar||{})[String(qi)]);return {name:((n.ism||'')+' '+(n.familiya||'')).trim(),answers:ans};});
+      var rRes=raschAnalyze(rStudents,rKey,d.maks_ball);
+      var rSorted=rRes.studentsReport.slice().sort(function(a,b){return (isNaN(b.score)?-999:b.score)-(isNaN(a.score)?-999:a.score);});
+      html+='<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin:18px 0 8px">📐 Rasch (IRT) tahlili — savol qiyinligini hisobga olgan holda:</div>';
+      html+='<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px">';
+      rSorted.forEach(function(s,idx){
+        var sc=isNaN(s.score)?0:Math.round(s.score*10)/10;
+        var rang=sc>=rRes.maksBall*0.8?'#00d4aa':(sc>=rRes.maksBall*0.5?'#facc15':'#ff6b6b');
+        html+='<div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border-left:3px solid '+rang+';border-radius:10px;padding:9px 12px">'+
+          '<div style="width:26px;text-align:center;font-size:.85rem;font-weight:800">'+(idx+1)+'</div>'+
+          '<div style="flex:1;min-width:0"><div style="font-size:.85rem;font-weight:700">'+esc(s.name)+'</div>'+
+          '<div style="font-size:.68rem;color:rgba(255,255,255,.4)">'+s.correct+'/'+d.n_savol+' to\'g\'ri · θ='+(isNaN(s.theta)?'—':s.theta.toFixed(2))+'</div></div>'+
+          '<div style="font-size:.95rem;font-weight:800;color:'+rang+'">'+sc+'</div>'+
+        '</div>';
+      });
+      html+='</div>';
+
+      var itemsSorted=rRes.itemsReport.slice().sort(function(a,b){return (isNaN(b.difficulty)?-999:b.difficulty)-(isNaN(a.difficulty)?-999:a.difficulty);}).slice(0,5);
+      if(itemsSorted.length){
+        html+='<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:8px">Rasch bo\'yicha eng qiyin savollar:</div>';
+        html+='<div style="display:flex;flex-direction:column;gap:6px">';
+        itemsSorted.forEach(function(q){
+          html+='<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.04);border-radius:10px;padding:8px 12px">'+
+            '<span style="font-size:.82rem">'+q.item+'-savol ('+(isNaN(q.pcorrect)?'—':q.pcorrect+'%')+')</span>'+
+            '<span style="font-size:.82rem;font-weight:700;color:'+(q.flag!=='Yaxshi'?'#ff6b6b':'#facc15')+'">b='+(isNaN(q.difficulty)?'—':q.difficulty.toFixed(2))+' · '+q.flag+'</span>'+
+          '</div>';
+        });
+        html+='</div>';
+      }
+    }else{
+      html+='<div style="font-size:.72rem;color:rgba(255,255,255,.35);margin:10px 0">📐 Rasch tahlil uchun kamida 8 ta o\'quvchi natijasi kerak (hozir '+jami+' ta).</div>';
     }
 
     body.innerHTML=html;
