@@ -278,10 +278,13 @@ function xatoRoyxatChiz(elId,notogri){
     el.innerHTML='<div style="text-align:center;color:#16a34a;font-size:.9rem;padding:14px">🎉 Barcha javoblar to\'g\'ri!</div>';
     return;
   }
-  el.innerHTML=notogri.map(x=>`<div style="background:#fef2f2;border-left:3px solid #dc2626;border-radius:8px;padding:10px 12px;margin-bottom:8px">
-    <div style="font-size:.78rem;color:#666">${x.savol}-savol</div>
+  el.innerHTML=notogri.map(x=>{
+    const ballTxt=(x.ball!=null)?` <span style="color:#999;font-weight:400">(${x.ball} ball)</span>`:'';
+    return `<div style="background:#fef2f2;border-left:3px solid #dc2626;border-radius:8px;padding:10px 12px;margin-bottom:8px">
+    <div style="font-size:.78rem;color:#666">${x.savol}-savol${ballTxt}</div>
     <div style="font-size:.9rem;margin-top:4px">Sizniki: <span style="color:#dc2626;font-weight:600">${escAttr(x.berilgan)}</span></div>
-    <div style="font-size:.9rem">To'g'ri: <span style="color:#16a34a;font-weight:600">${escAttr(x.togri)}</span></div></div>`).join('');
+    <div style="font-size:.9rem">To'g'ri: <span style="color:#16a34a;font-weight:600">${escAttr(x.togri)}</span></div></div>`;
+  }).join('');
 }
 function tamomXatoToggle(){
   const el=document.getElementById('tamom-xatolar');

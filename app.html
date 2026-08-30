@@ -3004,8 +3004,9 @@ function xatoRoyxatChiz(elId,notogri){
     return;
   }
   el.innerHTML=notogri.map(function(x){
+    var ballTxt=(x.ball!=null)?' <span style="color:rgba(255,255,255,.35);font-weight:400">('+x.ball+' ball)</span>':'';
     return '<div style="background:rgba(255,255,255,.04);border-left:3px solid #ff6b6b;border-radius:8px;padding:10px 12px;margin-bottom:8px">'+
-      '<div style="font-size:.78rem;color:rgba(255,255,255,.5)">'+x.savol+'-savol</div>'+
+      '<div style="font-size:.78rem;color:rgba(255,255,255,.5)">'+x.savol+'-savol'+ballTxt+'</div>'+
       '<div style="font-size:.85rem;margin-top:4px">Sizniki: <span style="color:#ff6b6b;font-weight:600">'+esc(x.berilgan)+'</span></div>'+
       '<div style="font-size:.85rem">To\'g\'ri: <span style="color:#00d4aa;font-weight:600">'+esc(x.togri)+'</span></div></div>';
   }).join('');
@@ -3672,6 +3673,35 @@ function raschIsCorrect(given,correct){
   return g===c?1:0;
 }
 function raschMeanOf(arr){var v=arr.filter(function(x){return !isNaN(x);});return v.length?v.reduce(function(a,b){return a+b;},0)/v.length:0;}
+// Har bir savol NECHA BALLGA teng ekanligini hisoblaydi -- backenddagi
+// test_yakunla'ning A-qism qiyinlik-vaznlash formulasi bilan bir xil (savol
+// qanchalik kam kishi tomonidan to'g'ri topilgan bo'lsa, shuncha qimmat).
+// 41-43 (bo'lsa) sobit 25 balldan (B qism maksimumi).
+function savolBallVaznlari(togri,nl,nSavol,tur,jami){
+  var vazn={};
+  if(tur!=='milliy'){
+    var teng=nSavol?Math.round((100/nSavol)*100)/100:0;
+    for(var i=1;i<=nSavol;i++)vazn[i]=teng;
+    return vazn;
+  }
+  var kopBor=nSavol>40, asosiyN=kopBor?40:nSavol;
+  if(asosiyN>0&&jami>0){
+    var togriSoniDict={};
+    for(var i=1;i<=asosiyN;i++){
+      var k=String(i),tj=(togri[k]||'').toUpperCase();
+      togriSoniDict[k]=nl.filter(function(n){return ((n.javoblar||{})[k]||'').toUpperCase()===tj;}).length;
+    }
+    var qiyinlik={},maksMumkinA=0,sumTogri=0;
+    for(var i=1;i<=asosiyN;i++){var k=String(i);qiyinlik[k]=(1-(togriSoniDict[k]/jami))+0.01;maksMumkinA+=qiyinlik[k];sumTogri+=togriSoniDict[k];}
+    var avgP=sumTogri/jami/asosiyN;
+    var tavon=75+15*Math.max(0,Math.min(1,(0.5-avgP)/0.5));
+    for(var i=1;i<=asosiyN;i++){var k=String(i);vazn[k]=maksMumkinA>0?Math.round((qiyinlik[k]/maksMumkinA)*tavon*100)/100:0;}
+  }else{
+    for(var i=1;i<=asosiyN;i++)vazn[String(i)]=0;
+  }
+  if(kopBor)for(var i=41;i<=nSavol;i++)vazn[String(i)]=25;
+  return vazn;
+}
 function raschLogit(p){p=Math.min(0.999,Math.max(0.001,p));return Math.log(p/(1-p));}
 function raschCompute(students,key){
   var L=key.length,N=students.length;
@@ -3771,12 +3801,13 @@ async function uNatijalarKor(kod){
 
     // Eng qiyin savollar (natijalardagi javoblar asosida)
     var togri=d.togri_javoblar||{};
+    var ballVazn=savolBallVaznlari(togri,nl,d.n_savol,d.tur,jami);
     var savolStat=[];
     for(var i=1;i<=d.n_savol;i++){
       var k=String(i), tj=(togri[k]||'').toUpperCase();
       if(!tj)continue;
       var togriSoni=nl.filter(function(n){return ((n.javoblar||{})[k]||'').toUpperCase()===tj;}).length;
-      savolStat.push({savol:i,foiz:Math.round(togriSoni/jami*100)});
+      savolStat.push({savol:i,foiz:Math.round(togriSoni/jami*100),ball:ballVazn[k]});
     }
     savolStat.sort(function(a,b){return a.foiz-b.foiz;});
     var qiyin=savolStat.slice(0,5);
@@ -3785,7 +3816,7 @@ async function uNatijalarKor(kod){
       html+='<div style="display:flex;flex-direction:column;gap:6px">';
       qiyin.forEach(function(q){
         html+='<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.04);border-radius:10px;padding:8px 12px">'+
-          '<span style="font-size:.82rem">'+q.savol+'-savol</span>'+
+          '<span style="font-size:.82rem">'+q.savol+'-savol <span style="color:rgba(255,255,255,.35)">('+q.ball+' ball)</span></span>'+
           '<span style="font-size:.82rem;font-weight:700;color:'+(q.foiz<40?'#ff6b6b':'#facc15')+'">'+q.foiz+'% to\'g\'ri</span>'+
         '</div>';
       });
@@ -3793,7 +3824,7 @@ async function uNatijalarKor(kod){
     }
 
     // Rasch (IRT) modeli bo'yicha tahlil — har bir o'quvchining har bir savolga bergan javobi asosida
-    if(jami>=8){
+    if(jami>=3){
       var rKey=[];for(var ri=1;ri<=d.n_savol;ri++)rKey.push(togri[String(ri)]||'');
       var rStudents=nl.map(function(n){var ans=[];for(var qi=1;qi<=d.n_savol;qi++)ans.push((n.javoblar||{})[String(qi)]);return {name:((n.ism||'')+' '+(n.familiya||'')).trim(),answers:ans};});
       var rRes=raschAnalyze(rStudents,rKey,d.maks_ball);
@@ -3817,15 +3848,16 @@ async function uNatijalarKor(kod){
         html+='<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:8px">Rasch bo\'yicha eng qiyin savollar:</div>';
         html+='<div style="display:flex;flex-direction:column;gap:6px">';
         itemsSorted.forEach(function(q){
+          var qBall=ballVazn[String(q.item)];
           html+='<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.04);border-radius:10px;padding:8px 12px">'+
-            '<span style="font-size:.82rem">'+q.item+'-savol ('+(isNaN(q.pcorrect)?'—':q.pcorrect+'%')+')</span>'+
+            '<span style="font-size:.82rem">'+q.item+'-savol <span style="color:rgba(255,255,255,.35)">('+(qBall!=null?qBall+' ball · ':'')+(isNaN(q.pcorrect)?'—':q.pcorrect+'%')+')</span></span>'+
             '<span style="font-size:.82rem;font-weight:700;color:'+(q.flag!=='Yaxshi'?'#ff6b6b':'#facc15')+'">b='+(isNaN(q.difficulty)?'—':q.difficulty.toFixed(2))+' · '+q.flag+'</span>'+
           '</div>';
         });
         html+='</div>';
       }
     }else{
-      html+='<div style="font-size:.72rem;color:rgba(255,255,255,.35);margin:10px 0">📐 Rasch tahlil uchun kamida 8 ta o\'quvchi natijasi kerak (hozir '+jami+' ta).</div>';
+      html+='<div style="font-size:.72rem;color:rgba(255,255,255,.35);margin:10px 0">📐 Rasch tahlil uchun kamida 3 ta o\'quvchi natijasi kerak (hozir '+jami+' ta).</div>';
     }
 
     body.innerHTML=html;
