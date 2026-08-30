@@ -336,7 +336,20 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   <div style="font-size:1.2rem;font-weight:800;margin-bottom:8px" id="p3c-ball">Barakalla!</div>
   <div style="font-size:.88rem;color:rgba(255,255,255,.4)" id="p3c-foiz">Javoblaringiz yuborildi.</div>
   <div style="font-size:.82rem;color:rgba(255,255,255,.5);margin-top:8px" id="p3c-sub"></div>
-  <button class="btn btn-green" id="boshbtn" style="margin-top:24px;max-width:200px">🏠 Bosh sahifa</button>
+  <button class="btn btn-outline" id="p3c-xato-btn" style="display:none;margin-top:16px;max-width:280px" onclick="p3cXatoToggle()"></button>
+  <div id="p3c-xatolar" style="display:none;margin-top:12px;max-width:420px;width:100%;text-align:left"></div>
+  <button class="btn btn-green" id="boshbtn" style="margin-top:16px;max-width:200px">🏠 Bosh sahifa</button>
+</div>
+
+<!-- XATO SAVOLLAR MODALI (natijalarni keyinchalik qayta ko'rish uchun) -->
+<div id="xatoModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;overflow-y:auto;padding:20px">
+  <div style="max-width:480px;margin:0 auto;background:#1a1a2e;border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,.1)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div style="font-weight:800;font-size:1rem" id="xatoModalTitle">Xato savollar</div>
+      <button onclick="xatoModalYop()" style="background:none;border:none;color:rgba(255,255,255,.6);font-size:1.4rem;cursor:pointer;line-height:1">✕</button>
+    </div>
+    <div id="xatoModalBody"></div>
+  </div>
 </div>
 
 <!-- KITOBLAR -->
@@ -2374,6 +2387,12 @@ async function tYubor(){
       var e2=document.getElementById('p3c-ball');if(e2)e2.textContent=d.ball+' / '+d.maks_ball+' ball';
       var e3=document.getElementById('p3c-foiz');if(e3)e3.textContent=d.foiz+'% ('+d.togri_soni+'/'+d.jami+')';
       var e4=document.getElementById('p3c-sub');if(e4)e4.textContent=sub;
+      var xbtn=document.getElementById('p3c-xato-btn');
+      if(d.notogri&&xbtn){
+        xatoRoyxatChiz('p3c-xatolar',d.notogri);
+        xbtn.style.display='inline-block';
+        xbtn.textContent=d.notogri.length?('📋 Xato savollarni ko\'rish ('+d.notogri.length+')'):'🎉 Hammasi to\'g\'ri!';
+      }
       taymerToxtat();tAvtotoza();
       document.getElementById('nav').style.display='none';
       go('p3c',-1);document.getElementById('p3c').style.display='flex';
@@ -2976,6 +2995,40 @@ async function uKursOchir(mavzu){
   }catch(e){alert('Xato');}
 }
 
+// XATO SAVOLLAR (testdan keyin darhol va keyinchalik qayta ko'rish uchun umumiy)
+function xatoRoyxatChiz(elId,notogri){
+  var el=document.getElementById(elId);
+  if(!el)return;
+  if(!notogri||!notogri.length){
+    el.innerHTML='<div style="text-align:center;color:#00d4aa;font-size:.88rem;padding:14px">🎉 Barcha javoblar to\'g\'ri!</div>';
+    return;
+  }
+  el.innerHTML=notogri.map(function(x){
+    return '<div style="background:rgba(255,255,255,.04);border-left:3px solid #ff6b6b;border-radius:8px;padding:10px 12px;margin-bottom:8px">'+
+      '<div style="font-size:.78rem;color:rgba(255,255,255,.5)">'+x.savol+'-savol</div>'+
+      '<div style="font-size:.85rem;margin-top:4px">Sizniki: <span style="color:#ff6b6b;font-weight:600">'+esc(x.berilgan)+'</span></div>'+
+      '<div style="font-size:.85rem">To\'g\'ri: <span style="color:#00d4aa;font-weight:600">'+esc(x.togri)+'</span></div></div>';
+  }).join('');
+}
+function p3cXatoToggle(){
+  var el=document.getElementById('p3c-xatolar');
+  if(el)el.style.display=el.style.display==='none'?'block':'none';
+}
+function xatoModalYop(){document.getElementById('xatoModal').style.display='none';}
+async function pXatoKor(kod){
+  document.getElementById('xatoModalTitle').textContent='Xato savollar — '+kod;
+  document.getElementById('xatoModalBody').innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
+  document.getElementById('xatoModal').style.display='block';
+  try{
+    var r=await apiFetch(API+'/natija/xato/'+kod+'?user_id='+CU.id);
+    var d=await r.json();
+    if(!r.ok){document.getElementById('xatoModalBody').innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:20px">'+esc(d.detail||'Topilmadi')+'</div>';return;}
+    var head='<div style="text-align:center;margin-bottom:12px;font-size:.85rem;color:rgba(255,255,255,.5)">'+d.togri_soni+'/'+d.jami+' to\'g\'ri • '+d.ball+' ball</div>';
+    document.getElementById('xatoModalBody').innerHTML=head+'<div id="xatoModalList"></div>';
+    xatoRoyxatChiz('xatoModalList',d.notogri);
+  }catch(e){document.getElementById('xatoModalBody').innerHTML='<div style="text-align:center;color:#ff6b6b;padding:20px">Xato yuz berdi</div>';}
+}
+
 // PROFIL
 async function pLoad(){
   if(!CU.id)return;
@@ -2989,7 +3042,8 @@ async function pLoad(){
     if(!d.natijalar||!d.natijalar.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Natija yo\'q</div>';return;}
     li.innerHTML=d.natijalar.map(function(n){
       var b=n.ball||0,rng=b>=60?'#00d4aa':b>=40?'#ff9500':'#ff6b6b';
-      return '<div class="ri" style="justify-content:space-between"><div><div style="font-size:.78rem;font-weight:700;color:#00d4aa">'+n.test_kod+'</div><div style="font-size:.85rem;margin-top:2px">'+n.fan+'</div><div style="font-size:.72rem;color:rgba(255,255,255,.4)">'+n.vaqt+'</div></div><div style="font-size:.9rem;font-weight:800;color:'+rng+'">'+(n.tugadi?b+'b':'⏳')+'</div></div>';
+      var xbtn=n.tugadi?'<button onclick="pXatoKor(\''+esc(n.test_kod)+'\')" style="background:rgba(255,107,107,.12);border:1px solid rgba(255,107,107,.3);border-radius:8px;padding:3px 8px;font-size:.68rem;color:#ff6b6b;cursor:pointer;margin-top:4px">📋 Xatolarim</button>':'';
+      return '<div class="ri" style="justify-content:space-between"><div><div style="font-size:.78rem;font-weight:700;color:#00d4aa">'+n.test_kod+'</div><div style="font-size:.85rem;margin-top:2px">'+n.fan+'</div><div style="font-size:.72rem;color:rgba(255,255,255,.4)">'+n.vaqt+'</div>'+xbtn+'</div><div style="font-size:.9rem;font-weight:800;color:'+rng+'">'+(n.tugadi?b+'b':'⏳')+'</div></div>';
     }).join('');
     document.getElementById('bs1').textContent=d.jami_test;
     if(d.natijalar[0]&&d.natijalar[0].ball)document.getElementById('bs2').textContent=d.natijalar[0].ball;

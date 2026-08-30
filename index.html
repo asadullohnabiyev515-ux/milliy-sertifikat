@@ -71,6 +71,28 @@ input:focus{border-color:#1d4ed8}
 <input id="test-kod" type="text" placeholder="Masalan: MAT2024" style="text-transform:uppercase"/>
 <button class="btn btn-primary" onclick="kirish()">Testni boshlash</button>
 <div id="kirish-xabar" class="xabar"></div>
+<div style="text-align:center;margin-top:14px">
+<a href="#" onclick="xatoFormOch();return false;" style="font-size:.85rem;color:#1d4ed8">Oldingi natijamni / xatolarimni ko'rish</a>
+</div>
+<div id="xato-form" style="display:none;margin-top:10px;padding-top:14px;border-top:1px solid #e5e7eb">
+<label>Test kodi</label>
+<input id="xato-kod" type="text" placeholder="Masalan: MAT2024" style="text-transform:uppercase"/>
+<label>Telefon (topshirganda kiritgan)</label>
+<input id="xato-telefon" type="tel" placeholder="+998 90 123 45 67"/>
+<button class="btn btn-outline" onclick="xatoIzla()">Qidirish</button>
+<div id="xato-form-xabar" class="xabar"></div>
+</div>
+</div>
+</div>
+
+<!-- XATO SAVOLLAR MODALI -->
+<div id="xatoModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;overflow-y:auto;padding:20px">
+<div style="max-width:480px;margin:0 auto;background:#fff;border-radius:16px;padding:20px">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+<div style="font-weight:800;font-size:1.05rem" id="xatoModalTitle">Xato savollar</div>
+<button onclick="xatoModalYop()" style="background:none;border:none;color:#666;font-size:1.4rem;cursor:pointer;line-height:1">✕</button>
+</div>
+<div id="xatoModalBody"></div>
 </div>
 </div>
 
@@ -119,6 +141,8 @@ input:focus{border-color:#1d4ed8}
 <div style="font-size:64px;margin-bottom:16px">🎉</div>
 <h1>Barakalla!</h1>
 <p style="color:#666;margin-top:8px">Javoblaringiz yuborildi.<br>Natijangizni ustozingizdan bilib olasiz.</p>
+<button class="btn btn-outline" id="tamom-xato-btn" style="display:none;margin-top:16px" onclick="tamomXatoToggle()"></button>
+<div id="tamom-xatolar" style="display:none;margin-top:12px;text-align:left"></div>
 </div>
 </div>
 
@@ -233,9 +257,57 @@ async function yuborish(){
       body:JSON.stringify({test_kod:userData.kod,ism:userData.ism,familiya:userData.familiya,telefon:userData.telefon,user_id:userId||0,javoblar})
     });
     const d=await r.json();
-    if(r.ok&&d.success){sahifaOch('s-tamom');setTimeout(()=>tg?.close?.(),4000);}
+    if(r.ok&&d.success){
+      sahifaOch('s-tamom');
+      const xbtn=document.getElementById('tamom-xato-btn');
+      if(d.notogri&&xbtn){
+        xatoRoyxatChiz('tamom-xatolar',d.notogri);
+        xbtn.style.display='inline-block';
+        xbtn.textContent=d.notogri.length?`📋 Xato savollarni ko'rish (${d.notogri.length})`:"🎉 Hammasi to'g'ri!";
+      }
+    }
     else{xabarKo('yuborish-xabar','error',d.detail||'Xato');btn.disabled=false;btn.textContent='Javoblarni yuborish';}
   }catch(e){xabarKo('yuborish-xabar','error','Serverga ulanib bolmadi!');btn.disabled=false;btn.textContent='Javoblarni yuborish';}
+}
+
+// XATO SAVOLLAR (testdan keyin darhol va keyinchalik qayta ko'rish uchun umumiy)
+function xatoRoyxatChiz(elId,notogri){
+  const el=document.getElementById(elId);
+  if(!el)return;
+  if(!notogri||!notogri.length){
+    el.innerHTML='<div style="text-align:center;color:#16a34a;font-size:.9rem;padding:14px">🎉 Barcha javoblar to\'g\'ri!</div>';
+    return;
+  }
+  el.innerHTML=notogri.map(x=>`<div style="background:#fef2f2;border-left:3px solid #dc2626;border-radius:8px;padding:10px 12px;margin-bottom:8px">
+    <div style="font-size:.78rem;color:#666">${x.savol}-savol</div>
+    <div style="font-size:.9rem;margin-top:4px">Sizniki: <span style="color:#dc2626;font-weight:600">${escAttr(x.berilgan)}</span></div>
+    <div style="font-size:.9rem">To'g'ri: <span style="color:#16a34a;font-weight:600">${escAttr(x.togri)}</span></div></div>`).join('');
+}
+function tamomXatoToggle(){
+  const el=document.getElementById('tamom-xatolar');
+  if(el)el.style.display=el.style.display==='none'?'block':'none';
+}
+function xatoModalYop(){document.getElementById('xatoModal').style.display='none';}
+function xatoFormOch(){
+  const el=document.getElementById('xato-form');
+  if(el)el.style.display=el.style.display==='none'?'block':'none';
+}
+async function xatoIzla(){
+  const kod=document.getElementById('xato-kod').value.trim().toUpperCase();
+  const telefon=document.getElementById('xato-telefon').value.trim();
+  if(!kod||!telefon){xabarKo('xato-form-xabar','error','Test kodi va telefonni kiriting!');return;}
+  xabarKo('xato-form-xabar','info','Qidirilmoqda...');
+  try{
+    const r=await fetch(`${API}/natija/xato/${kod}?telefon=${encodeURIComponent(telefon)}`);
+    const d=await r.json();
+    if(!r.ok){xabarKo('xato-form-xabar','error',d.detail||'Natija topilmadi');return;}
+    document.getElementById('xato-form-xabar').style.display='none';
+    document.getElementById('xatoModalTitle').textContent=`Natija — ${kod}`;
+    const head=`<div style="text-align:center;margin-bottom:12px;font-size:.9rem;color:#666">${d.togri_soni}/${d.jami} to'g'ri • ${d.ball} ball</div>`;
+    document.getElementById('xatoModalBody').innerHTML=head+'<div id="xatoModalList"></div>';
+    xatoRoyxatChiz('xatoModalList',d.notogri);
+    document.getElementById('xatoModal').style.display='block';
+  }catch(e){xabarKo('xato-form-xabar','error','Serverga ulanib bolmadi!');}
 }
 
 function xabarKo(id,tur,matn){
