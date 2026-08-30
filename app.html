@@ -300,8 +300,8 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <div id="tvar"></div>
     <div id="tochiq" style="display:none"><input class="inp" id="toinp" type="text" placeholder="Javobingizni yozing..."/></div>
     <div id="tkop" style="display:none">
+      <div style="font-size:.75rem;color:rgba(255,255,255,.5);margin-bottom:8px">⚠️ Javoblarni to'g'ri tartibda kiriting (1-katak — 1-javobingiz)</div>
       <div id="tkop-list" style="display:flex;flex-direction:column;gap:8px"></div>
-      <button type="button" onclick="tKopQosh()" style="margin-top:8px;background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.3);border-radius:8px;padding:8px;width:100%;color:#00d4aa;font-weight:700;cursor:pointer">+ Yana javob qo'shish</button>
     </div>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 16px">
@@ -2003,7 +2003,7 @@ function tXaritaYangi(){
 }
 function tSakra(i){
   if(tUD.tur==='milliy'&&tJ>=35){
-    if(tJ>=40){var j=tKopYigish(tJ+1);if(j)tJav[tJ+1]=j;}
+    if(tJ>=40){if(tKopBorMi(tJ+1))tJav[tJ+1]=tKopYigish(tJ+1);}
     else{var v=document.getElementById('toinp').value.trim();if(v)tJav[tJ+1]=v;}
   }
   tJ=i;tKor();
@@ -2243,7 +2243,14 @@ async function testBoshlash(){
     var rr=await apiFetch(API+'/student/royxat',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({test_kod:kod,ism:if_.ism,familiya:if_.familiya,telefon:'',user_id:CU.id||0})});
     var rd=await rr.json();
-    tUD={ism:if_.ism,kod:kod,fan:d.fan,tur:d.tur||'milliy',soni:d.savollar_soni||40,vaqt:d.vaqt||90,vid:rd.varaq_id||'',savollar:null};
+    // 41-43 (ko'p javobli) uchun ustoz nechta to'g'ri javob kiritgan bo'lsa,
+    // talabaga shuncha katak ko'rsatiladi (harflarning o'zi emas, faqat soni saqlanadi).
+    var kopSoni={};
+    if(d.javoblar)for(var kn=41;kn<=43;kn++){
+      var raw=d.javoblar[String(kn)]||'';
+      kopSoni[kn]=raw?raw.split('|').filter(Boolean).length:0;
+    }
+    tUD={ism:if_.ism,kod:kod,fan:d.fan,tur:d.tur||'milliy',soni:d.savollar_soni||40,vaqt:d.vaqt||90,vid:rd.varaq_id||'',savollar:null,kopSoni:kopSoni};
     document.getElementById('tfan').textContent=d.fan;
     try{var sq=await apiFetch(API+'/test/savollar/'+kod);var sd=await sq.json();if(sd.bor)tUD.savollar=sd.savollar;}catch(e){}
     tJav={};tJ=0;tBelgi={};
@@ -2295,7 +2302,7 @@ function tKor(){
     if(n>=40)kop=true;
   }
   var savol=tUD.savollar&&tUD.savollar[n]?tUD.savollar[n]:null;
-  document.getElementById('tstext').textContent=savol?savol.savol:(kop?"Bilgan barcha javoblaringizni kiriting:":'Javobni tanlang:');
+  document.getElementById('tstext').textContent=savol?savol.savol:(kop?"Javoblaringizni to'g'ri tartibda kiriting:":'Javobni tanlang:');
   document.getElementById('tstext').style.fontSize=savol?'.9rem':'1rem';
   var tsr=document.getElementById('tsrasm');
   if(savol&&savol.rasm_url){tsr.src=savol.rasm_url;tsr.style.display='block';}else{tsr.style.display='none';tsr.src='';}
@@ -2321,18 +2328,22 @@ function tV(v){tJav[tJ+1]=v;tKor();}
 function tOld(){if(tJ>0){tJ--;tKor();}}
 var tKopJav={};
 function tKopRender(n){
-  if(!tKopJav[n]||!tKopJav[n].length)tKopJav[n]=[''];
+  var soni=(tUD.kopSoni&&tUD.kopSoni[n])||1;
+  if(!tKopJav[n])tKopJav[n]=[];
+  while(tKopJav[n].length<soni)tKopJav[n].push('');
+  tKopJav[n].length=soni;
   var list=document.getElementById('tkop-list');
   list.innerHTML=tKopJav[n].map(function(v,i){
     return '<input class="inp" value="'+escAttr(v)+'" oninput="tKopYoz('+n+','+i+',this.value)" placeholder="'+(i+1)+'-javob..."/>';
   }).join('');
 }
 function tKopYoz(n,i,v){if(!tKopJav[n])tKopJav[n]=[];tKopJav[n][i]=v;}
-function tKopQosh(){var n=tJ+1;if(!tKopJav[n])tKopJav[n]=[''];tKopJav[n].push('');tKopRender(n);}
-function tKopYigish(n){return (tKopJav[n]||[]).map(function(s){return (s||'').trim();}).filter(Boolean).join('|');}
+// Tartib pozitsiyasi buzilmasligi uchun bo'sh kataklar HAM saqlanadi (filtrlanmaydi).
+function tKopYigish(n){return (tKopJav[n]||[]).map(function(s){return (s||'').trim();}).join('|');}
+function tKopBorMi(n){return (tKopJav[n]||[]).some(function(s){return s&&s.trim();});}
 function tKeyin(){
   if(tUD.tur==='milliy'&&tJ>=35){
-    if(tJ>=40){var j=tKopYigish(tJ+1);if(j)tJav[tJ+1]=j;}
+    if(tJ>=40){if(tKopBorMi(tJ+1))tJav[tJ+1]=tKopYigish(tJ+1);}
     else{var v=document.getElementById('toinp').value.trim();if(v)tJav[tJ+1]=v;}
   }
   if(tJ===tUD.soni-1){
@@ -3934,9 +3945,10 @@ function uJavoblargaO(){
     var hl=uTurVal==='m'&&n>=33&&n<=35?['A','B','C','D','E','F']:['A','B','C','D'];
     var och=uTurVal==='m'&&n>=36&&n<=40;
     var kop=uTurVal==='m'&&n>=41;
-    html+='<div class="card" style="margin-bottom:10px"><div style="font-size:.8rem;color:#00d4aa;font-weight:700;margin-bottom:8px">'+n+'-savol'+(kop?' <span style="color:rgba(255,255,255,.4);font-weight:400">(bir nechta to\'g\'ri javob)</span>':'')+'</div>';
+    html+='<div class="card" style="margin-bottom:10px"><div style="font-size:.8rem;color:#00d4aa;font-weight:700;margin-bottom:8px">'+n+'-savol'+(kop?' <span style="color:rgba(255,255,255,.4);font-weight:400">(bir nechta to\'g\'ri javob, tartib muhim)</span>':'')+'</div>';
     if(kop){
-      html+='<div id="ujkop'+n+'-list" style="display:flex;flex-direction:column;gap:6px"></div>'+
+      html+='<div style="font-size:.72rem;color:rgba(255,255,255,.45);margin-bottom:6px">Talaba xuddi shu tartibda javob yozadi (1-katak — 1-to\'g\'ri javob)</div>'+
+            '<div id="ujkop'+n+'-list" style="display:flex;flex-direction:column;gap:6px"></div>'+
             '<button type="button" onclick="uKopQosh('+n+')" style="margin-top:6px;background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.3);border-radius:8px;padding:8px;width:100%;color:#00d4aa;font-weight:700;cursor:pointer">+ Yana to\'g\'ri javob qo\'shish</button>';
     }else if(!och){
       html+='<div style="display:grid;grid-template-columns:repeat('+(hl.length===4?4:3)+',1fr);gap:6px">';
