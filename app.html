@@ -3989,14 +3989,14 @@ async function uElonYoz(){
   btn.disabled=true;btn.textContent='Yuborilmoqda...';
   try{
     var r=await apiFetch(API+'/elon/qosh',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({sarlavha:sarlavha,matn:matn,ustoz_id:CU.id||0})});
+      body:JSON.stringify({sarlavha:sarlavha,matn:matn,ustoz_id:CU.id||0})},45000);
     var d=await r.json();
     if(d.success){
       xb('egxb','ok','E\'lon yuborildi!');
       document.getElementById('esarlavha').value='';
       document.getElementById('ematn').value='';
     }else xb('egxb','err',d.detail||'Xato');
-  }catch(e){xb('egxb','err','Xato');}
+  }catch(e){xb('egxb','err',e&&e.name==='AbortError'?"Server uyg'onmoqda, biroz kutib ro'yxatni tekshiring (e'lon saqlangan bo'lishi mumkin)":'Xato');}
   btn.disabled=false;btn.textContent='📢 Yuborish';
 }
 async function uElonOchir(id){
