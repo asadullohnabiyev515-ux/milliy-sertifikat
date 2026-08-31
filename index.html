@@ -141,6 +141,7 @@ input:focus{border-color:#1d4ed8}
 <div style="font-size:64px;margin-bottom:16px">🎉</div>
 <h1>Barakalla!</h1>
 <p style="color:#666;margin-top:8px">Javoblaringiz yuborildi.<br>Natijangizni ustozingizdan bilib olasiz.</p>
+<div id="tamom-qismlar" style="display:none;margin-top:14px;text-align:left;background:#f9f9f9;border-radius:10px;padding:12px 16px"></div>
 <button class="btn btn-outline" id="tamom-xato-btn" style="display:none;margin-top:16px" onclick="tamomXatoToggle()"></button>
 <div id="tamom-xatolar" style="display:none;margin-top:12px;text-align:left"></div>
 </div>
@@ -259,6 +260,7 @@ async function yuborish(){
     const d=await r.json();
     if(r.ok&&d.success){
       sahifaOch('s-tamom');
+      qismlarChiz('tamom-qismlar',d);
       const xbtn=document.getElementById('tamom-xato-btn');
       if(d.notogri&&xbtn){
         xatoRoyxatChiz('tamom-xatolar',d.notogri);
@@ -268,6 +270,23 @@ async function yuborish(){
     }
     else{xabarKo('yuborish-xabar','error',d.detail||'Xato');btn.disabled=false;btn.textContent='Javoblarni yuborish';}
   }catch(e){xabarKo('yuborish-xabar','error','Serverga ulanib bolmadi!');btn.disabled=false;btn.textContent='Javoblarni yuborish';}
+}
+
+// QISM BALLARI (1-40 / 41-43 / o'rtacha) — testdan keyin darhol va keyinchalik
+// qayta ko'rish uchun umumiy. d = /natija/yuborish yoki /natija/xato javobi.
+function qismlarChiz(elId,d){
+  const el=document.getElementById(elId);
+  if(!el)return;
+  if(d.ball_asosiy==null){el.style.display='none';return;}
+  el.style.display='block';
+  const holat=d.yakunlangan
+    ?'<div style="font-size:.72rem;color:#16a34a;margin-bottom:8px">✅ Yakuniy natija (test yakunlangan)</div>'
+    :'<div style="font-size:.72rem;color:#b45309;margin-bottom:8px">⚠️ Taxminiy — test yakunlangach (ustoz tomonidan) yangilanadi</div>';
+  const qism2=d.ball_qoshimcha!=null?`<div style="display:flex;justify-content:space-between;padding:3px 0"><span style="font-size:.85rem;color:#555">41-43 qism</span><span style="font-size:.85rem;font-weight:700">${d.ball_qoshimcha}</span></div>`:'';
+  el.innerHTML=holat+
+    `<div style="display:flex;justify-content:space-between;padding:3px 0"><span style="font-size:.85rem;color:#555">1-40 qism</span><span style="font-size:.85rem;font-weight:700">${d.ball_asosiy}</span></div>`+
+    qism2+
+    `<div style="display:flex;justify-content:space-between;padding:5px 0 0;margin-top:5px;border-top:1px solid #e5e7eb"><span style="font-size:.88rem;font-weight:700">O'rtacha (yakuniy) ball</span><span style="font-size:.92rem;font-weight:800;color:#16a34a">${d.ball}</span></div>`;
 }
 
 // XATO SAVOLLAR (testdan keyin darhol va keyinchalik qayta ko'rish uchun umumiy)
@@ -307,7 +326,9 @@ async function xatoIzla(){
     document.getElementById('xato-form-xabar').style.display='none';
     document.getElementById('xatoModalTitle').textContent=`Natija — ${kod}`;
     const head=`<div style="text-align:center;margin-bottom:12px;font-size:.9rem;color:#666">${d.togri_soni}/${d.jami} to'g'ri • ${d.ball} ball</div>`;
-    document.getElementById('xatoModalBody').innerHTML=head+'<div id="xatoModalList"></div>';
+    document.getElementById('xatoModalBody').innerHTML=head+
+      '<div id="xatoModalQismlar" style="margin-bottom:14px"></div><div id="xatoModalList"></div>';
+    qismlarChiz('xatoModalQismlar',d);
     xatoRoyxatChiz('xatoModalList',d.notogri);
     document.getElementById('xatoModal').style.display='block';
   }catch(e){xabarKo('xato-form-xabar','error','Serverga ulanib bolmadi!');}
