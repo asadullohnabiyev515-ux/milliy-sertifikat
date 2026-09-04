@@ -560,6 +560,13 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <div id="ukurslist"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
   </div>
   <div id="ub8" style="display:none;padding:16px">
+    <div style="background:rgba(255,255,255,.04);border-radius:12px;padding:12px;margin-bottom:16px">
+      <div style="font-size:.78rem;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:8px">📢 Umumiy ota-onalar guruhi (standart)</div>
+      <div style="font-size:.7rem;color:rgba(255,255,255,.4);margin-bottom:8px">Test biror aniq guruhga biriktirilmagan (yoki o'sha guruhda alohida ota-onalar chat sozlanmagan) bo'lsa, natija shu standart guruhga yuboriladi. Botni oldindan shu guruhga a'zo qiling.</div>
+      <input class="inp" id="uUmumiyOtaChatId" type="text" inputmode="numeric" placeholder="Chat ID (masalan -1001234567890)" style="margin-top:0;margin-bottom:8px"/>
+      <button class="btn btn-green" style="margin-top:0;padding:10px" onclick="uUmumiyOtaSaqla()">Saqlash</button>
+      <div id="uUmumiyOtaXb" style="font-size:.72rem;margin-top:8px;color:rgba(255,255,255,.5)"></div>
+    </div>
     <div style="display:flex;gap:8px;margin-bottom:14px">
       <input class="inp" id="uguruhNomi" type="text" placeholder="Guruh nomi (masalan 9-A sinf)" style="margin-top:0;flex:1"/>
       <button class="btn btn-green" style="width:auto;margin-top:0;padding:0 18px" onclick="uGuruhYarat()">➕</button>
@@ -3114,7 +3121,7 @@ function uTab(n){
   if(n===5)uELoad();
   if(n===6)uOqLoad();
   if(n===7)uKursTabLoad();
-  if(n===8)uGuruhLoad();
+  if(n===8){uGuruhLoad();uUmumiyOtaLoad();}
   if(n===9)uSkanReset();
 }
 function uBoshga(){
@@ -3342,6 +3349,30 @@ async function uBildirishnoma(){
 // GURUHLAR
 var _uguruhCur='';
 var _ustozGuruhlarCache=[];
+async function uUmumiyOtaLoad(){
+  var el=document.getElementById('uUmumiyOtaChatId');
+  document.getElementById('uUmumiyOtaXb').textContent='';
+  try{
+    var r=await apiFetch(API+'/ustoz/ota_onalar/'+CU.id);
+    var d=await r.json();
+    el.value=(d.chat_id!=null)?d.chat_id:'';
+  }catch(e){}
+}
+async function uUmumiyOtaSaqla(){
+  var el=document.getElementById('uUmumiyOtaChatId');
+  var raw=el.value.trim();
+  var chatId=raw===''?null:parseInt(raw,10);
+  if(raw!==''&&isNaN(chatId)){alert("Chat ID faqat raqam bo'lishi kerak (masalan -1001234567890)");return;}
+  var xb=document.getElementById('uUmumiyOtaXb');
+  xb.textContent='Saqlanmoqda...';
+  try{
+    var r=await apiFetch(API+'/ustoz/ota_onalar_biriktir',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ustoz_id:CU.id,chat_id:chatId})});
+    var d=await r.json();
+    if(d.success){xb.textContent=chatId?'✅ Saqlandi':"✅ Bog'lanish o'chirildi";}
+    else{xb.textContent='Xato: '+(d.detail||'');}
+  }catch(e){xb.textContent='Xato: '+e;}
+}
 async function uGuruhLoad(){
   var li=document.getElementById('uguruhlist');
   li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
