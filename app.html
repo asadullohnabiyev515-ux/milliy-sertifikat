@@ -526,7 +526,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <div class="mc" onclick="uTab(9)"><div class="mi" style="background:rgba(59,130,246,.2)">🖨️</div><div class="mt">Varaq skaneri</div><div class="ms">Javob varag'ini tekshirish</div></div>
   </div>
   <div id="ub1" style="display:none;padding:16px">
-    <button class="btn btn-green" onclick="go('p9b',-1)" style="margin-bottom:8px">➕ Yangi test yaratish</button>
+    <button class="btn btn-green" onclick="uTestYaratOch()" style="margin-bottom:8px">➕ Yangi test yaratish</button>
     <button class="btn btn-out" onclick="go('p9o',-1)" style="margin-bottom:14px">📋 Matndan test yaratish</button>
     <div id="utlist"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
   </div>
@@ -603,7 +603,14 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
       <button onclick="uGuruhOqQoshOch()" style="flex:1;padding:13px;background:rgba(255,180,0,.1);border:1px solid rgba(255,180,0,.3);border-radius:12px;color:#ffb400;font-size:.85rem;font-weight:700;cursor:pointer">➕ O'quvchi qo'shish</button>
       <button onclick="uGuruhReytingOch()" style="flex:1;padding:13px;background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.3);border-radius:12px;color:gold;font-size:.85rem;font-weight:700;cursor:pointer">🏆 Reyting</button>
     </div>
-    <button onclick="uGuruhTestlarOch()" style="width:100%;padding:13px;background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.3);border-radius:12px;color:#00d4aa;font-size:.85rem;font-weight:700;cursor:pointer;margin-bottom:22px">📊 Test natijalari</button>
+    <button onclick="uGuruhTestlarOch()" style="width:100%;padding:13px;background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.3);border-radius:12px;color:#00d4aa;font-size:.85rem;font-weight:700;cursor:pointer;margin-bottom:18px">📊 Test natijalari</button>
+    <div style="background:rgba(255,255,255,.04);border-radius:12px;padding:12px;margin-bottom:22px">
+      <div style="font-size:.78rem;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:8px">👨‍👩‍👧 Ota-onalar Telegram guruhi</div>
+      <div style="font-size:.7rem;color:rgba(255,255,255,.4);margin-bottom:8px">Botni ota-onalar guruhingizga a'zo qiling, so'ng guruh chat_id'sini shu yerga kiriting — test yakunlanganda umumiy natija (jadval) o'sha guruhga avtomatik yuboriladi.</div>
+      <input class="inp" id="uguruhOtaChatId" type="text" inputmode="numeric" placeholder="Chat ID (masalan -1001234567890)" style="margin-top:0;margin-bottom:8px"/>
+      <button class="btn btn-green" style="margin-top:0;padding:10px" onclick="uGuruhOtaSaqla()">Saqlash</button>
+      <div id="uguruhOtaXb" style="font-size:.72rem;margin-top:8px;color:rgba(255,255,255,.5)"></div>
+    </div>
     <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">A'zolar (<span id="uguruhSoni">0</span>)</div>
     <div id="uguruhAzolar"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
   </div>
@@ -716,6 +723,11 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
       <input class="inp" id="ufan" type="text" placeholder="Masalan: Kimyo" style="margin-bottom:10px"/>
       <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">Test kodi</div>
       <input class="inp" id="ukod" type="text" placeholder="Masalan: KIM2024" style="text-transform:uppercase;margin-bottom:12px"/>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">Guruh (ixtiyoriy)</div>
+      <select class="inp" id="uguruhTanlov" style="margin-bottom:4px">
+        <option value="">— tanlanmagan —</option>
+      </select>
+      <div style="font-size:.7rem;color:rgba(255,255,255,.35);margin-bottom:12px">Tanlansangiz, test yakunlanganda umumiy natija shu guruhning ota-onalar Telegram guruhiga ham (ulangan bo'lsa) avtomatik yuboriladi</div>
       <button class="btn btn-green" onclick="uJavoblargaO()">Javoblarni kiritish →</button>
       <div class="xb" id="utxb"></div>
     </div>
@@ -3367,8 +3379,26 @@ function uGuruhOch(gid,nomi){
   document.getElementById('uguruhKutishForm').style.display='none';
   document.getElementById('uguruhKutishXb').textContent='';
   document.getElementById('uguruhNatijaExcelLink').href=API+'/guruh/natijalar/excel/'+gid;
+  var gInfo=(_ustozGuruhlarCache||[]).find(function(x){return x.guruh_id===gid;});
+  document.getElementById('uguruhOtaChatId').value=(gInfo&&gInfo.ota_onalar_chat_id!=null)?gInfo.ota_onalar_chat_id:'';
+  document.getElementById('uguruhOtaXb').textContent='';
   go('p9j',-1);
   uGuruhDetailLoad();
+}
+async function uGuruhOtaSaqla(){
+  var el=document.getElementById('uguruhOtaChatId');
+  var raw=el.value.trim();
+  var chatId=raw===''?null:parseInt(raw,10);
+  if(raw!==''&&isNaN(chatId)){alert("Chat ID faqat raqam bo'lishi kerak (masalan -1001234567890)");return;}
+  var xb=document.getElementById('uguruhOtaXb');
+  xb.textContent='Saqlanmoqda...';
+  try{
+    var r=await apiFetch(API+'/guruh/ota_onalar_biriktir',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({guruh_id:_uguruhCur,ustoz_id:CU.id,chat_id:chatId})});
+    var d=await r.json();
+    if(d.success){xb.textContent=chatId?'✅ Saqlandi':"✅ Bog'lanish o'chirildi";uGuruhLoad();}
+    else{xb.textContent='Xato: '+(d.detail||'');}
+  }catch(e){xb.textContent='Xato: '+e;}
 }
 function uGuruhOqQoshOch(){
   document.getElementById('uguruhOqSearch').value='';
@@ -4078,6 +4108,22 @@ function ujT(s,h){
     if(e){e.className='vb'+(x===h?' sel':'');var b=e.querySelector('.vbg');if(b){b.style.background=x===h?'#00d4aa':'rgba(255,255,255,.08)';b.style.color=x===h?'#000':'#fff';}}
   });
 }
+async function uTestYaratOch(){
+  go('p9b',-1);
+  var sel=document.getElementById('uguruhTanlov');
+  sel.innerHTML='<option value="">— tanlanmagan —</option>';
+  try{
+    var r=await apiFetch(API+'/guruh/royxat/'+CU.id);
+    var d=await r.json();
+    var list=d.guruhlar||[];
+    _ustozGuruhlarCache=list;
+    list.forEach(function(g){
+      var o=document.createElement('option');
+      o.value=g.guruh_id; o.textContent=g.nomi;
+      sel.appendChild(o);
+    });
+  }catch(e){}
+}
 async function uTestSaqla(){
   var fan=document.getElementById('ufan').value.trim();
   var kod=document.getElementById('ukod').value.trim().toUpperCase();
@@ -4094,9 +4140,11 @@ async function uTestSaqla(){
   if(cnt<min){xb('ujxb','err','Kamida '+min+' javob kiriting! ('+cnt+')');return;}
   var btn=document.getElementById('ujbtn');
   btn.disabled=true;btn.textContent='Saqlanmoqda...';
+  var guruhSel=document.getElementById('uguruhTanlov');
+  var guruhId=guruhSel&&guruhSel.value?guruhSel.value:null;
   try{
     var r=await apiFetch(API+'/test/yarat',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({kod:kod,fan:fan,ustoz_id:CU.id,javoblar:uJavoblar,tur:uTurVal==='m'?'milliy':'oddiy',savollar_soni:jami})},45000);
+      body:JSON.stringify({kod:kod,fan:fan,ustoz_id:CU.id,javoblar:uJavoblar,tur:uTurVal==='m'?'milliy':'oddiy',savollar_soni:jami,guruh_id:guruhId})},45000);
     var d=await r.json();
     if(d.success){alert('Test yaratildi! Kod: '+kod);go('p9',6);uTab(1);}
     else{xb('ujxb','err',d.detail||'Xato');btn.disabled=false;btn.textContent='💾 Saqlash';}
