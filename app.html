@@ -3389,19 +3389,37 @@ async function uOqLoad(){
     uOqRender(_uoqAll);
   }catch(e){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Xato</div>';}
 }
+var _uoqRenderedList=[];
 function uOqRender(list){
   var li=document.getElementById('uoqlist');
+  _uoqRenderedList=list;
   if(!list.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Hozircha ro\'yxatdan o\'tganlar yo\'q</div>';return;}
   li.innerHTML=list.map(function(u,i){
     return '<div class="ri" style="gap:10px;align-items:center">'+
       '<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#00d4aa,#00a8ff);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0">'+(i+1)+'</div>'+
       '<div style="flex:1;min-width:0">'+
-        '<div style="font-size:.88rem;font-weight:700">'+u.ism+' '+u.familiya+'</div>'+
-        '<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:2px">'+u.telefon+'</div>'+
+        '<div style="font-size:.88rem;font-weight:700">'+esc(u.ism)+' '+esc(u.familiya)+'</div>'+
+        '<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:2px">'+esc(u.telefon)+'</div>'+
       '</div>'+
       '<div style="font-size:.65rem;color:rgba(255,255,255,.3);white-space:nowrap">'+u.vaqt+'</div>'+
+      '<span onclick="uOqIsmTahrir('+i+')" style="cursor:pointer;padding:2px 4px;flex-shrink:0">✏️</span>'+
     '</div>';
   }).join('');
+}
+async function uOqIsmTahrir(i){
+  var u=_uoqRenderedList[i];
+  if(!u)return;
+  var yangiIsm=prompt('Ism:',u.ism);
+  if(yangiIsm===null||!yangiIsm.trim())return;
+  var yangiFamiliya=prompt('Familiya:',u.familiya);
+  if(yangiFamiliya===null)return;
+  try{
+    var r=await apiFetch(API+'/users/ism_yangila',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({user_id:u.user_id,ustoz_id:CU.id,ism:yangiIsm.trim(),familiya:yangiFamiliya.trim()})});
+    var d=await r.json();
+    if(d.success)uOqLoad();
+    else alert('Xato: '+(d.detail||''));
+  }catch(e){alert('Xato: '+e);}
 }
 function uOqSearch(){
   var q=document.getElementById('uoqsearch').value.toLowerCase().trim();
