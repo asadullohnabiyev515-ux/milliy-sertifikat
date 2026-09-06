@@ -204,6 +204,8 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
       <div class="sbox"><div class="snum" id="bs3">0</div><div class="slab">Kitoblar</div></div>
       <div class="sbox"><div class="snum" id="bs4">—</div><div class="slab">Reyting</div></div>
     </div>
+    <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">👨‍👩‍👧‍👦 Guruhim</div>
+    <div id="hGuruhim" style="margin-bottom:18px"><div style="text-align:center;padding:16px"><div class="sp" style="margin:0 auto"></div></div></div>
     <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">O'quv bo'limlari</div>
     <div class="g2">
       <div class="mc" onclick="go('p2',1)" style="border-left:3px solid #00d4aa;background:linear-gradient(135deg,rgba(0,212,170,.1),rgba(255,255,255,.03))"><div class="mi" style="background:rgba(0,212,170,.2)">📝</div><div class="mt">Testlar</div><div class="ms">Test ishlash</div></div>
@@ -2129,6 +2131,7 @@ function go(id,nav){
     var nj=document.getElementById('n-jadval');if(nj)nj.className='nitem on';
     var nu=document.getElementById('n-ustoz');if(nu)nu.className='nitem';
   }
+  if(id==='p1')hGuruhimLoad();
   if(id==='p2')tIsmFamiliyaOldindanTold();
   if(id==='p5')kLoad();
   if(id==='p6')rLoad();
@@ -2813,6 +2816,56 @@ function refUlash(){
   }
 }
 var _pGuruhAll=[];
+// BOSH SAHIFA — "Guruhim" bo'limi
+async function hGuruhimLoad(){
+  var wrap=document.getElementById('hGuruhim');
+  if(!CU.id){wrap.innerHTML='';return;}
+  wrap.innerHTML='<div style="text-align:center;padding:16px"><div class="sp" style="margin:0 auto"></div></div>';
+  try{
+    var r=await fetch(API+'/guruh/hammasi?user_id='+CU.id);
+    var d=await r.json();
+    var list=d.guruhlar||[];
+    var mening=list.find(function(g){return g.mening_holatim==='faol';});
+    var sorov=list.find(function(g){return g.mening_holatim==='sorov';});
+    if(mening){
+      wrap.innerHTML='<div onclick="pGuruhDetOch(\''+mening.guruh_id+'\',\''+esc(mening.nomi)+'\')" style="cursor:pointer;display:flex;align-items:center;gap:10px;background:rgba(0,212,170,.08);border:1px solid rgba(0,212,170,.25);border-radius:14px;padding:12px 14px">'+
+        '<div style="font-size:1.4rem">👨‍👩‍👧‍👦</div>'+
+        '<div style="flex:1;min-width:0"><div style="font-size:.9rem;font-weight:700">'+esc(mening.nomi)+'</div>'+
+        '<div style="font-size:.72rem;color:rgba(255,255,255,.4)">👨‍🏫 '+esc(mening.ustoz_ism)+' · '+mening.oquvchilar_soni+" o'quvchi</div></div>"+
+        '<div style="color:rgba(255,255,255,.3)">›</div></div>';
+      return;
+    }
+    if(sorov){
+      wrap.innerHTML='<div style="display:flex;align-items:center;gap:10px;background:rgba(255,180,0,.08);border:1px solid rgba(255,180,0,.25);border-radius:14px;padding:12px 14px">'+
+        '<div style="font-size:1.4rem">⏳</div>'+
+        '<div style="flex:1;min-width:0"><div style="font-size:.85rem;font-weight:700">"'+esc(sorov.nomi)+'" guruhiga so\'rovingiz yuborilgan</div>'+
+        '<div style="font-size:.72rem;color:rgba(255,255,255,.4)">Ustoz tasdiqlashini kuting</div></div></div>';
+      return;
+    }
+    if(!list.length){
+      wrap.innerHTML='<div style="text-align:center;padding:14px;color:rgba(255,255,255,.4);font-size:.82rem;background:rgba(255,255,255,.03);border-radius:14px">Hozircha mavjud guruh yo\'q</div>';
+      return;
+    }
+    wrap.innerHTML='<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:8px">Hech qaysi guruhga qo\'shilmagansiz — mavjud guruhlardan birini tanlang:</div>'+
+      '<div style="display:flex;flex-direction:column;gap:8px">'+
+      list.map(function(g){
+        return '<div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border-radius:12px;padding:10px 12px">'+
+          '<div style="flex:1;min-width:0"><div style="font-size:.85rem;font-weight:700">'+esc(g.nomi)+'</div>'+
+          '<div style="font-size:.7rem;color:rgba(255,255,255,.4)">👨‍🏫 '+esc(g.ustoz_ism)+' · '+g.oquvchilar_soni+" o'quvchi</div></div>"+
+          '<button onclick="hGuruhimSorovYubor(\''+g.guruh_id+'\',\''+esc(g.nomi)+'\')" style="background:#3b82f6;border:none;border-radius:8px;color:#fff;padding:6px 12px;font-size:.75rem;font-weight:700;cursor:pointer;white-space:nowrap">So\'rov yuborish</button></div>';
+      }).join('')+'</div>';
+  }catch(e){wrap.innerHTML='<div style="text-align:center;padding:14px;color:#ff6b6b;font-size:.82rem">Xato</div>';}
+}
+async function hGuruhimSorovYubor(gid,nomi){
+  try{
+    var r=await apiFetch(API+'/guruh/sorov',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({guruh_id:gid,user_id:CU.id})});
+    var d=await r.json();
+    if(!r.ok){alert(d.detail||'Xato');return;}
+    if(d.holat!=='faol')alert("✅ \""+nomi+"\" guruhiga so'rov yuborildi — ustoz tasdiqlashini kuting.");
+    hGuruhimLoad();
+  }catch(e){alert('Tarmoq xatosi');}
+}
 function pGuruhFormToggle(){
   var f=document.getElementById('pGuruhForm');
   var willShow=f.style.display==='none';
