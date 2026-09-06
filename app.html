@@ -461,7 +461,10 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   <div class="top"><div class="tlogo">Profil</div><div class="av" id="av8">A</div></div>
   <div style="padding:20px 16px;text-align:center">
     <div class="av" id="pav" style="width:68px;height:68px;border-radius:18px;font-size:1.8rem;margin:0 auto 12px">A</div>
-    <div style="font-size:1rem;font-weight:700;margin-bottom:4px" id="pism">—</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px">
+      <div style="font-size:1rem;font-weight:700" id="pism">—</div>
+      <span onclick="pIsmTahrir()" style="cursor:pointer">✏️</span>
+    </div>
     <div style="font-size:.78rem;color:rgba(255,255,255,.4);margin-bottom:10px" id="pid">ID: —</div>
     <div id="coin-badge-p8" onclick="reytingOch('/coin/reyting','🪙 Coin reytingi','coin')" style="display:inline-block;background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.3);border-radius:20px;padding:6px 14px;font-size:.85rem;font-weight:800;color:gold;cursor:pointer">🪙 0</div>
   </div>
@@ -3118,11 +3121,15 @@ async function pXatoKor(kod){
 }
 
 // PROFIL
+var _pIsm='', _pFamiliya='';
 async function pLoad(){
   if(!CU.id)return;
   try{
     var r=await apiFetch(API+'/profil/'+CU.id);
     var d=await r.json();
+    _pIsm=d.ism||''; _pFamiliya=d.familiya||'';
+    var toliqIsm=(_pIsm+' '+_pFamiliya).trim();
+    document.getElementById('pism').textContent=toliqIsm||CU.name||'—';
     document.getElementById('pjami').textContent=d.jami_test||0;
     document.getElementById('portacha').textContent=d.ortacha_ball||'—';
     document.getElementById('pyuqori').textContent=d.eng_yuqori||'—';
@@ -3136,6 +3143,19 @@ async function pLoad(){
     document.getElementById('bs1').textContent=d.jami_test;
     if(d.natijalar[0]&&d.natijalar[0].ball)document.getElementById('bs2').textContent=d.natijalar[0].ball;
   }catch(e){}
+}
+async function pIsmTahrir(){
+  var yangiIsm=prompt('Ism:',_pIsm||CU.name||'');
+  if(yangiIsm===null||!yangiIsm.trim())return;
+  var yangiFamiliya=prompt('Familiya:',_pFamiliya||'');
+  if(yangiFamiliya===null)return;
+  try{
+    var r=await apiFetch(API+'/users/ism_yangila',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({user_id:CU.id,ism:yangiIsm.trim(),familiya:yangiFamiliya.trim()})});
+    var d=await r.json();
+    if(d.success)pLoad();
+    else alert('Xato: '+(d.detail||''));
+  }catch(e){alert('Xato: '+e);}
 }
 
 // USTOZ
@@ -3403,6 +3423,7 @@ function uOqRender(list){
       '</div>'+
       '<div style="font-size:.65rem;color:rgba(255,255,255,.3);white-space:nowrap">'+u.vaqt+'</div>'+
       '<span onclick="uOqIsmTahrir('+i+')" style="cursor:pointer;padding:2px 4px;flex-shrink:0">✏️</span>'+
+      '<span onclick="uOqOchir('+i+')" style="cursor:pointer;padding:2px 4px;flex-shrink:0">🗑️</span>'+
     '</div>';
   }).join('');
 }
@@ -3416,6 +3437,17 @@ async function uOqIsmTahrir(i){
   try{
     var r=await apiFetch(API+'/users/ism_yangila',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({user_id:u.user_id,ustoz_id:CU.id,ism:yangiIsm.trim(),familiya:yangiFamiliya.trim()})});
+    var d=await r.json();
+    if(d.success)uOqLoad();
+    else alert('Xato: '+(d.detail||''));
+  }catch(e){alert('Xato: '+e);}
+}
+async function uOqOchir(i){
+  var u=_uoqRenderedList[i];
+  if(!u)return;
+  if(!confirm((u.ism+' '+u.familiya).trim()+" ro'yxatdan o'chirilsinmi? (oldingi natijalari saqlanib qoladi, faqat ro'yxatdan chiqariladi)"))return;
+  try{
+    var r=await apiFetch(API+'/users/ochir/'+u.user_id+'?ustoz_id='+CU.id,{method:'DELETE'});
     var d=await r.json();
     if(d.success)uOqLoad();
     else alert('Xato: '+(d.detail||''));
