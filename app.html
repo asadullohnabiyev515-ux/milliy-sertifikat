@@ -248,8 +248,15 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
       <div style="font-weight:700;margin-bottom:6px">📝 Test kodini kiriting</div>
       <div style="font-size:.82rem;color:rgba(255,255,255,.4);margin-bottom:12px">Ustozingizdan olgan kodni kiriting</div>
       <input class="inp" id="tkod" type="text" placeholder="Masalan: MAT2024" style="text-transform:uppercase;margin-bottom:12px"/>
-      <input class="inp" id="tism" type="text" placeholder="Ismingiz" style="margin-bottom:8px"/>
-      <input class="inp" id="tfamiliya" type="text" placeholder="Familiyangiz" style="margin-bottom:4px"/>
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border-radius:12px;padding:10px 14px;margin-bottom:4px">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:.68rem;color:rgba(255,255,255,.4)">Natijada shu ism ko'rinadi</div>
+          <div style="font-size:.9rem;font-weight:700" id="tIsmKorsatish">—</div>
+        </div>
+        <span onclick="go('p8',5)" style="cursor:pointer;font-size:.72rem;color:#3b82f6;font-weight:700;white-space:nowrap">✏️ Profilda o'zgartirish</span>
+      </div>
+      <input class="inp" id="tism" type="hidden"/>
+      <input class="inp" id="tfamiliya" type="hidden"/>
       <button class="btn btn-green" onclick="testBoshlash()" style="margin-top:12px">▶ Testni boshlash (dastur orqali)</button>
       <button class="btn btn-out" onclick="testFaqatRoyxat()" style="margin-top:8px">🖨️ Faqat ro'yxatdan o'tish (qog'ozda topshiraman)</button>
       <div class="xb" id="txb"></div>
@@ -2292,19 +2299,26 @@ document.getElementById('boshbtn').onclick=function(){go('p1',0);document.getEle
 if(uid)setTimeout(kirish,300);
 
 // TEST
-function tIsmFamiliyaOldindanTold(){
-  var ei=document.getElementById('tism'), ef=document.getElementById('tfamiliya');
-  if(ei&&!ei.value&&ef&&!ef.value&&CU.name){
-    var parts=CU.name.trim().split(' ');
-    ei.value=parts[0]||'';
-    ef.value=parts.slice(1).join(' ')||'';
-  }
+async function tIsmFamiliyaOldindanTold(){
+  // Test natijasida ISHONCHLI/BIR XIL ism chiqishi uchun bu maydonlar
+  // endi talaba tomonidan tahrirlanmaydi — Profilda saqlangan (tasdiqlangan)
+  // ism/familiya har safar to'g'ridan-to'g'ri backend'dan olinadi.
+  if(!CU.id)return;
+  try{
+    var r=await apiFetch(API+'/profil/'+CU.id);
+    var d=await r.json();
+    document.getElementById('tism').value=d.ism||'';
+    document.getElementById('tfamiliya').value=d.familiya||'';
+    document.getElementById('tIsmKorsatish').textContent=((d.ism||'')+' '+(d.familiya||'')).trim()||'—';
+  }catch(e){}
 }
 function tIsmFamiliyaOl(){
   var ism=document.getElementById('tism').value.trim();
   var familiya=document.getElementById('tfamiliya').value.trim();
-  if(!ismYaroqlimi(ism)){xb('txb','err','Ismingizni to\'g\'ri kiriting!');return null;}
-  if(!ismYaroqlimi(familiya)){xb('txb','err','Familiyangizni to\'g\'ri kiriting!');return null;}
+  if(!ismYaroqlimi(ism)||!ismYaroqlimi(familiya)){
+    xb('txb','err','Avval Profil sahifasida ism-familiyangizni to\'ldiring!');
+    return null;
+  }
   return {ism:ism,familiya:familiya};
 }
 async function testBoshlash(){
