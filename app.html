@@ -210,22 +210,14 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <div class="g2">
       <div class="mc" onclick="go('p2',1)" style="border-left:3px solid #00d4aa;background:linear-gradient(135deg,rgba(0,212,170,.1),rgba(255,255,255,.03))"><div class="mi" style="background:rgba(0,212,170,.2)">📝</div><div class="mt">Testlar</div><div class="ms">Test ishlash</div></div>
       <div class="mc" onclick="go('p5',2)" style="border-left:3px solid #ff6b35;background:linear-gradient(135deg,rgba(255,107,53,.1),rgba(255,255,255,.03))"><div class="mi" style="background:rgba(255,107,53,.2)">📚</div><div class="mt">Kitoblar</div><div class="ms">Fanlar bo'yicha</div></div>
-      <div class="mc" onclick="go('p6',3)" style="border-left:3px solid #0088ff;background:linear-gradient(135deg,rgba(0,136,255,.1),rgba(255,255,255,.03))"><div class="mi" style="background:rgba(0,136,255,.2)">🏆</div><div class="mt">Reyting</div><div class="ms">Top o'quvchilar</div></div>
       <div class="mc" onclick="go('p7',4);tTab(2)" style="border-left:3px solid #8b5cf6;background:linear-gradient(135deg,rgba(139,92,246,.1),rgba(255,255,255,.03))"><div class="mi" style="background:rgba(139,92,246,.2)">🎯</div><div class="mt">Tester</div><div class="ms">Mashq qilish</div></div>
       <div class="mc" onclick="go('p-kurs',-1);kursRoyxatLoad()" style="border-left:3px solid #f59e0b;background:linear-gradient(135deg,rgba(245,158,11,.1),rgba(255,255,255,.03))"><div class="mi" style="background:rgba(245,158,11,.2)">📐</div><div class="mt">Matematika</div><div class="ms">Kimyo uchun kurs</div></div>
     </div>
     <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:1px;text-transform:uppercase;margin:18px 0 12px">Qo'shimcha</div>
     <div class="g2">
-      <div class="mc" onclick="go('p-games',-1)" style="border-left:3px solid #10b981;background:linear-gradient(135deg,rgba(16,185,129,.1),rgba(255,255,255,.03))"><div class="mi" style="background:rgba(16,185,129,.2)">🎮</div><div class="mt">O'yinlar</div><div class="ms">Element o'yinlari</div></div>
       <div class="mc" onclick="go('p-jadval',-1);jadvalInit()" style="border-left:3px solid #0ea5e9;background:linear-gradient(135deg,rgba(14,165,233,.1),rgba(255,255,255,.03))"><div class="mi" style="background:rgba(14,165,233,.2)">⚛️</div><div class="mt">Jadval</div><div class="ms">Davriy jadval</div></div>
       <div class="mc" onclick="go('p-moddabaza',-1)" style="border-left:3px solid #a855f7;background:linear-gradient(135deg,rgba(168,85,247,.1),rgba(255,255,255,.03))"><div class="mi" style="background:rgba(168,85,247,.2)">📖</div><div class="mt">Moddalar bazasi</div><div class="ms">Formula va nomlar</div></div>
       <div class="mc" onclick="go('p-reaksiya',-1)" style="border-left:3px solid #22c55e;background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(255,255,255,.03))"><div class="mi" style="background:rgba(34,197,94,.2)">⚗️</div><div class="mt">Reaksiyalar</div><div class="ms">Reagent → mahsulot</div></div>
-      <div class="mc" onclick="go('p-elon',-1)" style="position:relative;border-left:3px solid #ff4757;background:linear-gradient(135deg,rgba(255,71,87,.1),rgba(255,255,255,.03))">
-        <span id="elon-badge" style="display:none;position:absolute;top:10px;right:10px;background:#ff4757;color:#fff;border-radius:50%;font-size:9px;width:16px;height:16px;text-align:center;line-height:16px;font-weight:700">!</span>
-        <div class="mi" style="background:rgba(255,71,87,.2)">🔔</div>
-        <div class="mt">E'lon</div><div class="ms">Yangiliklar</div>
-      </div>
-      <div class="mc" onclick="go('p8',5)" style="border-left:3px solid #6366f1;background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(255,255,255,.03))"><div class="mi" style="background:rgba(99,102,241,.2)">👤</div><div class="mt">Profil</div><div class="ms">Shaxsiy ma'lumot</div></div>
     </div>
   </div>
 </div>
@@ -965,10 +957,10 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
 <!-- NAV -->
 <div class="nav" id="nav" style="display:none">
   <div class="nitem on" id="n0" onclick="go('p1',0)"><span>🏠</span><span>Bosh</span></div>
-  <div class="nitem" id="n1" onclick="go('p2',1)"><span>📝</span><span>Testlar</span></div>
   <div class="nitem" id="n3" onclick="go('p6',3)"><span>🏆</span><span>Reyting</span></div>
   <div class="nitem" id="n-game" onclick="go('p-games',-1)"><span>🎮</span><span>O'yinlar</span></div>
   <div class="nitem" id="n5" onclick="go('p8',5)"><span>👤</span><span>Profil</span></div>
+  <div class="nitem" id="n-elon" onclick="go('p-elon',-1)"><span>🔔</span><span id="elon-badge" style="display:none;position:absolute;top:2px;right:26%;background:#ff4757;color:#fff;border-radius:50%;font-size:9px;width:14px;height:14px;text-align:center;line-height:14px;font-weight:700;z-index:1">!</span><span>E'lon</span></div>
 </div>
 
 <!-- O'YINLAR HUB -->
