@@ -1967,7 +1967,11 @@ function escAttr(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"
 function ismYaroqlimi(s){
   s=(s||'').trim();
   if(s.length<2)return false;
-  var harflar=s.replace(/[^a-zA-Zа-яА-ЯёЁʻʼ'’]/g,'');
+  // Butun matn FAQAT harf/bo'shliq/defis/apostrofdan iborat bo'lishi kerak —
+  // stiker/emoji, pastki chiziq, ikki nuqta, tilda va sh.k. RAD ETILADI
+  // (masalan "~M.M~" avval o'tib ketardi, chunki ichida 2ta harf bor edi).
+  if(!/^[a-zA-Zа-яА-ЯёЁʻʼ'’\-\s]+$/.test(s))return false;
+  var harflar=s.replace(/[^a-zA-Zа-яА-ЯёЁ]/g,'');
   if(harflar.length<2)return false;
   if(/(.)\1{4,}/i.test(s))return false;
   return true;
