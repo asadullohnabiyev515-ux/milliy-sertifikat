@@ -3736,7 +3736,8 @@ async function uDavomatSaqla(){
     var r=await apiFetch(API+'/guruh/davomat_saqla',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({guruh_id:_uguruhCur,ustoz_id:CU.id,sana:document.getElementById('uDavomatSana').value,holatlar:_uDavomatHolat})});
     var d=await r.json();
-    xb.textContent=d.success?'✅ Saqlandi':('Xato: '+(d.detail||''));
+    xb.textContent=!d.success?('Xato: '+(d.detail||'')):
+      (d.ota_xabar===false?'✅ Saqlandi, lekin ota-onalar guruhiga xabar yuborilmadi ❗️ (bot guruhdan chiqarilgan/admin emasligini tekshiring)':'✅ Saqlandi');
   }catch(e){xb.textContent='Xato: '+e;}
 }
 function uDavomatTarixOch(){
