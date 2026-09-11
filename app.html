@@ -3700,26 +3700,27 @@ async function uDavomatLoad(){
     var d=await r.json();
     _uDavomatAzolar=d.azolar||[];
     _uDavomatHolat={};
-    _uDavomatAzolar.forEach(function(a){if(a.holat)_uDavomatHolat[a.user_id]=a.holat;});
+    _uDavomatAzolar.forEach(function(a){if(a.holat)_uDavomatHolat[a.azo_id]=a.holat;});
     var kunXb=document.getElementById('uDavomatKunXb');
     kunXb.innerHTML=d.dars_kunimi
       ?('✅ '+d.hafta_kuni+' — jadval bo\'yicha dars kuni')
       :('⚠️ '+d.hafta_kuni+' — jadval bo\'yicha dars kuni emas (baribir belgilash mumkin)');
-    if(!_uDavomatAzolar.length){listEl.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Guruhda faol o\'quvchi yo\'q</div>';return;}
+    if(!_uDavomatAzolar.length){listEl.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Guruhda o\'quvchi yo\'q</div>';return;}
     uDavomatListRender();
   }catch(e){listEl.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Xato</div>';}
 }
 function uDavomatListRender(){
   var holatlar=[['keldi','✅ Keldi','#00d4aa'],['kechikdi','❗️ Kechikdi','#ffb400'],['kelmadi','❌ Kelmadi','#ff6b6b']];
   document.getElementById('uDavomatList').innerHTML=_uDavomatAzolar.map(function(a){
-    var joriy=_uDavomatHolat[a.user_id]||'';
+    var joriy=_uDavomatHolat[a.azo_id]||'';
     var tugmalar=holatlar.map(function(h){
       var on=joriy===h[0];
-      return '<div onclick="uDavomatHolatBelgila('+a.user_id+',\''+h[0]+'\')" style="flex:1;text-align:center;padding:8px 4px;border-radius:8px;font-size:.72rem;font-weight:700;cursor:pointer;'+
+      return '<div onclick="uDavomatHolatBelgila(\''+a.azo_id+'\',\''+h[0]+'\')" style="flex:1;text-align:center;padding:8px 4px;border-radius:8px;font-size:.72rem;font-weight:700;cursor:pointer;'+
         (on?('background:'+h[2]+';color:#000'):'background:rgba(255,255,255,.06);color:rgba(255,255,255,.5)')+'">'+h[1]+'</div>';
     }).join('');
+    var qoshimcha=a.holat_azo==='kutilmoqda'?' <span style="font-weight:400;color:rgba(255,255,255,.4)">(ro\'yxatga qo\'shilmagan)</span>':'';
     return '<div class="ri" style="flex-direction:column;align-items:stretch;gap:8px">'+
-      '<div style="font-size:.85rem;font-weight:700">'+esc(a.ism)+' '+esc(a.familiya)+'</div>'+
+      '<div style="font-size:.85rem;font-weight:700">'+esc(a.ism)+' '+esc(a.familiya)+qoshimcha+'</div>'+
       '<div style="display:flex;gap:6px">'+tugmalar+'</div></div>';
   }).join('');
 }
