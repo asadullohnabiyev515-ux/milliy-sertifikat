@@ -1977,8 +1977,12 @@ function ismYaroqlimi(s){
   return true;
 }
 function apiFetch(url,opts,ms){
+  // Render bepul tarifi harakatsizlikdan keyin uxlab qoladi — uyg'onishi
+  // 30-60s cho'zilishi mumkin, shuning uchun timeout shuncha vaqtga bardosh
+  // berishi kerak (avval 12s edi — cold-start paytida deyarli har doim
+  // "AbortError: Fetch is aborted" bilan uzilib qolardi).
   var ctrl=new AbortController();
-  var t=setTimeout(function(){ctrl.abort();},ms||12000);
+  var t=setTimeout(function(){ctrl.abort();},ms||45000);
   return fetch(url,Object.assign({},opts||{},{signal:ctrl.signal})).finally(function(){clearTimeout(t);});
 }
 function xatoJoriySahifa(){
@@ -4019,12 +4023,15 @@ function uGuruhKutishFormToggle(){
   var f=document.getElementById('uguruhKutishForm');
   f.style.display=f.style.display==='none'?'block':'none';
 }
+var _uguruhKutishYuborilmoqda=false;
 async function uGuruhKutishQosh(){
+  if(_uguruhKutishYuborilmoqda)return; // server sekin javob berganda ikki marta bosib, dublikat yuborilishining oldini olish
   var ism=document.getElementById('uguruhKutishIsm').value.trim();
   var tel=document.getElementById('uguruhKutishTel').value.trim();
   var xb=document.getElementById('uguruhKutishXb');
   if(!tel){xb.textContent="Telefon raqamini kiriting";xb.style.color='#ff6b6b';return;}
-  xb.textContent='Yuklanmoqda...';xb.style.color='rgba(255,255,255,.5)';
+  _uguruhKutishYuborilmoqda=true;
+  xb.textContent='Yuklanmoqda... (server uxlab yotgan bo\'lsa, bir necha soniya cho\'zilishi mumkin)';xb.style.color='rgba(255,255,255,.5)';
   try{
     var r=await apiFetch(API+'/guruh/oquvchi/kutish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({guruh_id:_uguruhCur,telefon:tel,ism:ism,ustoz_id:CU.id})});
     var d=await r.json();
@@ -4039,6 +4046,7 @@ async function uGuruhKutishQosh(){
     document.getElementById('uguruhKutishTel').value='';
     uGuruhDetailLoad();
   }catch(e){xb.textContent='Xato: '+e;xb.style.color='#ff6b6b';}
+  finally{_uguruhKutishYuborilmoqda=false;}
 }
 async function uGuruhOqChiqar(uid,tel){
   if(!confirm('Bu o\'quvchi guruhdan chiqarilsinmi?'))return;
