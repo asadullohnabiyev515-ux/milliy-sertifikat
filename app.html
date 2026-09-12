@@ -4371,7 +4371,7 @@ async function uNatijalarKor(kod){
     // 25 ball). Backend buni 1-40 (Rasch) ball bilan o'rtacha oladi va
     // kerakli chegaraga yetsa sertifikatni avtomatik yuboradi.
     if(d.tur==='milliy' && d.n_savol<=40 && d.tugadi){
-      html+='<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:8px">✍️ 41-42-43 (qo\'shimcha, yozma) ball kiritish — talaba boshiga jami eng ko\'p 25 ball:</div>';
+      html+='<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:8px">✍️ 41-42-43 (qo\'shimcha, yozma) ball kiritish — har biri eng ko\'p 25 balldan, talaba boshiga jami eng ko\'p 75 ball:</div>';
       html+='<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px">';
       nl.forEach(function(n){
         if(!n._id)return;
@@ -4380,12 +4380,12 @@ async function uNatijalarKor(kod){
         html+='<div style="background:rgba(255,255,255,.04);border-radius:10px;padding:9px 12px">'+
           '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'+
             '<span style="font-size:.82rem;font-weight:700">'+esc(n.ism||'')+' '+esc(n.familiya||'')+'</span>'+
-            (mavjud?'<span style="font-size:.68rem;color:#00d4aa;font-weight:700">'+n.ball_qoshimcha+'/25 kiritilgan</span>':'<span style="font-size:.68rem;color:rgba(255,255,255,.35)">kiritilmagan</span>')+
+            (mavjud?'<span style="font-size:.68rem;color:#00d4aa;font-weight:700">'+n.ball_qoshimcha+'/75 kiritilgan</span>':'<span style="font-size:.68rem;color:rgba(255,255,255,.35)">kiritilmagan</span>')+
           '</div>'+
           '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">'+
             [41,42,43].map(function(q){
               var joriy=qoshMavjud[String(q)];
-              return '<input class="inp" type="number" min="0" step="0.5" placeholder="'+q+'-savol" value="'+(joriy!=null?joriy:'')+'" oninput="qoshYoz(\''+n._id+'\','+q+',this.value)" style="padding:8px;font-size:.8rem;text-align:center"/>';
+              return '<input class="inp" type="number" min="0" max="25" step="0.5" placeholder="'+q+'-savol (0-25)" value="'+(joriy!=null?joriy:'')+'" oninput="qoshYoz(\''+n._id+'\','+q+',this.value)" style="padding:8px;font-size:.8rem;text-align:center"/>';
             }).join('')+
           '</div>'+
         '</div>';
