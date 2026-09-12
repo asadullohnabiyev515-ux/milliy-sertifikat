@@ -4365,6 +4365,36 @@ async function uNatijalarKor(kod){
     });
     html+='</div>';
 
+    // "40talik" (yoki umuman B-qismsiz) yakunlangan "milliy" testda ustoz
+    // 41-42-43 (qog'ozda yozma javob beriladigan) savollar uchun har bir
+    // o'quvchiga qo'lda ball qo'yishi mumkin (talaba boshiga jami eng ko'p
+    // 25 ball). Backend buni 1-40 (Rasch) ball bilan o'rtacha oladi va
+    // kerakli chegaraga yetsa sertifikatni avtomatik yuboradi.
+    if(d.tur==='milliy' && d.n_savol<=40 && d.tugadi){
+      html+='<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:8px">✍️ 41-42-43 (qo\'shimcha, yozma) ball kiritish — talaba boshiga jami eng ko\'p 25 ball:</div>';
+      html+='<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px">';
+      nl.forEach(function(n){
+        if(!n._id)return;
+        var mavjud=(n.ball_qoshimcha!=null);
+        var qoshMavjud=(n.javoblar&&n.javoblar._qoshimcha)||{};
+        html+='<div style="background:rgba(255,255,255,.04);border-radius:10px;padding:9px 12px">'+
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'+
+            '<span style="font-size:.82rem;font-weight:700">'+esc(n.ism||'')+' '+esc(n.familiya||'')+'</span>'+
+            (mavjud?'<span style="font-size:.68rem;color:#00d4aa;font-weight:700">'+n.ball_qoshimcha+'/25 kiritilgan</span>':'<span style="font-size:.68rem;color:rgba(255,255,255,.35)">kiritilmagan</span>')+
+          '</div>'+
+          '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">'+
+            [41,42,43].map(function(q){
+              var joriy=qoshMavjud[String(q)];
+              return '<input class="inp" type="number" min="0" step="0.5" placeholder="'+q+'-savol" value="'+(joriy!=null?joriy:'')+'" oninput="qoshYoz(\''+n._id+'\','+q+',this.value)" style="padding:8px;font-size:.8rem;text-align:center"/>';
+            }).join('')+
+          '</div>'+
+        '</div>';
+      });
+      html+='</div>';
+      html+='<button class="btn btn-green" onclick="qoshimchaSaqla(\''+kod+'\')" id="qoshBtn" style="width:100%;margin-bottom:8px">💾 Qo\'shimcha ballarni saqlash</button>';
+      html+='<div class="xb" id="qoshXb" style="margin-bottom:18px"></div>';
+    }
+
     // Eng qiyin savollar (natijalardagi javoblar asosida)
     var togri=d.togri_javoblar||{};
     var ballVazn=savolBallVaznlari(togri,nl,d.n_savol,d.tur,jami);
@@ -4679,6 +4709,31 @@ async function uTestSaqla(){
     if(d.success){alert('Test yaratildi! Kod: '+kod);go('p9',6);uTab(1);}
     else{xb('ujxb','err',d.detail||'Xato');btn.disabled=false;btn.textContent='💾 Saqlash';}
   }catch(e){xb('ujxb','err',e&&e.name==='AbortError'?"Server uyg'onmoqda, biroz kutib qayta urining":'Xato');btn.disabled=false;btn.textContent='💾 Saqlash';}
+}
+
+// 40talik testga keyinchalik 41-42-43 (qo'shimcha, qo'lda) ball qo'shish
+var qoshimchaVals={};
+function qoshYoz(natijaId,savol,v){
+  if(!qoshimchaVals[natijaId])qoshimchaVals[natijaId]={};
+  var num=parseFloat(v);
+  if(v===''||isNaN(num))delete qoshimchaVals[natijaId][savol];
+  else qoshimchaVals[natijaId][savol]=num;
+}
+async function qoshimchaSaqla(kod){
+  var ballar={};
+  Object.keys(qoshimchaVals).forEach(function(id){
+    if(Object.keys(qoshimchaVals[id]).length)ballar[id]=qoshimchaVals[id];
+  });
+  if(!Object.keys(ballar).length){xb('qoshXb','err',"Kamida bitta o'quvchiga ball kiriting!");return;}
+  var btn=document.getElementById('qoshBtn');
+  btn.disabled=true;btn.textContent='Saqlanmoqda...';
+  try{
+    var r=await apiFetch(API+'/test/qoshimcha_ball',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({test_kod:kod,ustoz_id:CU.id,ballar:ballar})},45000);
+    var d=await r.json();
+    if(d.success){qoshimchaVals={};xb('qoshXb','ok','Saqlandi! Natijalar va (kerak bo\'lsa) sertifikatlar yangilandi.');uNatijalarKor(kod);}
+    else{xb('qoshXb','err',d.detail||'Xato');btn.disabled=false;btn.textContent="💾 Qo'shimcha ballarni saqlash";}
+  }catch(e){xb('qoshXb','err',e&&e.name==='AbortError'?"Server uyg'onmoqda, biroz kutib qayta urining":'Xato');btn.disabled=false;btn.textContent="💾 Qo'shimcha ballarni saqlash";}
 }
 
 // SAVOL
