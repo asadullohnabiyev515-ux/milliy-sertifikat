@@ -792,9 +792,10 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   <div style="padding:16px">
     <div class="card">
       <div style="font-weight:700;margin-bottom:12px">Test turi</div>
-      <div class="g2" style="margin-bottom:14px">
-        <div id="turm" onclick="uTur('m')" class="mc" style="text-align:center;border-color:#00d4aa;background:rgba(0,212,170,.08)"><div style="font-size:1.3rem;margin-bottom:4px">🏆</div><div class="mt">Milliy</div><div class="ms">40 savol</div></div>
-        <div id="turo" onclick="uTur('o')" class="mc" style="text-align:center"><div style="font-size:1.3rem;margin-bottom:4px">📝</div><div class="mt">Oddiy</div><div class="ms">Tanlanadi</div></div>
+      <div class="g2" style="margin-bottom:14px;grid-template-columns:repeat(3,1fr)">
+        <div id="turm43" onclick="uTur('m43')" class="mc" style="text-align:center;padding:12px 8px;border-color:#00d4aa;background:rgba(0,212,170,.08)"><div style="font-size:1.3rem;margin-bottom:4px">🏆</div><div class="mt">43talik</div><div class="ms">40+3 qo'shimcha</div></div>
+        <div id="turm40" onclick="uTur('m40')" class="mc" style="text-align:center;padding:12px 8px"><div style="font-size:1.3rem;margin-bottom:4px">🎓</div><div class="mt">40talik</div><div class="ms">40 savol</div></div>
+        <div id="turo" onclick="uTur('o')" class="mc" style="text-align:center;padding:12px 8px"><div style="font-size:1.3rem;margin-bottom:4px">📝</div><div class="mt">Oddiy</div><div class="ms">Tanlanadi</div></div>
       </div>
       <div id="usoniwrap" style="display:none;margin-bottom:12px">
         <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:8px">Savollar soni</div>
@@ -2129,7 +2130,7 @@ function tChiq(){
 
 var ttS=[],ttJav={},ttJ=0,ttF='',ttM='';
 var ttMode='',ttSeqFan_='',ttSeqMavzular=[],ttSeqIdx=0;
-var uTurVal='m',uSoni=40,uJavoblar={};
+var uTurVal='m43',uSoni=40,uJavoblar={};
 var sTogri='';
 
 // GO - sahifa almashtirish
@@ -4531,10 +4532,12 @@ async function uElonOchir(id){
 // USTOZ TEST YARAT
 function uTur(t){
   uTurVal=t;
-  document.getElementById('turm').style.borderColor=t==='m'?'#00d4aa':'rgba(255,255,255,.08)';
-  document.getElementById('turm').style.background=t==='m'?'rgba(0,212,170,.08)':'rgba(255,255,255,.05)';
-  document.getElementById('turo').style.borderColor=t==='o'?'#00d4aa':'rgba(255,255,255,.08)';
-  document.getElementById('turo').style.background=t==='o'?'rgba(0,212,170,.08)':'rgba(255,255,255,.05)';
+  ['turm43','turm40','turo'].forEach(function(id){
+    var sel=id===('tur'+t);
+    var e=document.getElementById(id);
+    e.style.borderColor=sel?'#00d4aa':'rgba(255,255,255,.08)';
+    e.style.background=sel?'rgba(0,212,170,.08)':'rgba(255,255,255,.05)';
+  });
   document.getElementById('usoniwrap').style.display=t==='o'?'block':'none';
   if(t==='o'){
     var g=document.getElementById('usonigrid');
@@ -4561,16 +4564,17 @@ function uJavoblargaO(){
   var fan=document.getElementById('ufan').value.trim();
   var kod=document.getElementById('ukod').value.trim().toUpperCase();
   if(!fan||!kod){xb('utxb','err','Fan va kodni kiriting!');return;}
-  var jami=uTurVal==='m'?43:uSoni;
+  var isM=(uTurVal==='m43'||uTurVal==='m40');
+  var jami=uTurVal==='m43'?43:uTurVal==='m40'?40:uSoni;
   uJavoblar={};uKopJav={};
   document.getElementById('ujtitle').textContent=fan+' ('+kod+')';
   var li=document.getElementById('ujlist');
   var html='';
   for(var i=0;i<jami;i++){
     var n=i+1;
-    var hl=uTurVal==='m'&&n>=33&&n<=35?['A','B','C','D','E','F']:['A','B','C','D'];
-    var och=uTurVal==='m'&&n>=36&&n<=40;
-    var kop=uTurVal==='m'&&n>=41;
+    var hl=isM&&n>=33&&n<=35?['A','B','C','D','E','F']:['A','B','C','D'];
+    var och=isM&&n>=36&&n<=40;
+    var kop=uTurVal==='m43'&&n>=41;
     html+='<div class="card" style="margin-bottom:10px"><div style="font-size:.8rem;color:#00d4aa;font-weight:700;margin-bottom:8px">'+n+'-savol'+(kop?' <span style="color:rgba(255,255,255,.4);font-weight:400">(bir nechta to\'g\'ri javob, tartib muhim)</span>':'')+'</div>';
     if(kop){
       html+='<div style="font-size:.72rem;color:rgba(255,255,255,.45);margin-bottom:6px">Talaba xuddi shu tartibda javob yozadi (1-katak — 1-to\'g\'ri javob)</div>'+
@@ -4586,12 +4590,12 @@ function uJavoblargaO(){
     html+='</div>';
   }
   li.innerHTML=html;
-  if(uTurVal==='m'){for(var kn=41;kn<=43;kn++)uKopRender(kn);}
+  if(uTurVal==='m43'){for(var kn=41;kn<=43;kn++)uKopRender(kn);}
   go('p9e',-1);
 }
 function ujT(s,h){
   uJavoblar[String(s)]=h;
-  var hl=uTurVal==='m'&&s>=33&&s<=35?['A','B','C','D','E','F']:['A','B','C','D'];
+  var hl=(uTurVal==='m43'||uTurVal==='m40')&&s>=33&&s<=35?['A','B','C','D','E','F']:['A','B','C','D'];
   hl.forEach(function(x){
     var e=document.getElementById('uj'+s+x);
     if(e){e.className='vb'+(x===h?' sel':'');var b=e.querySelector('.vbg');if(b){b.style.background=x===h?'#00d4aa':'rgba(255,255,255,.08)';b.style.color=x===h?'#000':'#fff';}}
@@ -4616,16 +4620,17 @@ async function uTestYaratOch(){
 async function uTestSaqla(){
   var fan=document.getElementById('ufan').value.trim();
   var kod=document.getElementById('ukod').value.trim().toUpperCase();
-  var jami=uTurVal==='m'?43:uSoni;
+  var isM=(uTurVal==='m43'||uTurVal==='m40');
+  var jami=uTurVal==='m43'?43:uTurVal==='m40'?40:uSoni;
   for(var i=36;i<=40;i++){var e=document.getElementById('ujoch'+i);if(e&&e.value.trim())uJavoblar[String(i)]=e.value.trim();}
-  if(uTurVal==='m'){
+  if(uTurVal==='m43'){
     for(var ki=41;ki<=43;ki++){
       var joined=(uKopJav[ki]||[]).map(function(s){return (s||'').trim();}).filter(Boolean).join('|');
       if(joined)uJavoblar[String(ki)]=joined;
     }
   }
   var cnt=Object.keys(uJavoblar).length;
-  var min=uTurVal==='m'?38:jami;
+  var min=isM?38:jami;
   if(cnt<min){xb('ujxb','err','Kamida '+min+' javob kiriting! ('+cnt+')');return;}
   var btn=document.getElementById('ujbtn');
   btn.disabled=true;btn.textContent='Saqlanmoqda...';
@@ -4633,7 +4638,7 @@ async function uTestSaqla(){
   var guruhId=guruhSel&&guruhSel.value?guruhSel.value:null;
   try{
     var r=await apiFetch(API+'/test/yarat',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({kod:kod,fan:fan,ustoz_id:CU.id,javoblar:uJavoblar,tur:uTurVal==='m'?'milliy':'oddiy',savollar_soni:jami,guruh_id:guruhId})},45000);
+      body:JSON.stringify({kod:kod,fan:fan,ustoz_id:CU.id,javoblar:uJavoblar,tur:isM?'milliy':'oddiy',savollar_soni:jami,guruh_id:guruhId})},45000);
     var d=await r.json();
     if(d.success){alert('Test yaratildi! Kod: '+kod);go('p9',6);uTab(1);}
     else{xb('ujxb','err',d.detail||'Xato');btn.disabled=false;btn.textContent='💾 Saqlash';}
