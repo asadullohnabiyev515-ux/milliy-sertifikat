@@ -4210,6 +4210,34 @@ function raschIsCorrect(given,correct){
   return g===c?1:0;
 }
 function raschMeanOf(arr){var v=arr.filter(function(x){return !isNaN(x);});return v.length?v.reduce(function(a,b){return a+b;},0)/v.length:0;}
+// Testning ISHONCHLILIK/ANIQLIK darajasi — Cronbach's Alpha (klassik test
+// nazariyasi). Savollar bir-biriga qanchalik izchil ("mos") ishlashini
+// o'lchaydi: savollar javobsiz qoldirilgan joyni 0 (noto'g'ri) deb hisoblaydi
+// — bu backenddagi ball hisoblash mantig'i bilan bir xil.
+function cronbachAlpha(scored){
+  var N=scored.length; if(!N)return NaN;
+  var L=(scored[0]||[]).length; if(L<2)return NaN;
+  var bin=scored.map(function(row){return row.map(function(v){return isNaN(v)?0:v;});});
+  var itemVarSum=0;
+  for(var j=0;j<L;j++){
+    var col=bin.map(function(row){return row[j];});
+    var m=raschMeanOf(col);
+    itemVarSum+=col.reduce(function(a,b){return a+(b-m)*(b-m);},0)/N;
+  }
+  var totals=bin.map(function(row){return row.reduce(function(a,b){return a+b;},0);});
+  var mt=raschMeanOf(totals);
+  var totalVar=totals.reduce(function(a,b){return a+(b-mt)*(b-mt);},0)/N;
+  if(totalVar<=0)return NaN;
+  return (L/(L-1))*(1-itemVarSum/totalVar);
+}
+function aniqlikDarajasi(a){
+  if(isNaN(a))return {matn:"Aniqlab bo'lmadi",rang:'#94a3b8'};
+  if(a>=0.9)return {matn:'Juda yuqori',rang:'#00d4aa'};
+  if(a>=0.8)return {matn:'Yuqori',rang:'#00d4aa'};
+  if(a>=0.7)return {matn:'Qoniqarli',rang:'#facc15'};
+  if(a>=0.5)return {matn:"O'rta",rang:'#facc15'};
+  return {matn:'Past',rang:'#ff6b6b'};
+}
 // Har bir savol NECHA BALLGA teng ekanligini hisoblaydi -- backenddagi
 // test_yakunla'ning A-qism qiyinlik-vaznlash formulasi bilan bir xil (savol
 // qanchalik kam kishi tomonidan to'g'ri topilgan bo'lsa, shuncha qimmat).
@@ -4286,7 +4314,8 @@ function raschAnalyze(students,key,maksBall){
   }
   var itemsReport=key.map(function(k,j){return {item:j+1,pcorrect:r.itemAnswered[j]>0?Math.round(r.itemQ[j]*1000)/10:NaN,difficulty:difficulty[j],infit:infit[j],outfit:outfit[j],flag:flagItem(difficulty[j],infit[j],outfit[j])};});
   var studentsReport=students.map(function(s,i){return {name:s.name,correct:r.personCorrect[i],answered:r.personAnswered[i],theta:ability[i],score:scoreOut[i]};});
-  return {itemsReport:itemsReport,studentsReport:studentsReport,N:N,L:L,maksBall:mb};
+  var alpha=cronbachAlpha(r.scored);
+  return {itemsReport:itemsReport,studentsReport:studentsReport,N:N,L:L,maksBall:mb,alpha:alpha};
 }
 async function uNatijalarKor(kod){
   go('p9f',-1);
@@ -4370,7 +4399,14 @@ async function uNatijalarKor(kod){
       var rStudents=nl.map(function(n){var ans=[];for(var qi=1;qi<=d.n_savol;qi++)ans.push((n.javoblar||{})[String(qi)]);return {name:((n.ism||'')+' '+(n.familiya||'')).trim(),answers:ans};});
       var rRes=raschAnalyze(rStudents,rKey,d.maks_ball);
       var rSorted=rRes.studentsReport.slice().sort(function(a,b){return (isNaN(b.score)?-999:b.score)-(isNaN(a.score)?-999:a.score);});
-      html+='<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin:18px 0 8px">📐 Rasch (IRT) tahlili — savol qiyinligini hisobga olgan holda:</div>';
+      var alphaInfo=aniqlikDarajasi(rRes.alpha);
+      html+='<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(255,255,255,.04);border-left:3px solid '+alphaInfo.rang+';border-radius:10px;padding:10px 12px;margin:18px 0 10px">'+
+        '<div><div style="font-size:.82rem;font-weight:700">🎯 Testning aniqlik (ishonchlilik) darajasi</div>'+
+        '<div style="font-size:.66rem;color:rgba(255,255,255,.4);margin-top:2px">Cronbach\'s α — savollar bir-biriga qanchalik izchil mos kelishi</div></div>'+
+        '<div style="text-align:right;flex-shrink:0"><div style="font-size:1.15rem;font-weight:800;color:'+alphaInfo.rang+'">'+(isNaN(rRes.alpha)?'—':rRes.alpha.toFixed(2))+'</div>'+
+        '<div style="font-size:.66rem;color:'+alphaInfo.rang+';font-weight:700">'+alphaInfo.matn+'</div></div>'+
+      '</div>';
+      html+='<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:8px">📐 Rasch (IRT) tahlili — savol qiyinligini hisobga olgan holda:</div>';
       html+='<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px">';
       rSorted.forEach(function(s,idx){
         var sc=isNaN(s.score)?0:Math.round(s.score*10)/10;
