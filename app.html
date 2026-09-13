@@ -4403,13 +4403,25 @@ async function uYakunla(kod){
 // ---------- RASCH (1PL IRT, PROX usuli) MODELI BILAN TEKSHIRISH ----------
 function raschIsCorrect(given,correct){
   if(given===undefined||given===null||String(given).trim()==='')return NaN;
-  var g=String(given).trim().toUpperCase(),c=String(correct).trim().toUpperCase();
+  var g=String(given).trim().toUpperCase();
+  // Kalitda bir nechta qabul qilinadigan yozilish shakli bo'lishi mumkin
+  // ("62,5|0,625" kabi, "|" bilan ajratilgan) — backenddagi _javob_mos()
+  // bilan bir xil mantiq: talaba javobi ULARDAN BIRIGA mos kelsa yetarli.
+  var variantlar=String(correct||'').split('|').map(function(v){return v.trim().toUpperCase();}).filter(Boolean);
   var isNum=function(x){return /^-?[\d.,]+$/.test(x);};
-  if(isNum(g)&&isNum(c)){
-    var gNum=parseFloat(g.replace(',','.')),cNum=parseFloat(c.replace(',','.'));
-    if(!isNaN(gNum)&&!isNaN(cNum)){var tol=Math.max(Math.abs(cNum)*0.01,0.02);return Math.abs(gNum-cNum)<=tol?1:0;}
+  for(var i=0;i<variantlar.length;i++){
+    var c=variantlar[i];
+    if(isNum(g)&&isNum(c)){
+      var gNum=parseFloat(g.replace(',','.')),cNum=parseFloat(c.replace(',','.'));
+      if(!isNaN(gNum)&&!isNaN(cNum)){
+        var tol=Math.max(Math.abs(cNum)*0.01,0.02);
+        if(Math.abs(gNum-cNum)<=tol)return 1;
+        continue;
+      }
+    }
+    if(g===c)return 1;
   }
-  return g===c?1:0;
+  return 0;
 }
 function raschMeanOf(arr){var v=arr.filter(function(x){return !isNaN(x);});return v.length?v.reduce(function(a,b){return a+b;},0)/v.length:0;}
 // Testning ISHONCHLILIK/ANIQLIK darajasi — Cronbach's Alpha (klassik test
@@ -4455,8 +4467,8 @@ function savolBallVaznlari(togri,nl,nSavol,tur,jami){
   if(asosiyN>0&&jami>0){
     var togriSoniDict={};
     for(var i=1;i<=asosiyN;i++){
-      var k=String(i),tj=(togri[k]||'').toUpperCase();
-      togriSoniDict[k]=nl.filter(function(n){return ((n.javoblar||{})[k]||'').toUpperCase()===tj;}).length;
+      var k=String(i),tj=togri[k]||'';
+      togriSoniDict[k]=nl.filter(function(n){return javobMos(tj,(n.javoblar||{})[k]);}).length;
     }
     var qiyinlik={},maksMumkinA=0,sumTogri=0;
     for(var i=1;i<=asosiyN;i++){var k=String(i);qiyinlik[k]=(1-(togriSoniDict[k]/jami))+0.01;maksMumkinA+=qiyinlik[k];sumTogri+=togriSoniDict[k];}
@@ -4602,9 +4614,9 @@ async function uNatijalarKor(kod){
     var ballVazn=savolBallVaznlari(togri,nl,d.n_savol,d.tur,jami);
     var savolStat=[];
     for(var i=1;i<=d.n_savol;i++){
-      var k=String(i), tj=(togri[k]||'').toUpperCase();
+      var k=String(i), tj=togri[k]||'';
       if(!tj)continue;
-      var togriSoni=nl.filter(function(n){return ((n.javoblar||{})[k]||'').toUpperCase()===tj;}).length;
+      var togriSoni=nl.filter(function(n){return javobMos(tj,(n.javoblar||{})[k]);}).length;
       savolStat.push({savol:i,foiz:Math.round(togriSoni/jami*100),ball:ballVazn[k]});
     }
     savolStat.sort(function(a,b){return a.foiz-b.foiz;});
