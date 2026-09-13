@@ -4658,12 +4658,30 @@ function uKopRender(n){
 }
 function uKopYoz(n,i,v){if(!uKopJav[n])uKopJav[n]=[];uKopJav[n][i]=v;}
 function uKopQosh(n){if(!uKopJav[n])uKopJav[n]=[''];uKopJav[n].push('');uKopRender(n);}
+
+// Ochiq/yozma javobli savollar (36-40) uchun BIR NECHA qabul qilinadigan
+// yozilish shakli (masalan "62" va "0,62") — talaba ulardan BIRINI yozsa
+// ham to'g'ri hisoblanadi (backend "|" bilan ajratib saqlaydi/solishtiradi).
+var uOchJav={};
+function uOchRender(n){
+  if(!uOchJav[n]){
+    var mavjud=(uJavoblar[String(n)]||'').split('|').map(function(s){return s.trim();}).filter(Boolean);
+    uOchJav[n]=mavjud.length?mavjud:[''];
+  }
+  var list=document.getElementById('ujoch'+n+'-list');
+  if(!list)return;
+  list.innerHTML=uOchJav[n].map(function(v,i){
+    return '<input class="inp" value="'+escAttr(v)+'" oninput="uOchYoz('+n+','+i+',this.value)" placeholder="'+(i===0?'Javob':(i+1)+'-qabul qilinadigan shakl')+'..." style="margin-bottom:6px"/>';
+  }).join('');
+}
+function uOchYoz(n,i,v){if(!uOchJav[n])uOchJav[n]=[];uOchJav[n][i]=v;}
+function uOchQosh(n){if(!uOchJav[n])uOchJav[n]=[''];uOchJav[n].push('');uOchRender(n);}
 function uJavoblargaO(){
   var fan=document.getElementById('ufan').value.trim();
   var kod=document.getElementById('ukod').value.trim().toUpperCase();
   if(!fan||!kod){xb('utxb','err','Fan va kodni kiriting!');return;}
   uTahrirKod=null;
-  uJavoblar={};uKopJav={};
+  uJavoblar={};uKopJav={};uOchJav={};
   document.getElementById('ujtitle').textContent=fan+' ('+kod+')';
   document.getElementById('ujbtn').textContent='💾 Saqlash';
   uJavoblarRoyxatChiz();
@@ -4696,11 +4714,14 @@ function uJavoblarRoyxatChiz(){
       });
       html+='</div>';
     }else{
-      html+='<input class="inp" id="ujoch'+n+'" type="text" placeholder="Javob..." value="'+escAttr(uJavoblar[String(n)]||'')+'" onchange="uJavoblar[\''+n+'\']=this.value"/>';
+      html+='<div style="font-size:.72rem;color:rgba(255,255,255,.45);margin-bottom:6px">Bir nechta qabul qilinadigan yozilish shakli kiritishingiz mumkin (masalan "62" va "0,62") — talaba ulardan BIRINI yozsa ham to\'g\'ri hisoblanadi</div>'+
+            '<div id="ujoch'+n+'-list" style="display:flex;flex-direction:column;gap:6px"></div>'+
+            '<button type="button" onclick="uOchQosh('+n+')" style="margin-top:6px;background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.3);border-radius:8px;padding:8px;width:100%;color:#00d4aa;font-weight:700;cursor:pointer">+ Yana bitta shakl qo\'shish</button>';
     }
     html+='</div>';
   }
   li.innerHTML=html;
+  if(isM){for(var on=36;on<=40;on++)uOchRender(on);}
   if(uTurVal==='m43'){for(var kn=41;kn<=43;kn++)uKopRender(kn);}
 }
 // Ustoz test kalitida (javoblar) xato qilgan bo'lsa tuzatishi uchun — FAQAT
@@ -4715,7 +4736,7 @@ async function uKalitTahrir(kod){
     uTahrirKod=kod;
     uTurVal=d.tur==='milliy'?(d.savollar_soni>40?'m43':'m40'):'o';
     uSoni=d.savollar_soni||40;
-    uJavoblar={};uKopJav={};
+    uJavoblar={};uKopJav={};uOchJav={};
     Object.keys(d.javoblar||{}).forEach(function(k){
       var nk=parseInt(k,10);
       if(uTurVal==='m43'&&nk>=41&&nk<=43){
@@ -4734,7 +4755,10 @@ async function uKalitTahrir(kod){
 async function uKalitTahrirSaqla(){
   var isM=(uTurVal==='m43'||uTurVal==='m40');
   var jami=uTurVal==='m43'?43:uTurVal==='m40'?40:uSoni;
-  for(var i=36;i<=40;i++){var e=document.getElementById('ujoch'+i);if(e&&e.value.trim())uJavoblar[String(i)]=e.value.trim();}
+  for(var i=36;i<=40;i++){
+    var ochJoined=(uOchJav[i]||[]).map(function(s){return (s||'').trim();}).filter(Boolean).join('|');
+    if(ochJoined)uJavoblar[String(i)]=ochJoined;
+  }
   if(uTurVal==='m43'){
     for(var ki=41;ki<=43;ki++){
       var joined=(uKopJav[ki]||[]).map(function(s){return (s||'').trim();}).filter(Boolean).join('|');
@@ -4785,7 +4809,10 @@ async function uTestSaqla(){
   var kod=document.getElementById('ukod').value.trim().toUpperCase();
   var isM=(uTurVal==='m43'||uTurVal==='m40');
   var jami=uTurVal==='m43'?43:uTurVal==='m40'?40:uSoni;
-  for(var i=36;i<=40;i++){var e=document.getElementById('ujoch'+i);if(e&&e.value.trim())uJavoblar[String(i)]=e.value.trim();}
+  for(var i=36;i<=40;i++){
+    var ochJoined=(uOchJav[i]||[]).map(function(s){return (s||'').trim();}).filter(Boolean).join('|');
+    if(ochJoined)uJavoblar[String(i)]=ochJoined;
+  }
   if(uTurVal==='m43'){
     for(var ki=41;ki<=43;ki++){
       var joined=(uKopJav[ki]||[]).map(function(s){return (s||'').trim();}).filter(Boolean).join('|');
