@@ -3294,12 +3294,46 @@ function uBoshga(){
 
 // ── Varaq skaneri ────────────────────────────────────────────────────────
 var uSkanFile=null, uSkanJavoblar={}, uSkanTogri={}, uSkanVaraqId='', uSkanOquvchi=null, uSkanTur='milliy';
+var uSkanGuruhOquvchilar=[];  // test biriktirilgan guruhning faol o'quvchilari — {ism,familiya}
 // Kalitda bir nechta qabul qilinadigan yozilish shakli bo'lishi mumkin
 // ("62|0,62" kabi) — backenddagi _javob_mos() bilan bir xil mantiq.
 function javobMos(togri,berilgan){
   var variantlar=String(togri||'').split('|').map(function(v){return v.trim().toUpperCase();}).filter(Boolean);
   if(!variantlar.length)return false;
   return variantlar.indexOf(String(berilgan||'').trim().toUpperCase())!==-1;
+}
+// Test biror guruhga biriktirilgan bo'lsa, o'sha guruhning faol
+// o'quvchilari ro'yxatini yuklaydi — ism aniqlanmagan skaner/qo'lda
+// kiritish natijasida ro'yxatdan tanlash uchun (topilmasa qo'lda yozish).
+async function uSkanGuruhYukla(guruhId){
+  uSkanGuruhOquvchilar=[];
+  if(!guruhId)return;
+  try{
+    var r=await fetch(API+'/guruh/'+encodeURIComponent(guruhId));
+    var d=await r.json();
+    uSkanGuruhOquvchilar=(d.oquvchilar||[]).filter(function(a){return a.holat==='faol'&&(a.ism||a.familiya);})
+      .map(function(a){return {ism:a.ism||'',familiya:a.familiya||''};})
+      .sort(function(a,b){return (a.ism+a.familiya).localeCompare(b.ism+b.familiya);});
+  }catch(e){uSkanGuruhOquvchilar=[];}
+}
+// Guruh ro'yxatidan tanlanganda ism/familiya maydonlariga avtomatik
+// to'ldiradi (bu maydonlar uSkanSaqlash() tomonidan o'qiladi — o'zgarishsiz);
+// "qo'lda yozaman" tanlansa (yoki hech narsa tanlanmasa) o'sha maydonlar
+// ochiladi.
+function uSkanGuruhTanlash(val){
+  var wrap=document.getElementById('uskan-qolda-ism-wrap');
+  var ismEl=document.getElementById('uskan-ism'), famEl=document.getElementById('uskan-familiya');
+  if(val==='__boshqa__'){
+    if(wrap)wrap.style.display='flex';
+    if(ismEl)ismEl.value=''; if(famEl)famEl.value='';
+  }else if(val!==''){
+    var o=uSkanGuruhOquvchilar[parseInt(val,10)];
+    if(wrap)wrap.style.display='none';
+    if(o){ if(ismEl)ismEl.value=o.ism; if(famEl)famEl.value=o.familiya; }
+  }else{
+    if(wrap)wrap.style.display='none';
+    if(ismEl)ismEl.value=''; if(famEl)famEl.value='';
+  }
 }
 function uSkanReset(){
   uSkanFile=null; uSkanJavoblar={}; uSkanTogri={}; uSkanVaraqId=''; uSkanOquvchi=null;
@@ -3382,6 +3416,7 @@ async function uSkanQolda(varaqId,ism,familiya){
     uSkanTogri=d.javoblar||{};
     uSkanVaraqId=varaqId||'';
     uSkanOquvchi=ism?{ism:ism,familiya:familiya}:null;
+    await uSkanGuruhYukla(d.guruh_id);
     uSkanNatijaRender();
     document.getElementById('uskan-natija').scrollIntoView({behavior:'smooth'});
   }catch(e){alert("Tarmoq xatosi");}
@@ -3431,6 +3466,7 @@ async function uSkanBoshla(){
     }
     uSkanVaraqId=d.varaq_id||'';
     uSkanOquvchi=d.oquvchi||null;
+    await uSkanGuruhYukla(d.guruh_id);
     uSkanNatijaRender();
   }catch(e){
     natija.innerHTML='<div style="text-align:center;padding:16px;color:#ff6b6b;font-size:.85rem">⚠️ Tarmoq xatosi</div>';
@@ -3453,8 +3489,17 @@ function uSkanNatijaRender(){
   if(uSkanOquvchi){
     html+='<div style="font-size:.85rem">👤 <b>'+esc(uSkanOquvchi.ism||'')+' '+esc(uSkanOquvchi.familiya||'')+'</b> (ro\'yxatdan aniqlandi)</div>';
   }else{
-    html+='<div style="font-size:.78rem;color:#facc15;margin-bottom:8px">⚠️ O\'quvchi ro\'yxatdan avtomatik aniqlanmadi — ism familiyasini kiriting:</div>';
-    html+='<div style="display:flex;gap:6px">';
+    html+='<div style="font-size:.78rem;color:#facc15;margin-bottom:8px">⚠️ O\'quvchi ro\'yxatdan avtomatik aniqlanmadi:</div>';
+    if(uSkanGuruhOquvchilar.length){
+      html+='<select class="inp" id="uskan-guruh-select" onchange="uSkanGuruhTanlash(this.value)" style="margin-bottom:8px">';
+      html+='<option value="">— guruhdagi o\'quvchini tanlang —</option>';
+      uSkanGuruhOquvchilar.forEach(function(o,idx){
+        html+='<option value="'+idx+'">'+esc((o.ism+' '+o.familiya).trim())+'</option>';
+      });
+      html+='<option value="__boshqa__">✏️ Ro\'yxatda yo\'q — ismini qo\'lda yozaman</option>';
+      html+='</select>';
+    }
+    html+='<div id="uskan-qolda-ism-wrap" style="display:'+(uSkanGuruhOquvchilar.length?'none':'flex')+';gap:6px">';
     html+='<input class="inp" id="uskan-ism" type="text" placeholder="Ism" style="margin:0;flex:1"/>';
     html+='<input class="inp" id="uskan-familiya" type="text" placeholder="Familiya" style="margin:0;flex:1"/>';
     html+='</div>';
