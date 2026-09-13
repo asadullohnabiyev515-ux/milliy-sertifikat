@@ -3294,7 +3294,12 @@ function uBoshga(){
 
 // ── Varaq skaneri ────────────────────────────────────────────────────────
 var uSkanFile=null, uSkanJavoblar={}, uSkanTogri={}, uSkanVaraqId='', uSkanOquvchi=null, uSkanTur='milliy';
-var uSkanGuruhOquvchilar=[];  // test biriktirilgan guruhning faol o'quvchilari — {ism,familiya}
+var uSkanGuruhOquvchilar=[];   // joriy ko'rsatilayotgan guruhning a'zolari — {ism,familiya,user_id,holat}
+var uSkanTestGuruhId=null;     // test o'ziga biriktirilgan guruh (bo'lsa) — shu bo'lsa faqat shu guruh ko'rsatiladi
+var uSkanTanlanganGuruhId='';  // test guruhga biriktirilmagan holatda, ustoz picker orqali o'zi tanlagan guruh
+var uSkanUstozGuruhlar=null;   // ustozning guruhlari ro'yxati (lazy yuklanadi)
+var uSkanBarchaFoydalanuvchilar=null;  // /users/royxat natijasi (lazy yuklanadi)
+var uSkanTanlanganUserId=null; // guruh/bot ro'yxatidan tanlangan aniq Telegram user_id (bo'lsa)
 // Kalitda bir nechta qabul qilinadigan yozilish shakli bo'lishi mumkin
 // ("62|0,62" kabi) — backenddagi _javob_mos() bilan bir xil mantiq.
 function javobMos(togri,berilgan){
@@ -3302,38 +3307,97 @@ function javobMos(togri,berilgan){
   if(!variantlar.length)return false;
   return variantlar.indexOf(String(berilgan||'').trim().toUpperCase())!==-1;
 }
-// Test biror guruhga biriktirilgan bo'lsa, o'sha guruhning faol
-// o'quvchilari ro'yxatini yuklaydi — ism aniqlanmagan skaner/qo'lda
-// kiritish natijasida ro'yxatdan tanlash uchun (topilmasa qo'lda yozish).
+// Berilgan guruhning a'zolari ro'yxatini yuklaydi (FAOL va KUTILMOQDA —
+// telefon bilan qo'shilgan, hali Telegram'ga qo'shilmagan o'quvchilar ham) —
+// ism aniqlanmagan skaner/qo'lda kiritish natijasida ro'yxatdan tanlash
+// uchun (topilmasa qo'lda yozish).
 async function uSkanGuruhYukla(guruhId){
   uSkanGuruhOquvchilar=[];
   if(!guruhId)return;
   try{
     var r=await fetch(API+'/guruh/'+encodeURIComponent(guruhId));
     var d=await r.json();
-    uSkanGuruhOquvchilar=(d.oquvchilar||[]).filter(function(a){return a.holat==='faol'&&(a.ism||a.familiya);})
-      .map(function(a){return {ism:a.ism||'',familiya:a.familiya||''};})
+    uSkanGuruhOquvchilar=(d.oquvchilar||[]).filter(function(a){return (a.holat==='faol'||a.holat==='kutilmoqda')&&(a.ism||a.familiya);})
+      .map(function(a){return {ism:a.ism||'',familiya:a.familiya||'',user_id:a.user_id||null,holat:a.holat};})
       .sort(function(a,b){return (a.ism+a.familiya).localeCompare(b.ism+b.familiya);});
   }catch(e){uSkanGuruhOquvchilar=[];}
 }
-// Guruh ro'yxatidan tanlanganda ism/familiya maydonlariga avtomatik
-// to'ldiradi (bu maydonlar uSkanSaqlash() tomonidan o'qiladi — o'zgarishsiz);
-// "qo'lda yozaman" tanlansa (yoki hech narsa tanlanmasa) o'sha maydonlar
-// ochiladi.
+// Test o'ziga biriktirilgan guruhi bo'lsa, o'sha guruh a'zolaridan
+// tanlanganda ism/familiya maydonlariga avtomatik to'ldiradi (bu maydonlar
+// uSkanSaqlash() tomonidan o'qiladi — o'zgarishsiz); "qo'lda yozaman"
+// tanlansa (yoki hech narsa tanlanmasa) o'sha maydonlar ochiladi.
 function uSkanGuruhTanlash(val){
   var wrap=document.getElementById('uskan-qolda-ism-wrap');
   var ismEl=document.getElementById('uskan-ism'), famEl=document.getElementById('uskan-familiya');
+  uSkanTanlanganUserId=null;
   if(val==='__boshqa__'){
     if(wrap)wrap.style.display='flex';
     if(ismEl)ismEl.value=''; if(famEl)famEl.value='';
   }else if(val!==''){
     var o=uSkanGuruhOquvchilar[parseInt(val,10)];
     if(wrap)wrap.style.display='none';
-    if(o){ if(ismEl)ismEl.value=o.ism; if(famEl)famEl.value=o.familiya; }
+    if(o){ if(ismEl)ismEl.value=o.ism; if(famEl)famEl.value=o.familiya; uSkanTanlanganUserId=o.user_id||null; }
   }else{
     if(wrap)wrap.style.display='none';
     if(ismEl)ismEl.value=''; if(famEl)famEl.value='';
   }
+}
+// Test hech qanday guruhga biriktirilmagan holatda — ustoz o'zining
+// istalgan guruhini tanlashi mumkin (test o'ziga tegishli bo'lmasa ham).
+async function uSkanUstozGuruhlarYukla(){
+  if(uSkanUstozGuruhlar!==null)return;
+  try{
+    var r=await fetch(API+'/guruh/royxat/'+CU.id);
+    var d=await r.json();
+    uSkanUstozGuruhlar=d.guruhlar||[];
+  }catch(e){uSkanUstozGuruhlar=[];}
+}
+async function uSkanManbaGuruhTanlandi(guruhId){
+  uSkanTanlanganGuruhId=guruhId;
+  uSkanTanlanganUserId=null;
+  await uSkanGuruhYukla(guruhId);
+  uSkanNatijaRender();
+}
+function uSkanManbaGuruhAzoTanlandi(val){
+  var ismEl=document.getElementById('uskan-ism'), famEl=document.getElementById('uskan-familiya');
+  if(val===''){uSkanTanlanganUserId=null;return;}
+  var o=uSkanGuruhOquvchilar[parseInt(val,10)];
+  if(!o)return;
+  if(ismEl)ismEl.value=o.ism; if(famEl)famEl.value=o.familiya;
+  uSkanTanlanganUserId=o.user_id||null;
+}
+// Bot orqali ro'yxatdan o'tgan BARCHA o'quvchilar ichidan qidirish (test
+// hech qanday guruhga biriktirilmagan holatda, guruh alternativasi
+// sifatida). Ro'yxat katta bo'lishi mumkinligi uchun har harfda to'liq
+// qayta chizmasdan, faqat natijalar qatorini yangilaymiz.
+async function uSkanBotQidir(q){
+  if(uSkanBarchaFoydalanuvchilar===null){
+    try{
+      var r=await fetch(API+'/users/royxat');
+      var d=await r.json();
+      uSkanBarchaFoydalanuvchilar=d.users||[];
+    }catch(e){uSkanBarchaFoydalanuvchilar=[];}
+  }
+  var natijaEl=document.getElementById('uskan-bot-natija');
+  if(!natijaEl)return;
+  q=(q||'').trim().toLowerCase();
+  if(!q){natijaEl.innerHTML='';return;}
+  var mos=uSkanBarchaFoydalanuvchilar.filter(function(u){
+    return ((u.ism||'')+' '+(u.familiya||'')).toLowerCase().indexOf(q)!==-1 || (u.telefon||'').indexOf(q)!==-1;
+  }).slice(0,15);
+  if(!mos.length){natijaEl.innerHTML='<div style="font-size:.78rem;color:rgba(255,255,255,.35);padding:8px">Topilmadi</div>';return;}
+  natijaEl.innerHTML=mos.map(function(u){
+    return '<div onclick="uSkanBotTanlash('+u.user_id+')" style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer;font-size:.85rem">'+esc((u.ism+' '+u.familiya).trim())+' <span style="color:rgba(255,255,255,.35);font-size:.72rem">'+esc(u.telefon||'')+'</span></div>';
+  }).join('');
+}
+function uSkanBotTanlash(userId){
+  var u=(uSkanBarchaFoydalanuvchilar||[]).find(function(x){return x.user_id===userId;});
+  if(!u)return;
+  var ismEl=document.getElementById('uskan-ism'), famEl=document.getElementById('uskan-familiya');
+  if(ismEl)ismEl.value=u.ism||''; if(famEl)famEl.value=u.familiya||'';
+  uSkanTanlanganUserId=userId;
+  var natijaEl=document.getElementById('uskan-bot-natija'); if(natijaEl)natijaEl.innerHTML='';
+  var qEl=document.getElementById('uskan-bot-qidiruv'); if(qEl)qEl.value=(u.ism+' '+u.familiya).trim();
 }
 function uSkanReset(){
   uSkanFile=null; uSkanJavoblar={}; uSkanTogri={}; uSkanVaraqId=''; uSkanOquvchi=null;
@@ -3416,7 +3480,10 @@ async function uSkanQolda(varaqId,ism,familiya){
     uSkanTogri=d.javoblar||{};
     uSkanVaraqId=varaqId||'';
     uSkanOquvchi=ism?{ism:ism,familiya:familiya}:null;
-    await uSkanGuruhYukla(d.guruh_id);
+    uSkanTestGuruhId=d.guruh_id||null;
+    uSkanTanlanganGuruhId=''; uSkanTanlanganUserId=null;
+    if(uSkanTestGuruhId){ await uSkanGuruhYukla(uSkanTestGuruhId); }
+    else { uSkanGuruhOquvchilar=[]; await uSkanUstozGuruhlarYukla(); }
     uSkanNatijaRender();
     document.getElementById('uskan-natija').scrollIntoView({behavior:'smooth'});
   }catch(e){alert("Tarmoq xatosi");}
@@ -3466,7 +3533,10 @@ async function uSkanBoshla(){
     }
     uSkanVaraqId=d.varaq_id||'';
     uSkanOquvchi=d.oquvchi||null;
-    await uSkanGuruhYukla(d.guruh_id);
+    uSkanTestGuruhId=d.guruh_id||null;
+    uSkanTanlanganGuruhId=''; uSkanTanlanganUserId=null;
+    if(uSkanTestGuruhId){ await uSkanGuruhYukla(uSkanTestGuruhId); }
+    else { uSkanGuruhOquvchilar=[]; await uSkanUstozGuruhlarYukla(); }
     uSkanNatijaRender();
   }catch(e){
     natija.innerHTML='<div style="text-align:center;padding:16px;color:#ff6b6b;font-size:.85rem">⚠️ Tarmoq xatosi</div>';
@@ -3490,19 +3560,46 @@ function uSkanNatijaRender(){
     html+='<div style="font-size:.85rem">👤 <b>'+esc(uSkanOquvchi.ism||'')+' '+esc(uSkanOquvchi.familiya||'')+'</b> (ro\'yxatdan aniqlandi)</div>';
   }else{
     html+='<div style="font-size:.78rem;color:#facc15;margin-bottom:8px">⚠️ O\'quvchi ro\'yxatdan avtomatik aniqlanmadi:</div>';
-    if(uSkanGuruhOquvchilar.length){
+    if(uSkanTestGuruhId){
+      // Test aniq bir guruhga biriktirilgan — o'sha guruh a'zolaridan tanlanadi.
       html+='<select class="inp" id="uskan-guruh-select" onchange="uSkanGuruhTanlash(this.value)" style="margin-bottom:8px">';
       html+='<option value="">— guruhdagi o\'quvchini tanlang —</option>';
       uSkanGuruhOquvchilar.forEach(function(o,idx){
-        html+='<option value="'+idx+'">'+esc((o.ism+' '+o.familiya).trim())+'</option>';
+        html+='<option value="'+idx+'">'+esc((o.ism+' '+o.familiya).trim())+(o.holat==='kutilmoqda'?' (kutilmoqda)':'')+'</option>';
       });
       html+='<option value="__boshqa__">✏️ Ro\'yxatda yo\'q — ismini qo\'lda yozaman</option>';
       html+='</select>';
+      html+='<div id="uskan-qolda-ism-wrap" style="display:none;gap:6px">';
+      html+='<input class="inp" id="uskan-ism" type="text" placeholder="Ism" oninput="uSkanTanlanganUserId=null" style="margin:0;flex:1"/>';
+      html+='<input class="inp" id="uskan-familiya" type="text" placeholder="Familiya" oninput="uSkanTanlanganUserId=null" style="margin:0;flex:1"/>';
+      html+='</div>';
+    }else{
+      // Test hech qanday guruhga biriktirilmagan — ustoz o'zining istalgan
+      // guruhini tanlashi, BOT ro'yxatidan qidirishi yoki qo'lda yozishi mumkin.
+      html+='<div style="font-size:.72rem;color:rgba(255,255,255,.45);margin-bottom:4px">Guruhdan tanlash:</div>';
+      html+='<select class="inp" id="uskan-manba-guruh" onchange="uSkanManbaGuruhTanlandi(this.value)" style="margin-bottom:8px">';
+      html+='<option value="">— guruh tanlang —</option>';
+      (uSkanUstozGuruhlar||[]).forEach(function(g){
+        html+='<option value="'+esc(g.guruh_id)+'"'+(g.guruh_id===uSkanTanlanganGuruhId?' selected':'')+'>'+esc(g.nomi)+'</option>';
+      });
+      html+='</select>';
+      if(uSkanTanlanganGuruhId){
+        html+='<select class="inp" id="uskan-manba-guruh-azo" onchange="uSkanManbaGuruhAzoTanlandi(this.value)" style="margin-bottom:8px">';
+        html+='<option value="">— o\'quvchini tanlang —</option>';
+        uSkanGuruhOquvchilar.forEach(function(o,idx){
+          html+='<option value="'+idx+'">'+esc((o.ism+' '+o.familiya).trim())+(o.holat==='kutilmoqda'?' (kutilmoqda)':'')+'</option>';
+        });
+        html+='</select>';
+      }
+      html+='<div style="font-size:.72rem;color:rgba(255,255,255,.45);margin:10px 0 4px">Yoki bot ro\'yxatidan qidiring:</div>';
+      html+='<input class="inp" id="uskan-bot-qidiruv" type="text" placeholder="Ism, familiya yoki telefon..." oninput="uSkanBotQidir(this.value)" style="margin-bottom:6px"/>';
+      html+='<div id="uskan-bot-natija" style="max-height:180px;overflow-y:auto;border-radius:10px;background:rgba(255,255,255,.03);margin-bottom:10px"></div>';
+      html+='<div style="font-size:.72rem;color:rgba(255,255,255,.45);margin-bottom:4px">Yoki qo\'lda kiriting:</div>';
+      html+='<div style="display:flex;gap:6px">';
+      html+='<input class="inp" id="uskan-ism" type="text" placeholder="Ism" oninput="uSkanTanlanganUserId=null" style="margin:0;flex:1"/>';
+      html+='<input class="inp" id="uskan-familiya" type="text" placeholder="Familiya" oninput="uSkanTanlanganUserId=null" style="margin:0;flex:1"/>';
+      html+='</div>';
     }
-    html+='<div id="uskan-qolda-ism-wrap" style="display:'+(uSkanGuruhOquvchilar.length?'none':'flex')+';gap:6px">';
-    html+='<input class="inp" id="uskan-ism" type="text" placeholder="Ism" style="margin:0;flex:1"/>';
-    html+='<input class="inp" id="uskan-familiya" type="text" placeholder="Familiya" style="margin:0;flex:1"/>';
-    html+='</div>';
   }
   html+='<div id="uskCounterWrap" style="font-size:.85rem;margin-top:10px"'+(jamiBaholanadigan>0?'':' hidden')+'>✅ To\'g\'ri: <b id="uskCounter" style="color:#00d4aa">'+togriSoni+'/'+jamiBaholanadigan+'</b></div>';
   html+='</div>';
@@ -3576,6 +3673,10 @@ async function uSkanSaqlash(){
     var familiya=(document.getElementById('uskan-familiya')||{}).value||'';
     if(!ism.trim()){alert("O'quvchi ismini kiriting");return;}
     body.ism=ism.trim(); body.familiya=familiya.trim();
+    // Guruh yoki bot ro'yxatidan aniq o'quvchi tanlangan bo'lsa, natija
+    // shu haqiqiy Telegram hisobiga bog'lanadi (xabar/ball/sertifikat
+    // o'sha o'quvchiga yetib borishi uchun).
+    if(uSkanTanlanganUserId)body.user_id=uSkanTanlanganUserId;
   }
   try{
     var r=await fetch(API+'/natija/skaner',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
