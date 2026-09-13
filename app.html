@@ -3420,7 +3420,6 @@ async function uSkanBoshla(){
     btn.disabled=false; btn.textContent='🔍 Skanerlash';
   }
 }
-function uSkanJavobOzgardi(savol,val){ uSkanJavoblar[savol]=val; }
 function uSkanNatijaRender(){
   var wrap=document.getElementById('uskan-natija');
   var savollar=Object.keys(uSkanJavoblar).map(Number).sort(function(a,b){return a-b;});
@@ -3443,29 +3442,61 @@ function uSkanNatijaRender(){
     html+='<input class="inp" id="uskan-familiya" type="text" placeholder="Familiya" style="margin:0;flex:1"/>';
     html+='</div>';
   }
-  if(jamiBaholanadigan>0){
-    html+='<div style="font-size:.85rem;margin-top:10px">✅ To\'g\'ri: <b style="color:#00d4aa">'+togriSoni+'/'+jamiBaholanadigan+'</b></div>';
-  }
+  html+='<div id="uskCounterWrap" style="font-size:.85rem;margin-top:10px"'+(jamiBaholanadigan>0?'':' hidden')+'>✅ To\'g\'ri: <b id="uskCounter" style="color:#00d4aa">'+togriSoni+'/'+jamiBaholanadigan+'</b></div>';
   html+='</div>';
 
-  html+='<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:8px">Javoblar (har biri uchun harfni tanlang):</div>';
-  html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:6px;margin-bottom:16px">';
+  // Har bir savol uchun A/B/C/D (+E/F, kerak bo'lsa) tugmalarini BIR BOSISHDA
+  // tanlash mumkin — avval <select> (ochib-yopish kerak) edi, endi tezroq.
+  html+='<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:8px">Javoblar (har biri uchun harfni bosing):</div>';
+  html+='<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px">';
   savollar.forEach(function(s){
     var val=uSkanJavoblar[s]||'';
     var tj=(uSkanTogri[s]||'').toUpperCase();
     var xato=tj && val!==tj;
-    var brd=xato?'#ff6b6b':(val?'#00d4aa':'rgba(255,255,255,.15)');
-    html+='<div style="background:rgba(255,255,255,.04);border:1px solid '+brd+';border-radius:10px;padding:6px;text-align:center">';
-    html+='<div style="font-size:.65rem;color:rgba(255,255,255,.4);margin-bottom:3px">'+s+'</div>';
-    html+='<select onchange="uSkanJavobOzgardi('+s+',this.value)" style="width:100%;background:transparent;border:none;color:var(--c-fg);font-size:.85rem;font-weight:700;text-align:center">';
-    ['','A','B','C','D','E','F'].forEach(function(h){
-      html+='<option value="'+h+'"'+(val===h?' selected':'')+'>'+(h||'—')+'</option>';
+    var brd=xato?'#ff6b6b':(val?'#00d4aa':'rgba(255,255,255,.12)');
+    html+='<div id="uskCard'+s+'" style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border:1px solid '+brd+';border-radius:10px;padding:7px 8px">';
+    html+='<div style="width:20px;flex-shrink:0;text-align:center;font-size:.72rem;color:rgba(255,255,255,.4);font-weight:700">'+s+'</div>';
+    html+='<div style="display:flex;flex-wrap:wrap;gap:4px;flex:1">';
+    ['A','B','C','D','E','F'].forEach(function(h){
+      var sel=(val===h);
+      html+='<button type="button" onclick="uSkanJavobOzgardi('+s+',\''+h+'\')" id="usk'+s+h+'" style="min-width:32px;height:32px;padding:0 3px;border-radius:8px;border:1.5px solid '+(sel?'#00d4aa':'rgba(255,255,255,.12)')+';background:'+(sel?'rgba(0,212,170,.15)':'rgba(255,255,255,.05)')+';color:'+(sel?'#00d4aa':'var(--c-fg)')+';font-weight:800;font-size:.8rem;cursor:pointer">'+h+'</button>';
     });
-    html+='</select></div>';
+    html+='<button type="button" onclick="uSkanJavobOzgardi('+s+',\'\')" id="usk'+s+'X" style="min-width:32px;height:32px;padding:0 3px;border-radius:8px;border:1.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);font-weight:800;font-size:.8rem;cursor:pointer">✕</button>';
+    html+='</div></div>';
   });
   html+='</div>';
   html+='<button class="btn btn-green" onclick="uSkanSaqlash()">✅ Natijani saqlash</button>';
   wrap.innerHTML=html;
+}
+function uSkanJavobOzgardi(s,val){
+  uSkanJavoblar[s]=val;
+  // To'liq qayta chizmasdan — faqat shu savolning tugmalari va rangini
+  // yangilaymiz (40 tagacha savolda qayta render sakrash/lag qilardi).
+  ['A','B','C','D','E','F'].forEach(function(h){
+    var b=document.getElementById('usk'+s+h);
+    if(!b)return;
+    var sel=(val===h);
+    b.style.borderColor=sel?'#00d4aa':'rgba(255,255,255,.12)';
+    b.style.background=sel?'rgba(0,212,170,.15)':'rgba(255,255,255,.05)';
+    b.style.color=sel?'#00d4aa':'var(--c-fg)';
+  });
+  var card=document.getElementById('uskCard'+s);
+  var tj=(uSkanTogri[s]||'').toUpperCase();
+  if(card){
+    var xato=tj && val!==tj;
+    card.style.borderColor=xato?'#ff6b6b':(val?'#00d4aa':'rgba(255,255,255,.12)');
+  }
+  if(tj){
+    var savollar=Object.keys(uSkanJavoblar).map(Number);
+    var togriSoni=0, jamiBaholanadigan=0;
+    savollar.forEach(function(k){
+      var kj=(uSkanTogri[k]||'').toUpperCase();
+      if(kj){jamiBaholanadigan++; if((uSkanJavoblar[k]||'')===kj)togriSoni++;}
+    });
+    var wrap=document.getElementById('uskCounterWrap'), cnt=document.getElementById('uskCounter');
+    if(wrap)wrap.hidden=jamiBaholanadigan<=0;
+    if(cnt)cnt.textContent=togriSoni+'/'+jamiBaholanadigan;
+  }
 }
 async function uSkanSaqlash(){
   var kod=document.getElementById('uskan-test-kod').value.trim().toUpperCase();
