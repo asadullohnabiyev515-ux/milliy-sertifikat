@@ -3293,7 +3293,14 @@ function uBoshga(){
 }
 
 // ── Varaq skaneri ────────────────────────────────────────────────────────
-var uSkanFile=null, uSkanJavoblar={}, uSkanTogri={}, uSkanVaraqId='', uSkanOquvchi=null;
+var uSkanFile=null, uSkanJavoblar={}, uSkanTogri={}, uSkanVaraqId='', uSkanOquvchi=null, uSkanTur='milliy';
+// Kalitda bir nechta qabul qilinadigan yozilish shakli bo'lishi mumkin
+// ("62|0,62" kabi) — backenddagi _javob_mos() bilan bir xil mantiq.
+function javobMos(togri,berilgan){
+  var variantlar=String(togri||'').split('|').map(function(v){return v.trim().toUpperCase();}).filter(Boolean);
+  if(!variantlar.length)return false;
+  return variantlar.indexOf(String(berilgan||'').trim().toUpperCase())!==-1;
+}
 function uSkanReset(){
   uSkanFile=null; uSkanJavoblar={}; uSkanTogri={}; uSkanVaraqId=''; uSkanOquvchi=null;
   document.getElementById('uskan-file').value='';
@@ -3369,6 +3376,7 @@ async function uSkanQolda(varaqId,ism,familiya){
     var d=await r.json();
     if(!d.topildi){alert("Bunday test topilmadi");return;}
     var paperN=d.tur==='milliy'?Math.min(d.savollar_soni,40):d.savollar_soni;
+    uSkanTur=d.tur||'milliy';
     uSkanJavoblar={};
     for(var i=1;i<=paperN;i++)uSkanJavoblar[i]='';
     uSkanTogri=d.javoblar||{};
@@ -3412,6 +3420,15 @@ async function uSkanBoshla(){
     }
     uSkanJavoblar=d.javoblar||{};
     uSkanTogri=d.togri_javoblar||{};
+    uSkanTur=d.tur||'milliy';
+    // 36-40 (ochiq/yozma javob) qog'ozdan AI orqali o'qib bo'lmaydi (bo'yash
+    // doirasi yo'q) — shu sabab AI natijasida bu savollar umuman yo'q.
+    // Ustoz varaqdagi yozuvni o'zi ko'rib, shu yerda qo'lda kiritsin deb
+    // bo'sh qatorlar sifatida qo'shib qo'yamiz.
+    if(uSkanTur==='milliy'){
+      var ochGacha=Math.min(d.n_savol||40,40);
+      for(var oi=36;oi<=ochGacha;oi++)if(!(oi in uSkanJavoblar))uSkanJavoblar[oi]='';
+    }
     uSkanVaraqId=d.varaq_id||'';
     uSkanOquvchi=d.oquvchi||null;
     uSkanNatijaRender();
@@ -3426,8 +3443,7 @@ function uSkanNatijaRender(){
   var savollar=Object.keys(uSkanJavoblar).map(Number).sort(function(a,b){return a-b;});
   var togriSoni=0, jamiBaholanadigan=0;
   savollar.forEach(function(s){
-    var tj=(uSkanTogri[s]||'').toUpperCase();
-    if(tj){jamiBaholanadigan++; if((uSkanJavoblar[s]||'')===tj)togriSoni++;}
+    if(uSkanTogri[s]){jamiBaholanadigan++; if(javobMos(uSkanTogri[s],uSkanJavoblar[s]))togriSoni++;}
   });
 
   var html='';
@@ -3448,22 +3464,30 @@ function uSkanNatijaRender(){
 
   // Har bir savol uchun A/B/C/D (+E/F, kerak bo'lsa) tugmalarini BIR BOSISHDA
   // tanlash mumkin — avval <select> (ochib-yopish kerak) edi, endi tezroq.
-  html+='<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:8px">Javoblar (har biri uchun harfni bosing):</div>';
+  // 36-40 (milliy testda yozma/ochiq javob) uchun esa tugma emas, matn
+  // maydoni ko'rsatiladi — talaba varaqqa YOZGAN javobni o'sha yerga kiritasiz.
+  html+='<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:8px">Javoblar (harfli savolda tugmani bosing, yozma savolda matn kiriting):</div>';
   html+='<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px">';
   savollar.forEach(function(s){
     var val=uSkanJavoblar[s]||'';
-    var tj=(uSkanTogri[s]||'').toUpperCase();
-    var xato=tj && val!==tj;
+    var tj=uSkanTogri[s]||'';
+    var och=uSkanTur==='milliy'&&s>=36&&s<=40;
+    var xato=tj && !javobMos(tj,val);
     var brd=xato?'#ff6b6b':(val?'#00d4aa':'rgba(255,255,255,.12)');
     html+='<div id="uskCard'+s+'" style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border:1px solid '+brd+';border-radius:10px;padding:7px 8px">';
     html+='<div style="width:20px;flex-shrink:0;text-align:center;font-size:.72rem;color:rgba(255,255,255,.4);font-weight:700">'+s+'</div>';
-    html+='<div style="display:flex;flex-wrap:wrap;gap:4px;flex:1">';
-    ['A','B','C','D','E','F'].forEach(function(h){
-      var sel=(val===h);
-      html+='<button type="button" onclick="uSkanJavobOzgardi('+s+',\''+h+'\')" id="usk'+s+h+'" style="min-width:32px;height:32px;padding:0 3px;border-radius:8px;border:1.5px solid '+(sel?'#00d4aa':'rgba(255,255,255,.12)')+';background:'+(sel?'rgba(0,212,170,.15)':'rgba(255,255,255,.05)')+';color:'+(sel?'#00d4aa':'var(--c-fg)')+';font-weight:800;font-size:.8rem;cursor:pointer">'+h+'</button>';
-    });
-    html+='<button type="button" onclick="uSkanJavobOzgardi('+s+',\'\')" id="usk'+s+'X" style="min-width:32px;height:32px;padding:0 3px;border-radius:8px;border:1.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);font-weight:800;font-size:.8rem;cursor:pointer">✕</button>';
-    html+='</div></div>';
+    if(och){
+      html+='<input class="inp" value="'+escAttr(val)+'" oninput="uSkanJavobOzgardi('+s+',this.value)" placeholder="Talaba yozgan javob..." style="margin:0;flex:1;padding:8px"/>';
+    }else{
+      html+='<div style="display:flex;flex-wrap:wrap;gap:4px;flex:1">';
+      ['A','B','C','D','E','F'].forEach(function(h){
+        var sel=(val===h);
+        html+='<button type="button" onclick="uSkanJavobOzgardi('+s+',\''+h+'\')" id="usk'+s+h+'" style="min-width:32px;height:32px;padding:0 3px;border-radius:8px;border:1.5px solid '+(sel?'#00d4aa':'rgba(255,255,255,.12)')+';background:'+(sel?'rgba(0,212,170,.15)':'rgba(255,255,255,.05)')+';color:'+(sel?'#00d4aa':'var(--c-fg)')+';font-weight:800;font-size:.8rem;cursor:pointer">'+h+'</button>';
+      });
+      html+='<button type="button" onclick="uSkanJavobOzgardi('+s+',\'\')" id="usk'+s+'X" style="min-width:32px;height:32px;padding:0 3px;border-radius:8px;border:1.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);font-weight:800;font-size:.8rem;cursor:pointer">✕</button>';
+      html+='</div>';
+    }
+    html+='</div>';
   });
   html+='</div>';
   html+='<button class="btn btn-green" onclick="uSkanSaqlash()">✅ Natijani saqlash</button>';
@@ -3473,6 +3497,7 @@ function uSkanJavobOzgardi(s,val){
   uSkanJavoblar[s]=val;
   // To'liq qayta chizmasdan — faqat shu savolning tugmalari va rangini
   // yangilaymiz (40 tagacha savolda qayta render sakrash/lag qilardi).
+  // (Yozma/matn maydonli savollarda bu tugmalar yo'q — topilmasa jim o'tkaziladi.)
   ['A','B','C','D','E','F'].forEach(function(h){
     var b=document.getElementById('usk'+s+h);
     if(!b)return;
@@ -3482,17 +3507,16 @@ function uSkanJavobOzgardi(s,val){
     b.style.color=sel?'#00d4aa':'var(--c-fg)';
   });
   var card=document.getElementById('uskCard'+s);
-  var tj=(uSkanTogri[s]||'').toUpperCase();
+  var tj=uSkanTogri[s]||'';
   if(card){
-    var xato=tj && val!==tj;
+    var xato=tj && !javobMos(tj,val);
     card.style.borderColor=xato?'#ff6b6b':(val?'#00d4aa':'rgba(255,255,255,.12)');
   }
   if(tj){
     var savollar=Object.keys(uSkanJavoblar).map(Number);
     var togriSoni=0, jamiBaholanadigan=0;
     savollar.forEach(function(k){
-      var kj=(uSkanTogri[k]||'').toUpperCase();
-      if(kj){jamiBaholanadigan++; if((uSkanJavoblar[k]||'')===kj)togriSoni++;}
+      if(uSkanTogri[k]){jamiBaholanadigan++; if(javobMos(uSkanTogri[k],uSkanJavoblar[k]))togriSoni++;}
     });
     var wrap=document.getElementById('uskCounterWrap'), cnt=document.getElementById('uskCounter');
     if(wrap)wrap.hidden=jamiBaholanadigan<=0;
