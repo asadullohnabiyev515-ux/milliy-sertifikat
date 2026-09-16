@@ -261,11 +261,17 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
         <span onclick="tDostRejimAlmashtir()" id="tDostToggle" style="cursor:pointer;font-size:.78rem;color:#a78bfa;font-weight:700">🤝 Do'stim uchun topshiraman</span>
       </div>
       <div id="tDostWrap" style="display:none;margin-bottom:10px">
-        <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:6px">Avval yuqorida test kodini kiriting, so'ng do'stingiz ismini qidiring:</div>
-        <input class="inp" id="tDostQidiruv" type="text" placeholder="Ism yoki familiya..." oninput="tDostQidir(this.value)" style="margin-bottom:6px"/>
-        <div id="tDostNatija" style="max-height:160px;overflow-y:auto;border-radius:10px;background:rgba(255,255,255,.03);margin-bottom:8px"></div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:6px">Guruhni tanlang, so'ng ichidan do'stingizni toping:</div>
+        <select class="inp" id="tDostGuruhSelect" onchange="tDostGuruhTanlandi(this.value)" style="margin-bottom:8px">
+          <option value="">— guruh tanlang —</option>
+        </select>
+        <div id="tDostAzoWrap" style="display:none;margin-bottom:8px">
+          <select class="inp" id="tDostAzoSelect" onchange="tDostAzoTanlandi(this.value)">
+            <option value="">— o'quvchini tanlang —</option>
+          </select>
+        </div>
         <div id="tDostTanlangan" style="display:none;background:rgba(0,212,170,.08);border:1px solid rgba(0,212,170,.25);border-radius:10px;padding:8px 10px;margin-bottom:8px;font-size:.85rem;font-weight:700"></div>
-        <div style="font-size:.72rem;color:rgba(255,255,255,.35);margin-bottom:4px">Yoki ro'yxatda topilmasa, qo'lda kiriting:</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.35);margin-bottom:4px">Yoki guruhda topilmasa, qo'lda kiriting:</div>
         <div style="display:flex;gap:6px">
           <input class="inp" id="tDostIsmQolda" type="text" placeholder="Ism" style="margin:0;flex:1" oninput="tDostQoldaOzgardi()"/>
           <input class="inp" id="tDostFamiliyaQolda" type="text" placeholder="Familiya" style="margin:0;flex:1" oninput="tDostQoldaOzgardi()"/>
@@ -2374,39 +2380,50 @@ function tIsmFamiliyaOl(){
 // o'quvchi ismi bilan yoziladi, lekin xabar/sertifikat shu qurilmani
 // ishlatgan (joriy) akkauntga boradi. Bog'lanish DOIMIY EMAS — har safar
 // mustaqil (keyingi safar boshqa qurilma/do'st bo'lishi mumkin).
-var tDostRejim=false, tDostIsm='', tDostFamiliya='', tDostVaraqId='', _tDostQidiruvNatija=[];
-function tDostRejimAlmashtir(){
+var tDostRejim=false, tDostIsm='', tDostFamiliya='', tDostVaraqId='', _tDostGuruhAzolari=[], _tDostGuruhlarYuklandi=false;
+async function tDostRejimAlmashtir(){
   tDostRejim=!tDostRejim;
   document.getElementById('tDostWrap').style.display=tDostRejim?'block':'none';
   document.getElementById('tOzimUchunWrap').style.display=tDostRejim?'none':'flex';
   document.getElementById('tDostToggle').textContent=tDostRejim?"✕ Bekor qilish (o'zim uchun topshiraman)":"🤝 Do'stim uchun topshiraman";
-  if(!tDostRejim){tDostIsm='';tDostFamiliya='';tDostVaraqId='';}
-}
-async function tDostQidir(q){
-  var kod=document.getElementById('tkod').value.trim().toUpperCase();
-  var natijaEl=document.getElementById('tDostNatija');
-  if(!kod){natijaEl.innerHTML='<div style="font-size:.78rem;color:#facc15;padding:8px">Avval test kodini kiriting</div>';return;}
-  q=(q||'').trim();
-  if(!q){natijaEl.innerHTML='';return;}
+  if(!tDostRejim){tDostIsm='';tDostFamiliya='';tDostVaraqId='';return;}
+  if(_tDostGuruhlarYuklandi)return;
+  _tDostGuruhlarYuklandi=true;
+  var sel=document.getElementById('tDostGuruhSelect');
   try{
-    var r=await apiFetch(API+'/student/qidir/'+encodeURIComponent(kod)+'?q='+encodeURIComponent(q));
+    var r=await apiFetch(API+'/guruh/hammasi?user_id='+(CU.id||0));
     var d=await r.json();
-    var list=d.talabalar||[];
-    _tDostQidiruvNatija=list;
-    if(!list.length){natijaEl.innerHTML='<div style="font-size:.78rem;color:rgba(255,255,255,.35);padding:8px">Topilmadi — pastda qo\'lda kiriting</div>';return;}
-    natijaEl.innerHTML=list.map(function(t,i){
-      return '<div onclick="tDostTanlash('+i+')" style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer;font-size:.85rem">'+esc((t.ism+' '+t.familiya).trim())+'</div>';
-    }).join('');
-  }catch(e){natijaEl.innerHTML='<div style="font-size:.78rem;color:#ff6b6b;padding:8px">Tarmoq xatosi</div>';}
+    (d.guruhlar||[]).forEach(function(g){
+      var o=document.createElement('option');
+      o.value=g.guruh_id; o.textContent=g.nomi+' ('+g.ustoz_ism+')';
+      sel.appendChild(o);
+    });
+  }catch(e){}
 }
-function tDostTanlash(i){
-  var t=_tDostQidiruvNatija[i];
+async function tDostGuruhTanlandi(guruhId){
+  var azoWrap=document.getElementById('tDostAzoWrap');
+  var azoSel=document.getElementById('tDostAzoSelect');
+  azoSel.innerHTML='<option value="">— o\'quvchini tanlang —</option>';
+  if(!guruhId){azoWrap.style.display='none';return;}
+  try{
+    var r=await apiFetch(API+'/guruh/azolar/'+encodeURIComponent(guruhId));
+    var d=await r.json();
+    _tDostGuruhAzolari=d.azolar||[];
+    _tDostGuruhAzolari.forEach(function(a,i){
+      var o=document.createElement('option');
+      o.value=i; o.textContent=(a.ism+' '+a.familiya).trim();
+      azoSel.appendChild(o);
+    });
+    azoWrap.style.display='block';
+  }catch(e){azoWrap.style.display='none';}
+}
+function tDostAzoTanlandi(i){
+  if(i==='')return;
+  var t=_tDostGuruhAzolari[parseInt(i,10)];
   if(!t)return;
-  tDostIsm=t.ism||''; tDostFamiliya=t.familiya||''; tDostVaraqId=t.varaq_id||'';
+  tDostIsm=t.ism||''; tDostFamiliya=t.familiya||''; tDostVaraqId='';
   var el=document.getElementById('tDostTanlangan');
   el.style.display='block'; el.textContent='✅ Tanlandi: '+((tDostIsm+' '+tDostFamiliya).trim());
-  document.getElementById('tDostNatija').innerHTML='';
-  document.getElementById('tDostQidiruv').value='';
   document.getElementById('tDostIsmQolda').value=''; document.getElementById('tDostFamiliyaQolda').value='';
 }
 function tDostQoldaOzgardi(){
