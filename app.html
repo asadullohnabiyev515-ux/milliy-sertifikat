@@ -4585,7 +4585,7 @@ async function uNatijalarKor(kod){
     // 25 ball). Backend buni 1-40 (Rasch) ball bilan o'rtacha oladi va
     // kerakli chegaraga yetsa sertifikatni avtomatik yuboradi.
     if(d.tur==='milliy' && d.n_savol<=40 && d.tugadi){
-      html+='<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:8px">✍️ 41-42-43 (yozma ish balli) kiritish — talaba boshiga bitta yaxlit ball, 0 dan 75 gacha:</div>';
+      html+='<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:8px">✍️ 41-42-43 (yozma ish balli) kiritish — talaba boshiga xom ball, 0 dan 75 gacha (bu ham 1-40 kabi sinf o\'rtachasiga qarab qayta miqyoslanadi, saqlangach yakuniy ball ko\'rinadi):</div>';
       html+='<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px">';
       nl.forEach(function(n){
         if(!n._id)return;
@@ -4594,7 +4594,7 @@ async function uNatijalarKor(kod){
         html+='<div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border-radius:10px;padding:9px 12px">'+
           '<div style="flex:1;min-width:0">'+
             '<div style="font-size:.82rem;font-weight:700">'+esc(n.ism||'')+' '+esc(n.familiya||'')+'</div>'+
-            (mavjud?'<div style="font-size:.68rem;color:#00d4aa;font-weight:700;margin-top:2px">'+n.ball_qoshimcha+'/75 kiritilgan</div>':'<div style="font-size:.68rem;color:rgba(255,255,255,.35);margin-top:2px">kiritilmagan</div>')+
+            (mavjud?'<div style="font-size:.68rem;color:#00d4aa;font-weight:700;margin-top:2px">hisoblangan: '+n.ball_qoshimcha+'/75</div>':'<div style="font-size:.68rem;color:rgba(255,255,255,.35);margin-top:2px">kiritilmagan</div>')+
           '</div>'+
           '<input class="inp" type="number" min="0" max="75" step="0.5" placeholder="0-75" value="'+joriy+'" oninput="qoshYoz(\''+n._id+'\',this.value)" style="margin:0;width:90px;padding:8px;font-size:.85rem;text-align:center;flex-shrink:0"/>'+
         '</div>';
