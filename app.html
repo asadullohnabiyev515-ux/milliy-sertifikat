@@ -4585,23 +4585,18 @@ async function uNatijalarKor(kod){
     // 25 ball). Backend buni 1-40 (Rasch) ball bilan o'rtacha oladi va
     // kerakli chegaraga yetsa sertifikatni avtomatik yuboradi.
     if(d.tur==='milliy' && d.n_savol<=40 && d.tugadi){
-      html+='<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:8px">✍️ 41-42-43 (qo\'shimcha, yozma) ball kiritish — har biri eng ko\'p 25 balldan, talaba boshiga jami eng ko\'p 75 ball:</div>';
+      html+='<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:8px">✍️ 41-42-43 (yozma ish balli) kiritish — talaba boshiga bitta yaxlit ball, 0 dan 75 gacha:</div>';
       html+='<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px">';
       nl.forEach(function(n){
         if(!n._id)return;
         var mavjud=(n.ball_qoshimcha!=null);
-        var qoshMavjud=(n.javoblar&&n.javoblar._qoshimcha)||{};
-        html+='<div style="background:rgba(255,255,255,.04);border-radius:10px;padding:9px 12px">'+
-          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'+
-            '<span style="font-size:.82rem;font-weight:700">'+esc(n.ism||'')+' '+esc(n.familiya||'')+'</span>'+
-            (mavjud?'<span style="font-size:.68rem;color:#00d4aa;font-weight:700">'+n.ball_qoshimcha+'/75 kiritilgan</span>':'<span style="font-size:.68rem;color:rgba(255,255,255,.35)">kiritilmagan</span>')+
+        var joriy=(n.javoblar&&n.javoblar._qoshimcha!=null)?n.javoblar._qoshimcha:'';
+        html+='<div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border-radius:10px;padding:9px 12px">'+
+          '<div style="flex:1;min-width:0">'+
+            '<div style="font-size:.82rem;font-weight:700">'+esc(n.ism||'')+' '+esc(n.familiya||'')+'</div>'+
+            (mavjud?'<div style="font-size:.68rem;color:#00d4aa;font-weight:700;margin-top:2px">'+n.ball_qoshimcha+'/75 kiritilgan</div>':'<div style="font-size:.68rem;color:rgba(255,255,255,.35);margin-top:2px">kiritilmagan</div>')+
           '</div>'+
-          '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">'+
-            [41,42,43].map(function(q){
-              var joriy=qoshMavjud[String(q)];
-              return '<input class="inp" type="number" min="0" max="25" step="0.5" placeholder="'+q+'-savol (0-25)" value="'+(joriy!=null?joriy:'')+'" oninput="qoshYoz(\''+n._id+'\','+q+',this.value)" style="padding:8px;font-size:.8rem;text-align:center"/>';
-            }).join('')+
-          '</div>'+
+          '<input class="inp" type="number" min="0" max="75" step="0.5" placeholder="0-75" value="'+joriy+'" oninput="qoshYoz(\''+n._id+'\',this.value)" style="margin:0;width:90px;padding:8px;font-size:.85rem;text-align:center;flex-shrink:0"/>'+
         '</div>';
       });
       html+='</div>';
@@ -5020,19 +5015,15 @@ async function uTestSaqla(){
   }catch(e){xb('ujxb','err',e&&e.name==='AbortError'?"Server uyg'onmoqda, biroz kutib qayta urining":'Xato');btn.disabled=false;btn.textContent='💾 Saqlash';}
 }
 
-// 40talik testga keyinchalik 41-42-43 (qo'shimcha, qo'lda) ball qo'shish
+// 40talik testga keyinchalik 41-42-43 (yozma ish, bitta yaxlit ball) qo'shish
 var qoshimchaVals={};
-function qoshYoz(natijaId,savol,v){
-  if(!qoshimchaVals[natijaId])qoshimchaVals[natijaId]={};
+function qoshYoz(natijaId,v){
   var num=parseFloat(v);
-  if(v===''||isNaN(num))delete qoshimchaVals[natijaId][savol];
-  else qoshimchaVals[natijaId][savol]=num;
+  if(v===''||isNaN(num))delete qoshimchaVals[natijaId];
+  else qoshimchaVals[natijaId]=num;
 }
 async function qoshimchaSaqla(kod){
-  var ballar={};
-  Object.keys(qoshimchaVals).forEach(function(id){
-    if(Object.keys(qoshimchaVals[id]).length)ballar[id]=qoshimchaVals[id];
-  });
+  var ballar=qoshimchaVals;
   if(!Object.keys(ballar).length){xb('qoshXb','err',"Kamida bitta o'quvchiga ball kiriting!");return;}
   var btn=document.getElementById('qoshBtn');
   btn.disabled=true;btn.textContent='Saqlanmoqda...';
