@@ -4606,6 +4606,9 @@ async function uNatijalarKor(kod){
       });
       html+='</div>';
       html+='<button class="btn btn-green" onclick="qoshimchaSaqla(\''+kod+'\')" id="qoshBtn" style="width:100%;margin-bottom:8px">💾 Qo\'shimcha ballarni saqlash</button>';
+      if(nl.some(function(n){return n.ball_qoshimcha!=null;})){
+        html+='<button class="btn btn-out" onclick="qoshimchaBekorQil(\''+kod+'\')" id="qoshBekorBtn" style="width:100%;margin-bottom:8px;color:#ff6b6b;border-color:rgba(255,59,48,.35)">🗑 Barcha 41-42-43 ballarni bekor qilish</button>';
+      }
       html+='<div class="xb" id="qoshXb" style="margin-bottom:18px"></div>';
     }
 
@@ -5040,6 +5043,18 @@ async function qoshimchaSaqla(kod){
     if(d.success){qoshimchaVals={};xb('qoshXb','ok','Saqlandi! Natijalar va (kerak bo\'lsa) sertifikatlar yangilandi.');uNatijalarKor(kod);}
     else{xb('qoshXb','err',d.detail||'Xato');btn.disabled=false;btn.textContent="💾 Qo'shimcha ballarni saqlash";}
   }catch(e){xb('qoshXb','err',e&&e.name==='AbortError'?"Server uyg'onmoqda, biroz kutib qayta urining":'Xato');btn.disabled=false;btn.textContent="💾 Qo'shimcha ballarni saqlash";}
+}
+async function qoshimchaBekorQil(kod){
+  if(!confirm("Barcha o'quvchilarning 41-42-43 ballari bekor qilinsin va qayta boshidan kiritilsinmi? Ball faqat 1-40 asosiga qaytadi."))return;
+  var btn=document.getElementById('qoshBekorBtn');
+  btn.disabled=true;btn.textContent='Bekor qilinmoqda...';
+  try{
+    var r=await apiFetch(API+'/test/qoshimcha_ball_bekor',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({test_kod:kod,ustoz_id:CU.id})},45000);
+    var d=await r.json();
+    if(d.success){qoshimchaVals={};xb('qoshXb','ok','Bekor qilindi ('+d.bekor_qilindi+" ta o'quvchi) — endi qaytadan kiritishingiz mumkin.");uNatijalarKor(kod);}
+    else{xb('qoshXb','err',d.detail||'Xato');btn.disabled=false;btn.textContent='🗑 Barcha 41-42-43 ballarni bekor qilish';}
+  }catch(e){xb('qoshXb','err',e&&e.name==='AbortError'?"Server uyg'onmoqda, biroz kutib qayta urining":'Xato');btn.disabled=false;btn.textContent='🗑 Barcha 41-42-43 ballarni bekor qilish';}
 }
 
 // SAVOL
