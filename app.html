@@ -4648,6 +4648,54 @@ function raschAnalyze(students,key,maksBall){
   var alpha=cronbachAlpha(r.scored);
   return {itemsReport:itemsReport,studentsReport:studentsReport,N:N,L:L,maksBall:mb,alpha:alpha};
 }
+function htmlEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+// Ustoz uchun: bitta o'quvchining har bir savol bo'yicha to'g'ri/xato natijasi.
+// Backend'dagi _savol_baholash bilan bir xil mantiq: 1-40 (yoki 43talikda 1-40)
+// oddiy savollar — javobMos; 41-43 (faqat "milliy", n_savol>40) — TARTIB
+// muhim, pozitsiyama-pozitsiya solishtiriladi (qisman to'g'ri bo'lishi mumkin).
+function natTalabaSavollar(ni){
+  var box=document.getElementById('natTalabaSv'+ni),ok=document.getElementById('natTalabaOq'+ni);
+  if(!box||!window._natDetal)return;
+  if(box.style.display!=='none'){box.style.display='none';if(ok)ok.textContent='▾';return;}
+  var D=window._natDetal,n=D.nl[ni]||{},jav=n.javoblar||{};
+  var kopBor=D.tur==='milliy'&&D.nSavol>40;
+  var kop=function(s){return String(s||'').split('|').map(function(x){return x.trim().toUpperCase();});};
+  var chips='',xatolar='',nTogri=0,nXato=0,nBosh=0;
+  for(var i=1;i<=D.nSavol;i++){
+    var k=String(i),tj=D.togri[k]||'';
+    if(!tj)continue;
+    var holat,berilgan,togriMatn;
+    if(kopBor&&i>40){
+      var tjL=kop(tj).filter(Boolean),ojL=kop(jav[k]);
+      var mos=0;tjL.forEach(function(a,p){if(p<ojL.length&&ojL[p]===a)mos++;});
+      holat=(tjL.length&&mos===tjL.length)?'t':(mos>0?'q':'x');
+      berilgan=ojL.filter(Boolean).join(', ')||'';
+      togriMatn=tjL.join(', ');
+      if(holat==='q')togriMatn+=' ('+mos+'/'+tjL.length+' o\'rni to\'g\'ri)';
+    }else{
+      var oj=String(jav[k]==null?'':jav[k]).trim().toUpperCase();
+      holat=javobMos(tj,oj)?'t':'x';
+      berilgan=oj;
+      togriMatn=String(tj).split('|').map(function(x){return x.trim();}).filter(Boolean).join(' / ');
+    }
+    var bosh=(!berilgan);
+    if(holat==='t')nTogri++;else if(bosh)nBosh++;else nXato++;
+    var rangC=holat==='t'?'#00d4aa':(holat==='q'?'#facc15':(bosh?'rgba(255,255,255,.25)':'#ff6b6b'));
+    chips+='<span style="display:inline-block;min-width:26px;text-align:center;padding:3px 5px;margin:2px;border-radius:6px;font-size:.7rem;font-weight:700;color:'+rangC+';border:1px solid '+rangC+';background:rgba(255,255,255,.03)">'+i+'</span>';
+    if(holat!=='t'){
+      xatolar+='<div style="display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:.75rem">'+
+        '<span style="color:rgba(255,255,255,.55)">'+i+'-savol</span>'+
+        '<span style="text-align:right"><span style="color:'+(bosh?'rgba(255,255,255,.35)':'#ff6b6b')+'">'+(bosh?'javob yo\'q':htmlEsc(berilgan))+'</span>'+
+        ' <span style="color:rgba(255,255,255,.3)">→</span> <span style="color:#00d4aa;font-weight:700">'+htmlEsc(togriMatn)+'</span></span></div>';
+    }
+  }
+  box.innerHTML='<div style="background:rgba(255,255,255,.03);border-radius:10px;padding:10px 12px;margin:4px 0 4px">'+
+    '<div style="font-size:.72rem;margin-bottom:6px"><span style="color:#00d4aa;font-weight:700">✅ '+nTogri+' to\'g\'ri</span> · <span style="color:#ff6b6b;font-weight:700">❌ '+nXato+' xato</span>'+(nBosh?' · <span style="color:rgba(255,255,255,.4)">⬜ '+nBosh+' javobsiz</span>':'')+'</div>'+
+    '<div style="margin-bottom:8px">'+chips+'</div>'+
+    (xatolar?'<div style="font-size:.66rem;color:rgba(255,255,255,.4);margin-bottom:2px">Xato savollar (o\'quvchi javobi → to\'g\'ri javob):</div>'+xatolar:'<div style="font-size:.75rem;color:#00d4aa">🎉 Xato yo\'q</div>')+
+    '</div>';
+  box.style.display='block';if(ok)ok.textContent='▴';
+}
 async function uNatijalarKor(kod){
   go('p9f',-1);
   var body=document.getElementById('natStatBody');
@@ -4684,14 +4732,20 @@ async function uNatijalarKor(kod){
     var chegara=d.maks_ball*0.8, orta=d.maks_ball*0.5;
     html+='<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:8px">Reyting:</div>';
     html+='<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px">';
-    nl.forEach(function(n){
+    window._natDetal={togri:d.togri_javoblar||{},nSavol:d.n_savol,tur:d.tur,nl:nl};
+    html+='<div style="font-size:.66rem;color:rgba(255,255,255,.3);margin:-4px 0 8px">O\'quvchini bosing — qaysi savollarni xato/to\'g\'ri ishlagani ko\'rinadi</div>';
+    nl.forEach(function(n,ni){
       var rang=n.ball>=chegara?'#00d4aa':(n.ball>=orta?'#facc15':'#ff6b6b');
       var medal=n.orin===1?'🥇':n.orin===2?'🥈':n.orin===3?'🥉':n.orin;
-      html+='<div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border-left:3px solid '+rang+';border-radius:10px;padding:9px 12px">'+
+      html+='<div>'+
+        '<div onclick="natTalabaSavollar('+ni+')" style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border-left:3px solid '+rang+';border-radius:10px;padding:9px 12px;cursor:pointer">'+
         '<div style="width:26px;text-align:center;font-size:.85rem;font-weight:800">'+medal+'</div>'+
         '<div style="flex:1;min-width:0"><div style="font-size:.85rem;font-weight:700">'+esc(n.ism||'')+' '+esc(n.familiya||'')+'</div>'+
         '<div style="font-size:.68rem;color:rgba(255,255,255,.4)">'+(n.togri_soni||0)+'/'+d.n_savol+' to\'g\'ri</div></div>'+
         '<div style="font-size:.95rem;font-weight:800;color:'+rang+'">'+n.ball+'</div>'+
+        '<div id="natTalabaOq'+ni+'" style="font-size:.7rem;color:rgba(255,255,255,.35)">▾</div>'+
+      '</div>'+
+      '<div id="natTalabaSv'+ni+'" style="display:none"></div>'+
       '</div>';
     });
     html+='</div>';
