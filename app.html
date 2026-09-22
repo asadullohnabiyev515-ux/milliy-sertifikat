@@ -4604,6 +4604,47 @@ function aniqlikDarajasi(a){
 // test_yakunla'ning A-qism qiyinlik-vaznlash formulasi bilan bir xil (savol
 // qanchalik kam kishi tomonidan to'g'ri topilgan bo'lsa, shuncha qimmat).
 // 41-43 (bo'lsa) sobit 25 balldan (B qism maksimumi).
+// {savol_kaliti: xom_qiyinlik} ni `tavon` ballga PROPORSIONAL taqsimlaydi,
+// lekin hech bir savol `floor`dan kam olmaydi — backend _qiyinlik_taqsimla
+// bilan AYNAN bir xil (suv-to'ldirish usuli). Floor kerak: savol deyarli
+// hammaga oson bo'lsa, proporsional ulushi 0ga yaqinlashib, 2 xonagacha
+// yaxlitlaganda "0 ball" bo'lib ko'rinib, savol hisoblanmayotgandek
+// taassurot qoldirardi.
+function qiyinlikTaqsimla(qiyinlik,tavon,floor){
+  floor=(floor==null)?0.5:floor;
+  var kalitlar=Object.keys(qiyinlik),n=kalitlar.length;
+  if(!n)return {};
+  if(floor*n>=tavon){
+    var teng=tavon/n,r={};
+    kalitlar.forEach(function(k){r[k]=Math.round(teng*100)/100;});
+    return r;
+  }
+  var natija={},faol={};
+  kalitlar.forEach(function(k){faol[k]=true;});
+  var qolganTavon=tavon;
+  for(var iter=0;iter<n;iter++){
+    var faolKeys=Object.keys(faol);
+    if(!faolKeys.length)break;
+    var jamiXom=faolKeys.reduce(function(s,k){return s+qiyinlik[k];},0);
+    if(jamiXom<=0){
+      var teng2=qolganTavon/faolKeys.length;
+      faolKeys.forEach(function(k){natija[k]=teng2;});
+      faol={};
+      break;
+    }
+    var tushganlar=faolKeys.filter(function(k){return (qiyinlik[k]/jamiXom)*qolganTavon<floor;});
+    if(!tushganlar.length){
+      faolKeys.forEach(function(k){natija[k]=(qiyinlik[k]/jamiXom)*qolganTavon;});
+      break;
+    }
+    tushganlar.forEach(function(k){natija[k]=floor;delete faol[k];});
+    qolganTavon=Math.max(0,qolganTavon-floor*tushganlar.length);
+  }
+  kalitlar.forEach(function(k){if(!(k in natija))natija[k]=floor;});
+  var out={};
+  kalitlar.forEach(function(k){out[k]=Math.round(natija[k]*100)/100;});
+  return out;
+}
 function savolBallVaznlari(togri,nl,nSavol,tur,jami){
   var vazn={};
   if(tur!=='milliy'){
@@ -4618,10 +4659,10 @@ function savolBallVaznlari(togri,nl,nSavol,tur,jami){
       var k=String(i),tj=togri[k]||'';
       togriSoniDict[k]=nl.filter(function(n){return javobMos(tj,(n.javoblar||{})[k]);}).length;
     }
-    var qiyinlik={},maksMumkinA=0;
-    for(var i=1;i<=asosiyN;i++){var k=String(i);qiyinlik[k]=(1-(togriSoniDict[k]/jami))+0.01;maksMumkinA+=qiyinlik[k];}
-    var tavon=90; // _milliy_a_qism_hisobla (backend) bilan bir xil — doim 90
-    for(var i=1;i<=asosiyN;i++){var k=String(i);vazn[k]=maksMumkinA>0?Math.round((qiyinlik[k]/maksMumkinA)*tavon*100)/100:0;}
+    var qiyinlik={};
+    for(var i=1;i<=asosiyN;i++){var k=String(i);qiyinlik[k]=(1-(togriSoniDict[k]/jami))+0.01;}
+    // _milliy_a_qism_hisobla (backend) bilan bir xil — doim tavon=90.
+    vazn=qiyinlikTaqsimla(qiyinlik,90);
   }else{
     for(var i=1;i<=asosiyN;i++)vazn[String(i)]=0;
   }
@@ -4732,6 +4773,24 @@ function natTalabaSavollar(ni){
     '</div>';
   box.style.display='block';if(ok)ok.textContent='▴';
 }
+// Yakunlangan testning natija xabarini (rasm+excel) ota-onalar guruhiga
+// QAYTA yuboradi — birinchi safar Telegram xatosi (bot guruhdan
+// chiqarilgan/admin emas) sabab yetib bormagan bo'lsa.
+async function otaOnalarQaytaYubor(kod){
+  var btn=document.getElementById('otaQaytaBtn');
+  if(btn){btn.disabled=true;btn.textContent='Yuborilmoqda...';}
+  xb('otaQaytaXb','inf','');
+  try{
+    var r=await apiFetch(API+'/test/ota_onalar_qayta_yubor/'+encodeURIComponent(kod)+'?ustoz_id='+CU.id,{method:'POST'},25000);
+    var d=await r.json();
+    if(r.ok&&d.success){
+      xb('otaQaytaXb','ok','✅ Yuborildi'+(d.guruh_nomi?' — "'+esc(d.guruh_nomi)+'" guruhi':'')+'!');
+    }else{
+      xb('otaQaytaXb','err',d.detail||'Xato yuz berdi');
+    }
+  }catch(e){xb('otaQaytaXb','err','Serverga ulanib bo\'lmadi');}
+  if(btn){btn.disabled=false;btn.textContent='👨‍👩‍👧 Ota-onalar guruhiga qayta yuborish';}
+}
 async function uNatijalarKor(kod){
   go('p9f',-1);
   var body=document.getElementById('natStatBody');
@@ -4762,7 +4821,11 @@ async function uNatijalarKor(kod){
       '</div>';
 
     if(d.excel_bor){
-      html+='<a href="'+API+'/excel/'+encodeURIComponent(kod)+'" target="_blank" style="display:block;text-align:center;padding:11px;background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.3);border-radius:12px;color:#00d4aa;font-size:.85rem;font-weight:700;text-decoration:none;margin-bottom:16px">📥 Excel hisobotni yuklab olish</a>';
+      html+='<a href="'+API+'/excel/'+encodeURIComponent(kod)+'" target="_blank" style="display:block;text-align:center;padding:11px;background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.3);border-radius:12px;color:#00d4aa;font-size:.85rem;font-weight:700;text-decoration:none;margin-bottom:10px">📥 Excel hisobotni yuklab olish</a>';
+    }
+    if(d.tugadi){
+      html+='<button class="btn btn-outline" id="otaQaytaBtn" onclick="otaOnalarQaytaYubor(\''+kod+'\')" style="width:100%;margin-bottom:8px">👨‍👩‍👧 Ota-onalar guruhiga qayta yuborish</button>'+
+        '<div class="xb" id="otaQaytaXb" style="margin-bottom:8px"></div>';
     }
 
     var chegara=d.maks_ball*0.8, orta=d.maks_ball*0.5;
