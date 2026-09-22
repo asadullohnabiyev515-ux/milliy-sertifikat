@@ -361,6 +361,10 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   <div id="p3c-qismlar" style="display:none;margin-top:14px;max-width:320px;width:100%;background:rgba(255,255,255,.04);border-radius:12px;padding:12px 16px;text-align:left"></div>
   <button class="btn btn-outline" id="p3c-xato-btn" style="display:none;margin-top:16px;max-width:280px" onclick="p3cXatoToggle()"></button>
   <div id="p3c-xatolar" style="display:none;margin-top:12px;max-width:420px;width:100%;text-align:left"></div>
+  <div id="p3c-savolballari-wrap" style="display:none;margin-top:14px;max-width:340px;width:100%">
+    <div style="font-size:.68rem;color:rgba(255,255,255,.35);margin-bottom:6px;text-align:left" id="p3c-savolballari-lbl">Har bir savol necha ball:</div>
+    <div id="p3c-savolballari" style="text-align:left"></div>
+  </div>
   <button class="btn btn-green" id="boshbtn" style="margin-top:16px;max-width:200px">🏠 Bosh sahifa</button>
 </div>
 
@@ -2606,6 +2610,13 @@ async function tYubor(){
         xbtn.style.display='inline-block';
         xbtn.textContent=d.notogri.length?('📋 Xato savollarni ko\'rish ('+d.notogri.length+')'):'🎉 Hammasi to\'g\'ri!';
       }
+      var sbWrap=document.getElementById('p3c-savolballari-wrap');
+      if(d.barcha&&d.barcha.length&&sbWrap){
+        var sbLbl=document.getElementById('p3c-savolballari-lbl');
+        if(sbLbl)sbLbl.textContent=(d.yakunlangan?'✅ Yakuniy':'⚠️ Taxminiy')+' — har bir savol necha ball:';
+        barchaSavolBallChiz('p3c-savolballari',d.barcha);
+        sbWrap.style.display='block';
+      }
       taymerToxtat();tAvtotoza();
       // Keyingi safar (boshqa test) uchun "do'stim uchun" rejimini tozalab
       // qo'yamiz — tasodifan qoldirib ketilmasin (foydalanuvchi o'zi uchun
@@ -3299,6 +3310,23 @@ function xatoRoyxatChiz(elId,notogri){
       '<div style="font-size:.85rem">To\'g\'ri: <span style="color:#00d4aa;font-weight:600">'+esc(x.togri)+'</span></div></div>';
   }).join('');
 }
+// Har bir savol necha ballga tengligini (to'g'ri/xato holati bilan birga)
+// KOMPAKT chip ro'yxati sifatida chizadi — talaba o'ziga (barcha=d.barcha,
+// har biri {savol,ball,xato,berilgan,togri}) va ustozga (bitta talabaning
+// javoblari) bir xil ko'rinishda ko'rsatish uchun umumiy.
+function barchaSavolBallChiz(elId,barcha){
+  var el=document.getElementById(elId);
+  if(!el)return;
+  if(!barcha||!barcha.length){el.innerHTML='';return;}
+  el.innerHTML=barcha.map(function(x){
+    var rang=x.xato?'#ff6b6b':'#00d4aa';
+    var ballTxt=(x.ball!=null)?(Math.round(x.ball*10)/10):'—';
+    return '<div style="display:inline-flex;flex-direction:column;align-items:center;min-width:30px;padding:3px 4px;margin:2px;border-radius:6px;border:1px solid '+rang+';background:rgba(255,255,255,.03)" title="'+x.savol+'-savol: '+ballTxt+' ball">'+
+      '<span style="font-size:.68rem;font-weight:700;color:'+rang+'">'+x.savol+'</span>'+
+      '<span style="font-size:.55rem;color:rgba(255,255,255,.45)">'+ballTxt+'</span>'+
+    '</div>';
+  }).join('');
+}
 function p3cXatoToggle(){
   var el=document.getElementById('p3c-xatolar');
   if(el)el.style.display=el.style.display==='none'?'block':'none';
@@ -3314,8 +3342,11 @@ async function pXatoKor(kod){
     if(!r.ok){document.getElementById('xatoModalBody').innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:20px">'+esc(d.detail||'Topilmadi')+'</div>';return;}
     var head='<div style="text-align:center;margin-bottom:12px;font-size:.85rem;color:rgba(255,255,255,.5)">'+d.togri_soni+'/'+d.jami+' to\'g\'ri • '+d.ball+' ball</div>';
     document.getElementById('xatoModalBody').innerHTML=head+
-      '<div id="xatoModalQismlar" style="margin-bottom:14px"></div><div id="xatoModalList"></div>';
+      '<div id="xatoModalQismlar" style="margin-bottom:14px"></div>'+
+      (d.barcha&&d.barcha.length?('<div style="font-size:.68rem;color:rgba(255,255,255,.35);margin-bottom:6px">'+(d.yakunlangan?'✅ Yakuniy':'⚠️ Taxminiy')+' — har bir savol necha ball:</div><div id="xatoModalSavolBallari" style="margin-bottom:14px"></div>'):'')+
+      '<div id="xatoModalList"></div>';
     qismlarChiz('xatoModalQismlar',d);
+    if(d.barcha&&d.barcha.length)barchaSavolBallChiz('xatoModalSavolBallari',d.barcha);
     xatoRoyxatChiz('xatoModalList',d.notogri);
   }catch(e){document.getElementById('xatoModalBody').innerHTML='<div style="text-align:center;color:#ff6b6b;padding:20px">Xato yuz berdi</div>';}
 }
@@ -4680,10 +4711,16 @@ function natTalabaSavollar(ni){
     var bosh=(!berilgan);
     if(holat==='t')nTogri++;else if(bosh)nBosh++;else nXato++;
     var rangC=holat==='t'?'#00d4aa':(holat==='q'?'#facc15':(bosh?'rgba(255,255,255,.25)':'#ff6b6b'));
-    chips+='<span style="display:inline-block;min-width:26px;text-align:center;padding:3px 5px;margin:2px;border-radius:6px;font-size:.7rem;font-weight:700;color:'+rangC+';border:1px solid '+rangC+';background:rgba(255,255,255,.03)">'+i+'</span>';
+    var ballV=(D.ballVazn&&D.ballVazn[k]!=null)?Math.round(D.ballVazn[k]*10)/10:null;
+    var ballTxt=ballV!=null?ballV:'—';
+    chips+='<div style="display:inline-flex;flex-direction:column;align-items:center;min-width:30px;padding:3px 4px;margin:2px;border-radius:6px;border:1px solid '+rangC+';background:rgba(255,255,255,.03)" title="'+i+'-savol: '+ballTxt+' ball">'+
+      '<span style="font-size:.68rem;font-weight:700;color:'+rangC+'">'+i+'</span>'+
+      '<span style="font-size:.55rem;color:rgba(255,255,255,.45)">'+ballTxt+'</span>'+
+    '</div>';
     if(holat!=='t'){
+      var ballTxtRow=ballV!=null?' <span style="color:rgba(255,255,255,.35);font-weight:400">('+ballV+' ball)</span>':'';
       xatolar+='<div style="display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:.75rem">'+
-        '<span style="color:rgba(255,255,255,.55)">'+i+'-savol</span>'+
+        '<span style="color:rgba(255,255,255,.55)">'+i+'-savol'+ballTxtRow+'</span>'+
         '<span style="text-align:right"><span style="color:'+(bosh?'rgba(255,255,255,.35)':'#ff6b6b')+'">'+(bosh?'javob yo\'q':htmlEsc(berilgan))+'</span>'+
         ' <span style="color:rgba(255,255,255,.3)">→</span> <span style="color:#00d4aa;font-weight:700">'+htmlEsc(togriMatn)+'</span></span></div>';
     }
@@ -4729,9 +4766,14 @@ async function uNatijalarKor(kod){
     }
 
     var chegara=d.maks_ball*0.8, orta=d.maks_ball*0.5;
+    // Har bir savol necha ball ekanligi — natTalabaSavollar (o'quvchi bosilganda
+    // ochiladigan tafsilot) va pastdagi "eng qiyin savollar" ro'yxati ikkalasi
+    // ham shu bitta hisobdan foydalanadi (bir xil qiymat ko'rsatilsin deb).
+    var togri=d.togri_javoblar||{};
+    var ballVazn=savolBallVaznlari(togri,nl,d.n_savol,d.tur,jami);
     html+='<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:8px">Reyting:</div>';
     html+='<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px">';
-    window._natDetal={togri:d.togri_javoblar||{},nSavol:d.n_savol,tur:d.tur,nl:nl};
+    window._natDetal={togri:togri,nSavol:d.n_savol,tur:d.tur,nl:nl,ballVazn:ballVazn};
     html+='<div style="font-size:.66rem;color:rgba(255,255,255,.3);margin:-4px 0 8px">O\'quvchini bosing — qaysi savollarni xato/to\'g\'ri ishlagani ko\'rinadi</div>';
     nl.forEach(function(n,ni){
       var rang=n.ball>=chegara?'#00d4aa':(n.ball>=orta?'#facc15':'#ff6b6b');
@@ -4783,9 +4825,8 @@ async function uNatijalarKor(kod){
       html+='<div class="xb" id="qoshXb" style="margin-bottom:18px"></div>';
     }
 
-    // Eng qiyin savollar (natijalardagi javoblar asosida)
-    var togri=d.togri_javoblar||{};
-    var ballVazn=savolBallVaznlari(togri,nl,d.n_savol,d.tur,jami);
+    // Eng qiyin savollar (natijalardagi javoblar asosida) — togri/ballVazn
+    // yuqorida (Reyting bo'limidan oldin) allaqachon hisoblangan.
     var savolStat=[];
     for(var i=1;i<=d.n_savol;i++){
       var k=String(i), tj=togri[k]||'';
