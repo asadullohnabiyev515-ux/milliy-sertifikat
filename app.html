@@ -4587,10 +4587,9 @@ function savolBallVaznlari(togri,nl,nSavol,tur,jami){
       var k=String(i),tj=togri[k]||'';
       togriSoniDict[k]=nl.filter(function(n){return javobMos(tj,(n.javoblar||{})[k]);}).length;
     }
-    var qiyinlik={},maksMumkinA=0,sumTogri=0;
-    for(var i=1;i<=asosiyN;i++){var k=String(i);qiyinlik[k]=(1-(togriSoniDict[k]/jami))+0.01;maksMumkinA+=qiyinlik[k];sumTogri+=togriSoniDict[k];}
-    var avgP=sumTogri/jami/asosiyN;
-    var tavon=75+15*Math.max(0,Math.min(1,(0.5-avgP)/0.5));
+    var qiyinlik={},maksMumkinA=0;
+    for(var i=1;i<=asosiyN;i++){var k=String(i);qiyinlik[k]=(1-(togriSoniDict[k]/jami))+0.01;maksMumkinA+=qiyinlik[k];}
+    var tavon=90; // _milliy_a_qism_hisobla (backend) bilan bir xil — doim 90
     for(var i=1;i<=asosiyN;i++){var k=String(i);vazn[k]=maksMumkinA>0?Math.round((qiyinlik[k]/maksMumkinA)*tavon*100)/100:0;}
   }else{
     for(var i=1;i<=asosiyN;i++)vazn[String(i)]=0;
