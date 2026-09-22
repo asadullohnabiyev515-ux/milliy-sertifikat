@@ -4922,22 +4922,22 @@ async function uNatijalarKor(kod){
       var rRes=raschAnalyze(rStudents,rKey,d.maks_ball);
       var rSorted=rRes.studentsReport.slice().sort(function(a,b){return (isNaN(b.score)?-999:b.score)-(isNaN(a.score)?-999:a.score);});
       var alphaInfo=aniqlikDarajasi(rRes.alpha);
-      html+='<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(255,255,255,.04);border-left:3px solid '+alphaInfo.rang+';border-radius:10px;padding:10px 12px;margin:18px 0 10px">'+
+      html+='<div style="font-size:.68rem;color:#facc15;background:rgba(250,204,21,.08);border:1px solid rgba(250,204,21,.25);border-radius:10px;padding:9px 12px;margin:18px 0 10px">⚠️ Pastdagi bo\'lim (aniqlik darajasi, IRT tahlili) — RASMIY BALL EMAS. Bu yuqoridagi Reytingdagi haqiqiy ball (sertifikatga yoziladigan) BILAN BOG\'LANMAGAN, alohida statistik model: savol qiyinligini boshqacha (logit/θ) usulda taxmin qiladi, faqat savol sifatini tahlil qilish uchun.</div>';
+      html+='<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(255,255,255,.04);border-left:3px solid '+alphaInfo.rang+';border-radius:10px;padding:10px 12px;margin-bottom:10px">'+
         '<div><div style="font-size:.82rem;font-weight:700">🎯 Testning aniqlik (ishonchlilik) darajasi</div>'+
         '<div style="font-size:.66rem;color:rgba(255,255,255,.4);margin-top:2px">Cronbach\'s α — savollar bir-biriga qanchalik izchil mos kelishi</div></div>'+
         '<div style="text-align:right;flex-shrink:0"><div style="font-size:1.15rem;font-weight:800;color:'+alphaInfo.rang+'">'+(isNaN(rRes.alpha)?'—':rRes.alpha.toFixed(2))+'</div>'+
         '<div style="font-size:.66rem;color:'+alphaInfo.rang+';font-weight:700">'+alphaInfo.matn+'</div></div>'+
       '</div>';
-      html+='<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:8px">📐 Rasch (IRT) tahlili — savol qiyinligini hisobga olgan holda:</div>';
+      html+='<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:8px">📐 Rasch (IRT) tahlili — nazariy baho, RASMIY BALL EMAS:</div>';
       html+='<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px">';
       rSorted.forEach(function(s,idx){
         var sc=isNaN(s.score)?0:Math.round(s.score*10)/10;
-        var rang=sc>=rRes.maksBall*0.8?'#00d4aa':(sc>=rRes.maksBall*0.5?'#facc15':'#ff6b6b');
-        html+='<div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border-left:3px solid '+rang+';border-radius:10px;padding:9px 12px">'+
-          '<div style="width:26px;text-align:center;font-size:.85rem;font-weight:800">'+(idx+1)+'</div>'+
+        html+='<div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.03);border-left:3px dashed rgba(255,255,255,.2);border-radius:10px;padding:9px 12px">'+
+          '<div style="width:26px;text-align:center;font-size:.85rem;font-weight:800;color:rgba(255,255,255,.35)">'+(idx+1)+'</div>'+
           '<div style="flex:1;min-width:0"><div style="font-size:.85rem;font-weight:700">'+esc(s.name)+'</div>'+
           '<div style="font-size:.68rem;color:rgba(255,255,255,.4)">'+s.correct+'/'+d.n_savol+' to\'g\'ri · θ='+(isNaN(s.theta)?'—':s.theta.toFixed(2))+'</div></div>'+
-          '<div style="font-size:.95rem;font-weight:800;color:'+rang+'">'+sc+'</div>'+
+          '<div style="text-align:right"><div style="font-size:.9rem;font-weight:700;color:rgba(255,255,255,.5)">'+sc+'</div><div style="font-size:.6rem;color:rgba(255,255,255,.3)">nazariy</div></div>'+
         '</div>';
       });
       html+='</div>';
