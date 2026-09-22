@@ -2595,8 +2595,8 @@ async function tYubor(){
       var em=d.foiz>=80?'🏆':d.foiz>=60?'🎉':d.foiz>=40?'👍':'💪';
       var sub=d.foiz>=80?'Ajoyib!':d.foiz>=60?'Yaxshi!':d.foiz>=40?'Davom eting!':'Qayta urining!';
       var e1=document.getElementById('p3c-emoji');if(e1)e1.textContent=em;
-      var e2=document.getElementById('p3c-ball');if(e2)e2.textContent=d.ball+' / '+d.maks_ball+' ball';
-      var e3=document.getElementById('p3c-foiz');if(e3)e3.textContent=d.foiz+'% ('+d.togri_soni+'/'+d.jami+')';
+      var e2=document.getElementById('p3c-ball');if(e2)e2.textContent=d.ball+' ball';
+      var e3=document.getElementById('p3c-foiz');if(e3)e3.textContent=d.togri_soni+'/'+d.jami+" to'g'ri";
       var e4=document.getElementById('p3c-sub');
       if(e4)e4.textContent=tDostRejim?(sub+' ('+esc(tUD.ism)+" uchun topshirildi — sertifikat shu qurilmaga keladi, do'stingizga yetkazib qo'ying)"):sub;
       qismlarChiz('p3c-qismlar',d);
