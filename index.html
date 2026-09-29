@@ -262,10 +262,15 @@ async function yuborish(){
       sahifaOch('s-tamom');
       qismlarChiz('tamom-qismlar',d);
       const xbtn=document.getElementById('tamom-xato-btn');
-      if(d.notogri&&xbtn){
-        xatoRoyxatChiz('tamom-xatolar',d.notogri);
-        xbtn.style.display='inline-block';
-        xbtn.textContent=d.notogri.length?`📋 Xato savollarni ko'rish (${d.notogri.length})`:"🎉 Hammasi to'g'ri!";
+      if(xbtn){
+        if(d.xato_ochiq===false){
+          xbtn.style.display='inline-block';xbtn.disabled=true;
+          xbtn.textContent=`⏳ ${d.xato_qoldi_daq} daqiqadan keyin ko'rinadi`;
+        }else if(d.notogri){
+          xatoRoyxatChiz('tamom-xatolar',d.notogri);
+          xbtn.disabled=false;xbtn.style.display='inline-block';
+          xbtn.textContent=d.notogri.length?`📋 Xato savollarni ko'rish (${d.notogri.length})`:"🎉 Hammasi to'g'ri!";
+        }
       }
     }
     else{xabarKo('yuborish-xabar','error',d.detail||'Xato');btn.disabled=false;btn.textContent='Javoblarni yuborish';}
@@ -326,6 +331,14 @@ async function xatoIzla(){
     document.getElementById('xato-form-xabar').style.display='none';
     document.getElementById('xatoModalTitle').textContent=`Natija — ${kod}`;
     const head=`<div style="text-align:center;margin-bottom:12px;font-size:.9rem;color:#666">${d.togri_soni}/${d.jami} to'g'ri • ${d.ball} ball</div>`;
+    if(d.xato_ochiq===false){
+      document.getElementById('xatoModalBody').innerHTML=head+
+        '<div id="xatoModalQismlar" style="margin-bottom:14px"></div>'+
+        `<div style="text-align:center;padding:20px;color:#b45309;font-size:.9rem">⏳ Qaysi savolni xato/to'g'ri qilganingiz ${d.xato_qoldi_daq} daqiqadan keyin ko'rinadi</div>`;
+      qismlarChiz('xatoModalQismlar',d);
+      document.getElementById('xatoModal').style.display='block';
+      return;
+    }
     document.getElementById('xatoModalBody').innerHTML=head+
       '<div id="xatoModalQismlar" style="margin-bottom:14px"></div><div id="xatoModalList"></div>';
     qismlarChiz('xatoModalQismlar',d);

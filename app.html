@@ -835,6 +835,13 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
         <option value="">— tanlanmagan —</option>
       </select>
       <div style="font-size:.7rem;color:rgba(255,255,255,.35);margin-bottom:12px">Tanlansangiz, test yakunlanganda umumiy natija shu guruhning ota-onalar Telegram guruhiga ham (ulangan bo'lsa) avtomatik yuboriladi</div>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">O'quvchi qaysi savolni xato/to'g'ri qilganini qachon ko'radi?</div>
+      <select class="inp" id="uxatoKechikish" style="margin-bottom:4px">
+        <option value="0">Darhol (topshirgach)</option>
+        <option value="30">30 daqiqadan keyin</option>
+        <option value="60">1 soatdan keyin</option>
+      </select>
+      <div style="font-size:.7rem;color:rgba(255,255,255,.35);margin-bottom:12px">Har bir o'quvchi uchun O'ZI TOPSHIRGAN vaqtidan hisoblanadi. Umumiy ball darhol ko'rinadi — faqat qaysi savol xato/to'g'ri ekanligi kechiktiriladi (masalan hali topshirmagan sinfdoshlariga javob "sizib" ketmasin deb).</div>
       <button class="btn btn-green" onclick="uJavoblargaO()">Javoblarni kiritish →</button>
       <div class="xb" id="utxb"></div>
     </div>
@@ -2605,13 +2612,18 @@ async function tYubor(){
       if(e4)e4.textContent=tDostRejim?(sub+' ('+esc(tUD.ism)+" uchun topshirildi — sertifikat shu qurilmaga keladi, do'stingizga yetkazib qo'ying)"):sub;
       qismlarChiz('p3c-qismlar',d);
       var xbtn=document.getElementById('p3c-xato-btn');
-      if(d.notogri&&xbtn){
-        xatoRoyxatChiz('p3c-xatolar',d.notogri);
-        xbtn.style.display='inline-block';
-        xbtn.textContent=d.notogri.length?('📋 Xato savollarni ko\'rish ('+d.notogri.length+')'):'🎉 Hammasi to\'g\'ri!';
+      if(xbtn){
+        if(d.xato_ochiq===false){
+          xbtn.style.display='inline-block';xbtn.disabled=true;
+          xbtn.textContent='⏳ '+d.xato_qoldi_daq+" daqiqadan keyin ko'rinadi";
+        }else if(d.notogri){
+          xatoRoyxatChiz('p3c-xatolar',d.notogri);
+          xbtn.disabled=false;xbtn.style.display='inline-block';
+          xbtn.textContent=d.notogri.length?('📋 Xato savollarni ko\'rish ('+d.notogri.length+')'):'🎉 Hammasi to\'g\'ri!';
+        }
       }
       var sbWrap=document.getElementById('p3c-savolballari-wrap');
-      if(d.barcha&&d.barcha.length&&sbWrap){
+      if(d.xato_ochiq!==false&&d.barcha&&d.barcha.length&&sbWrap){
         var sbLbl=document.getElementById('p3c-savolballari-lbl');
         if(sbLbl)sbLbl.textContent=(d.yakunlangan?'✅ Yakuniy':'⚠️ Taxminiy')+' — har bir savol necha ball:';
         barchaSavolBallChiz('p3c-savolballari',d.barcha);
@@ -3341,6 +3353,13 @@ async function pXatoKor(kod){
     var d=await r.json();
     if(!r.ok){document.getElementById('xatoModalBody').innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:20px">'+esc(d.detail||'Topilmadi')+'</div>';return;}
     var head='<div style="text-align:center;margin-bottom:12px;font-size:.85rem;color:rgba(255,255,255,.5)">'+d.togri_soni+'/'+d.jami+' to\'g\'ri • '+d.ball+' ball</div>';
+    if(d.xato_ochiq===false){
+      document.getElementById('xatoModalBody').innerHTML=head+
+        '<div id="xatoModalQismlar" style="margin-bottom:14px"></div>'+
+        '<div style="text-align:center;padding:20px;color:#facc15;font-size:.85rem">⏳ Qaysi savolni xato/to\'g\'ri qilganingiz '+d.xato_qoldi_daq+" daqiqadan keyin ko'rinadi</div>";
+      qismlarChiz('xatoModalQismlar',d);
+      return;
+    }
     document.getElementById('xatoModalBody').innerHTML=head+
       '<div id="xatoModalQismlar" style="margin-bottom:14px"></div>'+
       (d.barcha&&d.barcha.length?('<div style="font-size:.68rem;color:rgba(255,255,255,.35);margin-bottom:6px">'+(d.yakunlangan?'✅ Yakuniy':'⚠️ Taxminiy')+' — har bir savol necha ball:</div><div id="xatoModalSavolBallari" style="margin-bottom:14px"></div>'):'')+
@@ -4776,6 +4795,19 @@ function natTalabaSavollar(ni){
 // Yakunlangan testning natija xabarini (rasm+excel) ota-onalar guruhiga
 // QAYTA yuboradi — birinchi safar Telegram xatosi (bot guruhdan
 // chiqarilgan/admin emas) sabab yetib bormagan bo'lsa.
+// O'quvchi xato/to'g'ri savol tafsilotini necha daqiqadan keyin ko'rishini
+// (0/30/60) o'zgartiradi — istalgan vaqt (yakunlangan yoki yakunlanmagan
+// testda) ishlaydi, ballga ta'sir qilmaydi.
+async function xatoKechikishOzgartir(kod,qiymat){
+  xb('xatoKechikishXb','inf','');
+  try{
+    var r=await apiFetch(API+'/test/xato_kechikish_belgila',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({kod:kod,ustoz_id:CU.id,daqiqa:parseInt(qiymat)||0})});
+    var d=await r.json();
+    if(r.ok&&d.success)xb('xatoKechikishXb','ok','✅ Saqlandi');
+    else xb('xatoKechikishXb','err',d.detail||'Xato');
+  }catch(e){xb('xatoKechikishXb','err','Serverga ulanib bo\'lmadi');}
+}
 async function otaOnalarQaytaYubor(kod){
   var btn=document.getElementById('otaQaytaBtn');
   if(btn){btn.disabled=true;btn.textContent='Yuborilmoqda...';}
@@ -4827,6 +4859,14 @@ async function uNatijalarKor(kod){
       html+='<button class="btn btn-outline" id="otaQaytaBtn" onclick="otaOnalarQaytaYubor(\''+kod+'\')" style="width:100%;margin-bottom:8px">👨‍👩‍👧 Ota-onalar guruhiga qayta yuborish</button>'+
         '<div class="xb" id="otaQaytaXb" style="margin-bottom:8px"></div>';
     }
+    html+='<div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border-radius:10px;padding:9px 12px;margin-bottom:8px">'+
+      '<span style="font-size:.72rem;color:rgba(255,255,255,.5);flex-shrink:0">Xato/to\'g\'ri qachon ko\'rinadi:</span>'+
+      '<select class="inp" id="xatoKechikishSel" style="margin:0;padding:6px 8px;font-size:.78rem;flex:1" onchange="xatoKechikishOzgartir(\''+kod+'\',this.value)">'+
+        '<option value="0"'+(!d.xato_kechikish?' selected':'')+'>Darhol</option>'+
+        '<option value="30"'+(d.xato_kechikish===30?' selected':'')+'>30 daqiqadan keyin</option>'+
+        '<option value="60"'+(d.xato_kechikish===60?' selected':'')+'>1 soatdan keyin</option>'+
+      '</select></div>'+
+      '<div class="xb" id="xatoKechikishXb" style="margin-bottom:8px"></div>';
 
     var chegara=d.maks_ball*0.8, orta=d.maks_ball*0.5;
     // Har bir savol necha ball ekanligi — natTalabaSavollar (o'quvchi bosilganda
@@ -5286,9 +5326,11 @@ async function uTestSaqla(){
   btn.disabled=true;btn.textContent='Saqlanmoqda...';
   var guruhSel=document.getElementById('uguruhTanlov');
   var guruhId=guruhSel&&guruhSel.value?guruhSel.value:null;
+  var xatoKechEl=document.getElementById('uxatoKechikish');
+  var xatoKechikish=xatoKechEl?parseInt(xatoKechEl.value)||0:0;
   try{
     var r=await apiFetch(API+'/test/yarat',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({kod:kod,fan:fan,ustoz_id:CU.id,javoblar:uJavoblar,tur:isM?'milliy':'oddiy',savollar_soni:jami,guruh_id:guruhId})},45000);
+      body:JSON.stringify({kod:kod,fan:fan,ustoz_id:CU.id,javoblar:uJavoblar,tur:isM?'milliy':'oddiy',savollar_soni:jami,guruh_id:guruhId,xato_kechikish:xatoKechikish})},45000);
     var d=await r.json();
     if(d.success){alert('Test yaratildi! Kod: '+kod);go('p9',6);uTab(1);}
     else{xb('ujxb','err',d.detail||'Xato');btn.disabled=false;btn.textContent='💾 Saqlash';}
