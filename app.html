@@ -837,6 +837,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
       <div id="usoniwrap" style="display:none;margin-bottom:12px">
         <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:8px">Savollar soni</div>
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px" id="usonigrid"></div>
+        <input class="inp" id="usoniCustom" type="number" min="1" placeholder="Yoki boshqa son kiriting..." style="margin-top:8px" oninput="uSoniCustom(this.value)"/>
       </div>
       <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:4px">Fan nomi</div>
       <input class="inp" id="ufan" type="text" placeholder="Masalan: Kimyo" style="margin-bottom:10px"/>
@@ -4706,12 +4707,20 @@ function uTur(t){
   if(t==='o'){
     var g=document.getElementById('usonigrid');
     uSoni=40;
-    g.innerHTML=[5,10,15,20,25,30,35,40].map(function(s){return '<button onclick="uSoniT('+s+')" id="us'+s+'" class="vb'+(s===40?' sel':'')+'" style="justify-content:center;padding:10px">'+s+'</button>';}).join('');
+    g.innerHTML=U_SONI_VARIANTLAR.map(function(s){return '<button onclick="uSoniT('+s+')" id="us'+s+'" class="vb'+(s===40?' sel':'')+'" style="justify-content:center;padding:10px">'+s+'</button>';}).join('');
   }
 }
+var U_SONI_VARIANTLAR=[5,10,15,20,25,30,35,40,45,50,55,60,65,70];
 function uSoniT(s){
   uSoni=s;
-  [5,10,15,20,25,30,35,40].forEach(function(x){var e=document.getElementById('us'+x);if(e)e.className='vb'+(x===s?' sel':'');});
+  U_SONI_VARIANTLAR.forEach(function(x){var e=document.getElementById('us'+x);if(e)e.className='vb'+(x===s?' sel':'');});
+  var cust=document.getElementById('usoniCustom');if(cust)cust.value='';
+}
+function uSoniCustom(v){
+  var s=parseInt(v,10);
+  if(!s||s<1)return;
+  uSoni=s;
+  U_SONI_VARIANTLAR.forEach(function(x){var e=document.getElementById('us'+x);if(e)e.className='vb'+(x===s?' sel':'');});
 }
 var uKopJav={};
 function uKopRender(n){
