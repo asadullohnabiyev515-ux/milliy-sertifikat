@@ -4468,6 +4468,50 @@ async function uNatijalarKor(kod){
       html+='</div>';
     }
 
+    // Mavzular kesimida tahlil (ustoz mavzu->savol raqamlari xaritasini
+    // kiritgan bo'lsa) — sinf qaysi mavzuda zaif ekanini ko'rsatadi.
+    var md={bor:false};
+    try{
+      var mr=await apiFetch(API+'/test/mavzular_tahlil/'+encodeURIComponent(kod));
+      md=await mr.json();
+    }catch(e){}
+    var mavzularMatn='';
+    if(md.mavzular&&md.mavzular.length){
+      mavzularMatn=md.mavzular.map(function(m){return m.mavzu+': '+m.savollar.join(',');}).join('\n');
+    }
+    html+='<div style="margin-top:18px">';
+    html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px">'+
+      '<div style="font-size:.72rem;color:rgba(255,255,255,.4)">📊 Mavzular kesimida tahlil:</div>'+
+      '<button class="btn btn-out" style="padding:4px 10px;font-size:.68rem;width:auto" onclick="mavzularTahrirOch(\''+kod+'\')">✏️ '+(md.bor?'Tahrir':"Mavzularni kiritish")+'</button>'+
+    '</div>';
+    html+='<div id="mavzularTahrirBox" style="display:none;margin-bottom:10px">'+
+      '<div style="font-size:.66rem;color:rgba(255,255,255,.4);margin-bottom:6px">Har bir qatorda: <b>Mavzu nomi: savol raqamlari</b> (vergul bilan). Masalan:<br>Atom tuzilishi: 1,2,6,13</div>'+
+      '<textarea id="mavzularMatnInp" rows="8" style="width:100%;box-sizing:border-box;font-size:.78rem;padding:8px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#fff" placeholder="Atom tuzilishi: 1,2,6,13&#10;Davriy jadval: 3,4,5">'+escAttr(mavzularMatn)+'</textarea>'+
+      '<div class="xb" id="mavzularXb" style="margin:6px 0"></div>'+
+      '<div style="display:flex;gap:8px">'+
+      '<button class="btn btn-green" style="flex:1" onclick="mavzularSaqla(\''+kod+'\')" id="mavzularSaqlaBtn">💾 Saqlash</button>'+
+      '<button class="btn btn-out" style="flex:0 0 auto" onclick="document.getElementById(\'mavzularTahrirBox\').style.display=\'none\'">Yopish</button>'+
+      '</div>'+
+    '</div>';
+    if(md.bor && md.mavzular && md.mavzular.length){
+      html+='<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px">';
+      md.mavzular.forEach(function(m){
+        var rang=m.ustuvor?'#ff6b6b':(m.foiz<75?'#facc15':'#4ade80');
+        html+='<div style="background:'+(m.ustuvor?'rgba(255,59,48,.07)':'rgba(255,255,255,.04)')+';border-left:3px solid '+rang+';border-radius:10px;padding:9px 12px">'+
+          '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px">'+
+          '<span style="font-size:.82rem;font-weight:700">'+esc(m.mavzu)+'</span>'+
+          '<span style="font-size:.9rem;font-weight:800;color:'+rang+'">'+m.foiz+'%</span>'+
+          '</div>'+
+          '<div style="font-size:.66rem;color:rgba(255,255,255,.4);margin-top:2px">Savollar: '+m.savollar.join(',')+' ('+m.jami_savol+' ta) · o\'rtacha '+m.ortacha_togri+'/'+m.jami_savol+' to\'g\'ri</div>'+
+          (m.ustuvor?'<div style="font-size:.64rem;color:#ff6b6b;margin-top:3px;font-weight:700">⚠️ Ustuvor takrorlash mavzusi (60% dan past)</div>':'')+
+        '</div>';
+      });
+      html+='</div>';
+    }else{
+      html+='<div style="font-size:.72rem;color:rgba(255,255,255,.35);background:rgba(255,255,255,.03);border-radius:10px;padding:10px 12px;margin-bottom:18px">Hali mavzular kiritilmagan. Yuqoridagi "Mavzularni kiritish" tugmasini bosib, har bir mavzuga tegishli savol raqamlarini kiriting — shunda sinf qaysi mavzuda zaif ekani avtomatik chiqadi.</div>';
+    }
+    html+='</div>';
+
     // Rasch (IRT) modeli bo'yicha tahlil — FAQAT "milliy" (Milliy Sertifikat)
     // testlarida ma'noli, chunki savol qiyinligiga qarab vaznlash aynan
     // shu turdagi testlarning rasmiy baholash usuli. Oddiy/do'st testlarida
@@ -4897,6 +4941,23 @@ async function natijaYuborTugma(kod){
     if(d.success){xb('qoshXb','ok','Yuborildi ('+d.yuborildi+" ta o'quvchiga)!");uNatijalarKor(kod);}
     else{xb('qoshXb','err',d.detail||'Xato');btn.disabled=false;btn.textContent='📤 Natijalarni yuborish';}
   }catch(e){xb('qoshXb','err',e&&e.name==='AbortError'?"Server uyg'onmoqda, biroz kutib qayta urining":'Xato');btn.disabled=false;btn.textContent='📤 Natijalarni yuborish';}
+}
+function mavzularTahrirOch(kod){
+  var box=document.getElementById('mavzularTahrirBox');
+  box.style.display=(box.style.display==='none')?'block':'none';
+  if(box.style.display==='block')document.getElementById('mavzularMatnInp').focus();
+}
+async function mavzularSaqla(kod){
+  var matn=document.getElementById('mavzularMatnInp').value;
+  var btn=document.getElementById('mavzularSaqlaBtn');
+  btn.disabled=true;btn.textContent='Saqlanmoqda...';
+  try{
+    var r=await apiFetch(API+'/test/mavzular_belgila',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({kod:kod,ustoz_id:CU.id,matn:matn})},45000);
+    var d=await r.json();
+    if(d.success){xb('mavzularXb','ok','Saqlandi ('+d.mavzular_soni+" ta mavzu)!");uNatijalarKor(kod);}
+    else{xb('mavzularXb','err',d.detail||'Xato');btn.disabled=false;btn.textContent='💾 Saqlash';}
+  }catch(e){xb('mavzularXb','err',e&&e.name==='AbortError'?"Server uyg'onmoqda, biroz kutib qayta urining":'Xato');btn.disabled=false;btn.textContent='💾 Saqlash';}
 }
 
 // SAVOL
