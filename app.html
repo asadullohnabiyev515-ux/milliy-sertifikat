@@ -2446,7 +2446,7 @@ async function dokonSotibOl(itemId){
     var r=await apiFetch(API+'/coin/dokon/sotib_ol',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({user_id:CU.id,item_id:itemId})});
     var d=await r.json();
-    if(r.ok&&d.success){coinBadgeYangila(d.balans);dokonYukla();}
+    if(r.ok&&d.success){coinBadgeYangila(d.balans);dokonYukla();pLoad();}
     else alert(d.detail||'Xato');
   }catch(e){alert('Serverga ulanib bo\'lmadi');}
 }
