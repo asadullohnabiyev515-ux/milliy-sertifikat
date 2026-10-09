@@ -4480,9 +4480,13 @@ async function uNatijalarKor(kod){
       mavzularMatn=md.mavzular.map(function(m){return m.mavzu+': '+m.savollar.join(',');}).join('\n');
     }
     html+='<div style="margin-top:18px">';
-    html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px">'+
-      '<div style="font-size:.72rem;color:rgba(255,255,255,.4)">📊 Mavzular kesimida tahlil:</div>'+
-      '<button class="btn btn-out" style="padding:4px 10px;font-size:.68rem;width:auto" onclick="mavzularTahrirOch(\''+kod+'\')">✏️ '+(md.bor?'Tahrir':"Mavzularni kiritish")+'</button>'+
+    html+='<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;background:rgba(255,255,255,.03);border-radius:10px;padding:9px 12px" onclick="mavzularSectionToggle()">'+
+      '<div style="font-size:.78rem;font-weight:700">📊 Mavzular bo\'yicha tahlil'+(md.bor?' <span style="font-weight:400;color:rgba(255,255,255,.35);font-size:.68rem">('+md.mavzular.length+' ta mavzu kiritilgan)</span>':'')+'</div>'+
+      '<div id="mavzularChevron" style="font-size:.7rem;color:rgba(255,255,255,.4)">▸ ko\'rsatish</div>'+
+    '</div>';
+    html+='<div id="mavzularBody" style="display:none;margin-top:10px">';
+    html+='<div style="display:flex;justify-content:flex-end;margin-bottom:8px">'+
+      '<button class="btn btn-out" style="padding:4px 10px;font-size:.68rem;width:auto" onclick="event.stopPropagation();mavzularTahrirOch(\''+kod+'\')">✏️ '+(md.bor?'Tahrir':"Mavzularni kiritish")+'</button>'+
     '</div>';
     html+='<div id="mavzularTahrirBox" style="display:none;margin-bottom:10px">'+
       '<div style="font-size:.66rem;color:rgba(255,255,255,.4);margin-bottom:6px">Har bir qatorda: <b>Mavzu nomi: savol raqamlari</b> (vergul bilan). Masalan:<br>Atom tuzilishi: 1,2,6,13</div>'+
@@ -4510,6 +4514,7 @@ async function uNatijalarKor(kod){
     }else{
       html+='<div style="font-size:.72rem;color:rgba(255,255,255,.35);background:rgba(255,255,255,.03);border-radius:10px;padding:10px 12px;margin-bottom:18px">Hali mavzular kiritilmagan. Yuqoridagi "Mavzularni kiritish" tugmasini bosib, har bir mavzuga tegishli savol raqamlarini kiriting — shunda sinf qaysi mavzuda zaif ekani avtomatik chiqadi.</div>';
     }
+    html+='</div>'; // #mavzularBody
     html+='</div>';
 
     // Rasch (IRT) modeli bo'yicha tahlil — FAQAT "milliy" (Milliy Sertifikat)
@@ -4941,6 +4946,13 @@ async function natijaYuborTugma(kod){
     if(d.success){xb('qoshXb','ok','Yuborildi ('+d.yuborildi+" ta o'quvchiga)!");uNatijalarKor(kod);}
     else{xb('qoshXb','err',d.detail||'Xato');btn.disabled=false;btn.textContent='📤 Natijalarni yuborish';}
   }catch(e){xb('qoshXb','err',e&&e.name==='AbortError'?"Server uyg'onmoqda, biroz kutib qayta urining":'Xato');btn.disabled=false;btn.textContent='📤 Natijalarni yuborish';}
+}
+function mavzularSectionToggle(){
+  var body=document.getElementById('mavzularBody');
+  var chev=document.getElementById('mavzularChevron');
+  var open=body.style.display==='none';
+  body.style.display=open?'block':'none';
+  chev.textContent=open?'▾ yashirish':'▸ ko\'rsatish';
 }
 function mavzularTahrirOch(kod){
   var box=document.getElementById('mavzularTahrirBox');
