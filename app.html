@@ -395,20 +395,15 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   </div>
 </div>
 
-<!-- REYTING -->
+<!-- REYTING (Coin) -->
 <div id="p6" class="page" style="padding-bottom:80px">
-  <div class="top"><div class="tlogo">Reyting</div><div class="av" id="av6">A</div></div>
-  <div class="tbtns">
-    <button class="tb on" id="rt1" onclick="rTab('u')">🏆 Umumiy</button>
-    <button class="tb off" id="rt2" onclick="rTab('o')">📝 Oxirgi</button>
-    <button class="tb off" id="rt3" onclick="rTab('c')">🪙 Coin</button>
-  </div>
-  <div id="coin-davr-tabs" style="display:none;padding:8px 16px 0;gap:8px">
+  <div class="top"><div class="tlogo">🪙 Coin reytingi</div><div class="av" id="av6">A</div></div>
+  <div id="coin-davr-tabs" style="display:flex;padding:8px 16px 0;gap:8px">
     <button class="tb off" id="cd1" onclick="coinDavrTab('hafta')" style="flex:1;font-size:.75rem;padding:7px 0">Hafta</button>
     <button class="tb off" id="cd2" onclick="coinDavrTab('oy')" style="flex:1;font-size:.75rem;padding:7px 0">Oy</button>
     <button class="tb on" id="cd3" onclick="coinDavrTab('umumiy')" style="flex:1;font-size:.75rem;padding:7px 0">Umumiy</button>
   </div>
-  <div style="padding:10px 16px 6px;font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px" id="rsarlavha">Umumiy reyting</div>
+  <div style="padding:10px 16px 6px;font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px" id="rsarlavha">Coin reytingi</div>
   <div id="rlist" style="padding:0 16px"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
 </div>
 
@@ -2137,44 +2132,29 @@ async function kYukla(fid,n){
   }catch(e){alert('Serverga ulanib bo\'lmadi!');}
 }
 
-// REYTING
-async function rLoad(){await rTab('u');}
+// REYTING (faqat Coin — umumiy/oxirgi test ball reytingi bekor qilindi)
+async function rLoad(){await coinDavrTab(coinDavr);}
 var coinDavr='umumiy';
-function coinDavrTab(d){
+async function coinDavrTab(d){
   coinDavr=d;
   var map={hafta:'cd1',oy:'cd2',umumiy:'cd3'};
   ['cd1','cd2','cd3'].forEach(function(id){
     var el=document.getElementById(id);
     if(el)el.className='tb '+(map[d]===id?'on':'off');
   });
-  rTab('c');
-}
-async function rTab(t){
-  var r1=document.getElementById('rt1'),r2=document.getElementById('rt2'),r3=document.getElementById('rt3');
-  var s=document.getElementById('rsarlavha');
-  var dt=document.getElementById('coin-davr-tabs');
-  r1.className='tb '+(t==='u'?'on':'off');
-  r2.className='tb '+(t==='o'?'on':'off');
-  if(r3)r3.className='tb '+(t==='c'?'on':'off');
-  if(dt)dt.style.display=(t==='c')?'flex':'none';
-  var davrNom=coinDavr==='hafta'?'Haftalik ':(coinDavr==='oy'?'Oylik ':'');
-  s.textContent=t==='u'?'Umumiy reyting':(t==='o'?'Oxirgi test':davrNom+'Coin reytingi');
+  var davrNom=d==='hafta'?'Haftalik ':(d==='oy'?'Oylik ':'');
+  document.getElementById('rsarlavha').textContent=davrNom+'Coin reytingi';
   var li=document.getElementById('rlist');
   li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
   try{
-    var url=t==='u'?'/reyting/umumiy':(t==='o'?'/reyting/oxirgi':'/coin/reyting?davr='+coinDavr);
-    var r=await apiFetch(API+url);
-    var d=await r.json();
-    var rl=d.reyting||[];
-    if(t==='o'&&d.fan)s.textContent='Oxirgi: '+d.fan;
+    var r=await apiFetch(API+'/coin/reyting?davr='+d);
+    var data=await r.json();
+    var rl=data.reyting||[];
     if(!rl.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Natija yo\'q</div>';return;}
     li.innerHTML=rl.map(function(n,i){
-      var ob=t==='c'?(i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.'):(n.orin===1?'🥇':n.orin===2?'🥈':n.orin===3?'🥉':n.orin+'.');
-      var nm=t==='c'?n.name:n.ism;
-      var b=t==='u'?n.jami_ball:(t==='o'?(n.ball||0):(n.coin||0));
-      var rng=t==='c'?'gold':(b>=60?'#00d4aa':b>=40?'#ff9500':'#ff6b6b');
-      var suffix=t==='c'?' 🪙':' b';
-      return '<div class="ri"><div style="font-size:1.1rem;min-width:30px;text-align:center">'+ob+'</div><div class="av" style="width:36px;height:36px;border-radius:10px;font-size:.9rem;flex-shrink:0">'+(nm?nm.charAt(0):'?')+'</div><div style="flex:1"><div style="font-size:.88rem;font-weight:600">'+(nm||'')+'</div></div><div style="font-size:.9rem;font-weight:800;color:'+rng+'">'+b+suffix+'</div></div>';
+      var ob=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
+      var b=n.coin||0;
+      return '<div class="ri"><div style="font-size:1.1rem;min-width:30px;text-align:center">'+ob+'</div><div class="av" style="width:36px;height:36px;border-radius:10px;font-size:.9rem;flex-shrink:0">'+(n.name?n.name.charAt(0):'?')+'</div><div style="flex:1"><div style="font-size:.88rem;font-weight:600">'+(n.name||'')+'</div></div><div style="font-size:.9rem;font-weight:800;color:gold">'+b+' 🪙</div></div>';
     }).join('');
   }catch(e){}
 }
@@ -2591,19 +2571,20 @@ async function pGuruhSorovYubor(gid,nomi){
     pGuruhRoyxatYukla();
   }catch(e){xb.style.color='#ff6b6b';xb.textContent='Tarmoq xatosi';}
 }
-function coinKunlikTekshir(){
+async function coinKunlikTekshir(){
   if(!CU.id)return;
+  // Ketma-ketlik SERVERDA saqlanadi (avval localStorage'da edi — brauzer
+  // tarixini tozalab cheksiz qayta olish mumkin edi, qurilma almashtirilsa
+  // yo'qolardi). Bonus ham server tomonidan hisoblanadi, mijoz faqat
+  // natijani ko'rsatadi.
   try{
-    var lastKey='coinLastLogin_'+CU.id, streakKey='coinStreak_'+CU.id;
-    var today=new Date().toISOString().slice(0,10);
-    var last=localStorage.getItem(lastKey);
-    if(last===today)return;
-    var yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);
-    var streak=(last===yesterday)?(parseInt(localStorage.getItem(streakKey)||'0')+1):1;
-    localStorage.setItem(lastKey,today);
-    localStorage.setItem(streakKey,String(streak));
-    var bonus=5+Math.min(streak-1,10);
-    coinBer(bonus,"Kunlik kirish ("+streak+"-kun ketma-ket)");
+    var r=await fetch(API+'/coin/kunlik_kirish',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({user_id:CU.id,name:CU.name||"Noma'lum"})});
+    var d=await r.json();
+    if(d.success&&!d.allaqachon&&d.bonus>0){
+      coinToast(d.bonus,"Kunlik kirish ("+d.ketma_ket+"-kun ketma-ket)");
+      coinBadgeYangila(d.jami);
+    }
   }catch(e){}
 }
 // MATEMATIKA KURSI (nazariya + mavzu bo'yicha test, ketma-ket ochiladi)
