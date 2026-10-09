@@ -487,7 +487,10 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
       <span onclick="pIsmTahrir()" style="cursor:pointer">✏️</span>
     </div>
     <div style="font-size:.78rem;color:rgba(255,255,255,.4);margin-bottom:10px" id="pid">ID: —</div>
-    <div id="coin-badge-p8" onclick="reytingOch('/coin/reyting','🪙 Coin reytingi','coin')" style="display:inline-block;background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.3);border-radius:20px;padding:6px 14px;font-size:.85rem;font-weight:800;color:gold;cursor:pointer">🪙 0</div>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+      <div id="coin-badge-p8" onclick="reytingOch('/coin/reyting','🪙 Coin reytingi','coin')" style="display:inline-block;background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.3);border-radius:20px;padding:6px 14px;font-size:.85rem;font-weight:800;color:gold;cursor:pointer">🪙 0</div>
+      <div onclick="go('p-dokon',-1);dokonYukla()" style="display:inline-block;background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.3);border-radius:20px;padding:6px 14px;font-size:.85rem;font-weight:800;color:#a78bfa;cursor:pointer">🛍 Do'kon</div>
+    </div>
   </div>
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 16px 16px">
     <div class="sbox" style="text-align:center"><div class="snum" id="pjami">0</div><div class="slab">Testlar</div></div>
@@ -510,6 +513,20 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">So'nggi natijalar</div>
     <div id="pnat"><div style="text-align:center;padding:20px;color:rgba(255,255,255,.4);font-size:.85rem">Hozircha natija yo'q</div></div>
   </div>
+</div>
+
+<!-- COIN DO'KONI (profil bezaklari) -->
+<div id="p-dokon" class="page" style="padding-bottom:80px">
+  <div class="top">
+    <button onclick="go('p8',5)" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
+    <div class="tlogo">🛍 Do'kon</div>
+    <div style="width:60px"></div>
+  </div>
+  <div style="padding:14px 16px 4px;text-align:center">
+    <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:6px">Coin bilan avatar ramkasi sotib oling — profilingizda va reytingda ko'rinadi</div>
+    <div id="dokon-balans" style="display:inline-block;background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.3);border-radius:20px;padding:6px 14px;font-size:.9rem;font-weight:800;color:gold">🪙 0</div>
+  </div>
+  <div id="dokon-list" style="padding:14px 16px;display:flex;flex-direction:column;gap:10px"></div>
 </div>
 
 <!-- DO'STLARNI TAKLIF QILISH -->
@@ -1620,7 +1637,7 @@ var sTogri='';
 
 // GO - sahifa almashtirish
 function go(id,nav){
-  var all=['p1','p2','p3','p3b','p3c','p4','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e','p9f','p9g','p9h','p9i','p9j','p9k','p9l','p9m','p9n','p9q','p9r','p9s','p-elon','p-games','p-game','p-memory','p-sort','p-jadval','p-moddabaza','p-reaksiya','p-oziq','p-kurs','p-kurs-mavzu','p-referral'];
+  var all=['p1','p2','p3','p3b','p3c','p4','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e','p9f','p9g','p9h','p9i','p9j','p9k','p9l','p9m','p9n','p9q','p9r','p9s','p-elon','p-games','p-game','p-memory','p-sort','p-jadval','p-moddabaza','p-reaksiya','p-oziq','p-kurs','p-kurs-mavzu','p-referral','p-dokon'];
   all.forEach(function(x){var e=document.getElementById(x);if(e)e.style.display='none';});
   var el=document.getElementById(id);
   if(el)el.style.display='block';
@@ -2154,8 +2171,10 @@ async function coinDavrTab(d){
     li.innerHTML=rl.map(function(n,i){
       var ob=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
       var b=n.coin||0;
-      return '<div class="ri"><div style="font-size:1.1rem;min-width:30px;text-align:center">'+ob+'</div><div class="av" style="width:36px;height:36px;border-radius:10px;font-size:.9rem;flex-shrink:0">'+(n.name?n.name.charAt(0):'?')+'</div><div style="flex:1"><div style="font-size:.88rem;font-weight:600">'+(n.name||'')+'</div></div><div style="font-size:.9rem;font-weight:800;color:gold">'+b+' 🪙</div></div>';
+      var nm=(n.name||'')+(n.badge?' '+n.badge:'');
+      return '<div class="ri"><div style="font-size:1.1rem;min-width:30px;text-align:center">'+ob+'</div><div class="av" id="coin-av-'+i+'" style="width:36px;height:36px;border-radius:10px;font-size:.9rem;flex-shrink:0">'+(n.name?n.name.charAt(0):'?')+'</div><div style="flex:1"><div style="font-size:.88rem;font-weight:600">'+nm+'</div></div><div style="font-size:.9rem;font-weight:800;color:gold">'+b+' 🪙</div></div>';
     }).join('');
+    rl.forEach(function(n,i){if(n.ramka)avatarRamkaQoyish(document.getElementById('coin-av-'+i),n.ramka);});
   }catch(e){}
 }
 
@@ -2386,6 +2405,59 @@ async function coinBadgeLoad(){
     var d=await r.json();
     coinBadgeYangila(d.coin||0);
   }catch(e){}
+}
+// COIN DO'KONI (profil bezaklari — avatar ramkasi + reyting/ism yonidagi belgi)
+function avatarRamkaQoyish(el,ramka){
+  if(!el)return;
+  if(!ramka){el.style.border='';el.style.backgroundImage='';el.style.backgroundOrigin='';el.style.backgroundClip='';return;}
+  el.style.border='3px solid transparent';
+  el.style.backgroundImage=ramka+',linear-gradient(135deg,#00d4aa,#00a8ff)';
+  el.style.backgroundOrigin='border-box,padding-box';
+  el.style.backgroundClip='border-box,padding-box';
+}
+async function dokonYukla(){
+  if(!CU.id)return;
+  var bal=document.getElementById('dokon-balans');
+  var li=document.getElementById('dokon-list');
+  li.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
+  try{
+    var r=await apiFetch(API+'/coin/dokon/'+CU.id);
+    var d=await r.json();
+    if(bal)bal.textContent='🪙 '+d.balans;
+    li.innerHTML=d.katalog.map(function(item){
+      var tanlangan=(d.active===item.id);
+      var btn;
+      if(item.egami){
+        btn='<button onclick="dokonTanla(\''+(tanlangan?'':item.id)+'\')" style="width:100%;padding:10px;border-radius:10px;border:none;font-weight:700;font-size:.8rem;cursor:pointer;background:'+(tanlangan?'rgba(239,68,68,.15);color:#ff6b6b':'rgba(0,212,170,.15);color:#00d4aa')+'">'+(tanlangan?'✕ Yechish':'✓ Kiyish')+'</button>';
+      }else{
+        var yetarli=d.balans>=item.narx;
+        btn='<button onclick="dokonSotibOl(\''+item.id+'\')" '+(yetarli?'':'disabled')+' style="width:100%;padding:10px;border-radius:10px;border:none;font-weight:700;font-size:.8rem;cursor:'+(yetarli?'pointer':'not-allowed')+';background:'+(yetarli?'linear-gradient(135deg,#a78bfa,#7c3aed);color:#fff':'rgba(255,255,255,.08);color:rgba(255,255,255,.35)')+'">🪙'+item.narx+'</button>';
+      }
+      return '<div style="background:rgba(255,255,255,.04);border-radius:16px;padding:14px;display:flex;align-items:center;gap:14px'+(tanlangan?';border:1.5px solid #00d4aa':'')+'">'+
+        '<div style="width:50px;height:50px;border-radius:50%;flex-shrink:0;border:3px solid transparent;background-image:'+item.ramka+',linear-gradient(135deg,#00d4aa,#00a8ff);background-origin:border-box,padding-box;background-clip:border-box,padding-box;display:flex;align-items:center;justify-content:center;font-weight:700">'+(CU.name?CU.name.charAt(0):'A')+'</div>'+
+        '<div style="flex:1;min-width:0"><div style="font-size:.88rem;font-weight:700">'+item.nom+(item.badge?' '+item.badge:'')+'</div>'+(tanlangan?'<div style="font-size:.66rem;color:#00d4aa;margin-top:2px">Kiyilgan</div>':'')+'</div>'+
+        '<div style="width:100px;flex-shrink:0">'+btn+'</div>'+
+      '</div>';
+    }).join('');
+  }catch(e){li.innerHTML='<div style="text-align:center;padding:20px;color:#ff6b6b">Xato</div>';}
+}
+async function dokonSotibOl(itemId){
+  try{
+    var r=await apiFetch(API+'/coin/dokon/sotib_ol',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({user_id:CU.id,item_id:itemId})});
+    var d=await r.json();
+    if(r.ok&&d.success){coinBadgeYangila(d.balans);dokonYukla();}
+    else alert(d.detail||'Xato');
+  }catch(e){alert('Serverga ulanib bo\'lmadi');}
+}
+async function dokonTanla(itemId){
+  try{
+    var r=await apiFetch(API+'/coin/dokon/tanla',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({user_id:CU.id,item_id:itemId||null})});
+    var d=await r.json();
+    if(r.ok&&d.success){dokonYukla();pLoad();}
+    else alert(d.detail||'Xato');
+  }catch(e){alert('Serverga ulanib bo\'lmadi');}
 }
 async function faollikBelgila(){
   if(!CU.id)return;
@@ -2816,7 +2888,8 @@ async function pLoad(){
     var d=await r.json();
     _pIsm=d.ism||''; _pFamiliya=d.familiya||'';
     var toliqIsm=(_pIsm+' '+_pFamiliya).trim();
-    document.getElementById('pism').textContent=toliqIsm||CU.name||'—';
+    document.getElementById('pism').textContent=(toliqIsm||CU.name||'—')+(d.bezak_badge?' '+d.bezak_badge:'');
+    avatarRamkaQoyish(document.getElementById('pav'),d.bezak_ramka);
     document.getElementById('pjami').textContent=d.jami_test||0;
     document.getElementById('portacha').textContent=d.ortacha_ball||'—';
     document.getElementById('pyuqori').textContent=d.eng_yuqori||'—';
