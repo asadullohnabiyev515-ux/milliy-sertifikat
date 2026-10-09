@@ -2172,7 +2172,8 @@ async function coinDavrTab(d){
       var ob=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
       var b=n.coin||0;
       var nm=(n.name||'')+(n.badge?' '+n.badge:'');
-      return '<div class="ri"><div style="font-size:1.1rem;min-width:30px;text-align:center">'+ob+'</div><div class="av" id="coin-av-'+i+'" style="width:36px;height:36px;border-radius:10px;font-size:.9rem;flex-shrink:0">'+(n.name?n.name.charAt(0):'?')+'</div><div style="flex:1"><div style="font-size:.88rem;font-weight:600">'+nm+'</div></div><div style="font-size:.9rem;font-weight:800;color:gold">'+b+' 🪙</div></div>';
+      var av=n.avatar||(n.name?n.name.charAt(0):'?');
+      return '<div class="ri"><div style="font-size:1.1rem;min-width:30px;text-align:center">'+ob+'</div><div class="av" id="coin-av-'+i+'" style="width:36px;height:36px;border-radius:10px;font-size:.9rem;flex-shrink:0">'+av+'</div><div style="flex:1"><div style="font-size:.88rem;font-weight:600">'+nm+'</div></div><div style="font-size:.9rem;font-weight:800;color:gold">'+b+' 🪙</div></div>';
     }).join('');
     rl.forEach(function(n,i){if(n.ramka)avatarRamkaQoyish(document.getElementById('coin-av-'+i),n.ramka);});
   }catch(e){}
@@ -2433,9 +2434,13 @@ async function dokonYukla(){
         var yetarli=d.balans>=item.narx;
         btn='<button onclick="dokonSotibOl(\''+item.id+'\')" '+(yetarli?'':'disabled')+' style="width:100%;padding:10px;border-radius:10px;border:none;font-weight:700;font-size:.8rem;cursor:'+(yetarli?'pointer':'not-allowed')+';background:'+(yetarli?'linear-gradient(135deg,#a78bfa,#7c3aed);color:#fff':'rgba(255,255,255,.08);color:rgba(255,255,255,.35)')+'">🪙'+item.narx+'</button>';
       }
+      var avStyle=item.ramka
+        ?'border:3px solid transparent;background-image:'+item.ramka+',linear-gradient(135deg,#00d4aa,#00a8ff);background-origin:border-box,padding-box;background-clip:border-box,padding-box'
+        :'background:linear-gradient(135deg,#00d4aa,#00a8ff)';
+      var avSadr=item.avatar||(CU.name?CU.name.charAt(0):'A');
       return '<div style="background:rgba(255,255,255,.04);border-radius:16px;padding:14px;display:flex;align-items:center;gap:14px'+(tanlangan?';border:1.5px solid #00d4aa':'')+'">'+
-        '<div style="width:50px;height:50px;border-radius:50%;flex-shrink:0;border:3px solid transparent;background-image:'+item.ramka+',linear-gradient(135deg,#00d4aa,#00a8ff);background-origin:border-box,padding-box;background-clip:border-box,padding-box;display:flex;align-items:center;justify-content:center;font-weight:700">'+(CU.name?CU.name.charAt(0):'A')+'</div>'+
-        '<div style="flex:1;min-width:0"><div style="font-size:.88rem;font-weight:700">'+item.nom+(item.badge?' '+item.badge:'')+'</div>'+(tanlangan?'<div style="font-size:.66rem;color:#00d4aa;margin-top:2px">Kiyilgan</div>':'')+'</div>'+
+        '<div style="width:50px;height:50px;border-radius:50%;flex-shrink:0;'+avStyle+';display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.3rem">'+avSadr+'</div>'+
+        '<div style="flex:1;min-width:0"><div style="font-size:.88rem;font-weight:700">'+item.nom+'</div>'+(tanlangan?'<div style="font-size:.66rem;color:#00d4aa;margin-top:2px">Kiyilgan</div>':'')+'</div>'+
         '<div style="width:100px;flex-shrink:0">'+btn+'</div>'+
       '</div>';
     }).join('');
@@ -2889,7 +2894,9 @@ async function pLoad(){
     _pIsm=d.ism||''; _pFamiliya=d.familiya||'';
     var toliqIsm=(_pIsm+' '+_pFamiliya).trim();
     document.getElementById('pism').textContent=(toliqIsm||CU.name||'—')+(d.bezak_badge?' '+d.bezak_badge:'');
-    avatarRamkaQoyish(document.getElementById('pav'),d.bezak_ramka);
+    var pavEl=document.getElementById('pav');
+    avatarRamkaQoyish(pavEl,d.bezak_ramka);
+    if(pavEl)pavEl.textContent=d.bezak_avatar||(toliqIsm||CU.name||'A').charAt(0);
     document.getElementById('pjami').textContent=d.jami_test||0;
     document.getElementById('portacha').textContent=d.ortacha_ball||'—';
     document.getElementById('pyuqori').textContent=d.eng_yuqori||'—';
