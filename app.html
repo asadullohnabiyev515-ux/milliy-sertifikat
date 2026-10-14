@@ -201,7 +201,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <div class="g2" style="margin-bottom:16px">
       <div class="sbox"><div class="snum" id="bs1">0</div><div class="slab">Testlar</div></div>
       <div class="sbox"><div class="snum" id="bs2">—</div><div class="slab">Ball</div></div>
-      <div class="sbox"><div class="snum" id="bs3">0</div><div class="slab">Kitoblar</div></div>
+      <div class="sbox"><div class="snum" id="bs3">0</div><div class="slab">Coin</div></div>
       <div class="sbox"><div class="snum" id="bs4">—</div><div class="slab">Reyting</div></div>
     </div>
     <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">👨‍👩‍👧‍👦 Guruhim</div>
@@ -1672,7 +1672,7 @@ function go(id,nav){
     var nj=document.getElementById('n-jadval');if(nj)nj.className='nitem on';
     var nu=document.getElementById('n-ustoz');if(nu)nu.className='nitem';
   }
-  if(id==='p1')hGuruhimLoad();
+  if(id==='p1'){hGuruhimLoad();hStatLoad();}
   if(id==='p2')tIsmFamiliyaOldindanTold();
   if(id==='p5')kLoad();
   if(id==='p6')rLoad();
@@ -2406,6 +2406,22 @@ function coinBadgeYangila(jami){
     var e=document.getElementById(id);
     if(e)e.textContent='🪙 '+jami;
   });
+  var bs=document.getElementById('bs3');if(bs)bs.textContent=jami;
+}
+// Bosh sahifadagi statistika: testlar soni, o'rtacha ball, coin va coin reytingidagi o'rin
+async function hStatLoad(){
+  if(!CU||!CU.id)return;
+  try{
+    var d=await (await apiFetch(API+'/profil/'+CU.id)).json();
+    document.getElementById('bs1').textContent=d.jami_test||0;
+    document.getElementById('bs2').textContent=d.ortacha_ball||'—';
+  }catch(e){}
+  coinBadgeLoad();
+  try{
+    var rl=(await (await apiFetch(API+'/coin/reyting?davr=umumiy')).json()).reyting||[];
+    var i=rl.findIndex(function(n){return String(n.user_id)===String(CU.id);});
+    document.getElementById('bs4').textContent=i>=0?'#'+(i+1):(rl.length>=10?'10+':'—');
+  }catch(e){}
 }
 async function coinBadgeLoad(){
   if(!CU.id)return;
@@ -2915,8 +2931,8 @@ async function pLoad(){
       var xbtn=n.tugadi?'<button onclick="pXatoKor(\''+esc(n.test_kod)+'\')" style="background:rgba(255,107,107,.12);border:1px solid rgba(255,107,107,.3);border-radius:8px;padding:3px 8px;font-size:.68rem;color:#ff6b6b;cursor:pointer;margin-top:4px">📋 Xatolarim</button>':'';
       return '<div class="ri" style="justify-content:space-between"><div><div style="font-size:.78rem;font-weight:700;color:#00d4aa">'+n.test_kod+'</div><div style="font-size:.85rem;margin-top:2px">'+n.fan+'</div><div style="font-size:.72rem;color:rgba(255,255,255,.4)">'+n.vaqt+'</div>'+xbtn+'</div><div style="font-size:.9rem;font-weight:800;color:'+rng+'">'+(n.tugadi?b+'b':'⏳')+'</div></div>';
     }).join('');
-    document.getElementById('bs1').textContent=d.jami_test;
-    if(d.natijalar[0]&&d.natijalar[0].ball)document.getElementById('bs2').textContent=d.natijalar[0].ball;
+    document.getElementById('bs1').textContent=d.jami_test||0;
+    document.getElementById('bs2').textContent=d.ortacha_ball||'—';
   }catch(e){}
 }
 async function pIsmTahrir(){
