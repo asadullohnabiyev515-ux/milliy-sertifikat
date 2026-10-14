@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Milliy Imtihon</title>
 <script src="https://telegram.org/js/telegram-web-app.js" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=JetBrains+Mono:wght@600;700&display=swap">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--tg-safe-top:0px}
@@ -115,12 +117,90 @@ body[data-tema="yorug"] [style*="color:rgba(255,255,255"]{color:rgba(0,0,0,.5)!i
 body[data-tema="yorug"] [style*="color:#fff"]:not([style*="background:#"]):not([style*="background:linear"]):not([style*="background:rgb("]){color:#1a1a2e!important}
 body[data-tema="yorug"] [style*="border-bottom"][style*="rgba(255,255,255"]{border-bottom-color:rgba(0,0,0,.1)!important}
 body[data-tema="yorug"] [style*="background:rgba(255,255,255"]{background:var(--c-card2)!important}
-body[data-tema="yorug"] #p0{background:var(--c-bg)}
+body[data-tema="yorug"] #p0{background:var(--c-bg)!important}
 #kimyo-bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;overflow:hidden;pointer-events:none}
 .zarracha{position:absolute;opacity:0;animation:suzib linear infinite;color:rgba(0,212,170,0.5);user-select:none;font-weight:700}
 .pufakcha{position:absolute;border-radius:50%;border:1.5px solid rgba(0,212,170,0.12);background:rgba(0,212,170,0.03);animation:suzib linear infinite}
 @keyframes suzib{0%{transform:translateY(110vh) rotate(0deg);opacity:0}5%{opacity:0.14}95%{opacity:0.14}100%{transform:translateY(-15vh) rotate(360deg);opacity:0}}
 #app{position:relative;z-index:1}
+
+/* ══ YANGI DIZAYN (yorug' oq kartochkalar, gradient ikonkalar) ══ */
+:root{
+  --e-brand:#00d4aa;--e-brand2:#00b894;--e-pill:#00d4aa;--e-pill-fg:#0a0f1e;
+  --e-f:"Nunito",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --e-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+body[data-tema="yorug"]{
+  --c-bg:#f4f7f6;--c-fg:#10201c;--c-muted:#7d8f8a;--c-muted2:#5f716c;
+  --c-card:#fff;--c-card2:#f4f7f6;--c-card3:#eef3f1;--c-card4:#e6efec;--c-card5:#f1f5f4;
+  --c-border:#dfe7e4;--c-border2:#e3eae7;--c-border3:#d3ddd9;--c-sep:#e3eae7;
+  --c-nav:#fff;--c-top:#fff;--c-inp:#f4f7f6;--c-ph:#9aaba6;
+  --e-brand:#3fa58a;--e-brand2:#2f8a73;--e-pill:#16302a;--e-pill-fg:#fff;
+}
+body{font-family:var(--e-f)}
+body[data-tema="yorug"] #kimyo-bg,body[data-tema="yorug"] #bg-tog{display:none}
+body[data-tema="yorug"] .top{background:var(--c-top);backdrop-filter:none;-webkit-backdrop-filter:none}
+body[data-tema="yorug"] .tlogo{background:none;-webkit-text-fill-color:currentColor;color:var(--c-fg);font-weight:900;font-size:1rem}
+body[data-tema="yorug"] .card{border-radius:20px;box-shadow:none;border:1px solid var(--c-border2)}
+body[data-tema="yorug"] .mc,body[data-tema="yorug"] .sbox,body[data-tema="yorug"] .ri{box-shadow:none;border:1px solid var(--c-border2)}
+body[data-tema="yorug"] .snum{color:var(--e-brand2)}
+body[data-tema="yorug"] .btn-green{background:var(--e-pill);box-shadow:none}
+body[data-tema="yorug"] .tb.on{background:var(--e-pill);color:#fff;box-shadow:none}
+body[data-tema="yorug"] .vb.sel{border-color:var(--e-brand);background:#effaf6;box-shadow:0 0 0 3px rgba(63,165,138,.15)}
+body[data-tema="yorug"] .vb.sel .vbg{background:var(--e-brand);color:#fff}
+body[data-tema="yorug"] .pf{background:linear-gradient(90deg,#3fa58a,#7fd1b9)}
+body[data-tema="yorug"] .av{background:linear-gradient(150deg,#5cb89d,#3c9a80);box-shadow:none;color:#fff}
+body[data-tema="yorug"] .inp:focus{border-color:var(--e-brand)}
+body[data-tema="yorug"] #tema-tog{background:#fff;border-color:var(--c-border2);box-shadow:0 4px 14px rgba(22,48,42,.12)}
+/* Pastki panel */
+.nav{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));padding:8px 6px calc(12px + env(safe-area-inset-bottom,0px))}
+.nitem{gap:3px;padding:2px}
+.nitem .ni{width:44px;height:32px;border-radius:12px;display:grid;place-items:center;color:var(--c-muted);opacity:1;font-size:1rem;transition:background .15s ease,color .15s ease}
+.nitem span.nl{font-size:.62rem;font-weight:800;opacity:1;color:var(--c-muted)}
+.nitem.on span.ni{background:var(--e-pill);color:var(--e-pill-fg)}
+.nitem.on span.nl{color:var(--c-fg)}
+.nitem.on::before{display:none}
+/* Sarlavha */
+.e-head{gap:10px;justify-content:flex-start}
+.e-logo{width:40px;height:40px;border-radius:12px;background:#16302a;display:grid;place-items:center;color:#f2c94c;flex-shrink:0}
+.e-ht{flex:1;min-width:0;display:grid}
+.e-eyebrow{font-family:var(--e-mono);font-size:.6rem;font-weight:700;letter-spacing:.2em;color:var(--e-brand2);text-transform:uppercase}
+.e-ht b{font-size:1.02rem;font-weight:900;color:var(--c-fg)}
+.e-chip{display:flex;align-items:center;gap:4px;border-radius:99px;padding:5px 10px;font-family:var(--e-mono);font-weight:700;font-size:.8rem;cursor:pointer;white-space:nowrap}
+.e-chip.coin{background:rgba(255,200,40,.12);border:1px solid rgba(230,168,23,.4);color:#b07a00}
+.e-chip.fire{background:rgba(255,120,60,.12);border:1px solid rgba(240,130,90,.4);color:#c2410c}
+.e-ibtn{position:relative;width:36px;height:36px;border-radius:12px;border:1px solid var(--c-border2);background:var(--c-card);color:var(--c-fg);display:grid;place-items:center;cursor:pointer;flex-shrink:0}
+.e-dot{position:absolute;top:-3px;right:-3px;background:#e5484d;border:2px solid var(--c-card);border-radius:50%;width:12px;height:12px}
+/* Salom kartochkasi */
+.e-wrap{padding:14px 16px 0;display:grid;gap:14px}
+.e-hero{border-radius:24px;padding:16px;color:#fff;background:linear-gradient(150deg,#5cb89d,#3c9a80);box-shadow:0 14px 30px -16px rgba(47,138,115,.7);display:grid;gap:14px}
+.e-hero .row{display:flex;align-items:center;gap:12px;min-width:0}
+.e-hero .av{width:46px;height:46px;background:#16302a!important;color:#fff;font-size:1.2rem;font-weight:900;box-shadow:none;flex-shrink:0}
+.e-hero small{display:block;opacity:.85;font-weight:600;font-size:.8rem}
+.e-hero strong{display:block;font-size:1.15rem;font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.e-badge{margin-left:auto;font-family:var(--e-mono);font-size:.58rem;font-weight:700;letter-spacing:.14em;border:1px solid rgba(255,255,255,.45);border-radius:99px;padding:4px 9px;flex-shrink:0}
+.e-stats{display:grid;grid-template-columns:repeat(4,1fr);background:rgba(255,255,255,.14);border-radius:16px;padding:10px 0}
+.e-stats div{text-align:center;display:grid;gap:2px;min-width:0}
+.e-stats div+div{border-left:1px solid rgba(255,255,255,.22)}
+.e-stats b{font-family:var(--e-mono);font-size:1.02rem;font-variant-numeric:tabular-nums;color:#fff}
+.e-stats span{font-size:.66rem;opacity:.85;font-weight:700}
+.e-sec{font-family:var(--e-mono);font-size:.64rem;font-weight:700;letter-spacing:.18em;color:var(--c-muted);text-transform:uppercase;margin-bottom:-4px}
+/* Bo'lim kartochkalari */
+.e-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.e-tile{background:var(--c-card);border:1px solid var(--c-border2);border-radius:20px;padding:12px;display:grid;gap:8px;position:relative;cursor:pointer;transition:transform .12s ease;min-width:0}
+.e-tile:active{transform:scale(.97)}
+.e-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#fff}
+.e-tile b{font-size:.95rem;font-weight:900;color:var(--c-fg)}
+.e-tile small{font-family:var(--e-mono);font-size:.56rem;letter-spacing:.06em;color:var(--c-muted);font-weight:700;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.e-chev{position:absolute;top:12px;right:12px;color:var(--c-border3)}
+.e-g1{background:linear-gradient(150deg,#4fa98d,#2f7f69)}
+.e-g2{background:linear-gradient(150deg,#5bb3e0,#3478c6)}
+.e-g3{background:linear-gradient(150deg,#9b6cf0,#6f3fd6)}
+.e-g4{background:linear-gradient(150deg,#f5a14a,#e2731d)}
+.e-g5{background:linear-gradient(150deg,#ec5f7a,#c93a64)}
+.e-g6{background:linear-gradient(150deg,#41b6c4,#1e8597)}
+.e-g7{background:linear-gradient(150deg,#8fb94b,#5e8f2a)}
+.e-g8{background:linear-gradient(150deg,#16302a,#2b4a42)}
 </style>
 </head>
 <body>
@@ -188,36 +268,40 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
 </div>
 
 <!-- BOSH -->
-<div id="p1" class="page" style="padding-bottom:80px">
-  <div class="top"><div class="tlogo">Milliy Imtihon</div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <div id="coin-badge-p1" onclick="reytingOch('/coin/reyting','🪙 Coin reytingi','coin')" style="background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.3);border-radius:20px;padding:5px 11px;font-size:.78rem;font-weight:800;color:gold;cursor:pointer">🪙 0</div>
-      <div class="av" id="av">A</div>
-    </div>
+<div id="p1" class="page" style="padding-bottom:90px">
+  <div class="top e-head">
+    <div class="e-logo"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></g></svg></div>
+    <div class="e-ht"><span class="e-eyebrow">EduTest</span><b>Milliy Imtihon</b></div>
+    <div class="e-chip fire" id="h-streak" style="display:none" title="Ketma-ket kunlar">🔥 <span id="h-streak-n">1</span></div>
+    <div class="e-chip coin" id="coin-badge-p1" onclick="reytingOch('/coin/reyting','🪙 Coin reytingi','coin')">🪙 0</div>
+    <div class="e-ibtn" onclick="go('p-elon',-1)" title="E'lonlar"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span id="elon-badge" class="e-dot" style="display:none"></span></div>
   </div>
-  <div style="padding:16px 16px 0">
-    <div style="font-size:.82rem;color:rgba(255,255,255,.4);margin-bottom:3px">Xush kelibsiz 👋</div>
-    <div style="font-size:1.3rem;font-weight:800;margin-bottom:16px" id="bism">Foydalanuvchi!</div>
-    <div class="g2" style="margin-bottom:16px">
-      <div class="sbox"><div class="snum" id="bs1">0</div><div class="slab">Testlar</div></div>
-      <div class="sbox"><div class="snum" id="bs2">—</div><div class="slab">Ball</div></div>
-      <div class="sbox"><div class="snum" id="bs3">—</div><div class="slab">Mavzular</div></div>
-      <div class="sbox"><div class="snum" id="bs4">—</div><div class="slab">Reyting</div></div>
+  <div class="e-wrap">
+    <div class="e-hero">
+      <div class="row">
+        <div class="av" id="av">A</div>
+        <div style="min-width:0"><small>Assalomu alaykum,</small><strong id="bism">Foydalanuvchi!</strong></div>
+        <span class="e-badge" id="h-rol">O'QUVCHI</span>
+      </div>
+      <div class="e-stats">
+        <div><b id="bs1">0</b><span>Testlar</span></div>
+        <div><b id="bs2">—</b><span>Ball</span></div>
+        <div><b id="bs3">—</b><span>Mavzular</span></div>
+        <div><b id="bs4">—</b><span>Reyting</span></div>
+      </div>
     </div>
-    <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">👨‍👩‍👧‍👦 Guruhim</div>
-    <div id="hGuruhim" style="margin-bottom:18px"><div style="text-align:center;padding:16px"><div class="sp" style="margin:0 auto"></div></div></div>
-    <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">O'quv bo'limlari</div>
-    <div class="g2">
-      <div class="mc" onclick="go('p2',1)" style="border-left:3px solid #00d4aa;background:linear-gradient(135deg,rgba(0,212,170,.1),rgba(255,255,255,.03))"><div class="mi" style="background:rgba(0,212,170,.2)">📝</div><div class="mt">Testlar</div><div class="ms">Test ishlash</div></div>
-      <div class="mc" onclick="go('p5',2)" style="border-left:3px solid #ff6b35;background:linear-gradient(135deg,rgba(255,107,53,.1),rgba(255,255,255,.03))"><div class="mi" style="background:rgba(255,107,53,.2)">📚</div><div class="mt">Kitoblar</div><div class="ms">Fanlar bo'yicha</div></div>
-      <div class="mc" onclick="go('p7',4);tTab(2)" style="border-left:3px solid #8b5cf6;background:linear-gradient(135deg,rgba(139,92,246,.1),rgba(255,255,255,.03))"><div class="mi" style="background:rgba(139,92,246,.2)">🎯</div><div class="mt">Tester</div><div class="ms">Mashq qilish</div></div>
-      <div class="mc" onclick="go('p-kurs',-1);kursRoyxatLoad()" style="border-left:3px solid #f59e0b;background:linear-gradient(135deg,rgba(245,158,11,.1),rgba(255,255,255,.03))"><div class="mi" style="background:rgba(245,158,11,.2)">📐</div><div class="mt">Matematika</div><div class="ms">Kimyo uchun kurs</div></div>
-    </div>
-    <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:1px;text-transform:uppercase;margin:18px 0 12px">Qo'shimcha</div>
-    <div class="g2">
-      <div class="mc" onclick="go('p-jadval',-1);jadvalInit()" style="border-left:3px solid #0ea5e9;background:linear-gradient(135deg,rgba(14,165,233,.1),rgba(255,255,255,.03))"><div class="mi" style="background:rgba(14,165,233,.2)">⚛️</div><div class="mt">Jadval</div><div class="ms">Davriy jadval</div></div>
-      <div class="mc" onclick="go('p-moddabaza',-1)" style="border-left:3px solid #a855f7;background:linear-gradient(135deg,rgba(168,85,247,.1),rgba(255,255,255,.03))"><div class="mi" style="background:rgba(168,85,247,.2)">📖</div><div class="mt">Moddalar bazasi</div><div class="ms">Formula va nomlar</div></div>
-      <div class="mc" onclick="go('p-reaksiya',-1)" style="border-left:3px solid #22c55e;background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(255,255,255,.03))"><div class="mi" style="background:rgba(34,197,94,.2)">⚗️</div><div class="mt">Reaksiyalar</div><div class="ms">Reagent → mahsulot</div></div>
+    <div class="e-sec">Guruhim</div>
+    <div id="hGuruhim"><div style="text-align:center;padding:16px"><div class="sp" style="margin:0 auto"></div></div></div>
+    <div class="e-sec">O'quv bo'limlari</div>
+    <div class="e-grid">
+      <div class="e-tile" onclick="go('p2',1)"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g1"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8zM14 3v5h5M9 13h6M9 17h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg></div><b>Testlar</b><small>Milliy · DTM · Kod</small></div>
+      <div class="e-tile" onclick="go('p7',4);tTab(2)"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g3"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></g></svg></div><b>Mashq</b><small>Tester · Mavzuli</small></div>
+      <div class="e-tile" onclick="go('p-kurs',-1);kursRoyxatLoad()"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g2"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V4l16 16zM8 16v-4.5L12.5 16z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div><b>Matematika</b><small>Kimyo uchun kurs</small></div>
+      <div class="e-tile" onclick="go('p5',2)"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g4"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div><b>Kitoblar</b><small>Fanlar bo'yicha</small></div>
+      <div class="e-tile" onclick="go('p-jadval',-1);jadvalInit()"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g6"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></g></svg></div><b>Jadvallar</b><small>Davriy · Eruvchanlik</small></div>
+      <div class="e-tile" onclick="go('p-games',-1)"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g5"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10a5 5 0 0 1 4.9 6l-.6 3a2.5 2.5 0 0 1-4.4 1.1L15 15H9l-1.9 2.1A2.5 2.5 0 0 1 2.7 16l-.6-3A5 5 0 0 1 7 7zM7 10v3M5.5 11.5h3M15.5 11h.01M17.5 13h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><b>O'yinlar</b><small>Memory · Duel</small></div>
+      <div class="e-tile" onclick="go('p-moddabaza',-1)"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g8"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></g></svg></div><b>Moddalar bazasi</b><small>Formula va nomlar</small></div>
+      <div class="e-tile" onclick="go('p-reaksiya',-1)"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g7"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3M7.5 15h9" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg></div><b>Reaksiyalar</b><small>Reagent → mahsulot</small></div>
     </div>
   </div>
 </div>
@@ -1034,12 +1118,11 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
 
 <!-- NAV -->
 <div class="nav" id="nav" style="display:none">
-  <div class="nitem on" id="n0" onclick="go('p1',0)"><span>🏠</span><span>Bosh</span></div>
-  <div class="nitem" id="n3" onclick="go('p6',3)"><span>🏆</span><span>Reyting</span></div>
-  <div class="nitem" id="n-game" onclick="go('p-games',-1)"><span>🎮</span><span>O'yinlar</span></div>
-  <div class="nitem" id="n-jadval" onclick="go('p-jadval',-1);jadvalInit()"><span>⚛️</span><span>Jadval</span></div>
-  <div class="nitem" id="n5" onclick="go('p8',5)"><span>👤</span><span>Profil</span></div>
-  <div class="nitem" id="n-elon" onclick="go('p-elon',-1)"><span>🔔</span><span id="elon-badge" style="display:none;position:absolute;top:2px;right:26%;background:#ff4757;color:#fff;border-radius:50%;font-size:9px;width:14px;height:14px;text-align:center;line-height:14px;font-weight:700;z-index:1">!</span><span>E'lon</span></div>
+  <div class="nitem on" id="n0" onclick="go('p1',0)"><span class="ni"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></span><span class="nl">Bosh</span></div>
+  <div class="nitem" id="n1" onclick="go('p2',1)"><span class="ni"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8zM14 3v5h5M9 13h6M9 17h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg></span><span class="nl">Testlar</span></div>
+  <div class="nitem" id="n-jadval" onclick="go('p-jadval',-1);jadvalInit()"><span class="ni"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></g></svg></span><span class="nl">Jadval</span></div>
+  <div class="nitem" id="n3" onclick="go('p6',3)"><span class="ni"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M9.5 17h5v4h-5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg></span><span class="nl">Reyting</span></div>
+  <div class="nitem" id="n5" onclick="go('p8',5)"><span class="ni"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0" stroke-linecap="round"/></g></svg></span><span class="nl">Profil</span></div>
 </div>
 
 <!-- O'YINLAR HUB -->
@@ -1696,11 +1779,12 @@ function appOch(){
     var nav=document.getElementById('nav');
     var ni=document.createElement('div');
     ni.id='n-ustoz';ni.className='nitem';
-    ni.innerHTML='<span>👨‍🏫</span><span>Ustoz</span>';
+    ni.innerHTML='<span class="ni"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9.5 12 5l10 4.5L12 14zM6 11.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></span><span class="nl">Ustoz</span>';
     ni.onclick=function(){go('p9',6);};
     nav.appendChild(ni);
   }
   if(ADMINS.indexOf(CU.id)>=0){
+    var hr=document.getElementById('h-rol');if(hr)hr.textContent='USTOZ';
     var hb=document.getElementById('ws-hint-btn');
     if(hb)hb.textContent='💡 Bepul';
   }
@@ -2689,6 +2773,10 @@ async function coinKunlikTekshir(){
     var r=await fetch(API+'/coin/kunlik_kirish',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({user_id:CU.id,name:CU.name||"Noma'lum"})});
     var d=await r.json();
+    if(d.success&&d.ketma_ket){
+      document.getElementById('h-streak-n').textContent=d.ketma_ket;
+      document.getElementById('h-streak').style.display='flex';
+    }
     if(d.success&&!d.allaqachon&&d.bonus>0){
       coinToast(d.bonus,"Kunlik kirish ("+d.ketma_ket+"-kun ketma-ket)");
       coinBadgeYangila(d.jami);
@@ -5236,7 +5324,7 @@ function temaToggle(){
   bgYarat(localStorage.getItem('bgTur')||'kimyo');
 }
 (function(){
-  var t=localStorage.getItem('tema')||'qorongu';
+  var t=localStorage.getItem('tema')||'yorug';
   document.body.setAttribute('data-tema',t);
   var btn=document.getElementById('tema-tog');
   if(btn)btn.textContent=t==='yorug'?'🌙':'☀️';
