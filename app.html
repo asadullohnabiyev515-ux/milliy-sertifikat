@@ -201,7 +201,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <div class="g2" style="margin-bottom:16px">
       <div class="sbox"><div class="snum" id="bs1">0</div><div class="slab">Testlar</div></div>
       <div class="sbox"><div class="snum" id="bs2">—</div><div class="slab">Ball</div></div>
-      <div class="sbox"><div class="snum" id="bs3">0</div><div class="slab">Coin</div></div>
+      <div class="sbox"><div class="snum" id="bs3">—</div><div class="slab">Mavzular</div></div>
       <div class="sbox"><div class="snum" id="bs4">—</div><div class="slab">Reyting</div></div>
     </div>
     <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">👨‍👩‍👧‍👦 Guruhim</div>
@@ -2406,9 +2406,8 @@ function coinBadgeYangila(jami){
     var e=document.getElementById(id);
     if(e)e.textContent='🪙 '+jami;
   });
-  var bs=document.getElementById('bs3');if(bs)bs.textContent=jami;
 }
-// Bosh sahifadagi statistika: testlar soni, o'rtacha ball, coin va coin reytingidagi o'rin
+// Bosh sahifadagi statistika: testlar soni, o'rtacha ball, o'tilgan mavzular va coin reytingidagi o'rin
 async function hStatLoad(){
   if(!CU||!CU.id)return;
   try{
@@ -2416,7 +2415,15 @@ async function hStatLoad(){
     document.getElementById('bs1').textContent=d.jami_test||0;
     document.getElementById('bs2').textContent=d.ortacha_ball||'—';
   }catch(e){}
-  coinBadgeLoad();
+  try{
+    var fl=(await (await apiFetch(API+'/savol/fanlar')).json()).fanlar||[];
+    var jami=0,otilgan=0;
+    fl.forEach(function(f){
+      var p=seqProgress(f.fan);
+      (f.mavzular||[]).forEach(function(m){jami++;if(p[m])otilgan++;});
+    });
+    document.getElementById('bs3').textContent=jami?otilgan+'/'+jami:'—';
+  }catch(e){}
   try{
     var rl=(await (await apiFetch(API+'/coin/reyting?davr=umumiy')).json()).reyting||[];
     var i=rl.findIndex(function(n){return String(n.user_id)===String(CU.id);});
