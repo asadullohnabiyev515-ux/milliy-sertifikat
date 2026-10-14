@@ -5743,23 +5743,28 @@ async function memReytingLoad(){
 // ============================================================
 var WS_COLORS=['#ef4444','#3b82f6','#22c55e','#f59e0b','#a855f7','#06b6d4','#f97316','#ec4899','#84cc16','#14b8a6','#6366f1','#d946ef','#0ea5e9','#78716c','#7c3aed','#eab308','#f43f5e','#10b981','#64748b','#1e3a8a'];
 // Level konfiguratsiyasi: {colors, empty} — 30 level
+// DIQQAT: qiyinlik oshirildi (foydalanuvchi so'rovi — "juda oson yutiladi").
+// 2-bo'sh-probirka (empty:2) eng katta osonlashtiruvchi omil edi, chunki
+// 2 ta bo'sh joy kam rangli darajalarda deyarli har qanday holatni bir
+// zumda yechib yuboradi. Shu sabab 2-15 rang oralig'ida (asosiy qism)
+// empty:2 BUTUNLAY olib tashlandi — har bir daraja faqat 1 bo'sh probirka
+// bilan boshlanadi. 8 rangdan boshlab vaqti-vaqti bilan empty:2 "nafas"
+// darajasi qoldirildi (katta holat maydonida bu ham hali chinakam qiyin).
 var WS_LEVELS=[
-  {colors:2,empty:2},{colors:3,empty:2},{colors:3,empty:1},{colors:4,empty:2}, // 1-4
-  {colors:4,empty:1},{colors:5,empty:2},{colors:5,empty:1},{colors:6,empty:2}, // 5-8
-  {colors:6,empty:1},{colors:7,empty:2},{colors:7,empty:1},{colors:8,empty:2}, // 9-12
-  {colors:8,empty:1},{colors:9,empty:2},{colors:9,empty:1},{colors:10,empty:2},// 13-16
-  {colors:10,empty:1},{colors:11,empty:2},{colors:11,empty:1},{colors:12,empty:2},// 17-20
-  {colors:12,empty:1},{colors:13,empty:2},{colors:13,empty:1},{colors:14,empty:2},// 21-24
-  {colors:14,empty:1},{colors:15,empty:2},{colors:15,empty:1},{colors:15,empty:1},// 25-28
-  {colors:15,empty:1},{colors:15,empty:1},                                        // 29-30
+  {colors:2,empty:1},{colors:3,empty:1},{colors:4,empty:1},{colors:5,empty:1}, // 1-4
+  {colors:6,empty:1},{colors:7,empty:1},{colors:8,empty:2},{colors:8,empty:1}, // 5-8
+  {colors:9,empty:2},{colors:9,empty:1},{colors:10,empty:2},{colors:10,empty:1},// 9-12
+  {colors:11,empty:2},{colors:11,empty:1},{colors:12,empty:2},{colors:12,empty:1},// 13-16
+  {colors:13,empty:2},{colors:13,empty:1},{colors:14,empty:2},{colors:14,empty:1},// 17-20
+  {colors:15,empty:2},{colors:15,empty:1},                                        // 21-22
   // ── 2-qism ──
-  {colors:16,empty:2},{colors:16,empty:1},{colors:17,empty:2},{colors:17,empty:1},// 31-34
-  {colors:18,empty:2},{colors:18,empty:1},{colors:19,empty:2},{colors:19,empty:1},// 35-38
-  {colors:20,empty:2},{colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1},// 39-42
-  {colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1},// 43-46
-  {colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1} // 47-50
+  {colors:16,empty:2},{colors:16,empty:1},{colors:17,empty:2},{colors:17,empty:1},// 23-26
+  {colors:18,empty:2},{colors:18,empty:1},{colors:19,empty:2},{colors:19,empty:1},// 27-30
+  {colors:20,empty:2},{colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1},// 31-34
+  {colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1},// 35-38
+  {colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1} // 39-42
 ];
-var WS_PART2_START=31;
+var WS_PART2_START=23;
 var wsLevel=1,wsMaxLevel=+(localStorage.getItem('ws_max')||1);
 var wsTubes=[],wsSelected=-1,wsMoves=0,wsRunning=false,wsHistory=[];
 var wsHintFrom=-1,wsHintTo=-1;
@@ -5771,7 +5776,7 @@ function wsGoLevel(lv){
 }
 function wsPlayPart(part){
   if(part===2&&wsMaxLevel<WS_PART2_START){
-    alert("🔒 2-qism hali ochilmagan!\n\nAvval 1-qismning barcha 30 darajasini yakunlang.");
+    alert("🔒 2-qism hali ochilmagan!\n\nAvval 1-qismning barcha "+(WS_PART2_START-1)+" darajasini yakunlang.");
     return;
   }
   var lv=part===1?Math.min(wsMaxLevel,WS_PART2_START-1):Math.min(wsMaxLevel,WS_LEVELS.length);
