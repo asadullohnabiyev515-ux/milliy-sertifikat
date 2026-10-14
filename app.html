@@ -574,6 +574,8 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   <div id="ub2" style="display:none;padding:16px">
     <button class="btn btn-green" onclick="go('p9c',-1)" style="margin-bottom:8px">➕ Savol qo'shish</button>
     <button class="btn btn-out" onclick="go('p9h',-1)" style="margin-bottom:8px">🤖 AI bilan yaratish</button>
+    <button class="btn btn-out" onclick="tayyorToplamYukla('kimyo/alkinlar')" style="margin-bottom:8px">📦 Kimyo: Alkinlar (30 ta rasmli savol) yuklash</button>
+    <div class="xb" id="toplamxb"></div>
     <div id="uslist"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
   </div>
   <div id="ub3" style="display:none;padding:16px">
@@ -5164,6 +5166,35 @@ async function savolOchir(fan,mavzu){
     if(d.success){alert('Savollar o\'chirildi!');uSLoad();}
     else alert('Xato: '+(d.detail||''));
   }catch(e){alert('Xato: '+e);}
+}
+
+// TAYYOR TO'PLAM: assets/<yol>/savollar.json dagi rasmli savollarni bazaga yuklaydi
+async function tayyorToplamYukla(yol){
+  if(!/^https?:$/.test(location.protocol)){alert('Sahifani sayt manzili orqali oching (rasm havolalari uchun).');return;}
+  var baza=new URL('assets/'+yol+'/',location.href).href;
+  try{
+    var t=await (await fetch(baza+'savollar.json',{cache:'no-store'})).json();
+    try{
+      var fd=await (await apiFetch(API+'/savol/fanlar')).json();
+      var bor=(fd.fanlar||[]).some(function(f){return f.fan===t.fan&&(f.mavzular||[]).indexOf(t.mavzu)>=0;});
+      if(bor&&!confirm(t.fan+' - '+t.mavzu+' mavzusi bazada allaqachon bor. Baribir qayta yuklaysizmi (takrorlanadi)?'))return;
+    }catch(e){}
+    if(!confirm(t.fan+' - '+t.mavzu+': '+t.savollar.length+' ta savol yuklansinmi?'))return;
+    var ok=0;
+    for(var i=0;i<t.savollar.length;i++){
+      var q=t.savollar[i];
+      xb('toplamxb','ok','Yuklanmoqda: '+(i+1)+'/'+t.savollar.length);
+      try{
+        var r=await apiFetch(API+'/savol/qosh',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({fan:t.fan,mavzu:t.mavzu,savol:(i+1)+'. Rasmdagi savolni o\'qing va to\'g\'ri javobni tanlang ('+q.bolim+')',
+            variantlar:{A:'A',B:'B',C:'C',D:'D'},togri_javob:q.togri_javob,qiyinlik:q.qiyinlik||'orta',ustoz_id:CU.id,rasm_url:baza+q.rasm})});
+        var d=await r.json();
+        if(d.success)ok++;
+      }catch(e){}
+    }
+    xb('toplamxb',ok===t.savollar.length?'ok':'err',ok+'/'+t.savollar.length+' savol yuklandi');
+    uSLoad();
+  }catch(e){xb('toplamxb','err','Xato: '+e);}
 }
 
 // HELPER

@@ -1,0 +1,216 @@
+{
+ "fan": "Kimyo",
+ "mavzu": "Alkinlar",
+ "savollar": [
+  {
+   "id": "alkin_01",
+   "rasm": "alkin_01.png",
+   "togri_javob": "A",
+   "bolim": "Tuzilishi",
+   "qiyinlik": "oson"
+  },
+  {
+   "id": "alkin_02",
+   "rasm": "alkin_02.png",
+   "togri_javob": "B",
+   "bolim": "Tuzilishi",
+   "qiyinlik": "oson"
+  },
+  {
+   "id": "alkin_03",
+   "rasm": "alkin_03.png",
+   "togri_javob": "A",
+   "bolim": "Tuzilishi",
+   "qiyinlik": "oson"
+  },
+  {
+   "id": "alkin_04",
+   "rasm": "alkin_04.png",
+   "togri_javob": "C",
+   "bolim": "Tuzilishi",
+   "qiyinlik": "oson"
+  },
+  {
+   "id": "alkin_05",
+   "rasm": "alkin_05.png",
+   "togri_javob": "C",
+   "bolim": "Nomlash",
+   "qiyinlik": "oson"
+  },
+  {
+   "id": "alkin_06",
+   "rasm": "alkin_06.png",
+   "togri_javob": "D",
+   "bolim": "Nomlash",
+   "qiyinlik": "orta"
+  },
+  {
+   "id": "alkin_07",
+   "rasm": "alkin_07.png",
+   "togri_javob": "B",
+   "bolim": "Izomeriya",
+   "qiyinlik": "orta"
+  },
+  {
+   "id": "alkin_08",
+   "rasm": "alkin_08.png",
+   "togri_javob": "D",
+   "bolim": "Izomeriya",
+   "qiyinlik": "qiyin"
+  },
+  {
+   "id": "alkin_09",
+   "rasm": "alkin_09.png",
+   "togri_javob": "D",
+   "bolim": "Izomeriya",
+   "qiyinlik": "orta"
+  },
+  {
+   "id": "alkin_10",
+   "rasm": "alkin_10.png",
+   "togri_javob": "B",
+   "bolim": "Olinishi",
+   "qiyinlik": "oson"
+  },
+  {
+   "id": "alkin_11",
+   "rasm": "alkin_11.png",
+   "togri_javob": "A",
+   "bolim": "Olinishi",
+   "qiyinlik": "oson"
+  },
+  {
+   "id": "alkin_12",
+   "rasm": "alkin_12.png",
+   "togri_javob": "B",
+   "bolim": "Kimyoviy xossalari",
+   "qiyinlik": "orta"
+  },
+  {
+   "id": "alkin_13",
+   "rasm": "alkin_13.png",
+   "togri_javob": "B",
+   "bolim": "Kimyoviy xossalari",
+   "qiyinlik": "oson"
+  },
+  {
+   "id": "alkin_14",
+   "rasm": "alkin_14.png",
+   "togri_javob": "D",
+   "bolim": "Kimyoviy xossalari",
+   "qiyinlik": "orta"
+  },
+  {
+   "id": "alkin_15",
+   "rasm": "alkin_15.png",
+   "togri_javob": "B",
+   "bolim": "Kimyoviy xossalari",
+   "qiyinlik": "orta"
+  },
+  {
+   "id": "alkin_16",
+   "rasm": "alkin_16.png",
+   "togri_javob": "B",
+   "bolim": "Oksidlanish",
+   "qiyinlik": "orta"
+  },
+  {
+   "id": "alkin_17",
+   "rasm": "alkin_17.png",
+   "togri_javob": "C",
+   "bolim": "Oksidlanish",
+   "qiyinlik": "orta"
+  },
+  {
+   "id": "alkin_18",
+   "rasm": "alkin_18.png",
+   "togri_javob": "D",
+   "bolim": "Oksidlanish darajasi",
+   "qiyinlik": "orta"
+  },
+  {
+   "id": "alkin_19",
+   "rasm": "alkin_19.png",
+   "togri_javob": "B",
+   "bolim": "Oksidlanish darajasi",
+   "qiyinlik": "qiyin"
+  },
+  {
+   "id": "alkin_20",
+   "rasm": "alkin_20.png",
+   "togri_javob": "D",
+   "bolim": "Gibridlanish",
+   "qiyinlik": "qiyin"
+  },
+  {
+   "id": "alkin_21",
+   "rasm": "alkin_21.png",
+   "togri_javob": "C",
+   "bolim": "Umumiy formula",
+   "qiyinlik": "qiyin"
+  },
+  {
+   "id": "alkin_22",
+   "rasm": "alkin_22.png",
+   "togri_javob": "A",
+   "bolim": "Masala",
+   "qiyinlik": "qiyin"
+  },
+  {
+   "id": "alkin_23",
+   "rasm": "alkin_23.png",
+   "togri_javob": "C",
+   "bolim": "Yonish",
+   "qiyinlik": "orta"
+  },
+  {
+   "id": "alkin_24",
+   "rasm": "alkin_24.png",
+   "togri_javob": "B",
+   "bolim": "Kimyoviy xossalari",
+   "qiyinlik": "oson"
+  },
+  {
+   "id": "alkin_25",
+   "rasm": "alkin_25.png",
+   "togri_javob": "B",
+   "bolim": "Umumiy formula",
+   "qiyinlik": "orta"
+  },
+  {
+   "id": "alkin_26",
+   "rasm": "alkin_26.png",
+   "togri_javob": "C",
+   "bolim": "Kimyoviy xossalari",
+   "qiyinlik": "orta"
+  },
+  {
+   "id": "alkin_27",
+   "rasm": "alkin_27.png",
+   "togri_javob": "B",
+   "bolim": "Oksidlanish",
+   "qiyinlik": "orta"
+  },
+  {
+   "id": "alkin_28",
+   "rasm": "alkin_28.png",
+   "togri_javob": "D",
+   "bolim": "Kimyoviy xossalari",
+   "qiyinlik": "oson"
+  },
+  {
+   "id": "alkin_29",
+   "rasm": "alkin_29.png",
+   "togri_javob": "C",
+   "bolim": "Kimyoviy xossalari",
+   "qiyinlik": "oson"
+  },
+  {
+   "id": "alkin_30",
+   "rasm": "alkin_30.png",
+   "togri_javob": "B",
+   "bolim": "Oksidlanish",
+   "qiyinlik": "orta"
+  }
+ ]
+}
