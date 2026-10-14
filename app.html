@@ -5762,10 +5762,17 @@ var WS_LEVELS=[
   {colors:18,empty:2},{colors:18,empty:1},{colors:19,empty:2},{colors:19,empty:1},// 27-30
   {colors:20,empty:2},{colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1},// 31-34
   {colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1},// 35-38
-  {colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1} // 39-42
+  {colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1},// 39-42
+  {colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1},// 43-46
+  {colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1},{colors:20,empty:1} // 47-50
 ];
 var WS_PART2_START=23;
-var wsLevel=1,wsMaxLevel=+(localStorage.getItem('ws_max')||1);
+// DIQQAT: kalit nomi 'ws_max'dan 'ws_max_v2'ga ATAYLAB o'zgartirildi —
+// foydalanuvchi so'rovi bo'yicha HAMMA o'quvchini 1-leveldan qaytadan
+// boshlatish uchun (bu qiymat faqat qurilmada saqlanadi, serverdan
+// tozalab bo'lmaydi — kalit nomini almashtirish eski qiymatni e'tiborsiz
+// qoldirishning yagona ishonchli usuli).
+var wsLevel=1,wsMaxLevel=+(localStorage.getItem('ws_max_v2')||1);
 var wsTubes=[],wsSelected=-1,wsMoves=0,wsRunning=false,wsHistory=[];
 var wsHintFrom=-1,wsHintTo=-1;
 
@@ -6030,7 +6037,7 @@ function wsWin(){
   // Keyingi levalni ochish
   if(wsLevel>=wsMaxLevel&&!isLast){
     wsMaxLevel=wsLevel+1;
-    localStorage.setItem('ws_max',wsMaxLevel);
+    localStorage.setItem('ws_max_v2',wsMaxLevel);
     coinBer(15,'Probirkalar — '+wsLevel+'-daraja topshirildi');
   }
   document.getElementById('ws-win-moves').textContent=wsMoves;
