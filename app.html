@@ -1037,6 +1037,7 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
   <div class="nitem on" id="n0" onclick="go('p1',0)"><span>🏠</span><span>Bosh</span></div>
   <div class="nitem" id="n3" onclick="go('p6',3)"><span>🏆</span><span>Reyting</span></div>
   <div class="nitem" id="n-game" onclick="go('p-games',-1)"><span>🎮</span><span>O'yinlar</span></div>
+  <div class="nitem" id="n-jadval" onclick="go('p-jadval',-1);jadvalInit()"><span>⚛️</span><span>Jadval</span></div>
   <div class="nitem" id="n5" onclick="go('p8',5)"><span>👤</span><span>Profil</span></div>
   <div class="nitem" id="n-elon" onclick="go('p-elon',-1)"><span>🔔</span><span id="elon-badge" style="display:none;position:absolute;top:2px;right:26%;background:#ff4757;color:#fff;border-radius:50%;font-size:9px;width:14px;height:14px;text-align:center;line-height:14px;font-weight:700;z-index:1">!</span><span>E'lon</span></div>
 </div>
@@ -1649,10 +1650,14 @@ function go(id,nav){
   if(nav>=0){
     for(var i=0;i<6;i++){var n=document.getElementById('n'+i);if(n)n.className='nitem'+(i===nav?' on':'');}
     if(ne)ne.className='nitem';
+    var ng=document.getElementById('n-game');if(ng)ng.className='nitem';
+    var nj=document.getElementById('n-jadval');if(nj)nj.className='nitem';
     var nu=document.getElementById('n-ustoz');if(nu)nu.className='nitem'+(nav===6?' on':'');
   }else if(id==='p-elon'){
     for(var i=0;i<6;i++){var n=document.getElementById('n'+i);if(n)n.className='nitem';}
     if(ne)ne.className='nitem on';
+    var ng=document.getElementById('n-game');if(ng)ng.className='nitem';
+    var nj=document.getElementById('n-jadval');if(nj)nj.className='nitem';
     var nu=document.getElementById('n-ustoz');if(nu)nu.className='nitem';
   }else if(id==='p-games'||id==='p-game'||id==='p-memory'||id==='p-sort'){
     for(var i=0;i<6;i++){var n=document.getElementById('n'+i);if(n)n.className='nitem';}
