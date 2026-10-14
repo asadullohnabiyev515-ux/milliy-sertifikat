@@ -60,7 +60,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Ar
 .md-caret{animation:mdBlink 1s step-end infinite;color:#a855f7}
 @keyframes wsHintGlow{0%,100%{opacity:1}50%{opacity:.35}}
 .ws-hint{animation:wsHintGlow .9s ease-in-out infinite}
-@keyframes labBubble{0%{transform:translateY(0) scale(1);opacity:.8}100%{transform:translateY(-110px) scale(1.4);opacity:0}}
+@keyframes labBubble{0%{transform:translate(0,0) scale(.7);opacity:.9}50%{transform:translate(6px,-60px) scale(1.1);opacity:.75}100%{transform:translate(-5px,-125px) scale(1.3);opacity:0}}
+@keyframes labWaveBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5px)}}
+.lab-wave{animation:labWaveBob 2.4s ease-in-out infinite}
+@keyframes labShake{0%,100%{transform:rotate(0)}20%{transform:rotate(-4deg)}40%{transform:rotate(3deg)}60%{transform:rotate(-2deg)}80%{transform:rotate(1deg)}}
+.lab-shake{animation:labShake .5s ease}
+@keyframes labSettle{0%{opacity:.9;transform:translateY(0) scale(1)}100%{opacity:.35;transform:translateY(75px) scale(.7)}}
+@keyframes labPopIn{0%{transform:scale(.92);opacity:0}100%{transform:scale(1);opacity:1}}
+.lab-pop{animation:labPopIn .3s ease}
 @keyframes coinToastIn{0%{transform:translateY(-16px);opacity:0}12%{transform:translateY(0);opacity:1}82%{transform:translateY(0);opacity:1}100%{transform:translateY(-10px);opacity:0}}
 #coin-toast-wrap{position:fixed;top:calc(env(safe-area-inset-top,0px) + var(--tg-safe-top) + 10px);left:0;right:0;z-index:600;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
 .coin-toast{display:flex;align-items:center;gap:8px;background:rgba(15,20,36,.95);border:1px solid rgba(255,215,0,.35);border-radius:14px;padding:8px 14px;box-shadow:0 6px 18px rgba(0,0,0,.35);animation:coinToastIn 3.2s ease forwards}
@@ -542,10 +549,30 @@ body[data-tema="yorug"] #p0{background:var(--c-bg)}
     <div id="lab-kashf-count" style="font-size:.72rem;color:rgba(255,255,255,.4)">🔬 Kashfiyotlar: 0/196</div>
   </div>
 
-  <div style="padding:14px 16px 4px;display:flex;justify-content:center">
-    <div id="lab-flask-wrap" style="position:relative;width:110px;height:150px">
-      <div id="lab-flask-liquid" style="position:absolute;left:12px;right:12px;bottom:12px;height:20%;border-radius:0 0 46px 46px;background:rgba(255,255,255,.08);transition:height .6s ease,background .6s ease"></div>
-      <div style="position:absolute;inset:0;border:3px solid rgba(255,255,255,.22);border-top:none;border-radius:0 0 50px 50px;clip-path:polygon(32% 0,68% 0,100% 100%,0 100%)"></div>
+  <div style="padding:10px 16px 4px;display:flex;justify-content:center;background:radial-gradient(ellipse at center,rgba(236,72,153,.1),transparent 70%)">
+    <div id="lab-flask-wrap" style="position:relative;width:140px;height:195px">
+      <svg viewBox="0 0 120 180" style="width:100%;height:100%;display:block;overflow:visible;filter:drop-shadow(0 8px 16px rgba(0,0,0,.35))">
+        <defs>
+          <linearGradient id="labGlassGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity=".18"/>
+            <stop offset="55%" stop-color="#ffffff" stop-opacity=".04"/>
+            <stop offset="100%" stop-color="#ffffff" stop-opacity=".12"/>
+          </linearGradient>
+          <clipPath id="labFlaskClip">
+            <path d="M52 12 H68 V52 C68 54 69 56 70 59 L108 150 C112 160 106 166 96 166 H24 C14 166 8 160 12 150 L50 59 C51 56 52 54 52 52 Z"/>
+          </clipPath>
+        </defs>
+        <g clip-path="url(#labFlaskClip)">
+          <g id="lab-liquid-g" style="transform:translateY(166px);transition:transform .8s cubic-bezier(.34,1.3,.64,1)">
+            <rect x="-10" y="0" width="140" height="170" id="lab-liquid-rect" fill="#60a5fa"></rect>
+            <path id="lab-liquid-wave" class="lab-wave" d="M-10,0 Q15,-5 40,0 T90,0 T130,0 V6 H-10 Z" fill="#60a5fa" opacity=".95"></path>
+          </g>
+        </g>
+        <path d="M52 12 H68 V52 C68 54 69 56 70 59 L108 150 C112 160 106 166 96 166 H24 C14 166 8 160 12 150 L50 59 C51 56 52 54 52 52 Z"
+              fill="url(#labGlassGrad)" stroke="rgba(255,255,255,.4)" stroke-width="2.5"></path>
+        <path d="M30 72 L54 148" stroke="rgba(255,255,255,.3)" stroke-width="5" stroke-linecap="round" opacity=".5"></path>
+        <rect x="48" y="5" width="24" height="9" rx="3" fill="#b45309"></rect>
+      </svg>
       <div id="lab-bubbles" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
     </div>
   </div>
@@ -7689,9 +7716,9 @@ function labToggleSubstance(f){
 function labRenderSelected(){
   var wrap=document.getElementById('lab-selected');
   if(!labSelected.length){wrap.innerHTML='<div style="font-size:.78rem;color:rgba(255,255,255,.3)">Hali modda tanlanmagan</div>';return;}
-  wrap.innerHTML=labSelected.map(function(f){
+  wrap.innerHTML=labSelected.map(function(f,i){
     var nm=rrFormulaName(f);
-    return '<span onclick="labToggleSubstance(\''+f.replace(/'/g,"\\'")+'\')" style="display:inline-flex;align-items:center;gap:4px;background:rgba(236,72,153,.22);border:1px solid rgba(236,72,153,.5);border-radius:20px;padding:5px 10px;font-size:.8rem;font-weight:700;cursor:pointer">'+esc(f)+(nm?' <span style="opacity:.5;font-weight:400">('+esc(nm)+')</span>':'')+' ✕</span>';
+    return '<span class="lab-pop" onclick="labToggleSubstance(\''+f.replace(/'/g,"\\'")+'\')" style="display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,rgba(236,72,153,.3),rgba(168,85,247,.22));border:1.5px solid rgba(236,72,153,.6);box-shadow:0 2px 8px rgba(236,72,153,.25);border-radius:20px;padding:6px 11px;font-size:.82rem;font-weight:700;cursor:pointer;animation-delay:'+(i*0.05)+'s">🧪 '+esc(f)+(nm?' <span style="opacity:.55;font-weight:400">('+esc(nm)+')</span>':'')+' <span style="opacity:.6">✕</span></span>';
   }).join('');
 }
 function labUpdateActionBtn(){
@@ -7717,49 +7744,80 @@ function labRenderShelf(filter){
   if(!list.length){wrap.innerHTML='<div style="text-align:center;padding:20px;opacity:.5;font-size:.82rem;width:100%">Topilmadi</div>';return;}
   wrap.innerHTML=list.map(function(f){
     var active=labSelected.indexOf(f)>=0;
-    return '<span onclick="labToggleSubstance(\''+f.replace(/'/g,"\\'")+'\')" title="'+esc(rrFormulaName(f))+'" style="display:inline-block;padding:7px 11px;border-radius:12px;font-size:.82rem;font-weight:700;cursor:pointer;background:'+(active?'rgba(236,72,153,.3)':'rgba(255,255,255,.05)')+';border:1.5px solid '+(active?'#ec4899':'rgba(255,255,255,.1)')+'">'+esc(f)+'</span>';
+    return '<span onclick="labToggleSubstance(\''+f.replace(/'/g,"\\'")+'\')" title="'+esc(rrFormulaName(f))+'" style="display:inline-block;padding:7px 12px;border-radius:12px;font-size:.82rem;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .15s;background:'+(active?'linear-gradient(135deg,#ec4899,#be185d)':'rgba(255,255,255,.05)')+';color:'+(active?'#fff':'var(--c-fg)')+';border:1.5px solid '+(active?'#ec4899':'rgba(255,255,255,.12)')+(active?';box-shadow:0 3px 10px rgba(236,72,153,.4);transform:scale(1.04)':'')+'">'+esc(f)+'</span>';
   }).join('');
 }
 function labFilter(q){labRenderShelf(q);}
+// Suyuqlik balandligini (pct 0-100, SVG flakon ichida) va rangini belgilaydi —
+// flakon tanasi konus shaklida (neck=55, tagi=166 SVG koordinatasida), shu
+// sabab translateY orqali boshqariladi (CSS height% emas, flakon shakliga
+// mos kelmasdi).
+function labSetLiquid(pct,color){
+  var g=document.getElementById('lab-liquid-g');
+  if(!g)return;
+  var f=Math.max(0,Math.min(1,pct/100));
+  g.style.transform='translateY('+(166-f*111)+'px)';
+  if(color){
+    var rect=document.getElementById('lab-liquid-rect'),wave=document.getElementById('lab-liquid-wave');
+    if(rect)rect.setAttribute('fill',color);
+    if(wave)wave.setAttribute('fill',color);
+  }
+}
+function labShake(){
+  var wrap=document.getElementById('lab-flask-wrap');
+  if(!wrap)return;
+  wrap.classList.remove('lab-shake');
+  void wrap.offsetWidth;
+  wrap.classList.add('lab-shake');
+}
+function labGasEffect(){
+  var bubbles=document.getElementById('lab-bubbles');
+  for(var i=0;i<10;i++){
+    var b=document.createElement('div');
+    b.style.cssText='position:absolute;left:'+(16+Math.random()*68)+'%;bottom:30px;width:'+(4+Math.random()*5)+'px;height:'+(4+Math.random()*5)+'px;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.95),rgba(255,255,255,.35));animation:labBubble '+(1.1+Math.random()*0.8)+'s ease-in '+(i*0.13)+'s infinite';
+    bubbles.appendChild(b);
+  }
+}
+function labPrecipitateEffect(){
+  var bubbles=document.getElementById('lab-bubbles');
+  for(var i=0;i<12;i++){
+    var p=document.createElement('div');
+    p.style.cssText='position:absolute;left:'+(22+Math.random()*56)+'%;top:'+(28+Math.random()*10)+'%;width:'+(2+Math.random()*2)+'px;height:'+(2+Math.random()*2)+'px;border-radius:50%;background:rgba(255,255,255,.75);animation:labSettle '+(0.9+Math.random()*0.6)+'s ease-in '+(Math.random()*0.5)+'s forwards';
+    bubbles.appendChild(p);
+  }
+}
 function labFlaskReset(){
-  var fl=document.getElementById('lab-flask-liquid');
-  if(fl){fl.style.height='20%';fl.style.background='rgba(255,255,255,.08)';}
+  labSetLiquid(0,'rgba(255,255,255,.1)');
   var b=document.getElementById('lab-bubbles');
   if(b)b.innerHTML='';
 }
 function labAction(){
   var matches=labFindMatches(labSelected);
-  var flaskLiquid=document.getElementById('lab-flask-liquid');
   var bubbles=document.getElementById('lab-bubbles');
   bubbles.innerHTML='';
+  labShake();
   var natijaEl=document.getElementById('lab-natija');
   if(!matches.length){
-    flaskLiquid.style.background='rgba(160,160,160,.3)';
-    flaskLiquid.style.height='40%';
-    natijaEl.innerHTML='<div style="text-align:center;padding:16px;background:rgba(255,255,255,.04);border-radius:14px;color:rgba(255,255,255,.4);font-size:.85rem">💭 Ko\'rinadigan reaksiya kuzatilmadi</div>';
+    labSetLiquid(35,'#6b7280');
+    natijaEl.innerHTML='<div class="lab-pop" style="text-align:center;padding:18px;background:rgba(255,255,255,.04);border-radius:14px;color:rgba(255,255,255,.45);font-size:.85rem">💭 Ko\'rinadigan reaksiya kuzatilmadi</div>';
     return;
   }
   var hasGas=matches.some(function(m){return m.r.eq.indexOf('↑')!==-1;});
   var hasPrec=matches.some(function(m){return m.r.eq.indexOf('↓')!==-1;});
-  var colors=['#60a5fa','#34d399','#fbbf24','#f472b6','#a78bfa','#38bdf8'];
+  var colors=['#60a5fa','#34d399','#fbbf24','#f472b6','#a78bfa','#38bdf8','#fb7185'];
   var col=colors[Math.floor(Math.random()*colors.length)];
-  flaskLiquid.style.height='58%';
-  flaskLiquid.style.background=hasPrec?('linear-gradient(180deg,'+col+'dd,'+col+'55)'):col;
-  if(hasGas){
-    for(var i=0;i<8;i++){
-      var b=document.createElement('div');
-      b.style.cssText='position:absolute;left:'+(18+Math.random()*64)+'%;bottom:16px;width:'+(4+Math.random()*4)+'px;height:'+(4+Math.random()*4)+'px;border-radius:50%;background:rgba(255,255,255,.65);animation:labBubble '+(1.1+Math.random())+'s ease-in '+(i*0.15)+'s infinite';
-      bubbles.appendChild(b);
-    }
-  }
+  setTimeout(function(){labSetLiquid(78,col);},80);
+  if(hasGas)setTimeout(labGasEffect,350);
+  if(hasPrec)setTimeout(labPrecipitateEffect,500);
+  var ico=hasGas?'💨':hasPrec?'🌫️':'🔵';
   var html='';
-  if(matches.length>1)html+='<div style="font-size:.68rem;color:rgba(255,255,255,.35);margin-bottom:6px">⚠️ Bu moddalar sharoitga qarab bir necha xil natija berishi mumkin:</div>';
-  matches.forEach(function(m){
+  if(matches.length>1)html+='<div style="font-size:.68rem;color:rgba(255,255,255,.4);margin-bottom:8px">⚠️ Bu moddalar sharoitga qarab bir necha xil natija berishi mumkin:</div>';
+  matches.forEach(function(m,mi){
     var r=m.r,idx=m.idx;
-    html+='<div style="background:rgba(236,72,153,.08);border:1.5px solid rgba(236,72,153,.3);border-radius:14px;padding:14px 16px;margin-bottom:8px">'+
-      '<div style="font-size:1rem;font-weight:800;margin-bottom:6px">'+esc(r.eq)+'</div>'+
+    html+='<div class="lab-pop" style="background:linear-gradient(135deg,rgba(236,72,153,.1),rgba(168,85,247,.06));border:1.5px solid rgba(236,72,153,.35);border-left:4px solid '+col+';border-radius:14px;padding:14px 16px;margin-bottom:8px;animation-delay:'+(mi*0.08)+'s">'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:1.3rem">'+ico+'</span><div style="font-size:1.02rem;font-weight:800">'+esc(r.eq)+'</div></div>'+
       '<div style="display:flex;flex-wrap:wrap;gap:6px">'+
-        '<span style="font-size:.65rem;background:rgba(236,72,153,.18);color:#f472b6;padding:3px 9px;border-radius:20px;font-weight:700">'+esc(r.tur)+'</span>'+
+        '<span style="font-size:.65rem;background:rgba(236,72,153,.2);color:#f9a8d4;padding:3px 9px;border-radius:20px;font-weight:700">'+esc(r.tur)+'</span>'+
         (r.shart?'<span style="font-size:.65rem;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);padding:3px 9px;border-radius:20px">'+esc(r.shart)+'</span>':'')+
       '</div>'+
       '<div id="lab-kashf-'+idx+'" style="margin-top:8px;font-size:.72rem"></div>'+
