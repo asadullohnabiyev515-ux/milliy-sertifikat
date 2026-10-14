@@ -172,7 +172,7 @@ body[data-tema="yorug"] #tema-tog{background:#fff;border-color:var(--c-border2);
 .e-ibtn{position:relative;width:36px;height:36px;border-radius:12px;border:1px solid var(--c-border2);background:var(--c-card);color:var(--c-fg);display:grid;place-items:center;cursor:pointer;flex-shrink:0}
 .e-dot{position:absolute;top:-3px;right:-3px;background:#e5484d;border:2px solid var(--c-card);border-radius:50%;width:12px;height:12px}
 /* Salom kartochkasi */
-.e-wrap{padding:14px 16px 0;display:grid;gap:14px}
+.e-wrap{padding:14px 16px 0;display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
 .e-hero{border-radius:24px;padding:16px;color:#fff;background:linear-gradient(150deg,#5cb89d,#3c9a80);box-shadow:0 14px 30px -16px rgba(47,138,115,.7);display:grid;gap:14px}
 .e-hero .row{display:flex;align-items:center;gap:12px;min-width:0}
 .e-hero .av{width:46px;height:46px;background:#16302a!important;color:#fff;font-size:1.2rem;font-weight:900;box-shadow:none;flex-shrink:0}
@@ -201,6 +201,64 @@ body[data-tema="yorug"] #tema-tog{background:#fff;border-color:var(--c-border2);
 .e-g6{background:linear-gradient(150deg,#41b6c4,#1e8597)}
 .e-g7{background:linear-gradient(150deg,#8fb94b,#5e8f2a)}
 .e-g8{background:linear-gradient(150deg,#16302a,#2b4a42)}
+
+/* Test ekrani */
+button.e-ibtn{padding:0;font:inherit}
+.e-timer{font-family:var(--e-mono);font-weight:700;font-size:.8rem;background:rgba(63,165,138,.12);color:var(--e-brand2);border-radius:99px;padding:5px 10px;white-space:nowrap;min-width:52px;text-align:center}
+.e-prow{display:flex;justify-content:space-between;align-items:center;gap:8px;font-family:var(--e-mono);font-size:.74rem;font-weight:700;color:var(--c-muted)}
+.e-prow b{color:var(--c-fg);font-weight:700}
+.e-dots{display:flex;gap:4px}
+.e-dots i{flex:1;height:6px;border-radius:99px;background:var(--c-card4)}
+.e-dots i.d{background:var(--e-brand)}
+.e-dots i.c{background:var(--c-fg)}
+.e-wrap .prog{margin:0}
+.e-trow{display:flex;justify-content:space-between;gap:8px}
+.e-mini{display:inline-flex;align-items:center;gap:5px;border-radius:99px;padding:5px 11px;font-family:var(--e-f);font-size:.74rem;font-weight:800;cursor:pointer;border:1px solid var(--c-border2);background:var(--c-card);color:var(--c-fg)}
+.e-xarita{background:var(--c-card);border:1px solid var(--c-border2);border-radius:16px;padding:10px}
+.e-qcard{background:var(--c-card);border:1px solid var(--c-border2);border-radius:20px;padding:14px;display:grid;gap:10px;min-width:0}
+.e-qtext{font-size:1rem;font-weight:800;color:var(--c-fg);line-height:1.4;overflow-wrap:anywhere}
+.e-qcard img{display:block;width:100%;max-width:100%;border-radius:12px;border:1px solid var(--c-border2);margin:0!important;background:#fff}
+.e-vars .vb{margin-bottom:8px;border-radius:16px;font-weight:700;min-width:0;overflow-wrap:anywhere}
+.e-vars.e-vars2{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.e-vars.e-vars2 .vb{margin:0;padding:14px;font-size:1rem;font-weight:900}
+.e-tbtns{display:grid;grid-template-columns:1fr 2fr;gap:10px}
+.e-tbtns .btn{margin-top:0;white-space:nowrap;padding-left:10px;padding-right:10px}
+.e-tbtns .btn:disabled{opacity:.45}
+/* Profil */
+.e-pcard{background:var(--c-card);border:1px solid var(--c-border2);border-radius:24px;padding:18px 16px 16px;display:grid;gap:12px;justify-items:center;text-align:center}
+.e-pav{width:72px!important;height:72px!important;border-radius:50%!important;font-size:1.8rem!important;font-weight:900;margin:0!important;box-shadow:0 0 0 4px var(--c-card),0 0 0 6px #f2c94c!important}
+.e-pname{display:flex;align-items:center;justify-content:center;gap:6px;font-size:1.15rem;font-weight:900;color:var(--c-fg);flex-wrap:wrap}
+.e-pname button{border:0;background:none;color:var(--c-muted);cursor:pointer;padding:2px;display:grid}
+.e-pid{font-family:var(--e-mono);font-size:.7rem;font-weight:700;color:var(--c-muted)}
+.e-pchips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.e-chip.shop{background:rgba(155,108,240,.12);border:1px solid rgba(155,108,240,.35);color:#6f3fd6}
+.e-pstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%}
+.e-pstats div{background:var(--c-card2);border-radius:14px;padding:10px 4px;display:grid;gap:2px}
+.e-pstats b{font-family:var(--e-mono);font-size:1.02rem;font-variant-numeric:tabular-nums;color:var(--c-fg)}
+.e-pstats span{font-size:.66rem;color:var(--c-muted);font-weight:800}
+.e-list{background:var(--c-card);border:1px solid var(--c-border2);border-radius:20px;overflow:hidden}
+.e-li{display:flex;align-items:center;gap:10px;padding:11px 12px;cursor:pointer;min-width:0}
+.e-li+.e-li{border-top:1px solid var(--c-border2)}
+.e-li .t{flex:1;min-width:0;display:grid}
+.e-li .t b{font-size:.9rem;font-weight:900;color:var(--c-fg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.e-li .t small{font-size:.72rem;color:var(--c-muted);font-weight:700}
+.e-li .code{font-family:var(--e-mono);font-size:.68rem;font-weight:700;color:var(--e-brand2)}
+.e-mi{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;color:#fff;flex-shrink:0}
+.e-lchev{color:var(--c-border3);display:grid}
+.e-cnt{font-family:var(--e-mono);font-weight:700;font-size:.72rem;background:#e5484d;color:#fff;border-radius:99px;padding:2px 8px}
+.e-pill{font-family:var(--e-mono);font-weight:700;font-size:.78rem;border-radius:99px;padding:4px 9px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.e-pill.hi{background:rgba(34,160,107,.14);color:#1c8a5b}
+.e-pill.mid{background:rgba(230,150,20,.15);color:#b76e00}
+.e-pill.lo{background:rgba(229,72,77,.13);color:#d23b40}
+.e-pill.wait{background:var(--c-card3);color:var(--c-muted)}
+body:not([data-tema="yorug"]) .e-chip.shop{color:#b79cff}
+body:not([data-tema="yorug"]) .e-pill.hi{color:#34d399}
+body:not([data-tema="yorug"]) .e-pill.mid{color:#fbbf24}
+body:not([data-tema="yorug"]) .e-pill.lo,body:not([data-tema="yorug"]) .e-xbtn{color:#ff7b7f}
+.e-xbtn{justify-self:start;margin-top:4px;background:rgba(229,72,77,.1);border:1px solid rgba(229,72,77,.3);border-radius:8px;padding:2px 8px;font-size:.68rem;font-weight:800;color:#d23b40;cursor:pointer;font-family:var(--e-f)}
+.e-empty{text-align:center;padding:18px;color:var(--c-muted);font-size:.85rem;font-weight:700}
+body[data-tema="yorug"] .e-only-dark{display:none}
+#tema-tog,#bg-tog{display:none!important}
 </style>
 </head>
 <body>
@@ -376,43 +434,39 @@ body[data-tema="yorug"] #tema-tog{background:#fff;border-color:var(--c-border2);
 </div>
 
 <!-- TEST ISHLASH -->
-<div id="p3" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button onclick="tChiq()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">✕</button>
-    <div class="tlogo" id="tfan">Test</div>
-    <div id="taymer" style="font-size:.85rem;font-weight:700;color:#00d4aa;min-width:52px;text-align:right">90:00</div>
+<div id="p3" class="page" style="padding-bottom:90px">
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="tChiq()" aria-label="Testdan chiqish"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+    <div class="e-ht"><span class="e-eyebrow">Test</span><b id="tfan" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Test</b></div>
+    <span class="e-timer" id="taymer">90:00</span>
   </div>
-  <div style="padding:14px 16px 0">
-    <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-      <span style="font-size:.8rem;color:rgba(255,255,255,.4)" id="tprog">1/40</span>
-      <span style="font-size:.85rem;font-weight:700;color:#00d4aa" id="tfoiz">0%</span>
-    </div>
+  <div class="e-wrap">
+    <div class="e-prow"><span><b id="tsnum">1-savol</b> · <span id="tprog">1/40</span></span><span id="tfoiz">0%</span></div>
     <div class="prog"><div class="pf" id="tfill" style="width:0%"></div></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin:10px 0 4px">
-      <div style="display:flex;align-items:center;gap:8px">
-        <span style="font-size:.78rem;color:rgba(255,255,255,.4)" id="tsnum">1-savol</span>
-        <button id="tbelgiBtn" onclick="tBelgila()" style="background:rgba(255,200,0,.1);border:1px solid rgba(255,200,0,.25);color:#ffd700;border-radius:6px;padding:2px 8px;font-size:.7rem;cursor:pointer">🚩 Belgilash</button>
-      </div>
-      <button onclick="tXaritaToggle()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:2px 8px;font-size:.7rem;color:rgba(255,255,255,.6);cursor:pointer">📋 Xarita</button>
+    <div class="e-trow">
+      <button class="e-mini" id="tbelgiBtn" onclick="tBelgila()"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4M5 4h11l-2 4 2 4H5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg> Belgilash</button>
+      <button class="e-mini" onclick="tXaritaToggle()"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></g></svg> Xarita</button>
     </div>
-    <div id="txarita" style="display:none;margin-bottom:10px;background:rgba(255,255,255,.04);border-radius:10px;padding:10px">
+    <div id="txarita" class="e-xarita" style="display:none">
       <div id="txarita-grid" style="display:grid;grid-template-columns:repeat(8,1fr);gap:4px"></div>
       <div style="display:flex;gap:12px;margin-top:8px;font-size:.65rem;color:rgba(255,255,255,.4)">
         <span>⬜ Javobsiz</span><span>🟩 Javob berildi</span><span>🟨 Belgilangan</span>
       </div>
     </div>
-    <div style="font-size:.95rem;font-weight:600;margin-bottom:14px" id="tstext">Javobni tanlang:</div>
-    <img id="tsrasm" style="display:none;max-width:100%;border-radius:10px;margin-bottom:14px"/>
-    <div id="tvar"></div>
-    <div id="tochiq" style="display:none"><input class="inp" id="toinp" type="text" placeholder="Javobingizni yozing..."/></div>
+    <div class="e-qcard">
+      <div class="e-qtext" id="tstext">Javobni tanlang:</div>
+      <img id="tsrasm" alt="Savol rasmi" style="display:none"/>
+    </div>
+    <div id="tvar" class="e-vars"></div>
+    <div id="tochiq" style="display:none"><input class="inp" id="toinp" type="text" placeholder="Javobingizni yozing..." style="margin-top:0"/></div>
     <div id="tkop" style="display:none">
       <div style="font-size:.75rem;color:rgba(255,255,255,.5);margin-bottom:8px">⚠️ Javoblarni to'g'ri tartibda kiriting (1-katak — 1-javobingiz)</div>
       <div id="tkop-list" style="display:flex;flex-direction:column;gap:8px"></div>
     </div>
-  </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 16px">
-    <button class="btn btn-out" onclick="tOld()" id="toldin">← Oldingi</button>
-    <button class="btn btn-green" onclick="tKeyin()" id="tkeyin">Keyingi →</button>
+    <div class="e-tbtns">
+      <button class="btn btn-out" onclick="tOld()" id="toldin">← Oldingi</button>
+      <button class="btn btn-green" onclick="tKeyin()" id="tkeyin">Keyingi →</button>
+    </div>
   </div>
 </div>
 
@@ -522,26 +576,25 @@ body[data-tema="yorug"] #tema-tog{background:#fff;border-color:var(--c-border2);
 </div>
 
 <!-- TESTER TEST -->
-<div id="p7b" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button onclick="ttCloseBtn()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">✕</button>
-    <div class="tlogo" id="ttitle">Test</div>
-    <div style="width:34px"></div>
+<div id="p7b" class="page" style="padding-bottom:90px">
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="ttCloseBtn()" aria-label="Yopish"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+    <div class="e-ht"><span class="e-eyebrow">Mashq testi</span><b id="ttitle" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Test</b></div>
+    <span class="e-timer" id="ttfoiz">0%</span>
   </div>
-  <div style="padding:14px 16px 0">
-    <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-      <span style="font-size:.8rem;color:rgba(255,255,255,.4)" id="ttprog">1/10</span>
-      <span style="font-size:.85rem;font-weight:700;color:#00d4aa" id="ttfoiz">0%</span>
+  <div class="e-wrap">
+    <div class="e-prow"><span><b id="ttsnum">1-savol</b> · <span id="ttprog">1/10</span></span><span id="ttjavsoni">0 ta javob</span></div>
+    <div class="e-dots" id="ttdots"></div>
+    <div class="pf" id="ttfill" style="display:none"></div>
+    <div class="e-qcard">
+      <div class="e-qtext" id="ttstext">Savol...</div>
+      <img id="ttrasm" alt="Savol rasmi" style="display:none"/>
     </div>
-    <div class="prog"><div class="pf" id="ttfill" style="width:0%"></div></div>
-    <div style="font-size:.78rem;color:rgba(255,255,255,.4);margin-bottom:4px" id="ttsnum">1-savol</div>
-    <div style="font-size:.95rem;font-weight:600;margin-bottom:14px" id="ttstext">Savol...</div>
-    <img id="ttrasm" style="display:none;max-width:100%;border-radius:10px;margin-bottom:14px"/>
-    <div id="ttvar"></div>
-  </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 16px">
-    <button class="btn btn-out" onclick="ttOld()" id="ttoldin">← Oldingi</button>
-    <button class="btn btn-green" onclick="ttKeyin()" id="ttkeyin">Keyingi →</button>
+    <div id="ttvar" class="e-vars"></div>
+    <div class="e-tbtns">
+      <button class="btn btn-out" onclick="ttOld()" id="ttoldin">← Oldingi</button>
+      <button class="btn btn-green" onclick="ttKeyin()" id="ttkeyin">Keyingi →</button>
+    </div>
   </div>
 </div>
 
@@ -562,40 +615,45 @@ body[data-tema="yorug"] #tema-tog{background:#fff;border-color:var(--c-border2);
 </div>
 
 <!-- PROFIL -->
-<div id="p8" class="page" style="padding-bottom:80px">
-  <div class="top"><div class="tlogo">Profil</div><div class="av" id="av8">A</div></div>
-  <div style="padding:20px 16px;text-align:center">
-    <div class="av" id="pav" style="width:68px;height:68px;border-radius:18px;font-size:1.8rem;margin:0 auto 12px">A</div>
-    <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px">
-      <div style="font-size:1rem;font-weight:700" id="pism">—</div>
-      <span onclick="pIsmTahrir()" style="cursor:pointer">✏️</span>
+<div id="p8" class="page" style="padding-bottom:90px">
+  <div class="top e-head">
+    <div class="e-ht"><span class="e-eyebrow">Shaxsiy kabinet</span><b>Profil</b></div>
+    <button class="e-ibtn" id="p-tema-btn" onclick="temaToggle()" aria-label="Rejimni almashtirish" title="Yorug' / qorong'i rejim"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button>
+  </div>
+  <div class="e-wrap">
+    <div class="e-pcard">
+      <div class="av e-pav" id="pav">A</div>
+      <div style="display:grid;gap:2px">
+        <div class="e-pname"><span id="pism">—</span><button onclick="pIsmTahrir()" aria-label="Ismni tahrirlash"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button></div>
+        <div class="e-pid" id="pid">ID: —</div>
+      </div>
+      <div class="e-pchips">
+        <div class="e-chip coin" id="coin-badge-p8" onclick="reytingOch('/coin/reyting','🪙 Coin reytingi','coin')">🪙 0</div>
+        <div class="e-chip shop" onclick="go('p-dokon',-1);dokonYukla()">🛍 Do'kon</div>
+      </div>
+      <div class="e-pstats">
+        <div><b id="pjami">0</b><span>Testlar</span></div>
+        <div><b id="portacha">—</b><span>O'rtacha</span></div>
+        <div><b id="pyuqori">—</b><span>Eng yuqori</span></div>
+      </div>
     </div>
-    <div style="font-size:.78rem;color:rgba(255,255,255,.4);margin-bottom:10px" id="pid">ID: —</div>
-    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
-      <div id="coin-badge-p8" onclick="reytingOch('/coin/reyting','🪙 Coin reytingi','coin')" style="display:inline-block;background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.3);border-radius:20px;padding:6px 14px;font-size:.85rem;font-weight:800;color:gold;cursor:pointer">🪙 0</div>
-      <div onclick="go('p-dokon',-1);dokonYukla()" style="display:inline-block;background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.3);border-radius:20px;padding:6px 14px;font-size:.85rem;font-weight:800;color:#a78bfa;cursor:pointer">🛍 Do'kon</div>
+
+    <div class="e-list">
+      <div class="e-li" onclick="go('p7',4);tTab(3)"><span class="e-mi e-g5"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span><div class="t"><b>Xato savollar</b><small>Trening bilan qayta ishlash</small></div><span class="e-cnt" id="p-xato-n" style="display:none">0</span><span class="e-lchev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+      <div class="e-li" onclick="go('p-referral',-1);refLinkOch()"><span class="e-mi e-g4"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11h16v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM3 7h18v4H3zM12 7v14M12 7S10.5 3 8 3.5 7 7 12 7zm0 0s1.5-4 4-3.5S17 7 12 7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></span><div class="t"><b>Do'stlarni taklif qilish</b><small>Taklif uchun coin oling</small></div><span class="e-lchev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+      <div class="e-li" onclick="pGuruhFormToggle()"><span class="e-mi e-g2"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6.5 6.5 0 0 1 3.5 6"/></g></svg></span><div class="t"><b>Guruhga qo'shilish</b><small>Ustozingiz guruhini tanlang</small></div><span class="e-lchev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+      <div class="e-li e-only-dark" onclick="bgGalleryOch()"><span class="e-mi e-g3"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 1.8-.9 1.5-2-.4-1.4.6-2.5 2-2.5H18a3 3 0 0 0 3-3A9 9 0 0 0 12 3z" stroke-linejoin="round"/><circle cx="7.5" cy="11" r="1" fill="currentColor"/><circle cx="10" cy="7" r="1" fill="currentColor"/><circle cx="15" cy="7.5" r="1" fill="currentColor"/></g></svg></span><div class="t"><b>Fon tanlash</b><small>Qorong'i rejim foni</small></div><span class="e-lchev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+      <div class="e-li" id="p-ustoz-li" style="display:none" onclick="go('p9',6)"><span class="e-mi e-g8" style="color:#f2c94c"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9.5 12 5l10 4.5L12 14zM6 11.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></span><div class="t"><b>Ustoz paneli</b><small>Testlar, guruhlar, savollar</small></div><span class="e-lchev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
     </div>
-  </div>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 16px 16px">
-    <div class="sbox" style="text-align:center"><div class="snum" id="pjami">0</div><div class="slab">Testlar</div></div>
-    <div class="sbox" style="text-align:center"><div class="snum" id="portacha">—</div><div class="slab">O'rtacha</div></div>
-    <div class="sbox" style="text-align:center"><div class="snum" id="pyuqori">—</div><div class="slab">Eng yuqori</div></div>
-  </div>
-  <div style="padding:0 16px 16px">
-    <button onclick="go('p-referral',-1);refLinkOch()" style="width:100%;padding:13px;background:linear-gradient(135deg,gold,#ca8a04);border:none;border-radius:14px;color:#1a1a1a;font-size:.92rem;font-weight:800;cursor:pointer">🎁 Do'stlarni taklif qilish</button>
-  </div>
-  <div style="padding:0 16px 16px">
-    <button onclick="pGuruhFormToggle()" style="width:100%;padding:13px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);border-radius:14px;color:#3b82f6;font-size:.92rem;font-weight:800;cursor:pointer">👨‍👩‍👧‍👦 Guruhga qo'shilish</button>
-    <div id="pGuruhForm" style="display:none;margin-top:10px;background:rgba(255,255,255,.04);border-radius:14px;padding:14px">
+    <div id="pGuruhForm" style="display:none;background:rgba(255,255,255,.04);border-radius:14px;padding:14px">
       <div style="font-size:.78rem;color:rgba(255,255,255,.5);margin-bottom:10px">O'zingizning guruhingizni tanlang</div>
       <input class="inp" id="pGuruhQidir" type="text" placeholder="🔍 Guruh yoki ustoz ismi bo'yicha qidirish..." oninput="pGuruhRoyxatFilter()" style="margin:0 0 10px"/>
       <div id="pGuruhRoyxat" style="display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto"></div>
       <div id="pGuruhXb" style="font-size:.76rem;margin-top:8px"></div>
     </div>
-  </div>
-  <div style="padding:0 16px">
-    <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">So'nggi natijalar</div>
-    <div id="pnat"><div style="text-align:center;padding:20px;color:rgba(255,255,255,.4);font-size:.85rem">Hozircha natija yo'q</div></div>
+
+    <div class="e-sec">So'nggi natijalar</div>
+    <div id="pnat"><div class="e-empty">Hozircha natija yo'q</div></div>
   </div>
 </div>
 
@@ -1658,7 +1716,7 @@ function taymerBoshlash(daqiqa){
     tQoldi--;
     var m=Math.floor(tQoldi/60),s=tQoldi%60;
     var el=document.getElementById('taymer');
-    if(el){el.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;el.style.color=tQoldi<300?'#ff6b6b':'#00d4aa';}
+    if(el){el.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;el.style.color=tQoldi<300?'#e5484d':'';}
     if(tQoldi%10===0)tAvtosaqlash();
     if(tQoldi<=0){clearInterval(tTaymer);alert('⏰ Vaqt tugadi! Javoblar yuborilmoqda...');tYubor();}
   },1000);
@@ -1700,7 +1758,7 @@ function tXaritaYangi(){
   for(var i=0;i<jami;i++){
     var bg=tBelgi[i]?'rgba(255,200,0,.3)':tJav[i+1]?'rgba(0,212,170,.25)':'rgba(255,255,255,.08)';
     var bd=tBelgi[i]?'rgba(255,200,0,.5)':tJav[i+1]?'rgba(0,212,170,.4)':'rgba(255,255,255,.1)';
-    var akt=i===tJ?';outline:2px solid #fff;outline-offset:1px':'';
+    var akt=i===tJ?';outline:2px solid var(--c-fg);outline-offset:1px':'';
     html+='<button onclick="tSakra('+i+')" style="background:'+bg+';border:1px solid '+bd+';border-radius:5px;padding:5px 2px;font-size:.68rem;cursor:pointer;color:#fff'+akt+'">'+(i+1)+'</button>';
   }
   g.innerHTML=html;
@@ -1785,6 +1843,7 @@ function appOch(){
   }
   if(ADMINS.indexOf(CU.id)>=0){
     var hr=document.getElementById('h-rol');if(hr)hr.textContent='USTOZ';
+    var ul=document.getElementById('p-ustoz-li');if(ul)ul.style.display='flex';
     var hb=document.getElementById('ws-hint-btn');
     if(hb)hb.textContent='💡 Bepul';
   }
@@ -2103,15 +2162,18 @@ function tKor(){
   if(savol&&savol.rasm_url){tsr.src=savol.rasm_url;tsr.style.display='block';}else{tsr.style.display='none';tsr.src='';}
   var vb=document.getElementById('tvar'),ob=document.getElementById('tochiq'),kb=document.getElementById('tkop');
   if(kop){
+    vb.className='e-vars';
     vb.style.display='none';ob.style.display='none';kb.style.display='block';
     tKopRender(n+1);
   }else if(!och){
     vb.style.display='block';ob.style.display='none';kb.style.display='none';
+    vb.className='e-vars'+(eQisqaVariant(vs.map(function(v){return savol&&savol.variantlar&&savol.variantlar[v]?savol.variantlar[v]:v+' variant';}))?' e-vars2':'');
     vb.innerHTML=vs.map(function(v){
       var vtxt=savol&&savol.variantlar&&savol.variantlar[v]?savol.variantlar[v]:v+' variant';
       return '<button onclick="tV(\''+v+'\')" class="vb'+(tJav[n+1]===v?' sel':'')+'"><span class="vbg">'+v+'</span>'+vtxt+'</button>';
     }).join('');
   }else{
+    vb.className='e-vars';
     vb.style.display='none';ob.style.display='block';kb.style.display='none';
     document.getElementById('toinp').value=tJav[n+1]||'';
   }
@@ -2119,7 +2181,7 @@ function tKor(){
   if(bb)bb.style.background=tBelgi[tJ]?'rgba(255,200,0,.3)':'rgba(255,200,0,.1)';
   tXaritaYangi();
 }
-function tV(v){tJav[tJ+1]=v;tKor();}
+function tV(v){tJav[tJ+1]=v;eTitra();tKor();}
 function tOld(){if(tJ>0){tJ--;tKor();}}
 var tKopJav={};
 function tKopRender(n){
@@ -2326,9 +2388,21 @@ function ttKor(){
   document.getElementById('ttoldin').disabled=n===0;
   document.getElementById('ttkeyin').textContent=n===jami-1?'✅ Natija':'Keyingi →';
   var vs=s.variantlar||{};
-  document.getElementById('ttvar').innerHTML=Object.keys(vs).map(function(h){return '<button onclick="ttV(\''+h+'\')" class="vb'+(ttJav[s.id]===h?' sel':'')+'"><span class="vbg">'+h+'</span>'+vs[h]+'</button>';}).join('');
+  var tv=document.getElementById('ttvar');
+  tv.className='e-vars'+(eQisqaVariant(Object.keys(vs).map(function(h){return vs[h];}))?' e-vars2':'');
+  tv.innerHTML=Object.keys(vs).map(function(h){return '<button onclick="ttV(\''+h+'\')" class="vb'+(ttJav[s.id]===h?' sel':'')+'"><span class="vbg">'+h+'</span>'+vs[h]+'</button>';}).join('');
+  var javSoni=0,dots='';
+  for(var i=0;i<jami;i++){
+    var bor=!!ttJav[ttS[i].id];if(bor)javSoni++;
+    dots+='<i class="'+(i===n?'c':(bor?'d':''))+'"></i>';
+  }
+  var de=document.getElementById('ttdots');if(de)de.innerHTML=jami<=30?dots:'';
+  var je=document.getElementById('ttjavsoni');if(je)je.textContent=javSoni+' ta javob';
 }
-function ttV(h){ttJav[ttS[ttJ].id]=h;ttKor();}
+// Variantlar qisqa bo'lsa (masalan rasmli savoldagi A/B/C/D) — 2 ustunli katta tugmalar
+function eQisqaVariant(arr){return arr.length>0&&arr.every(function(t){return String(t==null?'':t).length<=12;});}
+function eTitra(){try{Telegram.WebApp.HapticFeedback.selectionChanged();}catch(e){}}
+function ttV(h){ttJav[ttS[ttJ].id]=h;eTitra();ttKor();}
 function ttOld(){if(ttJ>0){ttJ--;ttKor();}}
 function ttKeyin(){if(ttJ===ttS.length-1)ttNat();else{ttJ++;ttKor();}}
 async function ttNat(){
@@ -3020,14 +3094,24 @@ async function pLoad(){
     document.getElementById('portacha').textContent=d.ortacha_ball||'—';
     document.getElementById('pyuqori').textContent=d.eng_yuqori||'—';
     var li=document.getElementById('pnat');
-    if(!d.natijalar||!d.natijalar.length){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Natija yo\'q</div>';return;}
-    li.innerHTML=d.natijalar.map(function(n){
-      var b=n.ball||0,rng=b>=60?'#00d4aa':b>=40?'#ff9500':'#ff6b6b';
-      var xbtn=n.tugadi?'<button onclick="pXatoKor(\''+esc(n.test_kod)+'\')" style="background:rgba(255,107,107,.12);border:1px solid rgba(255,107,107,.3);border-radius:8px;padding:3px 8px;font-size:.68rem;color:#ff6b6b;cursor:pointer;margin-top:4px">📋 Xatolarim</button>':'';
-      return '<div class="ri" style="justify-content:space-between"><div><div style="font-size:.78rem;font-weight:700;color:#00d4aa">'+n.test_kod+'</div><div style="font-size:.85rem;margin-top:2px">'+n.fan+'</div><div style="font-size:.72rem;color:rgba(255,255,255,.4)">'+n.vaqt+'</div>'+xbtn+'</div><div style="font-size:.9rem;font-weight:800;color:'+rng+'">'+(n.tugadi?b+'b':'⏳')+'</div></div>';
-    }).join('');
+    pXatoSoniLoad();
+    if(!d.natijalar||!d.natijalar.length){li.innerHTML='<div class="e-empty">Hozircha natija yo\'q</div>';return;}
+    li.innerHTML='<div class="e-list">'+d.natijalar.map(function(n){
+      var b=n.ball||0,cls=b>=60?'hi':b>=40?'mid':'lo';
+      var xbtn=n.tugadi?'<button class="e-xbtn" onclick="pXatoKor(\''+esc(n.test_kod)+'\')">📋 Xatolarim</button>':'';
+      return '<div class="e-li" style="cursor:default"><div class="t"><span class="code">'+escAttr(n.test_kod)+'</span><b>'+escAttr(n.fan||'—')+'</b><small>'+escAttr(n.vaqt||'')+'</small>'+xbtn+'</div>'+(n.tugadi?'<span class="e-pill '+cls+'">'+b+'</span>':'<span class="e-pill wait">⏳</span>')+'</div>';
+    }).join('')+'</div>';
     document.getElementById('bs1').textContent=d.jami_test||0;
     document.getElementById('bs2').textContent=d.ortacha_ball||'—';
+  }catch(e){}
+}
+async function pXatoSoniLoad(){
+  var el=document.getElementById('p-xato-n');
+  if(!el||!CU.id)return;
+  try{
+    var d=await (await apiFetch(API+'/trening/'+CU.id)).json();
+    var n=d.xato_soni||0;
+    el.textContent=n;el.style.display=n>0?'inline-block':'none';
   }catch(e){}
 }
 async function pIsmTahrir(){
@@ -5320,6 +5404,7 @@ function temaToggle(){
   document.body.setAttribute('data-tema',t);
   localStorage.setItem('tema',t);
   document.getElementById('tema-tog').textContent=t==='yorug'?'🌙':'☀️';
+  temaBtnYangila();
   if(gActive()&&gBoard.length) gRender();
   bgYarat(localStorage.getItem('bgTur')||'kimyo');
 }
@@ -5328,7 +5413,13 @@ function temaToggle(){
   document.body.setAttribute('data-tema',t);
   var btn=document.getElementById('tema-tog');
   if(btn)btn.textContent=t==='yorug'?'🌙':'☀️';
+  temaBtnYangila();
 })();
+// Profil sarlavhasidagi rejim tugmasi: yorug'da oy, qorong'ida quyosh
+function temaBtnYangila(){
+  var b=document.getElementById('p-tema-btn');if(!b)return;
+  b.innerHTML=document.body.getAttribute('data-tema')==='yorug'?'<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>':'<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></g></svg>';
+}
 
 var BG_TEMALAR={
   kimyo:{nom:'🧪 Kimyo',rang:'#00d4aa',rgb:'0,212,170',belgi:['🧪','🧪','⚗️','⚗️','⚗️','🔬','🧫','🧬','H₂O','CO₂','NaCl','O₂','NH₃','HCl','CH₄','H₂SO₄','KOH','NaOH','CaCO₃','SO₂','KMnO₄','Fe','Na','Ca']},
