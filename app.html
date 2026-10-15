@@ -2529,7 +2529,8 @@ async function ttNat(){
     }else if(ttMode==='kurs'){
       kursBallSave(kursMavzuCur,b);
       if(b>=60){
-        if(!seqProgress(KURS_FAN)[kursMavzuCur])coinBer(10,'Mavzu topshirildi: '+kursMavzuCur);
+        if('coin' in d)coinServerdan(d,'Mavzu topshirildi: '+kursMavzuCur);
+        else if(!seqProgress(KURS_FAN)[kursMavzuCur])coinBer(10,'Mavzu topshirildi: '+kursMavzuCur);
         seqSave(KURS_FAN,kursMavzuCur);
         if(typeof kursRenderRoyxat==='function')kursRenderRoyxat();
         if(kursMavzuIdx>=kursMavzuData.length-1){
@@ -2546,7 +2547,8 @@ async function ttNat(){
         bArea.innerHTML='<div style="background:rgba(255,59,48,.1);border:1px solid rgba(255,59,48,.25);border-radius:10px;padding:10px;font-size:.82rem;color:#ff6b6b;margin-bottom:10px;text-align:center">Keyingi mavzu uchun 60%+ ball kerak!</div><button class="btn btn-green" onclick="kursTestBoshla()">🔄 Qayta urinish</button><button class="btn btn-out" style="margin-top:8px" onclick="go(\'p-kurs\',-1)">📐 Mavzular ro\'yxati</button>';
       }
     }else if(b>=60){
-      if(!seqProgress(ttSeqFan_)[ttSeqMavzular[ttSeqIdx]])coinBer(10,'Mavzu topshirildi: '+ttSeqMavzular[ttSeqIdx]);
+      if('coin' in d)coinServerdan(d,'Mavzu topshirildi: '+ttSeqMavzular[ttSeqIdx]);
+      else if(!seqProgress(ttSeqFan_)[ttSeqMavzular[ttSeqIdx]])coinBer(10,'Mavzu topshirildi: '+ttSeqMavzular[ttSeqIdx]);
       seqSave(ttSeqFan_,ttSeqMavzular[ttSeqIdx]);
       if(typeof renderSeqMavzular==='function')renderSeqMavzular();
       if(ttSeqIdx<ttSeqMavzular.length-1)davomSaqla(ttSeqFan_,ttSeqMavzular,ttSeqIdx+1);
@@ -2657,17 +2659,24 @@ function ttCloseBtn(){
 }
 
 // COIN TIZIMI — mehnat evaziga to'planadigan valyuta, umumiy reyting uchun
-async function coinBer(miqdor,sabab){
+// Mijoz faqat o'yin rekordlari uchun coin so'raydi (manba: 2048/memory/probirka/oziq);
+// miqdor va kunlik limitni server belgilaydi. Kurs va mavzu testlari coinini server
+// javoblarni tekshirib o'zi beradi.
+async function coinBer(miqdor,sabab,manba){
   if(!CU.id||!miqdor)return;
   try{
     var r=await fetch(API+'/coin/qosh',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({user_id:CU.id,name:CU.name||"Noma'lum",miqdor:miqdor})});
+      body:JSON.stringify({user_id:CU.id,name:CU.name||"Noma'lum",miqdor:miqdor,manba:manba||''})});
     var d=await r.json();
     if(d.success){
-      coinToast(miqdor,sabab);
+      coinToast(d.miqdor||miqdor,sabab);
       coinBadgeYangila(d.jami);
     }
   }catch(e){}
+}
+// Server javobidagi coin (kurs / mavzu testi) — bildirishnoma va belgi
+function coinServerdan(d,sabab){
+  if(d&&d.coin>0){coinToast(d.coin,sabab);if(d.coin_jami!=null)coinBadgeYangila(d.coin_jami);}
 }
 function coinToast(miqdor,sabab){
   var wrap=document.getElementById('coin-toast-wrap');
@@ -2986,6 +2995,19 @@ var K={katalog:null,bolimId:'',mavzuIdx:0,mavzu:null,bosqich:0};
 var K_ICON={nazariy:['e-g2','📖'],mashq:['e-g1','✏️'],aralash:['e-g5','🔀']};
 function kProg(){try{return JSON.parse(localStorage.getItem('kprog_'+(CU&&CU.id||0))||'{}')||{};}catch(e){return {};}}
 function kProgSave(p){try{localStorage.setItem('kprog_'+(CU&&CU.id||0),JSON.stringify(p));}catch(e){}}
+// Server progressini mahalliy bilan birlashtiradi (raqamlarda kattasi, belgilarda "bor")
+async function kProgSinxron(){
+  if(!CU||!CU.id)return;
+  try{
+    var d=await (await apiFetch(API+'/kurslar/progress/'+CU.id,null,15000)).json();
+    var srv=d.progress||{},p=kProg();
+    Object.keys(srv).forEach(function(f){
+      var a=p[f]=p[f]||{};
+      Object.keys(srv[f]).forEach(function(k){var v=srv[f][k];if(typeof v==='number'&&typeof a[k]==='number')a[k]=Math.max(a[k],v);else if(v)a[k]=v;});
+    });
+    kProgSave(p);
+  }catch(e){}
+}
 function kEsc(t){return escAttr(t==null?'':String(t));}
 async function kKatalog(){
   if(K.katalog)return K.katalog;
@@ -3000,7 +3022,7 @@ async function kurslarOch(){
   go('p-kurslar',-1);
   var el=document.getElementById('k-bolimlar');
   try{
-    var kat=await kKatalog(),p=kProg();
+    var kat=await kKatalog();await kProgSinxron();var p=kProg();
     el.innerHTML=kat.map(function(b,bi){
       var tayyor=b.mavzular.filter(function(m){return m.fayl;}).length;
       var otilgan=b.mavzular.filter(function(m){return m.fayl&&p[m.fayl]&&p[m.fayl].done;}).length;
@@ -3078,6 +3100,7 @@ function kNazariyOch(i){
   document.getElementById('k-nz-keyin').textContent=keyin?"O'qidim, mashqqa o'tish →":"O'qidim";
   // Nazariya ochilgach o'qilgan deb belgilanadi — keyingi (mashq) bosqich ochiladi
   var p=kProg(),f=K.mavzu._fayl;p[f]=p[f]||{};p[f]['o'+i]=1;kProgSave(p);
+  try{apiFetch(API+'/kurslar/nazariy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:CU.id,fayl:f,bosqich:i})}).catch(function(){});}catch(e){}
   go('p-knazariy',-1);
 }
 function kNazariyKeyin(){if(K.mavzu.bosqichlar[K.bosqich+1])kBosqichOch(K.bosqich+1);else kMavzuRender();}
@@ -3096,12 +3119,19 @@ function kMashqBoshla(i){
   document.getElementById('ttitle').textContent=K.mavzu.nom+' — '+bq.nom;
   ttKor();go('p7b',-1);
 }
-function kNat(){
+async function kNat(){
   var M=K.mavzu,i=K.bosqich,bq=M.bosqichlar[i],f=M._fayl;
   var xit={};bq.savollar.forEach(function(s){xit[s.id]=s;});
+  var srv=null;
+  try{
+    var r=await apiFetch(API+'/kurslar/tekshir',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({user_id:CU.id,name:CU.name||"Noma'lum",fayl:f,bosqich:i,javoblar:ttJav})});
+    if(r.ok)srv=await r.json();
+  }catch(e){}
+  var kalit=srv&&srv.javoblar?srv.javoblar:null;
   var togri=0,xl=[];
-  ttS.forEach(function(q){var s=xit[q.id];if(ttJav[q.id]===s.javob)togri++;else xl.push(s);});
-  var jami=ttS.length,b=Math.round(togri/jami*100);
+  ttS.forEach(function(q){var s=xit[q.id],j=kalit&&kalit[q.id]?kalit[q.id]:s.javob;if(ttJav[q.id]===j)togri++;else xl.push(s);});
+  var jami=ttS.length,b=srv?srv.ball:Math.round(togri/jami*100);
   document.getElementById('ttball').textContent=b+'%';
   document.getElementById('tttogri').textContent=togri;
   document.getElementById('ttxato').textContent=jami-togri;
@@ -3115,7 +3145,11 @@ function kNat(){
   var p=kProg();p[f]=p[f]||{};var mp=p[f];
   if(b>(mp[i]||0))mp[i]=b;
   var otdi=b>=60,oxirgi=i===M.bosqichlar.length-1;
-  if(otdi&&!mp['c'+i]){mp['c'+i]=1;coinBer(bq.coin,M.nom+': '+bq.nom);}
+  if(srv){
+    coinServerdan(srv,M.nom+': '+bq.nom);
+    var sp=srv.progress||{};
+    Object.keys(sp).forEach(function(k){var v=sp[k];if(typeof v==='number'&&typeof mp[k]==='number')mp[k]=Math.max(mp[k],v);else if(v)mp[k]=v;});
+  }
   if(otdi&&oxirgi)mp.done=true;
   kProgSave(p);
   var bA=document.getElementById('ttnatbtnlar'),orqa='<button class="btn btn-out" style="margin-top:8px" onclick="kMavzuRender()">📋 Mavzu bosqichlari</button>';
@@ -5950,7 +5984,7 @@ function gShowOver(ico,txt){
     davomBtn.style.display='none';
   }
   gSkorSaqla();
-  if(gNewRecord){coinBer(15,"Element 2048 — yangi rekord");gNewRecord=false;}
+  if(gNewRecord){coinBer(15,"Element 2048 — yangi rekord",'2048');gNewRecord=false;}
 }
 
 async function gDavomEt(){
@@ -6209,7 +6243,7 @@ function memWin(){
   try{
     var bk='memBest_'+mDiff;
     var prev=parseInt(localStorage.getItem(bk)||'0');
-    if(score>prev){localStorage.setItem(bk,score);coinBer(15,'Memory ('+mDiff+') — yangi rekord');}
+    if(score>prev){localStorage.setItem(bk,score);coinBer(15,'Memory ('+mDiff+') — yangi rekord','memory');}
   }catch(e){}
 }
 
@@ -6549,7 +6583,7 @@ function wsWin(){
   if(wsLevel>=wsMaxLevel&&!isLast){
     wsMaxLevel=wsLevel+1;
     localStorage.setItem('ws_max_v2',wsMaxLevel);
-    coinBer(15,'Probirkalar — '+wsLevel+'-daraja topshirildi');
+    coinBer(15,'Probirkalar — '+wsLevel+'-daraja topshirildi','probirka');
   }
   document.getElementById('ws-win-moves').textContent=wsMoves;
   var lvlTxt='Level '+wsLevel+' tugadi'+(isLast?' — Barcha levellar!':'');
@@ -8072,7 +8106,7 @@ function ozOver(win,ans){
   pgOzBest();
   if(CU.id)fetch(API+'/oziq/natija',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({user_id:CU.id,name:CU.name||"Noma'lum",score:ozLevel})}).catch(function(){});
-  if(ozNewRecord){coinBer(15,'Oziq zanjiri — yangi rekord');ozNewRecord=false;}
+  if(ozNewRecord){coinBer(15,'Oziq zanjiri — yangi rekord','oziq');ozNewRecord=false;}
 }
 function pgOzBest(){
   var b=ozBestLoad();
