@@ -3187,12 +3187,15 @@ function kNazariyOch(i){
   }).join('');
   var keyin=K.mavzu.bosqichlar[i+1];
   document.getElementById('k-nz-keyin').textContent=keyin?"O'qidim, mashqqa o'tish →":"O'qidim";
-  // Nazariya ochilgach o'qilgan deb belgilanadi — keyingi (mashq) bosqich ochiladi
-  var p=kProg(),f=K.mavzu._fayl;p[f]=p[f]||{};p[f]['o'+i]=1;kProgSave(p);
-  try{apiFetch(API+'/kurslar/nazariy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:CU.id,fayl:f,bosqich:i})}).catch(function(){});}catch(e){}
   go('p-knazariy',-1);
 }
-function kNazariyKeyin(){if(K.mavzu.bosqichlar[K.bosqich+1])kBosqichOch(K.bosqich+1);else kMavzuRender();}
+// Sahifa oxiridagi "O'qidim" tugmasi: nazariya o'qilgan deb belgilanadi (+100 ball),
+// keyingi (mashq) bosqich ochiladi. Faqat ochib qo'yish ball bermaydi.
+function kNazariyKeyin(){
+  var i=K.bosqich,p=kProg(),f=K.mavzu._fayl;p[f]=p[f]||{};p[f]['o'+i]=1;kProgSave(p);
+  try{apiFetch(API+'/kurslar/nazariy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:CU.id,fayl:f,bosqich:i})}).catch(function(){});}catch(e){}
+  if(K.mavzu.bosqichlar[i+1])kBosqichOch(i+1);else kMavzuRender();
+}
 function kPdfOch(){
   var bq=K.mavzu&&K.mavzu.bosqichlar[K.bosqich];if(!bq||!bq.pdf)return;
   var url=new URL('assets/kurslar/'+bq.pdf,location.href).href;
