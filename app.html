@@ -321,6 +321,28 @@ body:not([data-tema="yorug"]) .e-pill.lo,body:not([data-tema="yorug"]) .e-xbtn{c
 .e-xbtn{justify-self:start;margin-top:4px;background:rgba(229,72,77,.1);border:1px solid rgba(229,72,77,.3);border-radius:8px;padding:2px 8px;font-size:.68rem;font-weight:800;color:#d23b40;cursor:pointer;font-family:var(--e-f)}
 .e-empty{text-align:center;padding:18px;color:var(--c-muted);font-size:.85rem;font-weight:700}
 body[data-tema="yorug"] .e-only-dark{display:none}
+/* ══ Boshqa sahifalar: yagona sarlavha, segment tablar, kartochkalar ══ */
+.e-head .tlogo{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.e-head>*:not(.tlogo){flex-shrink:0}
+.e-seg{display:flex;gap:4px;background:var(--c-card3);border:1px solid var(--c-border2);border-radius:14px;padding:4px}
+.e-seg-b{flex:1;min-width:0;border:0;background:transparent;color:var(--c-muted);font-family:var(--e-f);font-weight:800;font-size:.78rem;padding:8px 6px;border-radius:10px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:background .15s ease,color .15s ease}
+.e-seg-b.on{background:var(--e-pill);color:var(--e-pill-fg)}
+.e-mb{display:flex;gap:12px;align-items:center;background:var(--c-card);border:1px solid var(--c-border2);border-radius:18px;padding:12px;min-width:0}
+.e-mb-f{flex-shrink:0;min-width:62px;max-width:42%;padding:10px 8px;border-radius:12px;background:rgba(155,108,240,.12);color:#6f3fd6;font-weight:900;font-size:1rem;text-align:center;overflow-wrap:anywhere}
+body:not([data-tema="yorug"]) .e-mb-f{color:#c4a5ff}
+.e-mb-b{flex:1;min-width:0}
+.e-mb-n{font-weight:800;font-size:.9rem;color:var(--c-fg);overflow-wrap:anywhere}
+.e-mb-a{font-size:.74rem;color:var(--c-muted);margin-top:2px;overflow-wrap:anywhere}
+.e-mb-t{font-family:var(--e-mono);font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;color:var(--e-brand2);margin-top:5px;font-weight:700}
+.e-elon{background:var(--c-card);border:1px solid var(--c-border2);border-radius:20px;padding:14px;display:grid;gap:6px;margin-bottom:10px;min-width:0}
+.e-elon b{font-size:.95rem;font-weight:900;color:var(--c-fg);overflow-wrap:anywhere}
+.e-elon p{font-size:.86rem;line-height:1.5;color:var(--c-muted2);overflow-wrap:anywhere;white-space:pre-wrap}
+body[data-tema="yorug"] input[type="search"]{background:var(--c-card)!important;border:1px solid var(--c-border2)!important;border-radius:14px!important}
+body[data-tema="yorug"] [style*="#1a2a4a"],body[data-tema="yorug"] [style*="#132a1a"]{background:var(--c-card)!important;border:1px solid var(--c-border2)!important}
+body[data-tema="yorug"] .mc{border-radius:20px}
+body[data-tema="yorug"] .btn-out{border:1px solid var(--c-border3);background:var(--c-card)}
+body[data-tema="yorug"] .ri{border-radius:16px}
+body[data-tema="yorug"] .page>div>div[style*="background:rgba(255,255,255,.0"]{background:var(--c-card)!important;border:1px solid var(--c-border2);border-radius:18px!important}
 #tema-tog,#bg-tog{display:none!important}
 </style>
 </head>
@@ -437,10 +459,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- GURUH MA'LUMOTLARI (O'QUVCHI TOMONI) -->
 <div id="p4" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button onclick="go('p8',5)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p8',5)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="tlogo" id="pGuruhDetTitle">Guruh</div>
-    <div style="width:34px"></div>
   </div>
   <div style="padding:16px">
     <div id="pGuruhDetUstoz" style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:18px">—</div>
@@ -459,7 +480,7 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- TEST KIRISH -->
 <div id="p2" class="page" style="padding-bottom:80px">
-  <div class="top"><div class="tlogo">Testlar</div><div class="av" id="av2">A</div></div>
+  <div class="top e-head"><div class="tlogo">Testlar</div><div class="av" id="av2">A</div></div>
   <div style="padding:16px">
     <div class="card">
       <div style="font-weight:700;margin-bottom:6px">📝 Test kodini kiriting</div>
@@ -547,10 +568,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- TEST YUBORISH -->
 <div id="p3b" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button onclick="go('p3',1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p3',1)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="tlogo">Tekshirish</div>
-    <div style="width:34px"></div>
   </div>
   <div style="padding:16px">
     <div class="card">
@@ -594,7 +614,7 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- KITOBLAR -->
 <div id="p5" class="page" style="padding-bottom:80px">
-  <div class="top"><div class="tlogo" id="ktitle">Kitoblar</div><div class="av" id="av5">A</div></div>
+  <div class="top e-head"><div class="tlogo" id="ktitle">Kitoblar</div><div class="av" id="av5">A</div></div>
   <div id="kfanlar" style="padding:16px">
     <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">Fanlar</div>
     <div class="g2" id="kfgrid"><div style="grid-column:span 2;text-align:center;padding:20px"><div class="sp"></div></div></div>
@@ -610,11 +630,11 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- REYTING (Coin) -->
 <div id="p6" class="page" style="padding-bottom:80px">
-  <div class="top"><div class="tlogo">🪙 Coin reytingi</div><div class="av" id="av6">A</div></div>
-  <div id="coin-davr-tabs" style="display:flex;padding:8px 16px 0;gap:8px">
-    <button class="tb off" id="cd1" onclick="coinDavrTab('hafta')" style="flex:1;font-size:.75rem;padding:7px 0">Hafta</button>
-    <button class="tb off" id="cd2" onclick="coinDavrTab('oy')" style="flex:1;font-size:.75rem;padding:7px 0">Oy</button>
-    <button class="tb on" id="cd3" onclick="coinDavrTab('umumiy')" style="flex:1;font-size:.75rem;padding:7px 0">Umumiy</button>
+  <div class="top e-head"><div class="tlogo">Coin reytingi</div><div class="av" id="av6">A</div></div>
+  <div id="coin-davr-tabs" class="e-seg" style="margin:12px 16px 0">
+    <button class="e-seg-b" id="cd1" onclick="coinDavrTab('hafta')">Hafta</button>
+    <button class="e-seg-b" id="cd2" onclick="coinDavrTab('oy')">Oy</button>
+    <button class="e-seg-b on" id="cd3" onclick="coinDavrTab('umumiy')">Umumiy</button>
   </div>
   <div style="padding:10px 16px 6px;font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px" id="rsarlavha">Coin reytingi</div>
   <div id="rlist" style="padding:0 16px"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
@@ -622,10 +642,10 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- TESTER -->
 <div id="p7" class="page" style="padding-bottom:80px">
-  <div class="top"><div class="tlogo">Tester</div><div class="av" id="av7">A</div></div>
-  <div class="tbtns">
-    <button class="tb on" id="tt2" onclick="tTab(2)">📋 Mavzulashgan testlar to'plami</button>
-    <button class="tb off" id="tt3" onclick="tTab(3)">🔄 Trening</button>
+  <div class="top e-head"><div class="tlogo">Tester</div><div class="av" id="av7">A</div></div>
+  <div class="e-seg" style="margin:14px 16px 0">
+    <button class="e-seg-b on" id="tt2" onclick="tTab(2)">Mavzuli testlar</button>
+    <button class="e-seg-b" id="tt3" onclick="tTab(3)">Trening</button>
   </div>
   <div id="tb2" style="padding:16px">
     <div id="tseqfanwrap">
@@ -734,10 +754,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- COIN DO'KONI (profil bezaklari) -->
 <div id="p-dokon" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button onclick="go('p8',5)" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
-    <div class="tlogo">🛍 Do'kon</div>
-    <div style="width:60px"></div>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p8',5)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="tlogo">Do'kon</div>
   </div>
   <div style="padding:14px 16px 4px;text-align:center">
     <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:6px">Coin bilan avatar ramkasi sotib oling — profilingizda va reytingda ko'rinadi</div>
@@ -748,10 +767,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- DO'STLARNI TAKLIF QILISH -->
 <div id="p-referral" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button onclick="go('p8',5)" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
-    <div class="tlogo">🎁 Taklif qilish</div>
-    <div style="width:40px"></div>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p8',5)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="tlogo">Taklif qilish</div>
   </div>
   <div style="padding:24px 16px;text-align:center">
     <div style="font-size:2.8rem;margin-bottom:10px">🎁</div>
@@ -768,20 +786,20 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- USTOZ -->
 <div id="p9" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button id="u-back-btn" onclick="uBoshga()" style="display:none;background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
+  <div class="top e-head">
+    <button id="u-back-btn" class="e-ibtn" onclick="uBoshga()" aria-label="Orqaga" style="display:none"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="tlogo" id="u-panel-title">Ustoz paneli</div>
     <div class="av" id="av9">U</div>
   </div>
-  <div id="u-menu-grid" class="g2" style="padding:16px">
-    <div class="mc" onclick="uTab(1)"><div class="mi" style="background:rgba(0,212,170,.2)">📝</div><div class="mt">Testlar</div><div class="ms">Test yaratish va boshqarish</div></div>
-    <div class="mc" onclick="uTab(2)"><div class="mi" style="background:rgba(139,92,246,.2)">❓</div><div class="mt">Savollar</div><div class="ms">Savollar bazasi</div></div>
-    <div class="mc" onclick="uTab(3)"><div class="mi" style="background:rgba(255,107,53,.2)">📚</div><div class="mt">Kitoblar</div><div class="ms">O'quv adabiyotlar</div></div>
-    <div class="mc" onclick="uTab(5)"><div class="mi" style="background:rgba(255,71,87,.2)">📢</div><div class="mt">E'lonlar</div><div class="ms">Yangiliklar joylash</div></div>
-    <div class="mc" onclick="uTab(6)"><div class="mi" style="background:rgba(99,102,241,.2)">👥</div><div class="mt">O'quvchilar</div><div class="ms">Ro'yxatdan o'tganlar</div></div>
-    <div class="mc" onclick="uTab(7)"><div class="mi" style="background:rgba(245,158,11,.2)">📐</div><div class="mt">Kurs</div><div class="ms">Matematika mavzulari</div></div>
-    <div class="mc" onclick="uTab(8)"><div class="mi" style="background:rgba(34,197,94,.2)">👨‍👩‍👧‍👦</div><div class="mt">Guruhlar</div><div class="ms">Sinf/guruh boshqaruvi</div></div>
-    <div class="mc" onclick="uTab(9)"><div class="mi" style="background:rgba(59,130,246,.2)">🖨️</div><div class="mt">Varaq skaneri</div><div class="ms">Javob varag'ini tekshirish</div></div>
+  <div id="u-menu-grid" class="e-grid" style="padding:16px">
+    <div class="e-tile" onclick="uTab(1)"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g1"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8zM14 3v5h5M9 13h6M9 17h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><b>Testlar</b><small>Yaratish · Boshqarish</small></div>
+    <div class="e-tile" onclick="uTab(2)"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g3"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><b>Savollar</b><small>Savollar bazasi</small></div>
+    <div class="e-tile" onclick="uTab(3)"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g4"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5zM4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><b>Kitoblar</b><small>O'quv adabiyotlar</small></div>
+    <div class="e-tile" onclick="uTab(5)"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g5"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h3l5 4V6L7 10H4a1 1 0 0 0-1 1zM16 8a5 5 0 0 1 0 8M19 5a9 9 0 0 1 0 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><b>E'lonlar</b><small>Yangilik joylash</small></div>
+    <div class="e-tile" onclick="uTab(6)"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g2"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><b>O'quvchilar</b><small>Ro'yxatdagilar</small></div>
+    <div class="e-tile" onclick="uTab(7)"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g6"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M6 18V9M10 18V9M14 18V9M18 18V9M12 2 3 7h18z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><b>Kurs</b><small>Matematika mavzulari</small></div>
+    <div class="e-tile" onclick="uTab(8)"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g7"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><b>Guruhlar</b><small>Guruh boshqaruvi</small></div>
+    <div class="e-tile" onclick="uTab(9)"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g8"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><b>Varaq skaneri</b><small>Javob varag'i</small></div>
   </div>
   <div id="ub1" style="display:none;padding:16px">
     <button class="btn btn-green" onclick="uTestYaratOch()" style="margin-bottom:8px">➕ Yangi test yaratish</button>
@@ -861,18 +879,18 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- USTOZ GURUH TAFSILOTI -->
 <div id="p9j" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button onclick="go('p9',6);uTab(8)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p9',6);uTab(8)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="tlogo" id="uguruhTitle">Guruh</div>
     <button onclick="uGuruhOchir()" style="background:none;border:none;color:#ff6b6b;font-size:.85rem;cursor:pointer;font-weight:700">O'chirish</button>
   </div>
   <div style="padding:16px">
-    <div style="display:flex;gap:8px;margin-bottom:18px">
-      <button onclick="uGuruhOqQoshOch()" style="flex:1;padding:13px;background:rgba(255,180,0,.1);border:1px solid rgba(255,180,0,.3);border-radius:12px;color:#ffb400;font-size:.85rem;font-weight:700;cursor:pointer">➕ O'quvchi qo'shish</button>
-      <button onclick="uGuruhReytingOch()" style="flex:1;padding:13px;background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.3);border-radius:12px;color:gold;font-size:.85rem;font-weight:700;cursor:pointer">🏆 Reyting</button>
+    <div class="e-grid" style="margin-bottom:18px">
+      <div class="e-tile" onclick="uGuruhOqQoshOch()"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g4"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 19v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1M8.5 10a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM20 8v6M23 11h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><b>O'quvchi qo'shish</b><small>Telefon ixtiyoriy</small></div>
+      <div class="e-tile" onclick="uGuruhReytingOch()"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g5"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v2a3 3 0 0 0 3 3M17 6h3v2a3 3 0 0 1-3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><b>Reyting</b><small>Test · Kurslar</small></div>
+      <div class="e-tile" onclick="uGuruhTestlarOch()"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g2"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><b>Test natijalari</b><small>Guruh testlari</small></div>
+      <div class="e-tile" onclick="uDavomatOch()"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g3"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2v4M16 2v4M3 9h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM8 14l2 2 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><b>Davomat</b><small>Kunlik belgilash</small></div>
     </div>
-    <button onclick="uGuruhTestlarOch()" style="width:100%;padding:13px;background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.3);border-radius:12px;color:#00d4aa;font-size:.85rem;font-weight:700;cursor:pointer;margin-bottom:10px">📊 Test natijalari</button>
-    <button onclick="uDavomatOch()" style="width:100%;padding:13px;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);border-radius:12px;color:#818cf8;font-size:.85rem;font-weight:700;cursor:pointer;margin-bottom:18px">📋 Davomat</button>
     <div style="background:rgba(255,255,255,.04);border-radius:12px;padding:12px;margin-bottom:14px">
       <div style="font-size:.78rem;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:8px">🗓️ Dars kunlari (jadval)</div>
       <div style="font-size:.7rem;color:rgba(255,255,255,.4);margin-bottom:10px">Davomat bo'limi shu kunlarda avtomatik ochiladi. Tezkor tanlash yoki kunlarni birma-bir belgilang.</div>
@@ -907,9 +925,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- GURUH DAVOMATI -->
 <div id="p9q" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button onclick="go('p9j',-1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
-    <div class="tlogo">📋 Davomat</div>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p9j',-1)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="tlogo">Davomat</div>
     <button onclick="uDavomatTarixOch()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:.85rem;cursor:pointer;font-weight:700">Tarix</button>
   </div>
   <div style="padding:16px">
@@ -938,10 +956,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- GURUH DAVOMATI TARIXI -->
 <div id="p9r" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button onclick="go('p9q',-1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p9q',-1)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="tlogo">Davomat tarixi</div>
-    <div style="width:34px"></div>
   </div>
   <div style="padding:16px">
     <div id="uDavomatTarixList"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
@@ -950,10 +967,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- GURUH VAZIFASI TARIXI -->
 <div id="p9s" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button onclick="go('p9q',-1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p9q',-1)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="tlogo">Vazifa tarixi</div>
-    <div style="width:34px"></div>
   </div>
   <div style="padding:16px">
     <div id="uVazifaTarixList"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
@@ -962,10 +978,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- GURUHGA O'QUVCHI QO'SHISH -->
 <div id="p9n" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button onclick="go('p9j',-1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
-    <div class="tlogo">➕ O'quvchi qo'shish</div>
-    <div style="width:34px"></div>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p9j',-1)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="tlogo">O'quvchi qo'shish</div>
   </div>
   <div style="padding:16px">
     <input class="inp" id="uguruhOqSearch" type="text" placeholder="🔍 Ro'yxatdan o'tganlar orasidan qidirish..." oninput="uGuruhOqSearch()" style="margin-top:0;margin-bottom:8px"/>
@@ -982,10 +997,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- GURUH REYTINGI -->
 <div id="p9k" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button onclick="go('p9j',-1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
-    <div class="tlogo">🏆 Guruh reytingi</div>
-    <div style="width:34px"></div>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p9j',-1)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="tlogo">Guruh reytingi</div>
   </div>
   <div style="padding:16px">
     <div id="uguruhReyting"><div style="text-align:center;padding:20px;color:rgba(255,255,255,.4);font-size:.85rem">Hali natija yo'q</div></div>
@@ -997,10 +1011,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- TEST NATIJALARI / STATISTIKA -->
 <div id="p9f" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button onclick="go('p9',6);uTab(1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
-    <div class="tlogo" id="natStatTitle">📊 Natijalar</div>
-    <div style="width:34px"></div>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p9',6);uTab(1)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="tlogo" id="natStatTitle">Natijalar</div>
   </div>
   <div id="natStatBody" style="padding:16px">
     <div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>
@@ -1009,9 +1022,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- GURUH TEST NATIJALARI (testlar ro'yxati) -->
 <div id="p9l" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button onclick="go('p9j',-1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
-    <div class="tlogo">📊 Test natijalari</div>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p9j',-1)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="tlogo">Test natijalari</div>
     <a id="uguruhNatijaExcelLink" href="#" target="_blank" style="color:#00d4aa;font-size:.85rem;font-weight:700;text-decoration:none">⬇️</a>
   </div>
   <div style="padding:16px">
@@ -1038,10 +1051,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- GURUH: BITTA TEST NATIJALARI -->
 <div id="p9m" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button onclick="go('p9l',-1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p9l',-1)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="tlogo" id="uguruhTestTitle">Test</div>
-    <div style="width:34px"></div>
   </div>
   <div style="padding:16px">
     <div id="uguruhTestNatijalar"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
@@ -1050,10 +1062,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- USTOZ TEST YARAT -->
 <div id="p9b" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button onclick="go('p9',6)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p9',6)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="tlogo">Test yaratish</div>
-    <div style="width:34px"></div>
   </div>
   <div style="padding:16px">
     <div class="card">
@@ -1092,10 +1103,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- USTOZ JAVOBLAR -->
 <div id="p9e" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button onclick="uTahrirKod?(uTahrirKod=null,go('p9',6)):go('p9b',-1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="uTahrirKod?(uTahrirKod=null,go('p9',6)):go('p9b',-1)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="tlogo" id="ujtitle">Javoblar</div>
-    <div style="width:34px"></div>
   </div>
   <div style="padding:16px">
     <div id="ujlist"></div>
@@ -1106,10 +1116,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- USTOZ SAVOL -->
 <div id="p9c" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button onclick="go('p9',6);uTab(2)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p9',6);uTab(2)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="tlogo">Savol qo'shish</div>
-    <div style="width:34px"></div>
   </div>
   <div style="padding:16px">
     <div class="card">
@@ -1144,10 +1153,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- USTOZ KURS MAVZU QO'SHISH -->
 <div id="p9i" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button onclick="go('p9',6);uTab(7)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p9',6);uTab(7)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="tlogo">Kurs mavzusi</div>
-    <div style="width:34px"></div>
   </div>
   <div style="padding:16px">
     <div class="card">
@@ -1166,10 +1174,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- USTOZ AI SAVOL -->
 <div id="p9h" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button onclick="go('p9',6);uTab(2)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p9',6);uTab(2)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="tlogo">AI bilan savol yaratish</div>
-    <div style="width:34px"></div>
   </div>
   <div style="padding:16px">
     <div class="card" style="margin-bottom:14px">
@@ -1195,10 +1202,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- USTOZ MATNDAN TEST -->
 <div id="p9o" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button onclick="go('p9',6);uTab(1)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p9',6);uTab(1)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="tlogo">Matndan test yaratish</div>
-    <div style="width:34px"></div>
   </div>
   <div style="padding:16px">
     <div class="card" style="margin-bottom:14px">
@@ -1219,10 +1225,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- USTOZ KITOB -->
 <div id="p9d" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button onclick="go('p9',6);uTab(3)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p9',6);uTab(3)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="tlogo">Kitob qo'shish</div>
-    <div style="width:34px"></div>
   </div>
   <div style="padding:16px">
     <div class="card">
@@ -1241,10 +1246,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 <!-- USTOZ VARAQ YUKLASH -->
 <!-- USTOZ E'LON YOZISH -->
 <div id="p9g" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button onclick="go('p9',6);uTab(5)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p9',6);uTab(5)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="tlogo">E'lon yozish</div>
-    <div style="width:34px"></div>
   </div>
   <div style="padding:16px">
     <div class="card">
@@ -1311,20 +1315,13 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- O'YINLAR HUB -->
 <div id="p-games" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button id="pgames-back-btn" onclick="pgamesBoshga()" style="display:none;background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
-    <div class="tlogo" id="pgames-title">🎮 O'yinlar</div>
-    <div style="width:34px"></div>
+  <div class="top e-head">
+    <button id="pgames-back-btn" class="e-ibtn" onclick="pgamesBoshga()" aria-label="Orqaga" style="display:none"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="tlogo" id="pgames-title">O'yinlar</div>
   </div>
-  <div id="pgames-menu" class="g2" style="padding:16px">
-    <div class="mc" onclick="pgamesKategoriya('kimyo')" style="border-left:3px solid #00d4aa;background:linear-gradient(135deg,rgba(0,212,170,.1),rgba(255,255,255,.03));text-align:center">
-      <div style="font-size:2.4rem;margin-bottom:8px">🧪</div>
-      <div class="mt">Kimyo o'yinlari</div><div class="ms">3 ta o'yin</div>
-    </div>
-    <div class="mc" onclick="pgamesKategoriya('bio')" style="border-left:3px solid #22c55e;background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(255,255,255,.03));text-align:center">
-      <div style="font-size:2.4rem;margin-bottom:8px">🧬</div>
-      <div class="mt">Biologiya o'yinlari</div><div class="ms">1 ta o'yin</div>
-    </div>
+  <div id="pgames-menu" class="e-grid" style="padding:16px">
+    <div class="e-tile" onclick="pgamesKategoriya('kimyo')"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g1"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.7 3h10.6a2 2 0 0 0 1.7-3l-5-9V3M7.5 15h9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><b>Kimyo o'yinlari</b><small>3 ta o'yin</small></div>
+    <div class="e-tile" onclick="pgamesKategoriya('bio')"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g7"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3c0 6 10 6 10 12s-10 6-10 6M17 3c0 6-10 6-10 12M8 7h8M8 17h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><b>Biologiya o'yinlari</b><small>1 ta o'yin</small></div>
   </div>
   <div id="pgames-kimyo" style="display:none;padding:16px;flex-direction:column;gap:16px">
 
@@ -1404,9 +1401,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- O'YIN SAHIFASI (2048) -->
 <div id="p-game" class="page" style="padding-bottom:80px;user-select:none">
-  <div class="top">
-    <button onclick="go('p-games',-1)" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
-    <div class="tlogo">⚗️ 2048</div>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p-games',-1)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="tlogo">2048</div>
     <button onclick="gameStart()" style="background:none;border:none;color:#00d4aa;font-size:.85rem;font-weight:700;cursor:pointer">🔁</button>
   </div>
   <div style="padding:12px 16px 0">
@@ -1448,9 +1445,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- MEMORY O'YINI -->
 <div id="p-memory" class="page" style="padding-bottom:80px;user-select:none">
-  <div class="top">
-    <button onclick="go('p-games',-1)" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
-    <div class="tlogo">🧩 Memory</div>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p-games',-1)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="tlogo">Memory</div>
     <button onclick="memStart()" style="background:none;border:none;color:#a78bfa;font-size:.85rem;font-weight:700;cursor:pointer">🔁</button>
   </div>
   <div style="display:flex;gap:6px;padding:6px 16px;justify-content:center">
@@ -1489,10 +1486,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- PROBIRKALAR (WATER SORT) -->
 <div id="p-sort" class="page" style="padding-bottom:80px;user-select:none">
-  <div class="top">
-    <button onclick="go('p-games',-1)" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
-    <div class="tlogo">🧪 Probirkalar</div>
-    <div style="width:40px"></div>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p-games',-1)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="tlogo">Probirkalar</div>
   </div>
   <!-- Level navigator -->
   <div style="display:flex;align-items:center;justify-content:center;gap:10px;padding:6px 16px 4px">
@@ -1535,9 +1531,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- OZIQ ZANJIRI -->
 <div id="p-oziq" class="page" style="padding-bottom:80px;user-select:none">
-  <div class="top">
-    <button onclick="go('p-games',-1)" style="background:rgba(255,255,255,.08);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:700;cursor:pointer;padding:7px 14px">← Orqaga</button>
-    <div class="tlogo">🌿 Oziq zanjiri</div>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p-games',-1)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="tlogo">Oziq zanjiri</div>
     <div id="oz-lvl" style="font-size:.8rem;color:rgba(255,255,255,.5);font-weight:700;min-width:60px;text-align:right">—</div>
   </div>
   <!-- Kirish ekrani -->
@@ -1582,16 +1578,15 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- KIMYO JADVALLARI -->
 <div id="p-jadval" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <button onclick="go('p1',0)" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer">←</button>
-    <div class="tlogo">⚛️ Kimyo Jadvallari</div>
-    <div style="width:40px"></div>
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p1',0)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="tlogo">Kimyo Jadvallari</div>
   </div>
   <!-- Tablar -->
-  <div style="display:flex;gap:5px;padding:4px 12px 6px">
-    <button id="jt1" onclick="jTab(1)" style="flex:1;background:#3b82f6;color:#fff;border:none;border-radius:10px;padding:7px 0;font-size:.75rem;font-weight:700;cursor:pointer">⚛️ Davriy</button>
-    <button id="jt2" onclick="jTab(2)" style="flex:1;background:rgba(255,255,255,.1);color:var(--c-fg);border:none;border-radius:10px;padding:7px 0;font-size:.75rem;font-weight:700;cursor:pointer">⚡ Beketov</button>
-    <button id="jt3" onclick="jTab(3)" style="flex:1;background:rgba(255,255,255,.1);color:var(--c-fg);border:none;border-radius:10px;padding:7px 0;font-size:.75rem;font-weight:700;cursor:pointer">💧 Eruvchanlik</button>
+  <div class="e-seg" style="margin:10px 16px 6px">
+    <button id="jt1" class="e-seg-b on" onclick="jTab(1)">Davriy</button>
+    <button id="jt2" class="e-seg-b" onclick="jTab(2)">Beketov</button>
+    <button id="jt3" class="e-seg-b" onclick="jTab(3)">Eruvchanlik</button>
   </div>
   <!-- 1: Davriy jadval -->
   <div id="j-s1">
@@ -1679,8 +1674,8 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- KIMYOVIY MODDALAR BAZASI -->
 <div id="p-moddabaza" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <div class="tlogo" id="mb-title">📖 Moddalar bazasi</div>
+  <div class="top e-head">
+    <div class="tlogo" id="mb-title">Moddalar bazasi</div>
   </div>
   <div style="padding:4px 16px 6px">
     <input id="mb-q" type="search" placeholder="🔍 Formula, nomi yoki sinonimi bo'yicha qidirish..."
@@ -1692,12 +1687,12 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
 <!-- KIMYOVIY REAKSIYALAR BAZASI -->
 <div id="p-reaksiya" class="page" style="padding-bottom:80px">
-  <div class="top">
-    <div class="tlogo">⚗️ Reaksiyalar bazasi</div>
+  <div class="top e-head">
+    <div class="tlogo">Reaksiyalar bazasi</div>
   </div>
-  <div style="display:flex;gap:8px;padding:4px 16px 10px">
-    <button id="rr-tab-search" onclick="rrTab('search')" style="flex:1;padding:9px;border-radius:12px;border:none;font-size:.8rem;font-weight:700;cursor:pointer;background:rgba(34,197,94,.18);color:#4ade80">🔍 Qidiruv</button>
-    <button id="rr-tab-find" onclick="rrTab('find')" style="flex:1;padding:9px;border-radius:12px;border:none;font-size:.8rem;font-weight:700;cursor:pointer;background:rgba(255,255,255,.06);color:rgba(255,255,255,.5)">🧪 Reaksiya toping</button>
+  <div class="e-seg" style="margin:10px 16px 10px">
+    <button id="rr-tab-search" class="e-seg-b on" onclick="rrTab('search')">Qidiruv</button>
+    <button id="rr-tab-find" class="e-seg-b" onclick="rrTab('find')">Reaksiya toping</button>
   </div>
 
   <div id="rr-view-search">
@@ -1714,9 +1709,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 
   <div id="rr-view-find" style="display:none">
     <div style="padding:4px 16px 10px">
-      <div style="display:flex;gap:8px;margin-bottom:10px">
-        <button id="rf-dir-fwd" onclick="rfSetDir('fwd')" style="flex:1;padding:9px;border-radius:12px;border:none;font-size:.76rem;font-weight:700;cursor:pointer;background:rgba(34,197,94,.18);color:#4ade80">Reagent → Mahsulot</button>
-        <button id="rf-dir-rev" onclick="rfSetDir('rev')" style="flex:1;padding:9px;border-radius:12px;border:none;font-size:.76rem;font-weight:700;cursor:pointer;background:rgba(255,255,255,.06);color:rgba(255,255,255,.5)">Mahsulot → Reagent</button>
+      <div class="e-seg" style="margin-bottom:10px">
+        <button id="rf-dir-fwd" class="e-seg-b on" onclick="rfSetDir('fwd')">Reagent → Mahsulot</button>
+        <button id="rf-dir-rev" class="e-seg-b" onclick="rfSetDir('rev')">Mahsulot → Reagent</button>
       </div>
       <div style="display:flex;gap:8px">
         <input id="rf-q" type="text" placeholder="Reagent kiriting (masalan: Zn)"
@@ -1732,7 +1727,7 @@ body[data-tema="yorug"] .e-only-dark{display:none}
 </div>
 
 <div id="p-elon" class="page" style="padding-bottom:80px">
-  <div class="top"><div class="tl">E'lonlar</div></div>
+  <div class="top e-head"><div class="tlogo">E'lonlar</div></div>
   <div id="elon-list" style="padding:16px">
     <div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>
   </div>
@@ -2437,7 +2432,7 @@ async function coinDavrTab(d){
   var map={hafta:'cd1',oy:'cd2',umumiy:'cd3'};
   ['cd1','cd2','cd3'].forEach(function(id){
     var el=document.getElementById(id);
-    if(el)el.className='tb '+(map[d]===id?'on':'off');
+    if(el)el.className='e-seg-b'+(map[d]===id?' on':'');
   });
   var davrNom=d==='hafta'?'Haftalik ':(d==='oy'?'Oylik ':'');
   document.getElementById('rsarlavha').textContent=davrNom+'Coin reytingi';
@@ -2462,7 +2457,7 @@ async function coinDavrTab(d){
 // TESTER
 function tTab(n){
   [2,3].forEach(function(i){
-    document.getElementById('tt'+i).className='tb '+(i===n?'on':'off');
+    document.getElementById('tt'+i).className='e-seg-b'+(i===n?' on':'');
     document.getElementById('tb'+i).style.display=i===n?'block':'none';
   });
   if(n===2){ttMode='seq';ttSeqFanLoad();}
@@ -3560,10 +3555,10 @@ async function uLoad(){
   }catch(e){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Xato</div>';}
 }
 var _uoqAll=[];
-var U_TAB_NOMLARI={1:'📝 Testlar',2:'❓ Savollar',3:'📚 Kitoblar',5:"📢 E'lonlar",6:"👥 O'quvchilar",7:'📐 Kurs',8:'👨‍👩‍👧‍👦 Guruhlar',9:'🖨️ Varaq skaneri'};
+var U_TAB_NOMLARI={1:'Testlar',2:'Savollar',3:'Kitoblar',5:"E'lonlar",6:"O'quvchilar",7:'Kurs',8:'Guruhlar',9:'Varaq skaneri'};
 function uTab(n){
   document.getElementById('u-menu-grid').style.display='none';
-  document.getElementById('u-back-btn').style.display='block';
+  document.getElementById('u-back-btn').style.display='grid';
   document.getElementById('u-panel-title').textContent=U_TAB_NOMLARI[n]||'Ustoz paneli';
   [1,2,3,5,6,7,8,9].forEach(function(i){
     document.getElementById('ub'+i).style.display=i===n?'block':'none';
@@ -4990,7 +4985,7 @@ async function otaOnalarQaytaYubor(kod){
 async function uNatijalarKor(kod){
   go('p9f',-1);
   var body=document.getElementById('natStatBody');
-  document.getElementById('natStatTitle').textContent='📊 '+kod;
+  document.getElementById('natStatTitle').textContent=kod;
   body.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
   try{
     var r=await apiFetch(API+'/natijalar/'+encodeURIComponent(kod));
@@ -5764,11 +5759,10 @@ function elonLoad(){
       var el=d.elonlar||[];
       if(!el.length){li.innerHTML='<div style="text-align:center;padding:40px;color:rgba(255,255,255,.4)">Hozircha e\'lonlar yo\'q</div>';return;}
       li.innerHTML=el.map(function(e){
-        return '<div class="ri" style="flex-direction:column;align-items:flex-start;gap:6px;margin-bottom:10px">'+
-          '<div style="display:flex;justify-content:space-between;width:100%;align-items:center">'+
-          '<div style="font-size:.9rem;font-weight:700;color:#00d4aa">'+e.sarlavha+'</div>'+
-          '<div style="font-size:.7rem;color:rgba(255,255,255,.4)">'+e.vaqt+'</div></div>'+
-          '<div style="font-size:.85rem;line-height:1.5;color:rgba(255,255,255,.85)">'+e.matn+'</div></div>';
+        return '<div class="e-elon">'+
+          '<div class="e-elon-top"><span class="e-eyebrow">'+(e.vaqt||'')+'</span></div>'+
+          (e.sarlavha?'<b>'+e.sarlavha+'</b>':'')+
+          '<p>'+(e.matn||'')+'</p></div>';
       }).join('');
       if(el[0]&&el[0].id){
         localStorage.setItem('elon_korilgan',el[0].id);
@@ -6860,7 +6854,7 @@ function jTab(n){
     var t=document.getElementById('jt'+i);
     var s=document.getElementById('j-s'+i);
     var on=i===n;
-    if(t){t.style.background=on?'#3b82f6':'rgba(255,255,255,.1)';t.style.color=on?'#fff':'var(--c-fg)';}
+    if(t)t.classList.toggle('on',on);
     if(s)s.style.display=on?'':'none';
   }
   if(n===3&&!jEruvInited){jEruvInited=true;jEruvRender();}
@@ -7826,11 +7820,11 @@ function mbBuildAll(){
 }
 function mbCard(it){
   var d=document.createElement('div');
-  d.style.cssText='background:linear-gradient(135deg,#1a2a4a,#0d1f3a);border:1.5px solid #a855f74d;border-radius:14px;padding:14px 16px';
-  var html='<div style="font-size:1.1rem;font-weight:800;color:#a855f7">'+it.f+'</div>'+
-    '<div style="font-size:.92rem;font-weight:700;margin-top:4px">'+it.n+'</div>';
-  if(it.a) html+='<div style="font-size:.75rem;opacity:.5;margin-top:4px">'+it.a+'</div>';
-  if(it.t) html+='<div style="font-size:.65rem;color:rgba(255,255,255,.35);margin-top:6px;text-transform:uppercase;letter-spacing:.5px">'+it.t+'</div>';
+  d.className='e-mb';
+  var html='<div class="e-mb-f">'+it.f+'</div><div class="e-mb-b"><div class="e-mb-n">'+it.n+'</div>';
+  if(it.a) html+='<div class="e-mb-a">'+it.a+'</div>';
+  if(it.t) html+='<div class="e-mb-t">'+it.t+'</div>';
+  html+='</div>';
   d.innerHTML=html;
   return d;
 }
@@ -7844,13 +7838,13 @@ function mbRenderList(list){
 function mbBoshga(){
   document.getElementById('mb-q').value='';
   var all=mbBuildAll();
-  document.getElementById('mb-title').textContent="📖 Moddalar bazasi ("+all.length+" ta)";
+  document.getElementById('mb-title').textContent="Moddalar bazasi ("+all.length+" ta)";
   mbRenderList(all);
 }
 function mbSearch(q){
   q=q.trim().toLowerCase();
   if(!q){mbBoshga();return;}
-  document.getElementById('mb-title').textContent='🔎 Qidiruv natijalari';
+  document.getElementById('mb-title').textContent='Qidiruv natijalari';
   var res=mbBuildAll().filter(function(it){
     var hay=(it.f+' '+it.n+' '+(it.a||'')+' '+(it.t||'')).toLowerCase();
     return hay.indexOf(q)!==-1;
@@ -7927,16 +7921,14 @@ function rrTab(t){
   document.getElementById('rr-view-search').style.display=t==='search'?'':'none';
   document.getElementById('rr-view-find').style.display=t==='find'?'':'none';
   var s=document.getElementById('rr-tab-search'),f=document.getElementById('rr-tab-find');
-  var on='background:rgba(34,197,94,.18);color:#4ade80',off='background:rgba(255,255,255,.06);color:rgba(255,255,255,.5)';
-  s.style.cssText+=(t==='search'?on:off);
-  f.style.cssText+=(t==='find'?on:off);
+  s.classList.toggle('on',t==='search');
+  f.classList.toggle('on',t==='find');
 }
 function rfSetDir(d){
   rfDir=d;
   var fwd=document.getElementById('rf-dir-fwd'),rev=document.getElementById('rf-dir-rev');
-  var on='background:rgba(34,197,94,.18);color:#4ade80',off='background:rgba(255,255,255,.06);color:rgba(255,255,255,.5)';
-  fwd.style.cssText+=(d==='fwd'?on:off);
-  rev.style.cssText+=(d==='rev'?on:off);
+  fwd.classList.toggle('on',d==='fwd');
+  rev.classList.toggle('on',d==='rev');
   document.getElementById('rf-q').placeholder=d==='fwd'?'Reagent kiriting (masalan: Zn)':'Mahsulot kiriting (masalan: ZnCl₂)';
 }
 function rfAdd(){
@@ -8283,15 +8275,15 @@ async function pgReytingLoad(){
 }
 function pgamesKategoriya(kat){
   document.getElementById('pgames-menu').style.display='none';
-  document.getElementById('pgames-back-btn').style.display='block';
-  document.getElementById('pgames-title').textContent=kat==='kimyo'?"🧪 Kimyo o'yinlari":"🧬 Biologiya o'yinlari";
+  document.getElementById('pgames-back-btn').style.display='grid';
+  document.getElementById('pgames-title').textContent=kat==='kimyo'?"Kimyo o'yinlari":"Biologiya o'yinlari";
   document.getElementById('pgames-kimyo').style.display=kat==='kimyo'?'flex':'none';
   document.getElementById('pgames-bio').style.display=kat==='bio'?'flex':'none';
 }
 function pgamesBoshga(){
   document.getElementById('pgames-menu').style.display='grid';
   document.getElementById('pgames-back-btn').style.display='none';
-  document.getElementById('pgames-title').textContent="🎮 O'yinlar";
+  document.getElementById('pgames-title').textContent="O'yinlar";
   document.getElementById('pgames-kimyo').style.display='none';
   document.getElementById('pgames-bio').style.display='none';
 }
