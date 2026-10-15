@@ -231,6 +231,13 @@ body[data-tema="yorug"] #tema-tog{background:#fff;border-color:var(--c-border2);
 .k-rasmlar figure{margin:0;background:#fff;border:1px solid var(--c-border2);border-radius:12px;padding:6px;display:grid;gap:4px;justify-items:center}
 .k-rasmlar img{width:100%;height:auto;display:block}
 .k-rasmlar figcaption{font-size:.72rem;font-weight:800;color:#10201c;text-align:center}
+.k-yopiq{background:rgba(230,168,23,.1);border:1px solid rgba(230,168,23,.35);border-radius:14px;padding:10px 12px;font-size:.8rem;font-weight:700;color:var(--c-fg);margin-bottom:10px}
+.k-qh{display:flex;gap:8px;align-items:flex-start}
+.k-belgi{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.75rem;font-weight:900;color:#fff;flex-shrink:0}
+.k-ok .k-belgi{background:#22a06b}
+.k-no .k-belgi{background:#e5484d}
+.k-ok{border-left:3px solid #22a06b}
+.k-no{border-left:3px solid #e5484d}
 .k-xato{background:var(--c-card);border:1px solid var(--c-border2);border-radius:16px;padding:12px;display:grid;gap:4px;margin-bottom:8px;font-size:.84rem;color:var(--c-fg)}
 .k-xato .q{font-weight:800}
 .k-xato .iz{font-size:.78rem;color:var(--c-muted);font-weight:700}
@@ -3150,33 +3157,50 @@ function kMashqBoshla(i){
   document.getElementById('ttitle').textContent=K.mavzu.nom+' — '+bq.nom;
   ttKor();go('p7b',-1);
 }
+// Kurs mashqi natijasi. Javoblarni FAQAT server tekshiradi (ochiq faylda javob yo'q).
+// Har savol uchun to'g'ri/noto'g'ri ko'rsatiladi; to'g'ri javob va izoh — faqat 60%+ bo'lsa.
 async function kNat(){
   var M=K.mavzu,i=K.bosqich,bq=M.bosqichlar[i],f=M._fayl;
   var xit={};bq.savollar.forEach(function(s){xit[s.id]=s;});
-  var srv=null;
+  var srv=null,xatoMatn='';
+  document.getElementById('ttball').textContent='…';
   try{
     var r=await apiFetch(API+'/kurslar/tekshir',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({user_id:CU.id,name:CU.name||"Noma'lum",fayl:f,bosqich:i,javoblar:ttJav})});
     if(r.ok)srv=await r.json();
+    else if(r.status===403)xatoMatn='Bu kurs guruhingizga biriktirilmagan.';
   }catch(e){}
-  var kalit=srv&&srv.javoblar?srv.javoblar:null;
-  var togri=0,xl=[];
-  ttS.forEach(function(q){var s=xit[q.id],j=kalit&&kalit[q.id]?kalit[q.id]:s.javob;if(ttJav[q.id]===j)togri++;else xl.push(s);});
-  var jami=ttS.length,b=srv?srv.ball:Math.round(togri/jami*100);
+  if(!srv||!srv.natija){
+    document.getElementById('ttball').textContent='—';
+    ['tttogri','ttxato','ttjami'].forEach(function(id){document.getElementById(id).textContent='—';});
+    document.getElementById('ttemoji').textContent='📡';
+    document.getElementById('ttsub').textContent=xatoMatn||"Natijani tekshirib bo'lmadi: server bilan aloqa yo'q";
+    document.getElementById('ttxatolar').innerHTML='';
+    document.getElementById('ttnatbtnlar').innerHTML=xatoMatn?'<button class="btn btn-out" onclick="kurslarOch()">📚 Kurslar</button>':'<button class="btn btn-green" onclick="kNat()">🔄 Qayta yuborish</button><button class="btn btn-out" style="margin-top:8px" onclick="kMavzuRender()">📋 Mavzu bosqichlari</button>';
+    go('p7c',-1);return;
+  }
+  var b=srv.ball,togri=srv.togri,jami=srv.jami,kalit=srv.javoblar||null,izohlar=srv.izohlar||{};
   document.getElementById('ttball').textContent=b+'%';
   document.getElementById('tttogri').textContent=togri;
   document.getElementById('ttxato').textContent=jami-togri;
   document.getElementById('ttjami').textContent=jami;
   document.getElementById('ttemoji').textContent=b>=80?'🏆':b>=60?'🎉':b>=40?'👍':'💪';
   document.getElementById('ttsub').textContent=b>=60?'Bosqich bajarildi!':'Keyingi bosqich uchun 60%+ kerak';
-  document.getElementById('ttxatolar').innerHTML=xl.length?'<div class="e-sec" style="margin-bottom:10px">Xato javoblar</div>'+xl.map(function(s){
-    var u=ttJav[s.id];
-    return '<div class="k-xato"><div class="q">'+kEsc(s.savol)+'</div>'+(s.rasm?'<img src="assets/kurslar/'+kEsc(s.rasm)+'" alt="" style="max-width:220px;border-radius:10px;background:#fff;border:1px solid var(--c-border2)"/>':'')+'<div>Sizniki: <b style="color:#e5484d">'+(u?u+') '+kEsc(s.variantlar[u]):'javob berilmagan')+'</b></div><div>To\'g\'ri: <b style="color:#22a06b">'+s.javob+') '+kEsc(s.variantlar[s.javob])+'</b></div><div class="iz">💡 '+kEsc(s.izoh)+'</div></div>';
-  }).join(''):'';
+  var vt=function(s,h){return h?h+') '+kEsc(s.variantlar[h]||''):'javob berilmagan';};
+  document.getElementById('ttxatolar').innerHTML='<div class="e-sec" style="margin-bottom:10px">Savollar bo\'yicha natija</div>'+
+    (kalit?'':'<div class="k-yopiq">🔒 To\'g\'ri javoblar va izohlar 60% va undan yuqori natijada ko\'rsatiladi. Nazariyani takrorlab, qayta urinib ko\'ring.</div>')+
+    ttS.map(function(q,n){
+      var s=xit[q.id],ok=!!srv.natija[q.id],u=ttJav[q.id];
+      return '<div class="k-xato '+(ok?'k-ok':'k-no')+'"><div class="k-qh"><span class="k-belgi">'+(ok?'✓':'✗')+'</span><span class="q">'+(n+1)+'. '+kEsc(s.savol)+'</span></div>'+
+        (s.rasm?'<img src="assets/kurslar/'+kEsc(s.rasm)+'" alt="" style="max-width:200px;border-radius:10px;background:#fff;border:1px solid var(--c-border2)"/>':'')+
+        '<div>Sizniki: <b style="color:'+(ok?'#22a06b':'#e5484d')+'">'+vt(s,u)+'</b></div>'+
+        (kalit&&!ok?'<div>To\'g\'ri: <b style="color:#22a06b">'+vt(s,kalit[q.id])+'</b></div>':'')+
+        (kalit&&!ok&&izohlar[q.id]?'<div class="iz">💡 '+kEsc(izohlar[q.id])+'</div>':'')+'</div>';
+    }).join('');
   var p=kProg();p[f]=p[f]||{};var mp=p[f];
   if(b>(mp[i]||0))mp[i]=b;
   var otdi=b>=60,oxirgi=i===M.bosqichlar.length-1;
-  if(srv){
+  {
     coinServerdan(srv,M.nom+': '+bq.nom);
     var sp=srv.progress||{};
     Object.keys(sp).forEach(function(k){var v=sp[k];if(typeof v==='number'&&typeof mp[k]==='number')mp[k]=Math.max(mp[k],v);else if(v)mp[k]=v;});

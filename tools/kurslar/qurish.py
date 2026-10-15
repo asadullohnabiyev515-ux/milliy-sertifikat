@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Kurslar kontentini qurish: tools/kurslar/manba/** → assets/kurslar/**
+"""Kurslar kontentini qurish: ../milliy-imtihon/kurslar/manba/** → assets/kurslar/**
+(ochiq: nazariya va savollar, javobsiz) + ../milliy-imtihon/kurslar/javoblar/** (yopiq)
 
   python3 tools/kurslar/qurish.py
 
@@ -14,7 +15,11 @@ bog'liq barqaror tartibda aralashtiriladi (har qurishda bir xil natija).
 import hashlib, importlib.util, json, os, random, sys
 
 ILDIZ = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-MANBA = os.path.join(ILDIZ, "tools", "kurslar", "manba")
+# Savol manbalari va to'g'ri javoblar YOPIQ backend reposida (milliy-imtihon) turadi —
+# bu repo ochiq (GitHub Pages), shuning uchun bu yerga javoblar yozilmaydi.
+BACKEND = os.environ.get("KURS_BACKEND", os.path.join(os.path.dirname(ILDIZ), "milliy-imtihon"))
+MANBA = os.path.join(BACKEND, "kurslar", "manba")
+JAVOBLAR = os.path.join(BACKEND, "kurslar", "javoblar")
 CHIQISH = os.path.join(ILDIZ, "assets", "kurslar")
 HARFLAR = "ABCD"
 
@@ -179,6 +184,7 @@ def main():
             if "fayl" in m:
                 src = manba_yukla(m["fayl"])
                 bosqichlar = []
+                kalit = {}  # yopiq: {bosqich_indeksi: {"coin", "savollar": {id: {"javob", "izoh"}}}}
                 for n, bq in enumerate(src.BOSQICHLAR, 1):
                     if bq["tur"] == "nazariy":
                         pdf = f"{m['fayl']}-{n}.pdf"
@@ -195,10 +201,17 @@ def main():
                         sv = [tf_qur(i, *q[1:]) if q[0] == "tf" else savol_qur(i, *q, orin=next(orin))
                               for i, q in enumerate(bq["savollar"])]
                         assert len(sv) >= 20, f"{m['fayl']}: {bq['nom']} — kamida 20 ta savol kerak"
-                        bosqichlar.append({"tur": "mashq", "nom": bq["nom"], "coin": bq["coin"], "savollar": sv})
+                        kalit[str(n - 1)] = {"coin": bq["coin"],
+                                             "savollar": {str(q["id"]): {"javob": q["javob"], "izoh": q["izoh"]} for q in sv}}
+                        ochiq = [{k: v for k, v in q.items() if k not in ("javob", "izoh")} for q in sv]
+                        bosqichlar.append({"tur": "mashq", "nom": bq["nom"], "coin": bq["coin"], "savollar": ochiq})
                 with open(os.path.join(CHIQISH, m["fayl"] + ".json"), "w", encoding="utf-8") as fh:
                     json.dump({"id": m["id"], "nom": src.NOM, "tavsif": src.TAVSIF, "bosqichlar": bosqichlar},
                               fh, ensure_ascii=False, separators=(",", ":"))
+                kyol = os.path.join(JAVOBLAR, m["fayl"] + ".json")
+                os.makedirs(os.path.dirname(kyol), exist_ok=True)
+                with open(kyol, "w", encoding="utf-8") as fh:
+                    json.dump({"bosqichlar": kalit}, fh, ensure_ascii=False, indent=1)
                 yozuv["fayl"] = m["fayl"] + ".json"
                 yozuv["savollar"] = sum(len(x.get("savollar", [])) for x in bosqichlar)
                 print(f"  {m['fayl']}: {len(bosqichlar)} bosqich, {yozuv['savollar']} savol")
