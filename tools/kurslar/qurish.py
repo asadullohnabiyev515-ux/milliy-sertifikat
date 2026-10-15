@@ -21,7 +21,8 @@ HARFLAR = "ABCD"
 # Bo'limlar va mavzular tartibi. "fayl" yo'q mavzu ilovada "Tez orada" bo'lib turadi.
 KATALOG = [
     {"id": "organik", "nom": "Organik kimyo", "tavsif": "Uglevodorodlar va ularning hosilalari", "mavzular": [
-        {"id": "alkanlar", "nom": "Alkanlar", "fayl": "organik/alkanlar"},
+        # "otilgan": darsda o'tib bo'lingan — ochiq turadi (bosqichlari ham), keyingi mavzu uchun shart emas
+        {"id": "alkanlar", "nom": "Alkanlar", "fayl": "organik/alkanlar", "otilgan": True},
         {"id": "sikloalkanlar", "nom": "Sikloalkanlar"},
         {"id": "alkenlar", "nom": "Alkenlar"},
         {"id": "alkadiyenlar", "nom": "Alkadiyenlar va kauchuklar", "fayl": "organik/alkadiyenlar"},
@@ -173,6 +174,8 @@ def main():
         bolim["mavzular"] = []
         for m in b["mavzular"]:
             yozuv = {"id": m["id"], "nom": m["nom"]}
+            if m.get("otilgan"):
+                yozuv["otilgan"] = True
             if "fayl" in m:
                 src = manba_yukla(m["fayl"])
                 bosqichlar = []

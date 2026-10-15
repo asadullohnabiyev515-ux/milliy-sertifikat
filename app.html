@@ -3031,7 +3031,8 @@ async function kKatalog(){
 function kBolim(){return (K.katalog||[]).filter(function(b){return b.id===K.bolimId;})[0];}
 // Mavzu ochiqmi: birinchisi doim, keyingilari — oldingi mavzu o'tilgan bo'lsa
 // Mavzu ochiqmi: oldingi TAYYOR (fayli bor) mavzu o'tilgan bo'lsa; "Tez orada" mavzular zanjirda hisobga olinmaydi
-function kMavzuOchiq(b,i,p){for(var j=i-1;j>=0;j--){var old=b.mavzular[j];if(old.fayl)return !!(p[kKey(old.fayl)]&&p[kKey(old.fayl)].done);}return true;}
+// "otilgan" (darsda o'tib bo'lingan) mavzular doim ochiq va keyingi mavzu uchun shart emas
+function kMavzuOchiq(b,i,p){if(b.mavzular[i].otilgan)return true;for(var j=i-1;j>=0;j--){var old=b.mavzular[j];if(old.fayl&&!old.otilgan)return !!(p[kKey(old.fayl)]&&p[kKey(old.fayl)].done);}return true;}
 // Kurs faqat ustoz biriktirgan guruh a'zolariga ochiq; ruxsatni server beradi va tekshiradi
 async function kRuxsatYukla(){
   K.ruxsat=null;
@@ -3068,7 +3069,7 @@ async function kBolimOch(id){
   document.getElementById('k-bolim-nom').textContent=b.nom;
   document.getElementById('k-mavzular').innerHTML='<div class="e-list">'+b.mavzular.map(function(m,i){
     var ochiq=kMavzuOchiq(b,i,p),done=m.fayl&&p[kKey(m.fayl)]&&p[kKey(m.fayl)].done;
-    var sub=m.fayl?(m.savollar+' savol · 5 bosqich'):'Kontent tayyorlanmoqda';
+    var sub=m.fayl?(m.otilgan?"Darsda o'tilgan · takrorlash uchun ochiq":(m.savollar+' savol · 5 bosqich')):'Kontent tayyorlanmoqda';
     var ong=!m.fayl?'<span class="k-soon">TEZ ORADA</span>':(!ochiq?'🔒':(done?'<span class="e-pill hi">✓</span>':'<span class="e-lchev">'+'<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>'+'</span>'));
     var bos=(m.fayl&&ochiq)?' onclick="kMavzuOch('+i+')"':' style="cursor:default"';
     return '<div class="e-li'+((m.fayl&&ochiq)?'':' k-lock')+'"'+bos+'><span class="k-num'+(done?' ok':'')+'">'+(i+1)+'</span><div class="t"><b>'+kEsc(m.nom)+'</b><small>'+sub+'</small></div>'+ong+'</div>';
@@ -3078,7 +3079,7 @@ async function kMavzuOch(i){
   var b=kBolim();if(!b)return;
   var m=b.mavzular[i];
   if(!m||!m.fayl||!kMavzuOchiq(b,i,kProg()))return;
-  K.mavzuIdx=i;go('p-kmavzu',-1);
+  K.mavzuIdx=i;K.mavzuOtilgan=!!m.otilgan;go('p-kmavzu',-1);
   document.getElementById('k-mavzu-nom').textContent=m.nom;
   document.getElementById('k-bosqichlar').innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
   try{
@@ -3088,7 +3089,7 @@ async function kMavzuOch(i){
   }catch(e){document.getElementById('k-bosqichlar').innerHTML='<div class="e-empty">Mavzuni yuklab bo\'lmadi.</div>';}
 }
 function kBosqichOtildi(bq,i,mp){return bq.tur==='nazariy'?!!mp['o'+i]:(mp[i]||0)>=60;}
-function kBosqichOchiq(i,mp){if(i===0)return true;var bs=K.mavzu.bosqichlar;return kBosqichOtildi(bs[i-1],i-1,mp);}
+function kBosqichOchiq(i,mp){if(i===0||K.mavzuOtilgan)return true;var bs=K.mavzu.bosqichlar;return kBosqichOtildi(bs[i-1],i-1,mp);}
 function kMavzuRender(){
   var M=K.mavzu;if(!M)return;
   go('p-kmavzu',-1);
