@@ -184,6 +184,15 @@ body[data-tema="yorug"] #tema-tog{background:#fff;border-color:var(--c-border2);
 .e-stats div+div{border-left:1px solid rgba(255,255,255,.22)}
 .e-stats b{font-family:var(--e-mono);font-size:1.02rem;font-variant-numeric:tabular-nums;color:#fff}
 .e-stats span{font-size:.66rem;opacity:.85;font-weight:700}
+.e-cont{background:var(--c-card);border:1px solid var(--c-border2);border-radius:20px;padding:14px;display:grid;gap:10px}
+.e-cont-top{display:flex;align-items:center;gap:10px}
+.e-cont-t{flex:1;min-width:0;display:grid;gap:1px}
+.e-cont-t small{font-family:var(--e-mono);font-size:.6rem;letter-spacing:.16em;color:var(--c-muted);font-weight:700}
+.e-cont-t b{font-size:.95rem;font-weight:900;color:var(--c-fg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.e-cont-t span{font-size:.72rem;color:var(--c-muted);font-weight:700}
+.e-go{background:var(--e-pill);color:var(--e-pill-fg);border:0;border-radius:12px;padding:9px 14px;font-family:var(--e-f);font-weight:800;font-size:.8rem;cursor:pointer;flex-shrink:0}
+.e-bar{height:8px;border-radius:99px;background:var(--c-card4);overflow:hidden}
+.e-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--e-brand),#7fd1b9);transition:width .3s}
 .e-sec{font-family:var(--e-mono);font-size:.64rem;font-weight:700;letter-spacing:.18em;color:var(--c-muted);text-transform:uppercase;margin-bottom:-4px}
 /* Bo'lim kartochkalari */
 .e-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -347,6 +356,13 @@ body[data-tema="yorug"] .e-only-dark{display:none}
         <div><b id="bs3">—</b><span>Mavzular</span></div>
         <div><b id="bs4">—</b><span>Reyting</span></div>
       </div>
+    </div>
+    <div class="e-cont" id="h-davom" style="display:none">
+      <div class="e-cont-top">
+        <div class="e-cont-t"><small>DAVOM ETTIRISH</small><b id="h-davom-nom">—</b><span id="h-davom-sub">—</span></div>
+        <button class="e-go" onclick="davomEt()">Davom →</button>
+      </div>
+      <div class="e-bar"><i id="h-davom-bar" style="width:0%"></i></div>
     </div>
     <div class="e-sec">Guruhim</div>
     <div id="hGuruhim"><div style="text-align:center;padding:16px"><div class="sp" style="margin:0 auto"></div></div></div>
@@ -1813,7 +1829,7 @@ function go(id,nav){
     var nj=document.getElementById('n-jadval');if(nj)nj.className='nitem on';
     var nu=document.getElementById('n-ustoz');if(nu)nu.className='nitem';
   }
-  if(id==='p1'){hGuruhimLoad();hStatLoad();}
+  if(id==='p1'){hGuruhimLoad();hStatLoad();hDavomRender();}
   if(id==='p2')tIsmFamiliyaOldindanTold();
   if(id==='p5')kLoad();
   if(id==='p6')rLoad();
@@ -2452,6 +2468,8 @@ async function ttNat(){
       if(!seqProgress(ttSeqFan_)[ttSeqMavzular[ttSeqIdx]])coinBer(10,'Mavzu topshirildi: '+ttSeqMavzular[ttSeqIdx]);
       seqSave(ttSeqFan_,ttSeqMavzular[ttSeqIdx]);
       if(typeof renderSeqMavzular==='function')renderSeqMavzular();
+      if(ttSeqIdx<ttSeqMavzular.length-1)davomSaqla(ttSeqFan_,ttSeqMavzular,ttSeqIdx+1);
+      else{try{localStorage.removeItem(davomKalit());}catch(e){}}
       if(ttSeqIdx>=ttSeqMavzular.length-1){
         bArea.innerHTML='<div style="text-align:center;padding:12px;color:#00d4aa;font-weight:700;font-size:.95rem;margin-bottom:12px">🏆 Barcha mavzular muvaffaqiyatli o\'tildi!</div><button class="btn btn-out" onclick="go(\'p7\',4);tTab(2)">📋 Mavzular ro\'yxati</button>';
       }else{
@@ -2517,7 +2535,26 @@ function renderSeqMavzular(){
   });
   li.innerHTML=html;
 }
+// "Davom ettirish": oxirgi boshlangan mashq mavzusi (fan, mavzular ro'yxati, indeks) qurilmada saqlanadi
+function davomKalit(){return 'davom_'+(CU&&CU.id||0);}
+function davomSaqla(fan,mavzular,idx){try{localStorage.setItem(davomKalit(),JSON.stringify({fan:fan,mavzular:mavzular,idx:idx}));}catch(e){}}
+function davomOl(){try{var r=JSON.parse(localStorage.getItem(davomKalit())||'null');return r&&r.fan&&r.mavzular&&r.mavzular[r.idx]?r:null;}catch(e){return null;}}
+function hDavomRender(){
+  var el=document.getElementById('h-davom');if(!el)return;
+  var r=davomOl();
+  if(!r){el.style.display='none';return;}
+  var p=seqProgress(r.fan),otilgan=r.mavzular.filter(function(m){return p[m];}).length;
+  document.getElementById('h-davom-nom').textContent=r.fan+' · '+r.mavzular[r.idx];
+  document.getElementById('h-davom-sub').textContent=otilgan+'/'+r.mavzular.length+" mavzu o'tildi";
+  document.getElementById('h-davom-bar').style.width=Math.round(otilgan/r.mavzular.length*100)+'%';
+  el.style.display='grid';
+}
+function davomEt(){
+  var r=davomOl();if(!r)return;
+  ttSeqFan_=r.fan;ttSeqMavzular=r.mavzular;ttSeqStart(r.idx);
+}
 async function ttSeqStart(idx){
+  davomSaqla(ttSeqFan_,ttSeqMavzular,idx);
   ttSeqIdx=idx;
   ttMode='seq';
   var mav=ttSeqMavzular[idx];
