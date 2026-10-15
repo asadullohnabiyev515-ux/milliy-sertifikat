@@ -34,7 +34,9 @@
     },
     {
      "id": "arenlar",
-     "nom": "Arenlar"
+     "nom": "Arenlar",
+     "fayl": "organik/arenlar.json",
+     "savollar": 130
     },
     {
      "id": "spirtlar",
