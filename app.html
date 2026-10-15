@@ -973,7 +973,7 @@ body[data-tema="yorug"] .e-only-dark{display:none}
     <button onclick="uGuruhKutishFormToggle()" style="width:100%;padding:10px;background:rgba(255,180,0,.08);border:1px solid rgba(255,180,0,.25);border-radius:12px;color:#ffb400;font-size:.82rem;font-weight:700;cursor:pointer;margin-bottom:14px">📱 Ro'yxatdan o'tmagan o'quvchini telefon orqali qo'shish</button>
     <div id="uguruhKutishForm" style="display:none;background:rgba(255,255,255,.04);border-radius:12px;padding:12px;margin-bottom:16px">
       <input class="inp" id="uguruhKutishIsm" type="text" placeholder="Ism familiya" style="margin-top:0;margin-bottom:8px"/>
-      <input class="inp" id="uguruhKutishTel" type="tel" placeholder="+998901234567" style="margin-top:0;margin-bottom:10px"/>
+      <input class="inp" id="uguruhKutishTel" type="tel" placeholder="+998901234567 (ixtiyoriy)" style="margin-top:0;margin-bottom:10px"/>
       <button class="btn btn-green" style="margin-top:0" onclick="uGuruhKutishQosh()">Qo'shish</button>
       <div id="uguruhKutishXb" style="font-size:.78rem;margin-top:8px;color:rgba(255,255,255,.5)"></div>
     </div>
@@ -4477,10 +4477,10 @@ async function uGuruhDetailLoad(){
     }
     html+=boshqalar.map(function(u){
       var kutilmoqda=u.holat==='kutilmoqda';
-      var chiqar=kutilmoqda?"uGuruhOqChiqar(null,'"+esc(u.telefon)+"')":"uGuruhOqChiqar("+u.user_id+",null)";
+      var chiqar=kutilmoqda?"uGuruhOqChiqar(null,'"+esc(u.telefon||'')+"','"+esc(u.azo_kalit||'')+"')":"uGuruhOqChiqar("+u.user_id+",null)";
       return '<div class="ri" style="gap:10px;align-items:center">'+
         '<div class="av" style="width:36px;height:36px;border-radius:10px;font-size:.85rem;flex-shrink:0;'+(kutilmoqda?'opacity:.5':'')+'">'+(u.ism?u.ism.charAt(0):'?')+'</div>'+
-        '<div style="flex:1"><div style="font-size:.88rem;font-weight:600">'+u.ism+' '+u.familiya+(kutilmoqda?' <span style="color:#ffb400;font-size:.7rem;font-weight:700">⏳ Kutilmoqda</span>':'')+'</div><div style="font-size:.72rem;color:rgba(255,255,255,.4)">'+u.telefon+'</div></div>'+
+        '<div style="flex:1"><div style="font-size:.88rem;font-weight:600">'+u.ism+' '+u.familiya+(kutilmoqda?' <span style="color:#ffb400;font-size:.7rem;font-weight:700">⏳ Kutilmoqda</span>':'')+'</div><div style="font-size:.72rem;color:rgba(255,255,255,.4)">'+(u.telefon?esc(u.telefon):'telefonsiz')+'</div></div>'+
         '<button onclick="'+chiqar+'" style="background:rgba(255,59,48,.12);border:none;border-radius:8px;color:#ff6b6b;padding:6px 10px;font-size:.75rem;cursor:pointer;font-weight:700">Chiqarish</button></div>';
     }).join('');
     el.innerHTML=html;
@@ -4670,7 +4670,7 @@ async function uGuruhKutishQosh(){
   var ism=document.getElementById('uguruhKutishIsm').value.trim();
   var tel=document.getElementById('uguruhKutishTel').value.trim();
   var xb=document.getElementById('uguruhKutishXb');
-  if(!tel){xb.textContent="Telefon raqamini kiriting";xb.style.color='#ff6b6b';return;}
+  if(!tel&&!ism){xb.textContent="Telefonsiz qo'shish uchun ism-familiya kiriting";xb.style.color='#ff6b6b';return;}
   _uguruhKutishYuborilmoqda=true;
   xb.textContent='Yuklanmoqda... (server uxlab yotgan bo\'lsa, bir necha soniya cho\'zilishi mumkin)';xb.style.color='rgba(255,255,255,.5)';
   try{
@@ -4679,6 +4679,8 @@ async function uGuruhKutishQosh(){
     if(!r.ok){xb.textContent='Xato: '+(d.detail||'');xb.style.color='#ff6b6b';return;}
     if(d.holat==='faol'){
       xb.textContent='✅ Bu raqam allaqachon ro\'yxatdan o\'tgan — to\'g\'ridan-to\'g\'ri qo\'shildi!';
+    }else if(d.telefonsiz){
+      xb.innerHTML='✅ <b>'+esc(ism)+'</b> telefon raqamisiz ro\'yxatga qo\'shildi.<br>Botga avtomatik bog\'lanmaydi — o\'quvchi botda ro\'yxatdan o\'tgach, guruhga qo\'shilish so\'rovini yuborsin yoki keyin raqamini qo\'shing.';
     }else{
       xb.innerHTML='⏳ Kutish ro\'yxatiga qo\'shildi. O\'quvchiga quyidagi havolani yuboring:<br><b style="word-break:break-all;color:#00d4aa">https://t.me/AK_akademy_bot</b><br>U shu <b>'+esc(tel)+'</b> raqami bilan botda ro\'yxatdan o\'tsa, avtomatik guruhga qo\'shiladi.';
     }
@@ -4689,12 +4691,13 @@ async function uGuruhKutishQosh(){
   }catch(e){xb.textContent='Xato: '+e;xb.style.color='#ff6b6b';}
   finally{_uguruhKutishYuborilmoqda=false;}
 }
-async function uGuruhOqChiqar(uid,tel){
+async function uGuruhOqChiqar(uid,tel,kalit){
   if(!confirm('Bu o\'quvchi guruhdan chiqarilsinmi?'))return;
   try{
     var body={guruh_id:_uguruhCur,ustoz_id:CU.id};
     if(uid)body.user_id=uid;
     if(tel)body.telefon=tel;
+    if(kalit)body.azo_kalit=kalit;
     var r=await apiFetch(API+'/guruh/oquvchi/ochir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     var d=await r.json();
     if(d.success)uGuruhDetailLoad();
