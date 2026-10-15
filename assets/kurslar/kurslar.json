@@ -28,7 +28,9 @@
     },
     {
      "id": "alkinlar",
-     "nom": "Alkinlar"
+     "nom": "Alkinlar",
+     "fayl": "organik/alkinlar.json",
+     "savollar": 116
     },
     {
      "id": "arenlar",

@@ -31,7 +31,7 @@ KATALOG = [
         {"id": "sikloalkanlar", "nom": "Sikloalkanlar"},
         {"id": "alkenlar", "nom": "Alkenlar"},
         {"id": "alkadiyenlar", "nom": "Alkadiyenlar va kauchuklar", "fayl": "organik/alkadiyenlar"},
-        {"id": "alkinlar", "nom": "Alkinlar"},
+        {"id": "alkinlar", "nom": "Alkinlar", "fayl": "organik/alkinlar"},
         {"id": "arenlar", "nom": "Arenlar"},
         {"id": "spirtlar", "nom": "Spirtlar"},
         {"id": "fenollar", "nom": "Fenollar"},
