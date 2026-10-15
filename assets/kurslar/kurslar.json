@@ -21,7 +21,9 @@
     },
     {
      "id": "alkadiyenlar",
-     "nom": "Alkadiyenlar va kauchuklar"
+     "nom": "Alkadiyenlar va kauchuklar",
+     "fayl": "organik/alkadiyenlar.json",
+     "savollar": 106
     },
     {
      "id": "alkinlar",

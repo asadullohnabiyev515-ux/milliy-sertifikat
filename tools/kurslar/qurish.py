@@ -24,7 +24,7 @@ KATALOG = [
         {"id": "alkanlar", "nom": "Alkanlar", "fayl": "organik/alkanlar"},
         {"id": "sikloalkanlar", "nom": "Sikloalkanlar"},
         {"id": "alkenlar", "nom": "Alkenlar"},
-        {"id": "alkadiyenlar", "nom": "Alkadiyenlar va kauchuklar"},
+        {"id": "alkadiyenlar", "nom": "Alkadiyenlar va kauchuklar", "fayl": "organik/alkadiyenlar"},
         {"id": "alkinlar", "nom": "Alkinlar"},
         {"id": "arenlar", "nom": "Arenlar"},
         {"id": "spirtlar", "nom": "Spirtlar"},
@@ -85,13 +85,29 @@ def tf_qur(i, tasdiq, togrimi, izoh):
             "variantlar": {"A": "To'g'ri", "B": "Noto'g'ri"}, "javob": "A" if togrimi else "B", "izoh": izoh}
 
 
-def savol_qur(i, savol, variantlar, izoh, orin):
+def savol_qur(i, savol, variantlar, izoh, qosh=None, orin=0):
     assert len(variantlar) == 4 and len(set(variantlar)) == 4, savol
     xatolar = list(variantlar[1:])
     random.Random(hashlib.md5(savol.encode()).hexdigest()).shuffle(xatolar)
     tartib = xatolar[:orin] + [variantlar[0]] + xatolar[orin:]
-    return {"id": i + 1, "savol": savol, "variantlar": dict(zip(HARFLAR, tartib)),
-            "javob": HARFLAR[tartib.index(variantlar[0])], "izoh": izoh}
+    sv = {"id": i + 1, "savol": savol, "variantlar": dict(zip(HARFLAR, tartib)),
+          "javob": HARFLAR[tartib.index(variantlar[0])], "izoh": izoh}
+    if qosh and qosh.get("rasm"):
+        assert os.path.exists(os.path.join(CHIQISH, qosh["rasm"])), qosh["rasm"]
+        sv["rasm"] = qosh["rasm"]
+    return sv
+
+
+def pdf_kesib_ol(manba, yol):
+    """Ustoz bergan tayyor PDF'dan sahifalar oralig'ini olib, bosqich PDF'i qiladi.
+    manba = ("<manba/ ga nisbatan fayl>", birinchi_sahifa, oxirgi_sahifa)  (1 dan sanaladi)"""
+    from pypdf import PdfReader, PdfWriter
+    fayl, bosh, oxir = manba
+    r, w = PdfReader(os.path.join(MANBA, fayl)), PdfWriter()
+    for n in range(bosh - 1, oxir):
+        w.add_page(r.pages[n])
+    with open(yol, "wb") as fh:
+        w.write(fh)
 
 
 def pdf_yoz(yol, mavzu_nom, bosqich_nom, bloklar):
@@ -130,6 +146,15 @@ def pdf_yoz(yol, mavzu_nom, bosqich_nom, bloklar):
                                    ("LEFTPADDING", (0, 0), (-1, -1), 8), ("TOPPADDING", (0, 0), (-1, -1), 2),
                                    ("BOTTOMPADDING", (0, 0), (-1, -1), 2)]))
             hikoya += [t, Spacer(1, 6)]
+        elif tur == "rasmlar":
+            from reportlab.platypus import Image
+            katak = []
+            for rasm, izoh in qiymat:
+                im = Image(os.path.join(CHIQISH, rasm)); k = 70 * mm / im.drawWidth
+                im.drawWidth *= k; im.drawHeight *= k
+                katak.append([im, Paragraph(escape(izoh), s_p)])
+            qatorlar = [sum(katak[i:i + 2], []) for i in range(0, len(katak), 2)]
+            hikoya += [Table(qatorlar), Spacer(1, 6)]
         elif tur == "t":
             t = Table([[Paragraph(escape(c), s_p) for c in r] for r in qiymat])
             t.setStyle(TableStyle([("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#c9d6d2")),
@@ -155,13 +180,16 @@ def main():
                     if bq["tur"] == "nazariy":
                         pdf = f"{m['fayl']}-{n}.pdf"
                         os.makedirs(os.path.dirname(os.path.join(CHIQISH, pdf)), exist_ok=True)
-                        pdf_yoz(os.path.join(CHIQISH, pdf), src.NOM, bq["nom"], bq["bloklar"])
+                        if bq.get("pdf_manba"):
+                            pdf_kesib_ol(bq["pdf_manba"], os.path.join(CHIQISH, pdf))
+                        else:
+                            pdf_yoz(os.path.join(CHIQISH, pdf), src.NOM, bq["nom"], bq["bloklar"])
                         bosqichlar.append({"tur": "nazariy", "nom": bq["nom"], "pdf": pdf,
                                            "bloklar": [[t, q] for t, q in bq["bloklar"]]})
                     else:
                         tanlov = [q for q in bq["savollar"] if q[0] != "tf"]
                         orin = iter(javob_orinlari(m["fayl"] + bq["nom"], len(tanlov)))
-                        sv = [tf_qur(i, *q[1:]) if q[0] == "tf" else savol_qur(i, *q, next(orin))
+                        sv = [tf_qur(i, *q[1:]) if q[0] == "tf" else savol_qur(i, *q, orin=next(orin))
                               for i, q in enumerate(bq["savollar"])]
                         assert len(sv) >= 20, f"{m['fayl']}: {bq['nom']} — kamida 20 ta savol kerak"
                         bosqichlar.append({"tur": "mashq", "nom": bq["nom"], "coin": bq["coin"], "savollar": sv})
