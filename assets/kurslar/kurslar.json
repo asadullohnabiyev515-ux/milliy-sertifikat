@@ -40,7 +40,9 @@
     },
     {
      "id": "spirtlar",
-     "nom": "Spirtlar"
+     "nom": "Spirtlar",
+     "fayl": "organik/spirtlar.json",
+     "savollar": 139
     },
     {
      "id": "fenollar",
