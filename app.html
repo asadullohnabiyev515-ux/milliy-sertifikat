@@ -227,6 +227,10 @@ body[data-tema="yorug"] #tema-tog{background:#fff;border-color:var(--c-border2);
 .e-tf.sel .vbg{color:#fff}
 .e-tfB.sel{border-color:#e5484d!important;background:rgba(229,72,77,.08)!important;box-shadow:0 0 0 3px rgba(229,72,77,.15)!important}
 .e-tfB.sel .vbg{background:#e5484d!important}
+.k-rasmlar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.k-rasmlar figure{margin:0;background:#fff;border:1px solid var(--c-border2);border-radius:12px;padding:6px;display:grid;gap:4px;justify-items:center}
+.k-rasmlar img{width:100%;height:auto;display:block}
+.k-rasmlar figcaption{font-size:.72rem;font-weight:800;color:#10201c;text-align:center}
 .k-xato{background:var(--c-card);border:1px solid var(--c-border2);border-radius:16px;padding:12px;display:grid;gap:4px;margin-bottom:8px;font-size:.84rem;color:var(--c-fg)}
 .k-xato .q{font-weight:800}
 .k-xato .iz{font-size:.78rem;color:var(--c-muted);font-weight:700}
@@ -3008,6 +3012,8 @@ async function kProgSinxron(){
     kProgSave(p);
   }catch(e){}
 }
+// Katalogdagi fayl nomi (".json" bilan) → progress kaliti (".json"siz, server ham shunday saqlaydi)
+function kKey(f){return String(f||'').replace(/\.json$/,'');}
 function kEsc(t){return escAttr(t==null?'':String(t));}
 async function kKatalog(){
   if(K.katalog)return K.katalog;
@@ -3017,7 +3023,8 @@ async function kKatalog(){
 }
 function kBolim(){return (K.katalog||[]).filter(function(b){return b.id===K.bolimId;})[0];}
 // Mavzu ochiqmi: birinchisi doim, keyingilari — oldingi mavzu o'tilgan bo'lsa
-function kMavzuOchiq(b,i,p){if(i===0)return true;var old=b.mavzular[i-1];return !!(old.fayl&&p[old.fayl]&&p[old.fayl].done);}
+// Mavzu ochiqmi: oldingi TAYYOR (fayli bor) mavzu o'tilgan bo'lsa; "Tez orada" mavzular zanjirda hisobga olinmaydi
+function kMavzuOchiq(b,i,p){for(var j=i-1;j>=0;j--){var old=b.mavzular[j];if(old.fayl)return !!(p[kKey(old.fayl)]&&p[kKey(old.fayl)].done);}return true;}
 async function kurslarOch(){
   go('p-kurslar',-1);
   var el=document.getElementById('k-bolimlar');
@@ -3025,7 +3032,7 @@ async function kurslarOch(){
     var kat=await kKatalog();await kProgSinxron();var p=kProg();
     el.innerHTML=kat.map(function(b,bi){
       var tayyor=b.mavzular.filter(function(m){return m.fayl;}).length;
-      var otilgan=b.mavzular.filter(function(m){return m.fayl&&p[m.fayl]&&p[m.fayl].done;}).length;
+      var otilgan=b.mavzular.filter(function(m){return m.fayl&&p[kKey(m.fayl)]&&p[kKey(m.fayl)].done;}).length;
       var g=['e-g1','e-g2','e-g3'][bi%3];
       return '<div class="k-bcard" onclick="kBolimOch(\''+b.id+'\')"><div class="k-brow"><div class="e-ic '+g+'" style="font-size:1.2rem">'+['🧬','⚗️','🧪'][bi%3]+'</div><div class="t"><b>'+kEsc(b.nom)+'</b><small>'+kEsc(b.tavsif)+'</small></div><span class="e-lchev">'+'<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>'+'</span></div>'+
         '<div class="e-prow"><span>'+otilgan+'/'+b.mavzular.length+" mavzu o'tildi</span><span>"+tayyor+' ta tayyor</span></div><div class="e-bar"><i style="width:'+Math.round(otilgan/Math.max(1,b.mavzular.length)*100)+'%"></i></div></div>';
@@ -3038,7 +3045,7 @@ async function kBolimOch(id){
   var b=kBolim(),p=kProg();if(!b)return;
   document.getElementById('k-bolim-nom').textContent=b.nom;
   document.getElementById('k-mavzular').innerHTML='<div class="e-list">'+b.mavzular.map(function(m,i){
-    var ochiq=kMavzuOchiq(b,i,p),done=m.fayl&&p[m.fayl]&&p[m.fayl].done;
+    var ochiq=kMavzuOchiq(b,i,p),done=m.fayl&&p[kKey(m.fayl)]&&p[kKey(m.fayl)].done;
     var sub=m.fayl?(m.savollar+' savol · 5 bosqich'):'Kontent tayyorlanmoqda';
     var ong=!m.fayl?'<span class="k-soon">TEZ ORADA</span>':(!ochiq?'🔒':(done?'<span class="e-pill hi">✓</span>':'<span class="e-lchev">'+'<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>'+'</span>'));
     var bos=(m.fayl&&ochiq)?' onclick="kMavzuOch('+i+')"':' style="cursor:default"';
@@ -3093,6 +3100,7 @@ function kNazariyOch(i){
     if(t==='p')return '<p>'+kEsc(v)+'</p>';
     if(t==='ul')return '<ul>'+v.map(function(x){return '<li>'+kEsc(x)+'</li>';}).join('')+'</ul>';
     if(t==='f')return '<div class="k-f">'+v.map(kEsc).join('\n')+'</div>';
+    if(t==='rasmlar')return '<div class="k-rasmlar">'+v.map(function(r){return '<figure><img src="assets/kurslar/'+kEsc(r[0])+'" alt="'+kEsc(r[1])+'" loading="lazy"/><figcaption>'+kEsc(r[1])+'</figcaption></figure>';}).join('')+'</div>';
     if(t==='t')return '<div class="k-tw"><table>'+v.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+kEsc(c)+'</td>';}).join('')+'</tr>';}).join('')+'</table></div>';
     return '';
   }).join('');
@@ -3113,7 +3121,7 @@ function kPdfOch(){
 function kMashqBoshla(i){
   var bq=K.mavzu.bosqichlar[i];
   ttMode='kurslar';K.bosqich=i;
-  ttS=bq.savollar.map(function(s){return {id:s.id,tur:s.tur,savol:s.savol,variantlar:s.variantlar};});
+  ttS=bq.savollar.map(function(s){return {id:s.id,tur:s.tur,savol:s.savol,variantlar:s.variantlar,rasm_url:s.rasm?'assets/kurslar/'+s.rasm:''};});
   for(var a=ttS.length-1;a>0;a--){var b=Math.floor(Math.random()*(a+1)),t=ttS[a];ttS[a]=ttS[b];ttS[b]=t;}
   ttJav={};ttJ=0;
   document.getElementById('ttitle').textContent=K.mavzu.nom+' — '+bq.nom;
@@ -3140,7 +3148,7 @@ async function kNat(){
   document.getElementById('ttsub').textContent=b>=60?'Bosqich bajarildi!':'Keyingi bosqich uchun 60%+ kerak';
   document.getElementById('ttxatolar').innerHTML=xl.length?'<div class="e-sec" style="margin-bottom:10px">Xato javoblar</div>'+xl.map(function(s){
     var u=ttJav[s.id];
-    return '<div class="k-xato"><div class="q">'+kEsc(s.savol)+'</div><div>Sizniki: <b style="color:#e5484d">'+(u?u+') '+kEsc(s.variantlar[u]):'javob berilmagan')+'</b></div><div>To\'g\'ri: <b style="color:#22a06b">'+s.javob+') '+kEsc(s.variantlar[s.javob])+'</b></div><div class="iz">💡 '+kEsc(s.izoh)+'</div></div>';
+    return '<div class="k-xato"><div class="q">'+kEsc(s.savol)+'</div>'+(s.rasm?'<img src="assets/kurslar/'+kEsc(s.rasm)+'" alt="" style="max-width:220px;border-radius:10px;background:#fff;border:1px solid var(--c-border2)"/>':'')+'<div>Sizniki: <b style="color:#e5484d">'+(u?u+') '+kEsc(s.variantlar[u]):'javob berilmagan')+'</b></div><div>To\'g\'ri: <b style="color:#22a06b">'+s.javob+') '+kEsc(s.variantlar[s.javob])+'</b></div><div class="iz">💡 '+kEsc(s.izoh)+'</div></div>';
   }).join(''):'';
   var p=kProg();p[f]=p[f]||{};var mp=p[f];
   if(b>(mp[i]||0))mp[i]=b;
