@@ -231,6 +231,12 @@ body[data-tema="yorug"] #tema-tog{background:#fff;border-color:var(--c-border2);
 .k-rasmlar figure{margin:0;background:#fff;border:1px solid var(--c-border2);border-radius:12px;padding:6px;display:grid;gap:4px;justify-items:center}
 .k-rasmlar img{width:100%;height:auto;display:block}
 .k-rasmlar figcaption{font-size:.72rem;font-weight:800;color:#10201c;text-align:center}
+.k-taf{padding:4px 12px 12px 56px;display:grid;gap:8px}
+.k-taf[hidden]{display:none}
+.k-tafm{display:grid;gap:4px}
+.k-tafm b{font-size:.8rem;font-weight:900;color:var(--c-fg)}
+.k-tafc{display:flex;flex-wrap:wrap;gap:4px}
+.k-tafc .e-pill{font-size:.68rem}
 .k-yopiq{background:rgba(230,168,23,.1);border:1px solid rgba(230,168,23,.35);border-radius:14px;padding:10px 12px;font-size:.8rem;font-weight:700;color:var(--c-fg);margin-bottom:10px}
 .k-qh{display:flex;gap:8px;align-items:flex-start}
 .k-belgi{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.75rem;font-weight:900;color:#fff;flex-shrink:0}
@@ -442,6 +448,10 @@ body[data-tema="yorug"] .e-only-dark{display:none}
     <div id="pGuruhDetAzolar" style="display:flex;flex-direction:column;gap:6px;margin-bottom:22px"></div>
     <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">🏆 Reyting</div>
     <div id="pGuruhDetReyting" style="display:flex;flex-direction:column;gap:6px;margin-bottom:22px"></div>
+    <div id="pGuruhDetKursWrap" style="display:none">
+      <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">📚 Kurs reytingi</div>
+      <div id="pGuruhDetKurs" style="margin-bottom:22px"></div>
+    </div>
     <div style="font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">📝 O'tkazilgan testlar</div>
     <div id="pGuruhDetTestlar" style="display:flex;flex-direction:column;gap:6px"></div>
   </div>
@@ -979,6 +989,9 @@ body[data-tema="yorug"] .e-only-dark{display:none}
   </div>
   <div style="padding:16px">
     <div id="uguruhReyting"><div style="text-align:center;padding:20px;color:rgba(255,255,255,.4);font-size:.85rem">Hali natija yo'q</div></div>
+    <div class="e-sec" style="margin:22px 0 10px">📚 Kurs reytingi</div>
+    <div class="k-intro" style="margin-bottom:10px">Ismni bossangiz — mavzu va bosqichlar bo'yicha natijalar.</div>
+    <div id="uguruhKursReyting"></div>
   </div>
 </div>
 
@@ -2926,6 +2939,7 @@ async function pGuruhDetOch(gid,nomi){
   document.getElementById('pGuruhDetReyting').innerHTML='';
   document.getElementById('pGuruhDetTestlar').innerHTML='';
   go('p4',-1);
+  kursReytingRender('pGuruhDetKurs',gid,false);
   try{
     var r=await fetch(API+'/guruh/azolar/'+gid);
     var d=await r.json();
@@ -3004,6 +3018,43 @@ async function coinKunlikTekshir(){
   }catch(e){}
 }
 
+
+// ── Guruh kurs reytingi (ustoz va o'quvchi sahifalari uchun umumiy) ──
+var K_BOSQICH_NOM={'1':'1-mashq','3':'2-mashq','4':'Aralash'};
+async function kursReytingRender(elId,gid,ustoz){
+  var el=document.getElementById(elId);if(!el)return;
+  var wrap=document.getElementById('pGuruhDetKursWrap');
+  el.innerHTML='<div style="text-align:center;padding:16px"><div class="sp" style="margin:0 auto"></div></div>';
+  try{
+    var d=await (await apiFetch(API+'/guruh/kurs_reyting/'+encodeURIComponent(gid)+(ustoz?'?ustoz_id='+CU.id:''))).json();
+    if(!d.kurslar||!d.kurslar.length){
+      if(wrap)wrap.style.display='none';
+      el.innerHTML='<div class="e-empty">Guruhga hali kurs biriktirilmagan.</div>';return;
+    }
+    if(wrap)wrap.style.display='block';
+    var nomlar={};
+    try{(await kKatalog()).forEach(function(b){b.mavzular.forEach(function(m){if(m.fayl)nomlar[kKey(m.fayl)]=m.nom;});});}catch(e){}
+    var list=d.reyting||[];
+    if(!list.length){el.innerHTML='<div class="e-empty">Guruhda faol o\'quvchi yo\'q.</div>';return;}
+    el.innerHTML='<div class="e-list">'+list.map(function(n,i){
+      var bosh=!n.otilgan&&!n.bosqichlar&&!n.ball;
+      var medal=bosh?'–':(i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.');
+      var sub=bosh?'Hali boshlamagan':(n.otilgan+" mavzu o'tildi · "+n.bosqichlar+' bosqich');
+      var tafsilot='';
+      if(ustoz&&n.tafsilot){
+        var fl=Object.keys(n.tafsilot);
+        tafsilot='<div class="k-taf" id="ktaf-'+elId+'-'+i+'" hidden>'+(fl.length?fl.map(function(f){
+          var t=n.tafsilot[f],bl=Object.keys(t.ballar).sort();
+          return '<div class="k-tafm"><b>'+kEsc(nomlar[f]||f)+(t.done?' ✓':'')+'</b><div class="k-tafc">'+bl.map(function(k){
+            var v=t.ballar[k];return '<span class="e-pill '+(v>=60?'hi':'lo')+'">'+(K_BOSQICH_NOM[k]||((+k+1)+'-bosqich'))+': '+v+'%</span>';
+          }).join('')+'</div></div>';
+        }).join(''):'<div class="k-intro">Hali mashq ishlamagan.</div>')+'</div>';
+      }
+      var bos=ustoz&&n.tafsilot?' onclick="var t=document.getElementById(\'ktaf-'+elId+'-'+i+'\');t.hidden=!t.hidden"':' style="cursor:default"';
+      return '<div><div class="e-li"'+bos+'><span class="k-num'+(n.otilgan?' ok':'')+'" style="font-size:'+(i<3&&!bosh?'1rem':'.8rem')+'">'+medal+'</span><div class="t"><b>'+kEsc(n.ism)+'</b><small>'+sub+'</small></div><span class="e-pill '+(bosh?'wait':'hi')+'">'+n.ball+'</span></div>'+tafsilot+'</div>';
+    }).join('')+'</div><div class="k-intro" style="margin-top:8px">Ball — har bir mashq bosqichidagi eng yaxshi natijalar yig\'indisi.</div>';
+  }catch(e){el.innerHTML='<div class="e-empty">Kurs reytingini yuklab bo\'lmadi.</div>';}
+}
 // ═══ KIMYO KURSLARI ═══
 // Kontent: assets/kurslar/kurslar.json (katalog) va assets/kurslar/<bolim>/<mavzu>.json —
 // tools/kurslar/qurish.py yaratadi. Progress qurilmada: localStorage 'kprog_<user_id>' =
@@ -4359,6 +4410,7 @@ function uGuruhOqQoshOch(){
 function uGuruhReytingOch(){
   go('p9k',-1);
   uGuruhReytingLoad();
+  kursReytingRender('uguruhKursReyting',_uguruhCur,true);
 }
 function uGuruhTestlarOch(){
   document.getElementById('uguruhNatijaForm').style.display='none';
