@@ -1,0 +1,167 @@
+{
+ "bolimlar": [
+  {
+   "id": "organik",
+   "nom": "Organik kimyo",
+   "tavsif": "Uglevodorodlar va ularning hosilalari",
+   "mavzular": [
+    {
+     "id": "alkanlar",
+     "nom": "Alkanlar",
+     "fayl": "organik/alkanlar.json",
+     "savollar": 72
+    },
+    {
+     "id": "sikloalkanlar",
+     "nom": "Sikloalkanlar"
+    },
+    {
+     "id": "alkenlar",
+     "nom": "Alkenlar"
+    },
+    {
+     "id": "alkadiyenlar",
+     "nom": "Alkadiyenlar va kauchuklar"
+    },
+    {
+     "id": "alkinlar",
+     "nom": "Alkinlar"
+    },
+    {
+     "id": "arenlar",
+     "nom": "Arenlar"
+    },
+    {
+     "id": "spirtlar",
+     "nom": "Spirtlar"
+    },
+    {
+     "id": "fenollar",
+     "nom": "Fenollar"
+    },
+    {
+     "id": "aldegidlar",
+     "nom": "Aldegidlar va ketonlar"
+    },
+    {
+     "id": "kislotalar",
+     "nom": "Karbon kislotalar"
+    },
+    {
+     "id": "efirlar",
+     "nom": "Murakkab efirlar va yog'lar"
+    },
+    {
+     "id": "uglevodlar",
+     "nom": "Uglevodlar"
+    },
+    {
+     "id": "aminlar",
+     "nom": "Aminlar"
+    },
+    {
+     "id": "oqsillar",
+     "nom": "Aminokislotalar va oqsillar"
+    }
+   ]
+  },
+  {
+   "id": "anorganik",
+   "nom": "Anorganik kimyo",
+   "tavsif": "Elementlar va ularning birikmalari",
+   "mavzular": [
+    {
+     "id": "vodorod",
+     "nom": "Vodorod va kislorod"
+    },
+    {
+     "id": "galogenlar",
+     "nom": "Galogenlar"
+    },
+    {
+     "id": "oltingugurt",
+     "nom": "Oltingugurt va uning birikmalari"
+    },
+    {
+     "id": "azot",
+     "nom": "Azot va fosfor"
+    },
+    {
+     "id": "uglerod",
+     "nom": "Uglerod va kremniy"
+    },
+    {
+     "id": "ishqoriy",
+     "nom": "Ishqoriy metallar"
+    },
+    {
+     "id": "ishqoriyer",
+     "nom": "Ishqoriy-yer metallar"
+    },
+    {
+     "id": "alyuminiy",
+     "nom": "Alyuminiy"
+    },
+    {
+     "id": "temir",
+     "nom": "Temir va uning birikmalari"
+    },
+    {
+     "id": "dmetallar",
+     "nom": "Mis, rux va boshqa d-metallar"
+    }
+   ]
+  },
+  {
+   "id": "umumiy",
+   "nom": "Umumiy kimyo",
+   "tavsif": "Asosiy qonunlar, tuzilish va jarayonlar",
+   "mavzular": [
+    {
+     "id": "tushunchalar",
+     "nom": "Asosiy tushunchalar va qonunlar"
+    },
+    {
+     "id": "atom",
+     "nom": "Atom tuzilishi"
+    },
+    {
+     "id": "davriy",
+     "nom": "Davriy qonun va davriy sistema"
+    },
+    {
+     "id": "boglanish",
+     "nom": "Kimyoviy bog'lanish"
+    },
+    {
+     "id": "gazlar",
+     "nom": "Modda miqdori va gaz qonunlari"
+    },
+    {
+     "id": "eritmalar",
+     "nom": "Eritmalar va konsentratsiya"
+    },
+    {
+     "id": "tezlik",
+     "nom": "Reaksiya tezligi va kimyoviy muvozanat"
+    },
+    {
+     "id": "dissotsiatsiya",
+     "nom": "Elektrolitik dissotsiatsiya"
+    },
+    {
+     "id": "oqr",
+     "nom": "Oksidlanish-qaytarilish reaksiyalari"
+    },
+    {
+     "id": "elektroliz",
+     "nom": "Elektroliz"
+    },
+    {
+     "id": "sinflar",
+     "nom": "Anorganik moddalar sinflari"
+    }
+   ]
+  }
+ ]
+}

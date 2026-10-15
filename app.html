@@ -193,6 +193,37 @@ body[data-tema="yorug"] #tema-tog{background:#fff;border-color:var(--c-border2);
 .e-go{background:var(--e-pill);color:var(--e-pill-fg);border:0;border-radius:12px;padding:9px 14px;font-family:var(--e-f);font-weight:800;font-size:.8rem;cursor:pointer;flex-shrink:0}
 .e-bar{height:8px;border-radius:99px;background:var(--c-card4);overflow:hidden}
 .e-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--e-brand),#7fd1b9);transition:width .3s}
+
+/* Kimyo kurslari */
+.k-feat{grid-column:span 2;grid-template-columns:auto 1fr;align-items:center;gap:12px}
+.k-intro{font-size:.8rem;color:var(--c-muted);font-weight:700;line-height:1.5}
+.k-bcard{background:var(--c-card);border:1px solid var(--c-border2);border-radius:20px;padding:14px;display:grid;gap:10px;cursor:pointer;margin-bottom:10px;transition:transform .12s ease}
+.k-bcard:active{transform:scale(.98)}
+.k-brow{display:flex;align-items:center;gap:12px;min-width:0}
+.k-brow .t{flex:1;min-width:0;display:grid;gap:1px}
+.k-brow b{font-size:1rem;font-weight:900;color:var(--c-fg)}
+.k-brow small{font-size:.74rem;color:var(--c-muted);font-weight:700}
+.k-num{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-family:var(--e-mono);font-weight:700;font-size:.85rem;flex-shrink:0;background:var(--c-card3);color:var(--c-fg)}
+.k-num.ok{background:rgba(63,165,138,.16);color:var(--e-brand2)}
+.k-lock{opacity:.55}
+.k-soon{font-family:var(--e-mono);font-size:.62rem;font-weight:700;letter-spacing:.08em;color:var(--c-muted);background:var(--c-card3);border-radius:99px;padding:3px 8px;white-space:nowrap}
+.k-mhero{background:linear-gradient(150deg,#5cb89d,#3c9a80);color:#fff;border-radius:20px;padding:14px 16px;display:grid;gap:8px}
+.k-mhero b{font-size:1.1rem;font-weight:900}
+.k-mhero small{opacity:.9;font-size:.78rem;font-weight:700}
+.k-mhero .e-bar{background:rgba(255,255,255,.25)}
+.k-mhero .e-bar i{background:#fff}
+.k-nz{background:var(--c-card);border:1px solid var(--c-border2);border-radius:20px;padding:16px;display:grid;gap:10px;min-width:0;color:var(--c-fg)}
+.k-nz h3{font-size:1rem;font-weight:900;color:var(--e-brand2);margin-top:6px}
+.k-nz p,.k-nz li{font-size:.88rem;line-height:1.55;font-weight:600}
+.k-nz ul{padding-left:18px;display:grid;gap:4px}
+.k-f{background:var(--c-card2);border:1px solid var(--c-border2);border-radius:12px;padding:10px 12px;font-family:var(--e-mono);font-size:.76rem;line-height:1.7;white-space:pre;overflow-x:auto;color:var(--c-fg)}
+.k-tw{overflow-x:auto}
+.k-tw table{border-collapse:collapse;font-size:.8rem;min-width:100%}
+.k-tw td{border:1px solid var(--c-border2);padding:6px 8px;font-weight:700;white-space:nowrap}
+.k-tw tr:first-child td{background:var(--c-card3)}
+.k-xato{background:var(--c-card);border:1px solid var(--c-border2);border-radius:16px;padding:12px;display:grid;gap:4px;margin-bottom:8px;font-size:.84rem;color:var(--c-fg)}
+.k-xato .q{font-weight:800}
+.k-xato .iz{font-size:.78rem;color:var(--c-muted);font-weight:700}
 .e-sec{font-family:var(--e-mono);font-size:.64rem;font-weight:700;letter-spacing:.18em;color:var(--c-muted);text-transform:uppercase;margin-bottom:-4px}
 /* Bo'lim kartochkalari */
 .e-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -368,6 +399,7 @@ body[data-tema="yorug"] .e-only-dark{display:none}
     <div id="hGuruhim"><div style="text-align:center;padding:16px"><div class="sp" style="margin:0 auto"></div></div></div>
     <div class="e-sec">O'quv bo'limlari</div>
     <div class="e-grid">
+      <div class="e-tile k-feat" onclick="kurslarOch()"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g8" style="color:#f2c94c"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9.5 12 5l10 4.5L12 14zM6 11.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div><div style="display:grid;gap:2px;min-width:0"><b>Kimyo kurslari</b><small>Organik · Anorganik · Umumiy</small></div></div>
       <div class="e-tile" onclick="go('p2',1)"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g1"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8zM14 3v5h5M9 13h6M9 17h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg></div><b>Testlar</b><small>Milliy · DTM · Kod</small></div>
       <div class="e-tile" onclick="go('p7',4);tTab(2)"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g3"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></g></svg></div><b>Mashq</b><small>Tester · Mavzuli</small></div>
       <div class="e-tile" onclick="go('p-kurs',-1);kursRoyxatLoad()"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g2"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V4l16 16zM8 16v-4.5L12.5 16z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div><b>Matematika</b><small>Kimyo uchun kurs</small></div>
@@ -1199,6 +1231,47 @@ body[data-tema="yorug"] .e-only-dark{display:none}
   <div class="nitem" id="n5" onclick="go('p8',5)"><span class="ni"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0" stroke-linecap="round"/></g></svg></span><span class="nl">Profil</span></div>
 </div>
 
+<!-- KIMYO KURSLARI: bo'limlar → mavzular → bosqichlar (nazariya / mashq) -->
+<div id="p-kurslar" class="page" style="padding-bottom:90px">
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="go('p1',0)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="e-ht"><span class="e-eyebrow">EduTest</span><b id="k-sar0" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Kimyo kurslari</b></div>
+  </div>
+  <div class="e-wrap">
+    <div class="k-intro">Har bir mavzu: nazariya → mashq → nazariya → mashq → aralash savollar. Bosqichni 60%+ bilan o'tsangiz keyingisi ochiladi va coin olasiz.</div>
+    <div id="k-bolimlar"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
+  </div>
+</div>
+<div id="p-kbolim" class="page" style="padding-bottom:90px">
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="kurslarOch()" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="e-ht"><span class="e-eyebrow">Kurs</span><b id="k-bolim-nom" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Bo'lim</b></div>
+  </div>
+  <div class="e-wrap"><div id="k-mavzular"></div></div>
+</div>
+<div id="p-kmavzu" class="page" style="padding-bottom:90px">
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="kBolimOch(K.bolimId)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="e-ht"><span class="e-eyebrow">Mavzu</span><b id="k-mavzu-nom" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Mavzu</b></div>
+  </div>
+  <div class="e-wrap">
+    <div class="k-mhero" id="k-mhero"></div>
+    <div class="e-sec">Bosqichlar</div>
+    <div id="k-bosqichlar"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
+  </div>
+</div>
+<div id="p-knazariy" class="page" style="padding-bottom:90px">
+  <div class="top e-head">
+    <button class="e-ibtn" onclick="kMavzuRender()" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="e-ht"><span class="e-eyebrow">Nazariya</span><b id="k-nz-nom" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Nazariya</b></div>
+  </div>
+  <div class="e-wrap">
+    <button class="e-mini" style="justify-self:start" onclick="kPdfOch()">📄 PDF variantini ochish</button>
+    <div class="k-nz" id="k-nz"></div>
+    <button class="btn btn-green" id="k-nz-keyin" onclick="kNazariyKeyin()" style="margin-top:0">O'qidim, mashqqa o'tish →</button>
+  </div>
+</div>
+
 <!-- O'YINLAR HUB -->
 <div id="p-games" class="page" style="padding-bottom:80px">
   <div class="top">
@@ -1798,7 +1871,7 @@ var sTogri='';
 
 // GO - sahifa almashtirish
 function go(id,nav){
-  var all=['p1','p2','p3','p3b','p3c','p4','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e','p9f','p9g','p9h','p9i','p9j','p9k','p9l','p9m','p9n','p9q','p9r','p9s','p-elon','p-games','p-game','p-memory','p-sort','p-jadval','p-moddabaza','p-reaksiya','p-oziq','p-kurs','p-kurs-mavzu','p-referral','p-dokon'];
+  var all=['p1','p2','p3','p3b','p3c','p4','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e','p9f','p9g','p9h','p9i','p9j','p9k','p9l','p9m','p9n','p9q','p9r','p9s','p-elon','p-games','p-game','p-memory','p-sort','p-jadval','p-moddabaza','p-reaksiya','p-oziq','p-kurs','p-kurs-mavzu','p-referral','p-dokon','p-kurslar','p-kbolim','p-kmavzu','p-knazariy'];
   all.forEach(function(x){var e=document.getElementById(x);if(e)e.style.display='none';});
   var el=document.getElementById(id);
   if(el)el.style.display='block';
@@ -2422,6 +2495,7 @@ function ttV(h){ttJav[ttS[ttJ].id]=h;eTitra();ttKor();}
 function ttOld(){if(ttJ>0){ttJ--;ttKor();}}
 function ttKeyin(){if(ttJ===ttS.length-1)ttNat();else{ttJ++;ttKor();}}
 async function ttNat(){
+  if(ttMode==='kurslar'){kNat();return;}
   try{
     var r=ttMode==='trening'
       ?await apiFetch(API+'/trening/tekshir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:CU.id,javoblar:ttJav})})
@@ -2570,6 +2644,7 @@ async function ttSeqStart(idx){
   }catch(e){alert('Xato: '+e);}
 }
 function ttCloseBtn(){
+  if(ttMode==='kurslar'){kMavzuRender();return;}
   if(ttMode==='kurs'){go('p-kurs-mavzu',-1);}
   else{go('p7',4);tTab(2);}
 }
@@ -2894,6 +2969,160 @@ async function coinKunlikTekshir(){
     }
   }catch(e){}
 }
+
+// ═══ KIMYO KURSLARI ═══
+// Kontent: assets/kurslar/kurslar.json (katalog) va assets/kurslar/<bolim>/<mavzu>.json —
+// tools/kurslar/qurish.py yaratadi. Progress qurilmada: localStorage 'kprog_<user_id>' =
+// { "<mavzu fayli>": { "<bosqich>": eng yaxshi ball, "o<bosqich>": nazariya o'qildi,
+//   "c<bosqich>": coin berildi, "done": mavzu o'tildi } }
+var K={katalog:null,bolimId:'',mavzuIdx:0,mavzu:null,bosqich:0};
+var K_ICON={nazariy:['e-g2','📖'],mashq:['e-g1','✏️'],aralash:['e-g5','🔀']};
+function kProg(){try{return JSON.parse(localStorage.getItem('kprog_'+(CU&&CU.id||0))||'{}')||{};}catch(e){return {};}}
+function kProgSave(p){try{localStorage.setItem('kprog_'+(CU&&CU.id||0),JSON.stringify(p));}catch(e){}}
+function kEsc(t){return escAttr(t==null?'':String(t));}
+async function kKatalog(){
+  if(K.katalog)return K.katalog;
+  var r=await fetch('assets/kurslar/kurslar.json',{cache:'no-cache'});
+  K.katalog=(await r.json()).bolimlar||[];
+  return K.katalog;
+}
+function kBolim(){return (K.katalog||[]).filter(function(b){return b.id===K.bolimId;})[0];}
+// Mavzu ochiqmi: birinchisi doim, keyingilari — oldingi mavzu o'tilgan bo'lsa
+function kMavzuOchiq(b,i,p){if(i===0)return true;var old=b.mavzular[i-1];return !!(old.fayl&&p[old.fayl]&&p[old.fayl].done);}
+async function kurslarOch(){
+  go('p-kurslar',-1);
+  var el=document.getElementById('k-bolimlar');
+  try{
+    var kat=await kKatalog(),p=kProg();
+    el.innerHTML=kat.map(function(b,bi){
+      var tayyor=b.mavzular.filter(function(m){return m.fayl;}).length;
+      var otilgan=b.mavzular.filter(function(m){return m.fayl&&p[m.fayl]&&p[m.fayl].done;}).length;
+      var g=['e-g1','e-g2','e-g3'][bi%3];
+      return '<div class="k-bcard" onclick="kBolimOch(\''+b.id+'\')"><div class="k-brow"><div class="e-ic '+g+'" style="font-size:1.2rem">'+['🧬','⚗️','🧪'][bi%3]+'</div><div class="t"><b>'+kEsc(b.nom)+'</b><small>'+kEsc(b.tavsif)+'</small></div><span class="e-lchev">'+'<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>'+'</span></div>'+
+        '<div class="e-prow"><span>'+otilgan+'/'+b.mavzular.length+" mavzu o'tildi</span><span>"+tayyor+' ta tayyor</span></div><div class="e-bar"><i style="width:'+Math.round(otilgan/Math.max(1,b.mavzular.length)*100)+'%"></i></div></div>';
+    }).join('');
+  }catch(e){el.innerHTML='<div class="e-empty">Kurslarni yuklab bo\'lmadi. Internetni tekshiring.</div>';}
+}
+async function kBolimOch(id){
+  K.bolimId=id;go('p-kbolim',-1);
+  await kKatalog();
+  var b=kBolim(),p=kProg();if(!b)return;
+  document.getElementById('k-bolim-nom').textContent=b.nom;
+  document.getElementById('k-mavzular').innerHTML='<div class="e-list">'+b.mavzular.map(function(m,i){
+    var ochiq=kMavzuOchiq(b,i,p),done=m.fayl&&p[m.fayl]&&p[m.fayl].done;
+    var sub=m.fayl?(m.savollar+' savol · 5 bosqich'):'Kontent tayyorlanmoqda';
+    var ong=!m.fayl?'<span class="k-soon">TEZ ORADA</span>':(!ochiq?'🔒':(done?'<span class="e-pill hi">✓</span>':'<span class="e-lchev">'+'<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>'+'</span>'));
+    var bos=(m.fayl&&ochiq)?' onclick="kMavzuOch('+i+')"':' style="cursor:default"';
+    return '<div class="e-li'+((m.fayl&&ochiq)?'':' k-lock')+'"'+bos+'><span class="k-num'+(done?' ok':'')+'">'+(i+1)+'</span><div class="t"><b>'+kEsc(m.nom)+'</b><small>'+sub+'</small></div>'+ong+'</div>';
+  }).join('')+'</div>'+(b.mavzular.some(function(m){return m.fayl;})?'<div class="k-intro" style="margin-top:10px">Keyingi mavzu oldingisi 60%+ bilan o\'tilgach ochiladi.</div>':'');
+}
+async function kMavzuOch(i){
+  var b=kBolim();if(!b)return;
+  var m=b.mavzular[i];
+  if(!m||!m.fayl||!kMavzuOchiq(b,i,kProg()))return;
+  K.mavzuIdx=i;go('p-kmavzu',-1);
+  document.getElementById('k-mavzu-nom').textContent=m.nom;
+  document.getElementById('k-bosqichlar').innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
+  try{
+    var r=await fetch('assets/kurslar/'+m.fayl,{cache:'no-cache'});
+    K.mavzu=await r.json();K.mavzu._fayl=m.fayl.replace(/\.json$/,'');
+    kMavzuRender();
+  }catch(e){document.getElementById('k-bosqichlar').innerHTML='<div class="e-empty">Mavzuni yuklab bo\'lmadi.</div>';}
+}
+function kBosqichOtildi(bq,i,mp){return bq.tur==='nazariy'?!!mp['o'+i]:(mp[i]||0)>=60;}
+function kBosqichOchiq(i,mp){if(i===0)return true;var bs=K.mavzu.bosqichlar;return kBosqichOtildi(bs[i-1],i-1,mp);}
+function kMavzuRender(){
+  var M=K.mavzu;if(!M)return;
+  go('p-kmavzu',-1);
+  var mp=kProg()[M._fayl]||{};
+  var bs=M.bosqichlar,otildi=bs.filter(function(bq,i){return kBosqichOtildi(bq,i,mp);}).length;
+  document.getElementById('k-mhero').innerHTML='<small>'+kEsc(M.tavsif)+'</small><b>'+otildi+'/'+bs.length+' bosqich bajarildi'+(mp.done?' · ✓ Mavzu o\'tildi':'')+'</b><div class="e-bar"><i style="width:'+Math.round(otildi/bs.length*100)+'%"></i></div>';
+  document.getElementById('k-bosqichlar').innerHTML='<div class="e-list">'+bs.map(function(bq,i){
+    var aralash=bq.tur==='mashq'&&i===bs.length-1;
+    var t=K_ICON[aralash?'aralash':bq.tur],ochiq=kBosqichOchiq(i,mp),ot=kBosqichOtildi(bq,i,mp);
+    var sub=bq.tur==='nazariy'?'Nazariya · PDF':(bq.savollar.length+' savol · +'+bq.coin+' coin');
+    var ong;
+    if(!ochiq)ong='🔒';
+    else if(bq.tur==='nazariy')ong=ot?'<span class="e-pill hi">O\'qildi</span>':'<span class="e-lchev">'+'<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>'+'</span>';
+    else if(mp[i]!=null)ong='<span class="e-pill '+(mp[i]>=60?'hi':'lo')+'">'+mp[i]+'%</span>';
+    else ong='<span class="e-lchev">'+'<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>'+'</span>';
+    return '<div class="e-li'+(ochiq?'':' k-lock')+'"'+(ochiq?' onclick="kBosqichOch('+i+')"':' style="cursor:default"')+'><span class="e-mi '+t[0]+'" style="font-size:1rem">'+t[1]+'</span><div class="t"><b>'+(i+1)+'. '+kEsc(bq.nom)+'</b><small>'+sub+'</small></div>'+ong+'</div>';
+  }).join('')+'</div>';
+}
+function kBosqichOch(i){
+  var M=K.mavzu;if(!M||!kBosqichOchiq(i,kProg()[M._fayl]||{}))return;
+  K.bosqich=i;
+  var bq=M.bosqichlar[i];
+  if(bq.tur==='nazariy')kNazariyOch(i);else kMashqBoshla(i);
+}
+function kNazariyOch(i){
+  var bq=K.mavzu.bosqichlar[i];
+  document.getElementById('k-nz-nom').textContent=bq.nom;
+  document.getElementById('k-nz').innerHTML=bq.bloklar.map(function(bl){
+    var t=bl[0],v=bl[1];
+    if(t==='h')return '<h3>'+kEsc(v)+'</h3>';
+    if(t==='p')return '<p>'+kEsc(v)+'</p>';
+    if(t==='ul')return '<ul>'+v.map(function(x){return '<li>'+kEsc(x)+'</li>';}).join('')+'</ul>';
+    if(t==='f')return '<div class="k-f">'+v.map(kEsc).join('\n')+'</div>';
+    if(t==='t')return '<div class="k-tw"><table>'+v.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+kEsc(c)+'</td>';}).join('')+'</tr>';}).join('')+'</table></div>';
+    return '';
+  }).join('');
+  var keyin=K.mavzu.bosqichlar[i+1];
+  document.getElementById('k-nz-keyin').textContent=keyin?"O'qidim, mashqqa o'tish →":"O'qidim";
+  // Nazariya ochilgach o'qilgan deb belgilanadi — keyingi (mashq) bosqich ochiladi
+  var p=kProg(),f=K.mavzu._fayl;p[f]=p[f]||{};p[f]['o'+i]=1;kProgSave(p);
+  go('p-knazariy',-1);
+}
+function kNazariyKeyin(){if(K.mavzu.bosqichlar[K.bosqich+1])kBosqichOch(K.bosqich+1);else kMavzuRender();}
+function kPdfOch(){
+  var bq=K.mavzu&&K.mavzu.bosqichlar[K.bosqich];if(!bq||!bq.pdf)return;
+  var url=new URL('assets/kurslar/'+bq.pdf,location.href).href;
+  try{if(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.openLink){Telegram.WebApp.openLink(url);return;}}catch(e){}
+  window.open(url,'_blank');
+}
+function kMashqBoshla(i){
+  var bq=K.mavzu.bosqichlar[i];
+  ttMode='kurslar';K.bosqich=i;
+  ttS=bq.savollar.map(function(s){return {id:s.id,savol:s.savol,variantlar:s.variantlar};});
+  for(var a=ttS.length-1;a>0;a--){var b=Math.floor(Math.random()*(a+1)),t=ttS[a];ttS[a]=ttS[b];ttS[b]=t;}
+  ttJav={};ttJ=0;
+  document.getElementById('ttitle').textContent=K.mavzu.nom+' — '+bq.nom;
+  ttKor();go('p7b',-1);
+}
+function kNat(){
+  var M=K.mavzu,i=K.bosqich,bq=M.bosqichlar[i],f=M._fayl;
+  var xit={};bq.savollar.forEach(function(s){xit[s.id]=s;});
+  var togri=0,xl=[];
+  ttS.forEach(function(q){var s=xit[q.id];if(ttJav[q.id]===s.javob)togri++;else xl.push(s);});
+  var jami=ttS.length,b=Math.round(togri/jami*100);
+  document.getElementById('ttball').textContent=b+'%';
+  document.getElementById('tttogri').textContent=togri;
+  document.getElementById('ttxato').textContent=jami-togri;
+  document.getElementById('ttjami').textContent=jami;
+  document.getElementById('ttemoji').textContent=b>=80?'🏆':b>=60?'🎉':b>=40?'👍':'💪';
+  document.getElementById('ttsub').textContent=b>=60?'Bosqich bajarildi!':'Keyingi bosqich uchun 60%+ kerak';
+  document.getElementById('ttxatolar').innerHTML=xl.length?'<div class="e-sec" style="margin-bottom:10px">Xato javoblar</div>'+xl.map(function(s){
+    var u=ttJav[s.id];
+    return '<div class="k-xato"><div class="q">'+kEsc(s.savol)+'</div><div>Sizniki: <b style="color:#e5484d">'+(u?u+') '+kEsc(s.variantlar[u]):'javob berilmagan')+'</b></div><div>To\'g\'ri: <b style="color:#22a06b">'+s.javob+') '+kEsc(s.variantlar[s.javob])+'</b></div><div class="iz">💡 '+kEsc(s.izoh)+'</div></div>';
+  }).join(''):'';
+  var p=kProg();p[f]=p[f]||{};var mp=p[f];
+  if(b>(mp[i]||0))mp[i]=b;
+  var otdi=b>=60,oxirgi=i===M.bosqichlar.length-1;
+  if(otdi&&!mp['c'+i]){mp['c'+i]=1;coinBer(bq.coin,M.nom+': '+bq.nom);}
+  if(otdi&&oxirgi)mp.done=true;
+  kProgSave(p);
+  var bA=document.getElementById('ttnatbtnlar'),orqa='<button class="btn btn-out" style="margin-top:8px" onclick="kMavzuRender()">📋 Mavzu bosqichlari</button>';
+  if(otdi&&!oxirgi)bA.innerHTML='<button class="btn btn-green" onclick="kBosqichOch('+(i+1)+')">→ Keyingi bosqich</button>'+orqa;
+  else if(otdi){
+    var bl=kBolim(),keyin=bl&&bl.mavzular[K.mavzuIdx+1];
+    bA.innerHTML='<div style="text-align:center;padding:10px;color:var(--e-brand2);font-weight:800">🏆 Mavzu o\'tildi!</div>'+(keyin&&keyin.fayl?'<button class="btn btn-green" onclick="kMavzuOch('+(K.mavzuIdx+1)+')">→ Keyingi mavzu: '+kEsc(keyin.nom)+'</button>':'<button class="btn btn-green" onclick="kBolimOch(K.bolimId)">📚 Mavzular ro\'yxati</button>')+orqa;
+  }else{
+    var nz=-1;for(var j=i-1;j>=0;j--)if(M.bosqichlar[j].tur==='nazariy'){nz=j;break;}
+    bA.innerHTML='<button class="btn btn-green" onclick="kMashqBoshla('+i+')">🔄 Qayta urinish</button>'+(nz>=0?'<button class="btn btn-out" style="margin-top:8px" onclick="K.bosqich='+nz+';kNazariyOch('+nz+')">📖 Nazariyani qayta o\'qish</button>':'')+orqa;
+  }
+  go('p7c',-1);
+}
+
 // MATEMATIKA KURSI (nazariya + mavzu bo'yicha test, ketma-ket ochiladi)
 var KURS_FAN='Matematika';
 var kursMavzuData=[],kursMavzuCur='',kursMavzuIdx=-1;
