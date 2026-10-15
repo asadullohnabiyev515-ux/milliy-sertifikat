@@ -7,7 +7,8 @@
 - assets/kurslar/<bolim>/<mavzu>.json — bosqichlar (nazariya bloklari, mashq savollari)
 - assets/kurslar/<bolim>/<mavzu>-<n>.pdf — har bir nazariy bosqichning PDF varianti
 
-Manbada to'g'ri javob har doim birinchi variant; bu yerda variantlar savol matniga
+Manbada to'g'ri javob har doim birinchi variant ("tf" bilan boshlanganlari —
+to'g'ri/noto'g'ri tasdiqlar); bu yerda variantlar savol matniga
 bog'liq barqaror tartibda aralashtiriladi (har qurishda bir xil natija).
 """
 import hashlib, importlib.util, json, os, random, sys
@@ -75,6 +76,13 @@ def javob_orinlari(bosqich_nom, n):
     orin = [i % 4 for i in range(n)]
     random.Random(hashlib.md5(bosqich_nom.encode()).hexdigest()).shuffle(orin)
     return orin
+
+
+def tf_qur(i, tasdiq, togrimi, izoh):
+    """To'g'ri/noto'g'ri savol: manbada ("tf", "tasdiq", True|False, "izoh")."""
+    assert isinstance(togrimi, bool), tasdiq
+    return {"id": i + 1, "tur": "tf", "savol": "To'g'ri yoki noto'g'ri? " + tasdiq,
+            "variantlar": {"A": "To'g'ri", "B": "Noto'g'ri"}, "javob": "A" if togrimi else "B", "izoh": izoh}
 
 
 def savol_qur(i, savol, variantlar, izoh, orin):
@@ -151,8 +159,10 @@ def main():
                         bosqichlar.append({"tur": "nazariy", "nom": bq["nom"], "pdf": pdf,
                                            "bloklar": [[t, q] for t, q in bq["bloklar"]]})
                     else:
-                        orin = javob_orinlari(m["fayl"] + bq["nom"], len(bq["savollar"]))
-                        sv = [savol_qur(i, *q, orin[i]) for i, q in enumerate(bq["savollar"])]
+                        tanlov = [q for q in bq["savollar"] if q[0] != "tf"]
+                        orin = iter(javob_orinlari(m["fayl"] + bq["nom"], len(tanlov)))
+                        sv = [tf_qur(i, *q[1:]) if q[0] == "tf" else savol_qur(i, *q, next(orin))
+                              for i, q in enumerate(bq["savollar"])]
                         assert len(sv) >= 20, f"{m['fayl']}: {bq['nom']} — kamida 20 ta savol kerak"
                         bosqichlar.append({"tur": "mashq", "nom": bq["nom"], "coin": bq["coin"], "savollar": sv})
                 with open(os.path.join(CHIQISH, m["fayl"] + ".json"), "w", encoding="utf-8") as fh:

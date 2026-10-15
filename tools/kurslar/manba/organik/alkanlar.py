@@ -1,5 +1,6 @@
 # Organik kimyo → 1-mavzu: Alkanlar
 # Savollar formati: (savol, [TO'G'RI javob, xato1, xato2, xato3], izoh)
+#   yoki to'g'ri/noto'g'ri: ("tf", tasdiq, True|False, izoh)
 # To'g'ri javob har doim birinchi yoziladi — qurish skripti variantlarni aralashtiradi.
 
 NOM = "Alkanlar"
@@ -227,6 +228,33 @@ MASHQ_3 = {
         ("1 mol metan va 2 mol xlor yorug'likda reaksiyaga kirishsa, asosiy organik mahsulot:", ["CH₂Cl₂", "CH₃Cl", "CHCl₃", "CCl₄"], "Ikki marta o'rin olish: CH₄ + 2Cl₂ → CH₂Cl₂ + 2HCl."),
     ],
 }
+
+# To'g'ri / noto'g'ri tasdiqlar: ("tf", tasdiq, True|False, izoh)
+MASHQ_1["savollar"] += [
+    ("tf", "Alkanlarda barcha uglerod atomlari sp²-gibridlangan.", False, "Alkanlarda uglerod atomlari sp³-gibridlangan."),
+    ("tf", "Metan molekulasi muntazam tetraedr shaklida.", True, "Uglerod tetraedr markazida, 4 ta vodorod uning uchlarida."),
+    ("tf", "Propanning struktura izomerlari bor.", False, "Struktura izomeriyasi butandan (C₄H₁₀) boshlanadi; propanning izomeri yo'q."),
+    ("tf", "2-metilbutan va pentan bir-biriga izomer.", True, "Ikkalasining formulasi C₅H₁₂, tuzilishi har xil."),
+    ("tf", "\"2-etilbutan\" — to'g'ri sistematik nom.", False, "Eng uzun zanjir 5 ta C bo'ladi, shuning uchun to'g'ri nomi 3-metilpentan."),
+    ("tf", "Alkanlarda C–C bog'ning uzunligi 0,154 nm.", True, "C–C σ-bog' uzunligi 0,154 nm, C–H bog'niki 0,109 nm."),
+    ("tf", "Izobutanning ratsional nomi — trimetilmetan.", True, "(CH₃)₃CH: markaziy CH ga 3 ta metil birikkan."),
+]
+MASHQ_2["savollar"] += [
+    ("tf", "Alkanlar KMnO₄ eritmasini rangsizlantiradi.", False, "Alkanlar to'yingan — KMnO₄ eritmasi va brom suvini rangsizlantirmaydi."),
+    ("tf", "Metanning xlorlanishi yorug'lik ta'sirida boradigan radikal o'rin olish reaksiyasi.", True, "CH₄ + Cl₂ →(hν) CH₃Cl + HCl."),
+    ("tf", "Dyuma usulida hosil bo'ladigan alkanda uglerod atomlari tuzdagidan bitta kam bo'ladi.", True, "Karboksil uglerodi Na₂CO₃ tarkibida chiqib ketadi."),
+    ("tf", "Vyurs reaksiyasida uglerod zanjiri ikki baravar qisqaradi.", False, "Zanjir ikki baravar uzayadi: 2R–Hal + 2Na → R–R + 2NaHal."),
+    ("tf", "Alkanlar krekingida alkan va alken hosil bo'ladi.", True, "Masalan: C₁₀H₂₂ → C₅H₁₂ + C₅H₁₀."),
+    ("tf", "Alyuminiy karbid gidrolizidan atsetilen olinadi.", False, "Al₄C₃ dan metan olinadi; atsetilen kalsiy karbid CaC₂ dan olinadi."),
+]
+MASHQ_3["savollar"] += [
+    ("tf", "Metandagi uglerodning oksidlanish darajasi +4.", False, "x + 4·(+1) = 0 → x = −4."),
+    ("tf", "1 mol geptan to'liq yonishi uchun 11 mol kislorod kerak.", True, "(3n+1)/2 = (3·7+1)/2 = 11."),
+    ("tf", "Butan va izobutan bir-biriga gomologdir.", False, "Ular izomerlar: formulasi bir xil (C₄H₁₀), tuzilishi har xil."),
+    ("tf", "Normal sharoitda pentan suyuq holatda bo'ladi.", True, "C₁–C₄ gazlar, C₅ dan boshlab suyuqliklar."),
+    ("tf", "Tarmoqlangan izomerlar normal tuzilishli izomerga qaraganda yuqoriroq temperaturada qaynaydi.", False, "Aksincha, tarmoqlanish qaynash temperaturasini pasaytiradi."),
+    ("tf", "Havoga nisbatan zichligi 2 ga teng alkan — butan.", True, "M = 2 · 29 = 58 → 14n + 2 = 58 → n = 4."),
+]
 
 BOSQICHLAR = [
     {"tur": "nazariy", **NAZARIY_1},
