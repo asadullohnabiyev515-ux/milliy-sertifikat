@@ -869,6 +869,13 @@ body[data-tema="yorug"] .e-only-dark{display:none}
       <button class="btn btn-green" style="margin-top:0;padding:10px" onclick="uJadvalSaqla()">Saqlash</button>
       <div id="uJadvalXb" style="font-size:.72rem;margin-top:8px;color:rgba(255,255,255,.5)"></div>
     </div>
+    <div style="background:rgba(255,255,255,.04);border-radius:12px;padding:12px;margin-bottom:12px">
+      <div style="font-size:.78rem;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:8px">📚 Kimyo kurslari</div>
+      <div style="font-size:.7rem;color:rgba(255,255,255,.4);margin-bottom:10px">Belgilangan kurslarni faqat shu guruh a'zolari ochib ishlay oladi.</div>
+      <div id="uKursChiplar" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px"></div>
+      <button class="btn btn-green" style="margin-top:0;padding:10px" onclick="uKursBiriktirSaqla()">Saqlash</button>
+      <div id="uKursXb" style="font-size:.72rem;margin-top:8px;color:rgba(255,255,255,.5)"></div>
+    </div>
     <div style="background:rgba(255,255,255,.04);border-radius:12px;padding:12px;margin-bottom:22px">
       <div style="font-size:.78rem;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:8px">👨‍👩‍👧 Ota-onalar Telegram guruhi</div>
       <div style="font-size:.7rem;color:rgba(255,255,255,.4);margin-bottom:8px">Botni ota-onalar guruhingizga a'zo qiling, so'ng guruh chat_id'sini shu yerga kiriting — test yakunlanganda umumiy natija (jadval) o'sha guruhga avtomatik yuboriladi.</div>
@@ -3025,21 +3032,36 @@ function kBolim(){return (K.katalog||[]).filter(function(b){return b.id===K.boli
 // Mavzu ochiqmi: birinchisi doim, keyingilari — oldingi mavzu o'tilgan bo'lsa
 // Mavzu ochiqmi: oldingi TAYYOR (fayli bor) mavzu o'tilgan bo'lsa; "Tez orada" mavzular zanjirda hisobga olinmaydi
 function kMavzuOchiq(b,i,p){for(var j=i-1;j>=0;j--){var old=b.mavzular[j];if(old.fayl)return !!(p[kKey(old.fayl)]&&p[kKey(old.fayl)].done);}return true;}
+// Kurs faqat ustoz biriktirgan guruh a'zolariga ochiq; ruxsatni server beradi va tekshiradi
+async function kRuxsatYukla(){
+  K.ruxsat=null;
+  try{var r=await apiFetch(API+'/kurslar/ruxsat/'+CU.id,null,20000);if(r.ok)K.ruxsat=(await r.json()).bolimlar||[];}catch(e){}
+  return K.ruxsat;
+}
+function kRuxsatBor(id){return !!(K.ruxsat&&K.ruxsat.indexOf(id)>=0);}
 async function kurslarOch(){
   go('p-kurslar',-1);
   var el=document.getElementById('k-bolimlar');
+  el.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
   try{
-    var kat=await kKatalog();await kProgSinxron();var p=kProg();
+    var kat=await kKatalog();await kRuxsatYukla();await kProgSinxron();var p=kProg();
     el.innerHTML=kat.map(function(b,bi){
       var tayyor=b.mavzular.filter(function(m){return m.fayl;}).length;
       var otilgan=b.mavzular.filter(function(m){return m.fayl&&p[kKey(m.fayl)]&&p[kKey(m.fayl)].done;}).length;
       var g=['e-g1','e-g2','e-g3'][bi%3];
+      if(!kRuxsatBor(b.id))return '<div class="k-bcard k-lock" style="cursor:default"><div class="k-brow"><div class="e-ic '+g+'" style="font-size:1.2rem">'+['🧬','⚗️','🧪'][bi%3]+'</div><div class="t"><b>'+kEsc(b.nom)+'</b><small>Guruhingizga biriktirilmagan</small></div>🔒</div></div>';
       return '<div class="k-bcard" onclick="kBolimOch(\''+b.id+'\')"><div class="k-brow"><div class="e-ic '+g+'" style="font-size:1.2rem">'+['🧬','⚗️','🧪'][bi%3]+'</div><div class="t"><b>'+kEsc(b.nom)+'</b><small>'+kEsc(b.tavsif)+'</small></div><span class="e-lchev">'+'<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>'+'</span></div>'+
         '<div class="e-prow"><span>'+otilgan+'/'+b.mavzular.length+" mavzu o'tildi</span><span>"+tayyor+' ta tayyor</span></div><div class="e-bar"><i style="width:'+Math.round(otilgan/Math.max(1,b.mavzular.length)*100)+'%"></i></div></div>';
     }).join('');
+    var xabar='';
+    if(K.ruxsat===null)xabar='<div class="e-empty">Server bilan bog\'lanib bo\'lmadi. Birozdan keyin qayta oching.</div>';
+    else if(!K.ruxsat.length)xabar='<div class="k-bcard" style="cursor:default"><b style="font-size:.9rem">🔒 Kurslar hali ochilmagan</b><div class="k-intro">Kurslarni ustozingiz guruhingizga biriktiradi. Guruhga qo\'shilmagan bo\'lsangiz: Profil → Guruhga qo\'shilish.</div><button class="btn btn-out" style="margin-top:4px" onclick="go(\'p8\',5);pGuruhFormToggle()">Guruhga qo\'shilish</button></div>';
+    el.innerHTML=xabar+el.innerHTML;
   }catch(e){el.innerHTML='<div class="e-empty">Kurslarni yuklab bo\'lmadi. Internetni tekshiring.</div>';}
 }
 async function kBolimOch(id){
+  if(K.ruxsat===undefined)await kRuxsatYukla();
+  if(!kRuxsatBor(id)){kurslarOch();return;}
   K.bolimId=id;go('p-kbolim',-1);
   await kKatalog();
   var b=kBolim(),p=kProg();if(!b)return;
@@ -4043,8 +4065,32 @@ function uGuruhOch(gid,nomi){
   document.getElementById('uJadvalDarsVaqt').value=(gInfo&&gInfo.dars_vaqt)?gInfo.dars_vaqt:'';
   document.getElementById('uJadvalXb').textContent='';
   uJadvalRender();
+  _uKurslar=(gInfo&&gInfo.kurslar)?gInfo.kurslar.slice():[];
+  document.getElementById('uKursXb').textContent='';
+  uKursChipRender();
   go('p9j',-1);
   uGuruhDetailLoad();
+}
+// Guruhga biriktirilgan kimyo kurslari (bo'limlar)
+var _uKurslar=[];
+var U_KURS_BOLIMLAR=[['organik','🧬 Organik'],['anorganik','⚗️ Anorganik'],['umumiy','🧪 Umumiy']];
+function uKursChipRender(){
+  document.getElementById('uKursChiplar').innerHTML=U_KURS_BOLIMLAR.map(function(k){
+    var on=_uKurslar.indexOf(k[0])>=0;
+    return '<div onclick="uKursToggle(\''+k[0]+'\')" style="padding:8px 12px;border-radius:10px;font-size:.78rem;font-weight:700;cursor:pointer;'+
+      (on?'background:#3fa58a;color:#fff':'background:rgba(255,255,255,.06);color:rgba(255,255,255,.6)')+'">'+(on?'✓ ':'')+k[1]+'</div>';
+  }).join('');
+}
+function uKursToggle(id){var i=_uKurslar.indexOf(id);if(i>=0)_uKurslar.splice(i,1);else _uKurslar.push(id);uKursChipRender();}
+async function uKursBiriktirSaqla(){
+  var xb=document.getElementById('uKursXb');xb.textContent='Saqlanmoqda...';
+  try{
+    var r=await apiFetch(API+'/guruh/kurs_biriktir',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({guruh_id:_uguruhCur,ustoz_id:CU.id,kurslar:_uKurslar})});
+    var d=await r.json();
+    if(d.success){xb.textContent=d.kurslar.length?'✅ Saqlandi: '+d.kurslar.length+' ta kurs biriktirildi':"✅ Saqlandi: guruhga kurs biriktirilmagan";uGuruhLoad();}
+    else xb.textContent='Xato: '+(d.detail||'');
+  }catch(e){xb.textContent='Xato: serverga ulanib bo\'lmadi';}
 }
 var HAFTA_QISQA=['Du','Se','Cho','Pay','Ju','Sha','Ya'];
 var _uJadvalKunlar=[];
