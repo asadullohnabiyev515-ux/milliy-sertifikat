@@ -33,7 +33,7 @@ KATALOG = [
         {"id": "alkadiyenlar", "nom": "Alkadiyenlar va kauchuklar", "fayl": "organik/alkadiyenlar"},
         {"id": "alkinlar", "nom": "Alkinlar", "fayl": "organik/alkinlar"},
         {"id": "arenlar", "nom": "Arenlar", "fayl": "organik/arenlar"},
-        {"id": "spirtlar", "nom": "Spirtlar"},
+        {"id": "spirtlar", "nom": "Spirtlar", "fayl": "organik/spirtlar"},
         {"id": "fenollar", "nom": "Fenollar"},
         {"id": "aldegidlar", "nom": "Aldegidlar va ketonlar"},
         {"id": "kislotalar", "nom": "Karbon kislotalar"},
