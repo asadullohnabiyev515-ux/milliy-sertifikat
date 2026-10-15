@@ -221,6 +221,12 @@ body[data-tema="yorug"] #tema-tog{background:#fff;border-color:var(--c-border2);
 .k-tw table{border-collapse:collapse;font-size:.8rem;min-width:100%}
 .k-tw td{border:1px solid var(--c-border2);padding:6px 8px;font-weight:700;white-space:nowrap}
 .k-tw tr:first-child td{background:var(--c-card3)}
+.e-tf .vbg{font-size:1rem}
+.e-tfA .vbg{color:#22a06b}
+.e-tfB .vbg{color:#e5484d}
+.e-tf.sel .vbg{color:#fff}
+.e-tfB.sel{border-color:#e5484d!important;background:rgba(229,72,77,.08)!important;box-shadow:0 0 0 3px rgba(229,72,77,.15)!important}
+.e-tfB.sel .vbg{background:#e5484d!important}
 .k-xato{background:var(--c-card);border:1px solid var(--c-border2);border-radius:16px;padding:12px;display:grid;gap:4px;margin-bottom:8px;font-size:.84rem;color:var(--c-fg)}
 .k-xato .q{font-weight:800}
 .k-xato .iz{font-size:.78rem;color:var(--c-muted);font-weight:700}
@@ -2479,7 +2485,8 @@ function ttKor(){
   var vs=s.variantlar||{};
   var tv=document.getElementById('ttvar');
   tv.className='e-vars'+(eQisqaVariant(Object.keys(vs).map(function(h){return vs[h];}))?' e-vars2':'');
-  tv.innerHTML=Object.keys(vs).map(function(h){return '<button onclick="ttV(\''+h+'\')" class="vb'+(ttJav[s.id]===h?' sel':'')+'"><span class="vbg">'+h+'</span>'+vs[h]+'</button>';}).join('');
+  var tf=s.tur==='tf';
+  tv.innerHTML=Object.keys(vs).map(function(h){return '<button onclick="ttV(\''+h+'\')" class="vb'+(tf?' e-tf e-tf'+h:'')+(ttJav[s.id]===h?' sel':'')+'"><span class="vbg">'+(tf?(h==='A'?'✓':'✗'):h)+'</span>'+vs[h]+'</button>';}).join('');
   var javSoni=0,dots='';
   for(var i=0;i<jami;i++){
     var bor=!!ttJav[ttS[i].id];if(bor)javSoni++;
@@ -3083,7 +3090,7 @@ function kPdfOch(){
 function kMashqBoshla(i){
   var bq=K.mavzu.bosqichlar[i];
   ttMode='kurslar';K.bosqich=i;
-  ttS=bq.savollar.map(function(s){return {id:s.id,savol:s.savol,variantlar:s.variantlar};});
+  ttS=bq.savollar.map(function(s){return {id:s.id,tur:s.tur,savol:s.savol,variantlar:s.variantlar};});
   for(var a=ttS.length-1;a>0;a--){var b=Math.floor(Math.random()*(a+1)),t=ttS[a];ttS[a]=ttS[b];ttS[b]=t;}
   ttJav={};ttJ=0;
   document.getElementById('ttitle').textContent=K.mavzu.nom+' — '+bq.nom;
