@@ -3020,7 +3020,7 @@ async function coinKunlikTekshir(){
 
 
 // ── Guruh kurs reytingi (ustoz va o'quvchi sahifalari uchun umumiy) ──
-var K_BOSQICH_NOM={'1':'1-mashq','3':'2-mashq','4':'Aralash'};
+var K_BOSQICH_NOM={'0':'1-nazariya','1':'1-mashq','2':'2-nazariya','3':'2-mashq','4':'Aralash'};
 async function kursReytingRender(elId,gid,ustoz){
   var el=document.getElementById(elId);if(!el)return;
   var wrap=document.getElementById('pGuruhDetKursWrap');
@@ -3046,13 +3046,13 @@ async function kursReytingRender(elId,gid,ustoz){
         tafsilot='<div class="k-taf" id="ktaf-'+elId+'-'+i+'" hidden>'+(fl.length?fl.map(function(f){
           var t=n.tafsilot[f],bl=Object.keys(t.ballar).sort();
           return '<div class="k-tafm"><b>'+kEsc(nomlar[f]||f)+(t.done?' ✓':'')+'</b><div class="k-tafc">'+bl.map(function(k){
-            var v=t.ballar[k];return '<span class="e-pill '+(v>=60?'hi':'lo')+'">'+(K_BOSQICH_NOM[k]||((+k+1)+'-bosqich'))+': '+v+'%</span>';
+            var v=t.ballar[k],nz=k==='0'||k==='2';return '<span class="e-pill '+(v>=60?'hi':'lo')+'">'+(K_BOSQICH_NOM[k]||((+k+1)+'-bosqich'))+': '+(nz?'✓ 100':v+'%')+'</span>';
           }).join('')+'</div></div>';
         }).join(''):'<div class="k-intro">Hali mashq ishlamagan.</div>')+'</div>';
       }
       var bos=ustoz&&n.tafsilot?' onclick="var t=document.getElementById(\'ktaf-'+elId+'-'+i+'\');t.hidden=!t.hidden"':' style="cursor:default"';
       return '<div><div class="e-li"'+bos+'><span class="k-num'+(n.otilgan?' ok':'')+'" style="font-size:'+(i<3&&!bosh?'1rem':'.8rem')+'">'+medal+'</span><div class="t"><b>'+kEsc(n.ism)+'</b><small>'+sub+'</small></div><span class="e-pill '+(bosh?'wait':'hi')+'">'+n.ball+'</span></div>'+tafsilot+'</div>';
-    }).join('')+'</div><div class="k-intro" style="margin-top:8px">Ball — har bir mashq bosqichidagi eng yaxshi natijalar yig\'indisi.</div>';
+    }).join('')+'</div><div class="k-intro" style="margin-top:8px">Ball: har mavzu 5 bosqich × 100 = 500. O\'qilgan nazariya — 100, mashq — eng yaxshi natija foizi.</div>';
   }catch(e){el.innerHTML='<div class="e-empty">Kurs reytingini yuklab bo\'lmadi.</div>';}
 }
 // ═══ KIMYO KURSLARI ═══
