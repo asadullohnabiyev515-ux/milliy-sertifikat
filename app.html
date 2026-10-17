@@ -1311,6 +1311,7 @@ body[data-tema="yorug"] .page>div>div[style*="background:rgba(255,255,255,.0"]{b
     <div class="k-mhero" id="k-mhero"></div>
     <div class="e-sec">Bosqichlar</div>
     <div id="k-bosqichlar"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
+    <div id="k-xato-kart"></div>
   </div>
 </div>
 <div id="p-knazariy" class="page" style="padding-bottom:90px">
@@ -2556,6 +2557,7 @@ function ttOld(){if(ttJ>0){ttJ--;ttKor();}}
 function ttKeyin(){if(ttJ===ttS.length-1)ttNat();else{ttJ++;ttKor();}}
 async function ttNat(){
   if(ttMode==='kurslar'){kNat();return;}
+  if(ttMode==='kxato'){kXatoNat();return;}
   try{
     var r=ttMode==='trening'
       ?await apiFetch(API+'/trening/tekshir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:CU.id,javoblar:ttJav})})
@@ -2706,7 +2708,7 @@ async function ttSeqStart(idx){
   }catch(e){alert('Xato: '+e);}
 }
 function ttCloseBtn(){
-  if(ttMode==='kurslar'){kMavzuRender();return;}
+  if(ttMode==='kurslar'||ttMode==='kxato'){kMavzuRender();return;}
   if(ttMode==='kurs'){go('p-kurs-mavzu',-1);}
   else{go('p7',4);tTab(2);}
 }
@@ -3211,6 +3213,76 @@ function kMavzuRender(){
     else ong='<span class="e-lchev">'+'<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>'+'</span>';
     return '<div class="e-li'+(ochiq?'':' k-lock')+'"'+(ochiq?' onclick="kBosqichOch('+i+')"':' style="cursor:default"')+'><span class="e-mi '+t[0]+'" style="font-size:1rem">'+t[1]+'</span><div class="t"><b>'+(i+1)+'. '+kEsc(bq.nom)+'</b><small>'+sub+'</small></div>'+ong+'</div>';
   }).join('')+'</div>';
+  kXatoKart();kXatoYukla();
+}
+// ── Xatolar ustida ishlash: serverdagi ro'yxat (kurs_xato.json) — {fayl: {"<bosqich>": [savol_id]}} ──
+K.xatolar=null;
+async function kXatoYukla(){
+  if(!CU||!CU.id)return;
+  try{var d=await (await apiFetch(API+'/kurslar/xatolar/'+CU.id,null,20000)).json();K.xatolar=d.xatolar||{};kXatoKart();}catch(e){}
+}
+function kXatoSavollar(){
+  var M=K.mavzu,x=(K.xatolar||{})[M&&M._fayl]||{},r=[];
+  if(!M)return r;
+  Object.keys(x).forEach(function(b){
+    var bq=M.bosqichlar[+b];if(!bq||!bq.savollar)return;
+    var ids={};(x[b]||[]).forEach(function(id){ids[String(id)]=1;});
+    bq.savollar.forEach(function(s){if(ids[String(s.id)])r.push({b:+b,s:s});});
+  });
+  return r;
+}
+function kXatoKart(){
+  var el=document.getElementById('k-xato-kart');if(!el)return;
+  var n=kXatoSavollar().length;
+  el.innerHTML=n?'<div class="e-list" style="margin-top:12px"><div class="e-li" onclick="kXatoBoshla()"><span class="e-mi e-g5" style="font-size:1rem">🔁</span><div class="t"><b>Xatolar ustida ishlash</b><small>'+n+' ta savol · to\'g\'ri ishlangani ro\'yxatdan chiqadi</small></div><span class="e-cnt">'+n+'</span></div></div>':'';
+}
+function kXatoBoshla(){
+  var r=kXatoSavollar();if(!r.length)return;
+  ttMode='kxato';
+  ttS=r.map(function(x){var s=x.s;return {id:x.b+':'+s.id,tur:s.tur,savol:s.savol,variantlar:s.variantlar,rasm_url:s.rasm?'assets/kurslar/'+s.rasm:'',_s:s};});
+  for(var a=ttS.length-1;a>0;a--){var b=Math.floor(Math.random()*(a+1)),t=ttS[a];ttS[a]=ttS[b];ttS[b]=t;}
+  ttJav={};ttJ=0;
+  document.getElementById('ttitle').textContent=K.mavzu.nom+' — Xatolar ustida ishlash';
+  ttKor();go('p7b',-1);
+}
+async function kXatoNat(){
+  var M=K.mavzu,srv=null;
+  document.getElementById('ttball').textContent='…';
+  try{
+    var r=await apiFetch(API+'/kurslar/xato_tekshir',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({user_id:CU.id,fayl:M._fayl,javoblar:ttJav})});
+    if(r.ok)srv=await r.json();
+  }catch(e){}
+  var bA=document.getElementById('ttnatbtnlar'),orqa='<button class="btn btn-out" style="margin-top:8px" onclick="kMavzuRender()">📋 Mavzu bosqichlari</button>';
+  if(!srv||!srv.natija){
+    document.getElementById('ttball').textContent='—';
+    ['tttogri','ttxato','ttjami'].forEach(function(id){document.getElementById(id).textContent='—';});
+    document.getElementById('ttemoji').textContent='📡';
+    document.getElementById('ttsub').textContent="Natijani tekshirib bo'lmadi: server bilan aloqa yo'q";
+    document.getElementById('ttxatolar').innerHTML='';
+    bA.innerHTML='<button class="btn btn-green" onclick="kXatoNat()">🔄 Qayta yuborish</button>'+orqa;
+    go('p7c',-1);return;
+  }
+  K.xatolar=K.xatolar||{};K.xatolar[M._fayl]=srv.xatolar||{};
+  var jami=ttS.length,togri=ttS.filter(function(q){return srv.natija[q.id];}).length,b=jami?Math.round(togri/jami*100):0;
+  document.getElementById('ttball').textContent=b+'%';
+  document.getElementById('tttogri').textContent=togri;
+  document.getElementById('ttxato').textContent=jami-togri;
+  document.getElementById('ttjami').textContent=jami;
+  document.getElementById('ttemoji').textContent=srv.qoldi?(togri?'💪':'📖'):'🏆';
+  document.getElementById('ttsub').textContent=srv.qoldi?(togri+' ta savol ro\'yxatdan chiqdi · yana '+srv.qoldi+' ta qoldi'):'Barcha xatolar tuzatildi!';
+  var vt=function(s,h){return h?h+') '+kEsc(s.variantlar[h]||''):'javob berilmagan';};
+  document.getElementById('ttxatolar').innerHTML='<div class="e-sec" style="margin-bottom:10px">Savollar bo\'yicha natija</div>'+
+    '<div class="k-yopiq">🔒 Noto\'g\'ri ishlangan savollarning javobi ko\'rsatilmaydi — ular ro\'yxatda qoladi. Nazariyani takrorlab, qayta urinib ko\'ring.</div>'+
+    ttS.map(function(q,n){
+      var s=q._s,ok=!!srv.natija[q.id],u=ttJav[q.id],iz=(srv.izohlar||{})[q.id];
+      return '<div class="k-xato '+(ok?'k-ok':'k-no')+'"><div class="k-qh"><span class="k-belgi">'+(ok?'✓':'✗')+'</span><span class="q">'+(n+1)+'. '+kEsc(s.savol)+'</span></div>'+
+        (s.rasm?'<img src="assets/kurslar/'+kEsc(s.rasm)+'" alt="" style="max-width:200px;border-radius:10px;background:#fff;border:1px solid var(--c-border2)"/>':'')+
+        '<div>Sizniki: <b style="color:'+(ok?'#22a06b':'#e5484d')+'">'+vt(s,u)+'</b></div>'+
+        (ok&&iz?'<div class="iz">💡 '+kEsc(iz)+'</div>':'')+'</div>';
+    }).join('');
+  bA.innerHTML=(srv.qoldi?'<button class="btn btn-green" onclick="kXatoBoshla()">🔁 Qolgan '+srv.qoldi+' ta savolni qayta ishlash</button>':'')+orqa;
+  go('p7c',-1);
 }
 function kBosqichOch(i){
   var M=K.mavzu;if(!M||!kBosqichOchiq(i,kProg()[M._fayl]||{}))return;
@@ -3279,6 +3351,7 @@ async function kNat(){
     document.getElementById('ttnatbtnlar').innerHTML=xatoMatn?'<button class="btn btn-out" onclick="kurslarOch()">📚 Kurslar</button>':'<button class="btn btn-green" onclick="kNat()">🔄 Qayta yuborish</button><button class="btn btn-out" style="margin-top:8px" onclick="kMavzuRender()">📋 Mavzu bosqichlari</button>';
     go('p7c',-1);return;
   }
+  if(srv.xatolar){K.xatolar=K.xatolar||{};K.xatolar[f]=srv.xatolar;}
   var b=srv.ball,togri=srv.togri,jami=srv.jami,kalit=srv.javoblar||null,izohlar=srv.izohlar||{};
   document.getElementById('ttball').textContent=b+'%';
   document.getElementById('tttogri').textContent=togri;
