@@ -918,6 +918,10 @@ body[data-tema="yorug"] .page>div>div[style*="background:rgba(255,255,255,.0"]{b
       <div style="font-size:.78rem;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:8px">📚 Kimyo kurslari</div>
       <div style="font-size:.7rem;color:rgba(255,255,255,.4);margin-bottom:10px">Belgilangan kurslarni faqat shu guruh a'zolari ochib ishlay oladi.</div>
       <div id="uKursChiplar" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px"></div>
+      <div id="uMavzuWrap" style="display:none;margin-bottom:10px">
+        <div style="font-size:.74rem;font-weight:700;color:rgba(255,255,255,.5);margin:4px 0 6px">Ochiq mavzular (o'quvchilar faqat shularni ishlaydi)</div>
+        <div id="uMavzuChiplar" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+      </div>
       <button class="btn btn-green" style="margin-top:0;padding:10px" onclick="uKursBiriktirSaqla()">Saqlash</button>
       <div id="uKursXb" style="font-size:.72rem;margin-top:8px;color:rgba(255,255,255,.5)"></div>
       <button class="btn btn-out" style="margin-top:10px;padding:10px;font-size:.85rem" onclick="uKursHisobot()">📊 Kurs hisobotini Telegram'ga olish</button>
@@ -3138,11 +3142,13 @@ function kBolim(){return (K.katalog||[]).filter(function(b){return b.id===K.boli
 // Mavzu ochiqmi: birinchisi doim, keyingilari — oldingi mavzu o'tilgan bo'lsa
 // Mavzu ochiqmi: oldingi TAYYOR (fayli bor) mavzu o'tilgan bo'lsa; "Tez orada" mavzular zanjirda hisobga olinmaydi
 // "otilgan" (darsda o'tib bo'lingan) mavzular doim ochiq va keyingi mavzu uchun shart emas
-function kMavzuOchiq(b,i,p){if(b.mavzular[i].otilgan)return true;for(var j=i-1;j>=0;j--){var old=b.mavzular[j];if(old.fayl&&!old.otilgan)return !!(p[kKey(old.fayl)]&&p[kKey(old.fayl)].done);}return true;}
+// Mavzu: ustoz ochgan bo'lishi (K.mavzuRuxsat; null — cheklov yo'q) VA oldingisi 60%+ bilan o'tilgan bo'lishi kerak
+function kMavzuRuxsatBor(m){return !!(m&&(m.otilgan||!K.mavzuRuxsat||K.mavzuRuxsat.indexOf(kKey(m.fayl))>=0));}
+function kMavzuOchiq(b,i,p){if(b.mavzular[i].otilgan)return true;if(!kMavzuRuxsatBor(b.mavzular[i]))return false;for(var j=i-1;j>=0;j--){var old=b.mavzular[j];if(old.fayl&&!old.otilgan)return !!(p[kKey(old.fayl)]&&p[kKey(old.fayl)].done);}return true;}
 // Kurs faqat ustoz biriktirgan guruh a'zolariga ochiq; ruxsatni server beradi va tekshiradi
 async function kRuxsatYukla(){
   K.ruxsat=null;
-  try{var r=await apiFetch(API+'/kurslar/ruxsat/'+CU.id,null,20000);if(r.ok)K.ruxsat=(await r.json()).bolimlar||[];}catch(e){}
+  try{var r=await apiFetch(API+'/kurslar/ruxsat/'+CU.id,null,20000);if(r.ok){var d=await r.json();K.ruxsat=d.bolimlar||[];K.mavzuRuxsat=d.mavzular||null;}}catch(e){}
   return K.ruxsat;
 }
 function kRuxsatBor(id){return !!(K.ruxsat&&K.ruxsat.indexOf(id)>=0);}
@@ -3175,11 +3181,12 @@ async function kBolimOch(id){
   document.getElementById('k-bolim-nom').textContent=b.nom;
   document.getElementById('k-mavzular').innerHTML='<div class="e-list">'+b.mavzular.map(function(m,i){
     var ochiq=kMavzuOchiq(b,i,p),done=m.fayl&&p[kKey(m.fayl)]&&p[kKey(m.fayl)].done;
-    var sub=m.fayl?(m.otilgan?"Darsda o'tilgan · takrorlash uchun ochiq":(m.savollar+' savol · 5 bosqich')):'Kontent tayyorlanmoqda';
+    var ustozYopiq=m.fayl&&!kMavzuRuxsatBor(m);
+    var sub=m.fayl?(m.otilgan?"Darsda o'tilgan · takrorlash uchun ochiq":(ustozYopiq?'🔒 Ustoz hali ochmagan':(m.savollar+' savol · 5 bosqich'))):'Kontent tayyorlanmoqda';
     var ong=!m.fayl?'<span class="k-soon">TEZ ORADA</span>':(!ochiq?'🔒':(done?'<span class="e-pill hi">✓</span>':'<span class="e-lchev">'+'<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>'+'</span>'));
     var bos=(m.fayl&&ochiq)?' onclick="kMavzuOch('+i+')"':' style="cursor:default"';
     return '<div class="e-li'+((m.fayl&&ochiq)?'':' k-lock')+'"'+bos+'><span class="k-num'+(done?' ok':'')+'">'+(i+1)+'</span><div class="t"><b>'+kEsc(m.nom)+'</b><small>'+sub+'</small></div>'+ong+'</div>';
-  }).join('')+'</div>'+(b.mavzular.some(function(m){return m.fayl;})?'<div class="k-intro" style="margin-top:10px">Keyingi mavzu oldingisi 60%+ bilan o\'tilgach ochiladi.</div>':'');
+  }).join('')+'</div>'+(b.mavzular.some(function(m){return m.fayl;})?'<div class="k-intro" style="margin-top:10px">Mavzuni ustoz ochadi; ochilgan mavzu oldingisi 60%+ bilan o\'tilgach ishlanadi.</div>':'');
 }
 async function kMavzuOch(i){
   var b=kBolim();if(!b)return;
@@ -4296,6 +4303,7 @@ function uGuruhOch(gid,nomi){
   document.getElementById('uJadvalXb').textContent='';
   uJadvalRender();
   _uKurslar=(gInfo&&gInfo.kurslar)?gInfo.kurslar.slice():[];
+  _uMavzular=(gInfo&&Array.isArray(gInfo.mavzular))?gInfo.mavzular.slice():null;  // null — eski guruh: hammasi ochiq
   document.getElementById('uKursXb').textContent='';
   uKursChipRender();
   go('p9j',-1);
@@ -4310,15 +4318,32 @@ function uKursChipRender(){
     return '<div onclick="uKursToggle(\''+k[0]+'\')" style="padding:8px 12px;border-radius:10px;font-size:.78rem;font-weight:700;cursor:pointer;'+
       (on?'background:#3fa58a;color:#fff':'background:rgba(255,255,255,.06);color:rgba(255,255,255,.6)')+'">'+(on?'✓ ':'')+k[1]+'</div>';
   }).join('');
+  uMavzuChipRender();
 }
 function uKursToggle(id){var i=_uKurslar.indexOf(id);if(i>=0)_uKurslar.splice(i,1);else _uKurslar.push(id);uKursChipRender();}
+var _uMavzular=null;
+async function uMavzuChipRender(){
+  var wrap=document.getElementById('uMavzuWrap'),el=document.getElementById('uMavzuChiplar');if(!wrap)return;
+  var kat=[];try{kat=await kKatalog();}catch(e){}
+  var ms=[];kat.forEach(function(b){if(_uKurslar.indexOf(b.id)>=0)b.mavzular.forEach(function(m){if(m.fayl)ms.push(m);});});
+  if(!ms.length){wrap.style.display='none';return;}
+  if(_uMavzular===null)_uMavzular=ms.map(function(m){return kKey(m.fayl);});
+  wrap.style.display='block';
+  el.innerHTML=ms.map(function(m){
+    var k=kKey(m.fayl),on=m.otilgan||_uMavzular.indexOf(k)>=0;
+    var st='padding:7px 11px;border-radius:10px;font-size:.76rem;font-weight:700;'+(on?'background:#3fa58a;color:#fff':'background:rgba(255,255,255,.06);color:rgba(255,255,255,.6)');
+    if(m.otilgan)return '<div style="'+st+';opacity:.75" title="Darsda o\'tilgan — har doim ochiq">✓ '+kEsc(m.nom)+' (o\'tilgan)</div>';
+    return '<div onclick="uMavzuToggle(\''+k+'\')" style="'+st+';cursor:pointer">'+(on?'✓ ':'🔒 ')+kEsc(m.nom)+'</div>';
+  }).join('');
+}
+function uMavzuToggle(k){if(_uMavzular===null)return;var i=_uMavzular.indexOf(k);if(i>=0)_uMavzular.splice(i,1);else _uMavzular.push(k);uMavzuChipRender();}
 async function uKursBiriktirSaqla(){
   var xb=document.getElementById('uKursXb');xb.textContent='Saqlanmoqda...';
   try{
     var r=await apiFetch(API+'/guruh/kurs_biriktir',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({guruh_id:_uguruhCur,ustoz_id:CU.id,kurslar:_uKurslar})});
+      body:JSON.stringify(Object.assign({guruh_id:_uguruhCur,ustoz_id:CU.id,kurslar:_uKurslar},_uMavzular===null?{}:{mavzular:_uMavzular}))});
     var d=await r.json();
-    if(d.success){xb.textContent=d.kurslar.length?'✅ Saqlandi: '+d.kurslar.length+' ta kurs biriktirildi':"✅ Saqlandi: guruhga kurs biriktirilmagan";uGuruhLoad();}
+    if(d.success){_uMavzular=Array.isArray(d.mavzular)?d.mavzular.slice():_uMavzular;uMavzuChipRender();xb.textContent=d.kurslar.length?'✅ Saqlandi: '+d.kurslar.length+' ta kurs, '+(d.mavzular||[]).length+' ta mavzu ochiq':"✅ Saqlandi: guruhga kurs biriktirilmagan";uGuruhLoad();}
     else xb.textContent='Xato: '+(d.detail||'');
   }catch(e){xb.textContent='Xato: serverga ulanib bo\'lmadi';}
 }
