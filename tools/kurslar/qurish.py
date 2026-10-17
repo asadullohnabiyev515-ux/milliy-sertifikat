@@ -7,6 +7,7 @@
 - assets/kurslar/kurslar.json         — bo'limlar va mavzular katalogi
 - assets/kurslar/<bolim>/<mavzu>.json — bosqichlar (nazariya bloklari, mashq savollari)
 - assets/kurslar/<bolim>/<mavzu>-<n>.pdf — har bir nazariy bosqichning PDF varianti
+- ../milliy-imtihon/kurslar/katalog.json — server uchun mavzular tartibi (eslatma va hisobotlar)
 
 Manbada to'g'ri javob har doim birinchi variant ("tf" bilan boshlanganlari —
 to'g'ri/noto'g'ri tasdiqlar); bu yerda variantlar savol matniga
@@ -174,9 +175,11 @@ def pdf_yoz(yol, mavzu_nom, bosqich_nom, bloklar):
 
 def main():
     katalog = []
+    server_katalog = []  # backend uchun: mavzular tartibi va bosqich nomlari (eslatma/hisobotlar uchun)
     for b in KATALOG:
         bolim = {k: b[k] for k in ("id", "nom", "tavsif")}
         bolim["mavzular"] = []
+        sk = {"id": b["id"], "mavzular": []}
         for m in b["mavzular"]:
             yozuv = {"id": m["id"], "nom": m["nom"]}
             if m.get("otilgan"):
@@ -215,10 +218,15 @@ def main():
                 yozuv["fayl"] = m["fayl"] + ".json"
                 yozuv["savollar"] = sum(len(x.get("savollar", [])) for x in bosqichlar)
                 print(f"  {m['fayl']}: {len(bosqichlar)} bosqich, {yozuv['savollar']} savol")
+                sk["mavzular"].append({"fayl": m["fayl"], "nom": m["nom"], "otilgan": bool(m.get("otilgan")),
+                                       "bosqichlar": [{"tur": x["tur"], "nom": x["nom"]} for x in bosqichlar]})
             bolim["mavzular"].append(yozuv)
         katalog.append(bolim)
+        server_katalog.append(sk)
     with open(os.path.join(CHIQISH, "kurslar.json"), "w", encoding="utf-8") as fh:
         json.dump({"bolimlar": katalog}, fh, ensure_ascii=False, indent=1)
+    with open(os.path.join(BACKEND, "kurslar", "katalog.json"), "w", encoding="utf-8") as fh:
+        json.dump({"bolimlar": server_katalog}, fh, ensure_ascii=False, indent=1)
     print("tayyor:", CHIQISH)
 
 
