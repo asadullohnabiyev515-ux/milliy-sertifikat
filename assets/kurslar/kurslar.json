@@ -52,7 +52,9 @@
     },
     {
      "id": "aldegidlar",
-     "nom": "Aldegidlar va ketonlar"
+     "nom": "Aldegidlar va ketonlar",
+     "fayl": "organik/aldegidlar.json",
+     "savollar": 106
     },
     {
      "id": "kislotalar",
