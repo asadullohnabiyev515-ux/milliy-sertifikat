@@ -58,7 +58,9 @@
     },
     {
      "id": "kislotalar",
-     "nom": "Karbon kislotalar"
+     "nom": "Karbon kislotalar",
+     "fayl": "organik/kislotalar.json",
+     "savollar": 100
     },
     {
      "id": "efirlar",
