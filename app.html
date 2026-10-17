@@ -233,6 +233,10 @@ body[data-tema="yorug"] #tema-tog{background:#fff;border-color:var(--c-border2);
 .k-rasmlar figcaption{font-size:.72rem;font-weight:800;color:#10201c;text-align:center}
 .k-taf{padding:4px 12px 12px 56px;display:grid;gap:8px}
 .k-taf[hidden]{display:none}
+.k-rtabs{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.k-rtabs::-webkit-scrollbar{display:none}
+.k-rtab{flex-shrink:0;border:1px solid var(--c-border2);background:var(--c-card);color:var(--c-muted);font-family:var(--e-f);font-weight:800;font-size:.76rem;padding:7px 12px;border-radius:99px;cursor:pointer;white-space:nowrap}
+.k-rtab.on{background:var(--e-pill);color:var(--e-pill-fg);border-color:transparent}
 .k-tafm{display:grid;gap:4px}
 .k-tafm b{font-size:.8rem;font-weight:900;color:var(--c-fg)}
 .k-tafc{display:flex;flex-wrap:wrap;gap:4px}
@@ -3019,6 +3023,7 @@ async function coinKunlikTekshir(){
 
 // ── Guruh kurs reytingi (ustoz va o'quvchi sahifalari uchun umumiy) ──
 var K_BOSQICH_NOM={'0':'1-nazariya','1':'1-mashq','2':'2-nazariya','3':'2-mashq','4':'Aralash'};
+var K_REYT={};  // elId → {d, nomlar, mavzular, ustoz, sel}
 async function kursReytingRender(elId,gid,ustoz){
   var el=document.getElementById(elId);if(!el)return;
   var wrap=document.getElementById('pGuruhDetKursWrap');
@@ -3030,28 +3035,51 @@ async function kursReytingRender(elId,gid,ustoz){
       el.innerHTML='<div class="e-empty">Guruhga hali kurs biriktirilmagan.</div>';return;
     }
     if(wrap)wrap.style.display='block';
-    var nomlar={};
-    try{(await kKatalog()).forEach(function(b){b.mavzular.forEach(function(m){if(m.fayl)nomlar[kKey(m.fayl)]=m.nom;});});}catch(e){}
-    var list=d.reyting||[];
-    if(!list.length){el.innerHTML='<div class="e-empty">Guruhda faol o\'quvchi yo\'q.</div>';return;}
-    el.innerHTML='<div class="e-list">'+list.map(function(n,i){
-      var bosh=!n.otilgan&&!n.bosqichlar&&!n.ball;
-      var medal=bosh?'–':(i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.');
-      var sub=bosh?'Hali boshlamagan':(n.otilgan+" mavzu o'tildi · "+n.bosqichlar+' bosqich');
-      var tafsilot='';
-      if(ustoz&&n.tafsilot){
-        var fl=Object.keys(n.tafsilot);
-        tafsilot='<div class="k-taf" id="ktaf-'+elId+'-'+i+'" hidden>'+(fl.length?fl.map(function(f){
-          var t=n.tafsilot[f],bl=Object.keys(t.ballar).sort();
-          return '<div class="k-tafm"><b>'+kEsc(nomlar[f]||f)+(t.done?' ✓':'')+'</b><div class="k-tafc">'+bl.map(function(k){
-            var v=t.ballar[k],nz=k==='0'||k==='2';return '<span class="e-pill '+(v>=60?'hi':'lo')+'">'+(K_BOSQICH_NOM[k]||((+k+1)+'-bosqich'))+': '+(nz?'✓ 100':v+'%')+'</span>';
-          }).join('')+'</div></div>';
-        }).join(''):'<div class="k-intro">Hali mashq ishlamagan.</div>')+'</div>';
-      }
-      var bos=ustoz&&n.tafsilot?' onclick="var t=document.getElementById(\'ktaf-'+elId+'-'+i+'\');t.hidden=!t.hidden"':' style="cursor:default"';
-      return '<div><div class="e-li"'+bos+'><span class="k-num'+(n.otilgan?' ok':'')+'" style="font-size:'+(i<3&&!bosh?'1rem':'.8rem')+'">'+medal+'</span><div class="t"><b>'+kEsc(n.ism)+'</b><small>'+sub+'</small></div><span class="e-pill '+(bosh?'wait':'hi')+'">'+n.ball+'</span></div>'+tafsilot+'</div>';
-    }).join('')+'</div><div class="k-intro" style="margin-top:8px">Ball: har mavzu 5 bosqich × 100 = 500. O\'qilgan nazariya — 100, mashq — eng yaxshi natija foizi.</div>';
+    var nomlar={},mavzular=[];
+    try{(await kKatalog()).forEach(function(b){b.mavzular.forEach(function(m){
+      if(!m.fayl)return;var k=kKey(m.fayl);nomlar[k]=m.nom;
+      if(d.kurslar.indexOf(b.id)>=0)mavzular.push({k:k,nom:m.nom});
+    });});}catch(e){}
+    var eski=K_REYT[elId];
+    K_REYT[elId]={d:d,nomlar:nomlar,mavzular:mavzular,ustoz:ustoz,sel:eski&&eski.sel||''};
+    kursReytingChiz(elId);
   }catch(e){el.innerHTML='<div class="e-empty">Kurs reytingini yuklab bo\'lmadi.</div>';}
+}
+function kursReytingTanla(elId,k){if(K_REYT[elId]){K_REYT[elId].sel=k;kursReytingChiz(elId);}}
+function kursReytingChiz(elId){
+  var el=document.getElementById(elId),R=K_REYT[elId];if(!el||!R)return;
+  var d=R.d,nomlar=R.nomlar,ustoz=R.ustoz,sel=R.sel;
+  if(sel&&!R.mavzular.some(function(m){return m.k===sel;}))sel=R.sel='';
+  var tabs='<div class="k-rtabs">'+[{k:'',nom:'Umumiy'}].concat(R.mavzular).map(function(m){
+    return '<button class="k-rtab'+(m.k===sel?' on':'')+'" onclick="kursReytingTanla(\''+elId+'\',\''+m.k+'\')">'+kEsc(m.nom)+'</button>';
+  }).join('')+'</div>';
+  var list=(d.reyting||[]).map(function(n){
+    if(!sel)return {n:n,ball:n.ball,bosqich:n.bosqichlar,otilgan:n.otilgan,done:n.otilgan>0};
+    var m=(n.mavzular||{})[sel]||{ball:0,bosqichlar:0,done:false};
+    return {n:n,ball:m.ball,bosqich:m.bosqichlar,otilgan:m.done?1:0,done:m.done};
+  });
+  list.sort(function(x,y){return (y.otilgan-x.otilgan)||(y.bosqich-x.bosqich)||(y.ball-x.ball);});
+  if(!list.length){el.innerHTML=tabs+'<div class="e-empty">Guruhda faol o\'quvchi yo\'q.</div>';return;}
+  el.innerHTML=tabs+'<div class="e-list">'+list.map(function(r,i){
+    var n=r.n,bosh=!r.otilgan&&!r.bosqich&&!r.ball;
+    var medal=bosh?'–':(i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.');
+    var sub=bosh?(sel?'Bu mavzuni boshlamagan':'Hali boshlamagan'):
+      (sel?(r.bosqich+'/5 bosqich'+(r.done?" · o'tildi ✓":'')):(r.otilgan+" mavzu o'tildi · "+r.bosqich+' bosqich'));
+    var tafsilot='';
+    if(ustoz&&n.tafsilot){
+      var fl=Object.keys(n.tafsilot).filter(function(f){return !sel||f===sel;});
+      tafsilot='<div class="k-taf" id="ktaf-'+elId+'-'+i+'" hidden>'+(fl.length?fl.map(function(f){
+        var t=n.tafsilot[f],bl=Object.keys(t.ballar).sort();
+        return '<div class="k-tafm">'+(sel?'':'<b>'+kEsc(nomlar[f]||f)+(t.done?' ✓':'')+'</b>')+'<div class="k-tafc">'+bl.map(function(k){
+          var v=t.ballar[k],nz=k==='0'||k==='2';return '<span class="e-pill '+(v>=60?'hi':'lo')+'">'+(K_BOSQICH_NOM[k]||((+k+1)+'-bosqich'))+': '+(nz?'✓ 100':v+'%')+'</span>';
+        }).join('')+'</div></div>';
+      }).join(''):'<div class="k-intro">Hali mashq ishlamagan.</div>')+'</div>';
+    }
+    var bos=ustoz&&n.tafsilot?' onclick="var t=document.getElementById(\'ktaf-'+elId+'-'+i+'\');t.hidden=!t.hidden"':' style="cursor:default"';
+    return '<div><div class="e-li"'+bos+'><span class="k-num'+(r.done?' ok':'')+'" style="font-size:'+(i<3&&!bosh?'1rem':'.8rem')+'">'+medal+'</span><div class="t"><b>'+kEsc(n.ism)+'</b><small>'+sub+'</small></div><span class="e-pill '+(bosh?'wait':'hi')+'">'+r.ball+(sel?'<small style="opacity:.6">/500</small>':'')+'</span></div>'+tafsilot+'</div>';
+  }).join('')+'</div><div class="k-intro" style="margin-top:8px">'+(sel?'Mavzu reytingi: 5 bosqich × 100 = 500 ball.':'Umumiy reyting: barcha mavzular ballari yig\'indisi.')+' O\'qilgan nazariya — 100, mashq — eng yaxshi natija foizi.</div>';
+  var on=el.querySelector('.k-rtab.on');
+  if(on){var c=on.parentNode;c.scrollLeft=on.offsetLeft-c.offsetLeft-(c.clientWidth-on.offsetWidth)/2;}
 }
 // ═══ KIMYO KURSLARI ═══
 // Kontent: assets/kurslar/kurslar.json (katalog) va assets/kurslar/<bolim>/<mavzu>.json —
