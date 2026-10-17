@@ -46,7 +46,9 @@
     },
     {
      "id": "fenollar",
-     "nom": "Fenollar"
+     "nom": "Fenollar",
+     "fayl": "organik/fenollar.json",
+     "savollar": 110
     },
     {
      "id": "aldegidlar",
