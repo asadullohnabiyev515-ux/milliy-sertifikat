@@ -917,6 +917,8 @@ body[data-tema="yorug"] .page>div>div[style*="background:rgba(255,255,255,.0"]{b
       <div id="uKursChiplar" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px"></div>
       <button class="btn btn-green" style="margin-top:0;padding:10px" onclick="uKursBiriktirSaqla()">Saqlash</button>
       <div id="uKursXb" style="font-size:.72rem;margin-top:8px;color:rgba(255,255,255,.5)"></div>
+      <button class="btn btn-out" style="margin-top:10px;padding:10px;font-size:.85rem" onclick="uKursHisobot()">📊 Kurs hisobotini Telegram'ga olish</button>
+      <div style="font-size:.68rem;color:rgba(255,255,255,.4);margin-top:6px">Har dushanba soat 9:00 da hisobot avtomatik keladi. O'quvchilarga har kuni 19:00 da navbatdagi bosqich haqida eslatma boradi.</div>
     </div>
     <div style="background:rgba(255,255,255,.04);border-radius:12px;padding:12px;margin-bottom:22px">
       <div style="font-size:.78rem;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:8px">👨‍👩‍👧 Ota-onalar Telegram guruhi</div>
@@ -4213,6 +4215,15 @@ async function uKursBiriktirSaqla(){
     var d=await r.json();
     if(d.success){xb.textContent=d.kurslar.length?'✅ Saqlandi: '+d.kurslar.length+' ta kurs biriktirildi':"✅ Saqlandi: guruhga kurs biriktirilmagan";uGuruhLoad();}
     else xb.textContent='Xato: '+(d.detail||'');
+  }catch(e){xb.textContent='Xato: serverga ulanib bo\'lmadi';}
+}
+async function uKursHisobot(){
+  var xb=document.getElementById('uKursXb');xb.textContent='Yuborilmoqda...';
+  try{
+    var r=await apiFetch(API+'/guruh/hisobot_yubor',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({guruh_id:_uguruhCur,ustoz_id:CU.id})});
+    var d=await r.json();
+    xb.textContent=d.success?"✅ Hisobot botga yuborildi — Telegram'ni tekshiring":'Xato: '+(d.detail||'');
   }catch(e){xb.textContent='Xato: serverga ulanib bo\'lmadi';}
 }
 var HAFTA_QISQA=['Du','Se','Cho','Pay','Ju','Sha','Ya'];
