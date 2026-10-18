@@ -3318,7 +3318,7 @@ function kNazariyOch(i){
 // Sahifa oxiridagi "O'qidim" tugmasi: nazariya o'qilgan deb belgilanadi (+100 ball),
 // keyingi (mashq) bosqich ochiladi. Faqat ochib qo'yish ball bermaydi.
 function kNazariyKeyin(){
-  var i=K.bosqich,p=kProg(),f=K.mavzu._fayl;p[f]=p[f]||{};p[f]['o'+i]=1;kProgSave(p);
+  var i=K.bosqich,p=kProg(),f=K.mavzu._fayl;if(!K.ustoz){p[f]=p[f]||{};p[f]['o'+i]=1;kProgSave(p);}
   try{apiFetch(API+'/kurslar/nazariy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:CU.id,fayl:f,bosqich:i})}).catch(function(){});}catch(e){}
   if(K.mavzu.bosqichlar[i+1])kBosqichOch(i+1);else kMavzuRender();
 }
@@ -3366,7 +3366,7 @@ async function kNat(){
   document.getElementById('ttxato').textContent=jami-togri;
   document.getElementById('ttjami').textContent=jami;
   document.getElementById('ttemoji').textContent=b>=80?'🏆':b>=60?'🎉':b>=40?'👍':'💪';
-  document.getElementById('ttsub').textContent=b>=60?'Bosqich bajarildi!':'Keyingi bosqich uchun 60%+ kerak';
+  document.getElementById('ttsub').textContent=srv.ustoz?'Ustoz rejimi: ball va coin hisoblanmaydi, reytingga kirmaydi':(b>=60?'Bosqich bajarildi!':'Keyingi bosqich uchun 60%+ kerak');
   var vt=function(s,h){return h?h+') '+kEsc(s.variantlar[h]||''):'javob berilmagan';};
   document.getElementById('ttxatolar').innerHTML='<div class="e-sec" style="margin-bottom:10px">Savollar bo\'yicha natija</div>'+
     (kalit?'':'<div class="k-yopiq">🔒 To\'g\'ri javoblar va izohlar 60% va undan yuqori natijada ko\'rsatiladi. Nazariyani takrorlab, qayta urinib ko\'ring.</div>')+
@@ -3378,16 +3378,16 @@ async function kNat(){
         (kalit&&!ok?'<div>To\'g\'ri: <b style="color:#22a06b">'+vt(s,kalit[q.id])+'</b></div>':'')+
         (kalit&&!ok&&izohlar[q.id]?'<div class="iz">💡 '+kEsc(izohlar[q.id])+'</div>':'')+'</div>';
     }).join('');
-  var p=kProg();p[f]=p[f]||{};var mp=p[f];
+  var p=kProg();p[f]=p[f]||{};var mp=srv.ustoz?{}:p[f];
   if(b>(mp[i]||0))mp[i]=b;
   var otdi=b>=60,oxirgi=i===M.bosqichlar.length-1;
-  {
+  if(!srv.ustoz){
     coinServerdan(srv,M.nom+': '+bq.nom);
     var sp=srv.progress||{};
     Object.keys(sp).forEach(function(k){var v=sp[k];if(typeof v==='number'&&typeof mp[k]==='number')mp[k]=Math.max(mp[k],v);else if(v)mp[k]=v;});
   }
   if(otdi&&oxirgi)mp.done=true;
-  kProgSave(p);
+  if(!srv.ustoz)kProgSave(p);
   var bA=document.getElementById('ttnatbtnlar'),orqa='<button class="btn btn-out" style="margin-top:8px" onclick="kMavzuRender()">📋 Mavzu bosqichlari</button>';
   if(otdi&&!oxirgi)bA.innerHTML='<button class="btn btn-green" onclick="kBosqichOch('+(i+1)+')">→ Keyingi bosqich</button>'+orqa;
   else if(otdi){
@@ -3652,6 +3652,11 @@ async function pLoad(){
 // Kurslardan to'plangan ball: o'qilgan nazariya — 100, mashq — eng yaxshi foiz (server bilan bir xil)
 async function pKursBallLoad(){
   try{
+    if(!K._pRux)K._pRux=K.ruxsat!==undefined?Promise.resolve():kRuxsatYukla();
+    await K._pRux;
+    var kc=document.getElementById('pkurs').parentNode,ps=kc.parentNode;
+    kc.style.display=K.ustoz?'none':'';ps.style.gridTemplateColumns=K.ustoz?'repeat(3,1fr)':'';
+    if(K.ustoz)return;
     var r=await apiFetch(API+'/kurslar/progress/'+CU.id,null,20000);if(!r.ok)return;
     var p=(await r.json()).progress||{},jami=0;
     Object.keys(p).forEach(function(f){var mp=p[f];if(!mp||typeof mp!=='object')return;var bl={};
