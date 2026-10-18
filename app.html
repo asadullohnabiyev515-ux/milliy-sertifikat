@@ -299,7 +299,7 @@ button.e-ibtn{padding:0;font:inherit}
 .e-pid{font-family:var(--e-mono);font-size:.7rem;font-weight:700;color:var(--c-muted)}
 .e-pchips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 .e-chip.shop{background:rgba(155,108,240,.12);border:1px solid rgba(155,108,240,.35);color:#6f3fd6}
-.e-pstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%}
+.e-pstats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%}
 .e-pstats div{background:var(--c-card2);border-radius:14px;padding:10px 4px;display:grid;gap:2px}
 .e-pstats b{font-family:var(--e-mono);font-size:1.02rem;font-variant-numeric:tabular-nums;color:var(--c-fg)}
 .e-pstats span{font-size:.66rem;color:var(--c-muted);font-weight:800}
@@ -734,6 +734,7 @@ body[data-tema="yorug"] .page>div>div[style*="background:rgba(255,255,255,.0"]{b
         <div><b id="pjami">0</b><span>Testlar</span></div>
         <div><b id="portacha">—</b><span>O'rtacha</span></div>
         <div><b id="pyuqori">—</b><span>Eng yuqori</span></div>
+        <div onclick="kurslarOch()" style="cursor:pointer"><b id="pkurs">0</b><span>Kurs bali</span></div>
       </div>
     </div>
 
@@ -3637,6 +3638,7 @@ async function pLoad(){
     document.getElementById('pyuqori').textContent=d.eng_yuqori||'—';
     var li=document.getElementById('pnat');
     pXatoSoniLoad();
+    pKursBallLoad();
     if(!d.natijalar||!d.natijalar.length){li.innerHTML='<div class="e-empty">Hozircha natija yo\'q</div>';return;}
     li.innerHTML='<div class="e-list">'+d.natijalar.map(function(n){
       var b=n.ball||0,cls=b>=60?'hi':b>=40?'mid':'lo';
@@ -3645,6 +3647,18 @@ async function pLoad(){
     }).join('')+'</div>';
     document.getElementById('bs1').textContent=d.jami_test||0;
     document.getElementById('bs2').textContent=d.ortacha_ball||'—';
+  }catch(e){}
+}
+// Kurslardan to'plangan ball: o'qilgan nazariya — 100, mashq — eng yaxshi foiz (server bilan bir xil)
+async function pKursBallLoad(){
+  try{
+    var r=await apiFetch(API+'/kurslar/progress/'+CU.id,null,20000);if(!r.ok)return;
+    var p=(await r.json()).progress||{},jami=0;
+    Object.keys(p).forEach(function(f){var mp=p[f];if(!mp||typeof mp!=='object')return;var bl={};
+      Object.keys(mp).forEach(function(k){if(/^\d+$/.test(k)&&typeof mp[k]==='number')bl[k]=mp[k];});
+      Object.keys(mp).forEach(function(k){var n=k.slice(1);if(k.charAt(0)==='o'&&/^\d+$/.test(n)&&mp[k]&&!(n in bl))bl[n]=100;});
+      Object.keys(bl).forEach(function(k){jami+=bl[k];});});
+    document.getElementById('pkurs').textContent=Math.round(jami);
   }catch(e){}
 }
 async function pXatoSoniLoad(){
