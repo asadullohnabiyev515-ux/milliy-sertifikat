@@ -1809,6 +1809,8 @@ function xatoYubor(xabar,manba,satr,stack){
   }catch(e){}
 }
 window.onerror=function(msg,src,line,col,err){
+  // "Script error." manbasiz — boshqa domendagi skript xatosi (tafsilotsiz, tuzatib bo'lmaydi)
+  if(String(msg)==='Script error.'&&!src)return false;
   xatoYubor(msg,src,line,err&&err.stack?err.stack:'');
   return false;
 };
