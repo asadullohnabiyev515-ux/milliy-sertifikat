@@ -2025,48 +2025,50 @@ async function kirish(){
   document.getElementById('p0').style.display='none';
   document.getElementById('p-obuna').style.display='none';
   document.getElementById('p-royxat').style.display='none';
-  document.getElementById('p-loading-txt').textContent='Yuklanmoqda...';
+  var lt=document.getElementById('p-loading-txt');
+  lt.textContent='Yuklanmoqda...';
   document.getElementById('p-loading-retry').style.display='none';
   document.getElementById('p-loading').style.display='flex';
-  if(ADMINS.indexOf(CU.id)<0){
-    var obunaOk=false;
-    try{
-      var ro=await apiFetch(API+'/user/obuna/'+CU.id,{},20000);
-      var dobuna=await ro.json();
-      obunaOk=!!dobuna.obuna;
-    }catch(e){
-      kirishXatoKorsat();
-      return;
-    }
-    if(!obunaOk){
+  // Render bepul serveri uxlab qolgan bo'lsa uyg'onishi 30-60s oladi — foydalanuvchiga aytamiz
+  var sekin=setTimeout(function(){lt.textContent="Server uyg'onmoqda, biroz kuting...";},6000);
+  // Obuna va ro'yxat tekshiruvi PARALLEL (avval ketma-ket edi — kutish ikki baravar uzoq)
+  var admin=ADMINS.indexOf(CU.id)>=0;
+  var pObuna=admin?Promise.resolve({obuna:true}):apiFetch(API+'/user/obuna/'+CU.id,{},60000).then(function(r){return r.json();});
+  var pTekshir=apiFetch(API+'/user/tekshir/'+CU.id,{},60000).then(function(r){return r.json();});
+  pObuna.catch(function(){});pTekshir.catch(function(){});
+  try{
+    var dobuna=await pObuna;
+    if(!dobuna.obuna){
+      clearTimeout(sekin);
       document.getElementById('p-loading').style.display='none';
       document.getElementById('p-obuna').style.display='flex';
       return;
     }
-  }
-  kirishDavomEt();
+  }catch(e){clearTimeout(sekin);kirishXatoKorsat();return;}
+  kirishDavomEt(pTekshir,sekin);
 }
 
-function kirishDavomEt(){
+function kirishDavomEt(pTekshir,sekin){
   document.getElementById('p-obuna').style.display='none';
   // Avval Telegram ismini inputlarga to'ldir
-  royxatOchishTayyorla();
+  royxatOchishTayyorla(pTekshir,sekin);
 }
 
-async function royxatOchishTayyorla(){
+async function royxatOchishTayyorla(pTekshir,sekin){
   if(CU.name&&CU.name!=='Foydalanuvchi'){
     var parts=CU.name.trim().split(' ');
     document.getElementById('rq-ism').value=parts[0]||'';
     document.getElementById('rq-familiya').value=parts.slice(1).join(' ')||'';
   }
   try{
-    var r=await apiFetch(API+'/user/tekshir/'+CU.id,{},20000);
-    var d=await r.json();
+    var d=await (pTekshir||apiFetch(API+'/user/tekshir/'+CU.id,{},60000).then(function(r){return r.json();}));
+    if(sekin)clearTimeout(sekin);
     if(d.royxatdan_otgan){
       document.getElementById('p-loading').style.display='none';
       appOch(); return;
     }
   }catch(e){
+    if(sekin)clearTimeout(sekin);
     kirishXatoKorsat();
     return;
   }
