@@ -449,6 +449,7 @@ body[data-tema="yorug"] .page>div>div[style*="background:rgba(255,255,255,.0"]{b
     <div class="e-sec">O'quv bo'limlari</div>
     <div class="e-grid">
       <div class="e-tile k-feat" onclick="kurslarOch()"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g8" style="color:#f2c94c"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9.5 12 5l10 4.5L12 14zM6 11.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div><div style="display:grid;gap:2px;min-width:0"><b>Kimyo kurslari</b><small>Organik · Anorganik · Umumiy</small></div></div>
+      <div class="e-tile k-feat" onclick="masalaYordamchi()"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g2"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="4"/><path d="M12 4v4M9.5 13.5h.01M14.5 13.5h.01M3 13v2M21 13v2"/></g></svg></div><div style="display:grid;gap:2px;min-width:0"><b>Masala yordamchisi</b><small>AI ustoz · xatoingizni topadi</small></div></div>
       <div class="e-tile" onclick="go('p2',1)"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g1"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8zM14 3v5h5M9 13h6M9 17h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg></div><b>Testlar</b><small>Milliy · DTM · Kod</small></div>
       <div class="e-tile" onclick="go('p7',4);tTab(2)"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g3"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></g></svg></div><b>Mashq</b><small>Tester · Mavzuli</small></div>
       <div class="e-tile" onclick="go('p-kurs',-1);kursRoyxatLoad()"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g2"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V4l16 16zM8 16v-4.5L12.5 16z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div><b>Matematika</b><small>Kimyo uchun kurs</small></div>
@@ -2077,6 +2078,13 @@ async function royxatOchishTayyorla(pTekshir,sekin){
   // Ro'yxat oynasini ko'rsat
   document.getElementById('p-loading').style.display='none';
   document.getElementById('p-royxat').style.display='flex';
+}
+
+function masalaYordamchi(){
+  // Botdagi masala yordamchisini ochadi (bot '/start masala' ni menyuga aylantiradi)
+  var url='https://t.me/Med_Star_Uz_bot?start=masala';
+  try{if(tg&&tg.openTelegramLink){tg.openTelegramLink(url);setTimeout(function(){try{tg.close()}catch(e){}},400);return;}}catch(e){}
+  window.open(url,'_blank');
 }
 
 document.getElementById('obuna-kanal-btn').onclick=function(){
