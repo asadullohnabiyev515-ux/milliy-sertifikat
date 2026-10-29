@@ -1708,7 +1708,8 @@ body[data-tema="yorug"] .page>div>div[style*="background:rgba(255,255,255,.0"]{b
 <!-- MASALA YORDAMCHISI (AI ustoz) -->
 <div id="p-masala" class="page">
 <style>
-#p-masala{min-height:100vh;min-height:100dvh;background:var(--c-bg)}
+#p-masala{min-height:100vh;min-height:100dvh;background:var(--c-bg);overflow-x:hidden}
+.my-m,.my-line{overflow-wrap:anywhere}
 .my-top{position:sticky;top:0;z-index:20;background:var(--c-top);border-bottom:1px solid var(--c-border2)}
 .my-lim{font-size:.72rem;font-weight:800;color:var(--c-muted);background:var(--c-card3);border:1px solid var(--c-border2);border-radius:20px;padding:4px 10px;white-space:nowrap}
 .my-feed{display:flex;flex-direction:column;gap:10px;padding:14px 14px 150px}
@@ -1742,7 +1743,7 @@ body[data-tema="yorug"] .page>div>div[style*="background:rgba(255,255,255,.0"]{b
 .my-ib{width:42px;height:42px;flex-shrink:0;border-radius:14px;border:1px solid var(--c-border2);background:var(--c-card);color:var(--c-fg);display:grid;place-items:center;cursor:pointer}
 .my-send{background:linear-gradient(135deg,#00d4aa,#00a8ff);color:#fff;border:0}
 .my-send:disabled{opacity:.45}
-#my-txt{flex:1;min-width:0;resize:none;max-height:110px;border:1px solid var(--c-border2);background:var(--c-inp);color:var(--c-fg);border-radius:14px;padding:11px 12px;font-family:var(--e-f);font-size:.9rem;line-height:1.35;outline:none}
+#my-txt{flex:1;min-width:0;resize:none;max-height:110px;border:1px solid var(--c-border2);background:var(--c-inp);color:var(--c-fg);border-radius:14px;padding:10px 12px;font-family:var(--e-f);font-size:16px;line-height:1.35;outline:none}
 #my-txt::placeholder{color:var(--c-ph)}
 @keyframes myIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @keyframes myDot{0%,80%,100%{opacity:.25;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
@@ -2153,13 +2154,18 @@ async function royxatOchishTayyorla(pTekshir,sekin){
 // Yashirin yechim serverda qoladi; bu yerda faqat joriy qadam va natija ko'rsatiladi.
 var MY={mode:'step',phase:'',rasmlar:[],cond:null,band:false,sess:null};
 function myH(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function myApi(amal,body){
+function myApi(amal,body,_qayta){
   return apiFetch(API+'/tutor/'+amal,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})},90000)
     .then(function(r){
       if(r.status===401)return{ok:false,error:'Ilovani Telegram ichida oching'};
-      return r.json().catch(function(){return{ok:false,error:'Server javobi buzuq'};});
+      if(r.status>=500&&!_qayta)return new Promise(function(ok){setTimeout(function(){ok(myApi(amal,body,1));},3000);});
+      return r.json().catch(function(){return{ok:false,net:true,error:'Server javob bermadi (HTTP '+r.status+'). Qayta urinib ko\'ring.'};});
     })
-    .catch(function(){return{ok:false,error:'Internet yoki server bilan aloqa yo\'q. Qayta urinib ko\'ring.'};});
+    .catch(function(e){
+      if(!_qayta)return new Promise(function(ok){setTimeout(function(){ok(myApi(amal,body,1));},2500);});
+      try{xatoYubor('tutor '+amal+': '+(e&&e.name)+' '+(e&&e.message),'p-masala',0,'');}catch(x){}
+      return{ok:false,net:true,error:'Server bilan aloqa uzildi. Qayta yuborib ko\'ring.'};
+    });
 }
 function myLim(l){var e=document.getElementById('my-lim');if(e&&l)e.textContent='Bugun '+l.used+' / '+l.limit;}
 function myFeed(){return document.getElementById('my-feed');}
@@ -2279,14 +2285,15 @@ function myYubor(){
   }
   if(MY.phase==='confirm'||MY.phase==='result'){myAi('Quyidagi tugmalardan birini tanlang 👇');myAct();}
 }
-function myXato(k,r){k.innerHTML='⚠️ '+myH(r.error||'Xato yuz berdi');}
+function myXato(k,r,qayta){k.innerHTML='⚠️ '+myH(r.error||'Xato yuz berdi');
+  if(r.net&&qayta){myActs([{t:'🔁 Qayta yuborish',pri:1,f:qayta}]);return true;}return false;}
 
 // 1-rejim
 function myStepStart(txt,img){
   myBand(true);var k=myKut();
   myApi('step_start',{text:txt,image:img||null}).then(function(r){
     myBand(false);
-    if(!r.ok){myXato(k,r);return;}
+    if(!r.ok){myXato(k,r,function(){myStepStart(txt,img);});return;}
     k.remove();myLim(r.limit);MY.sess=r.session;MY.phase='work';
     myAi('📄 <b>Masala:</b> '+myH(r.session.problem_text)+'\n\nJami <b>'+r.session.total+' qadam</b>. Har qadamni o\'zingiz ishlaysiz, men tekshirib boraman.');
     myQadam(r.session);
@@ -2301,7 +2308,7 @@ function myStepJavob(txt,img){
   myBand(true);var k=myKut();
   myApi('step_answer',{text:txt,image:img||null}).then(function(r){
     myBand(false);
-    if(!r.ok){myXato(k,r);myAct();return;}
+    if(!r.ok){if(!myXato(k,r,function(){myStepJavob(txt,img);}))myAct();return;}
     var ic=r.verdict==='correct'?'✅ ':r.verdict==='wrong'?'❌ ':'✋ ';
     var h=ic+myH(r.message);
     if(r.verdict==='wrong'&&!r.revealed&&r.session)h+='\n<i>Qayta urinib ko\'ring ('+r.session.tries+'/'+r.session.max_tries+').</i>';
@@ -2322,7 +2329,7 @@ function myCheckRead(imgs){
   myBand(true);var k=myKut();
   myApi('check_read',{cond_text:MY.cond.text,cond_image:MY.cond.image,images:imgs}).then(function(r){
     myBand(false);
-    if(!r.ok){myXato(k,r);myPh('Yechim rasmlari…');return;}
+    if(!r.ok){if(!myXato(k,r,function(){myCheckRead(imgs);}))myPh('Yechim rasmlari…');return;}
     k.remove();myLim(r.limit);myOqildi(r.session);
   });
 }
@@ -2335,7 +2342,7 @@ function myCheckRun(){
   myBand(true);var k=myKut();
   myApi('check_run').then(function(r){
     myBand(false);
-    if(!r.ok){myXato(k,r);myAct();return;}
+    if(!r.ok){if(!myXato(k,r,myCheckRun))myAct();return;}
     k.remove();MY.phase='result';MY.res=r.result;var x=r.result;
     if(x.is_correct){
       myAi('✅ <b>Yechim to\'liq to\'g\'ri!</b> Barakalla!'+(x.shorter_way?'<span class="my-hint">💡 Qisqaroq yo\'l: '+myH(x.shorter_way)+'</span>':''));
@@ -2355,7 +2362,7 @@ function myShow(){
   myBand(true);var k=myKut();
   myApi('check_show').then(function(r){
     myBand(false);
-    if(!r.ok){myXato(k,r);myAct();return;}
+    if(!r.ok){if(!myXato(k,r,myShow))myAct();return;}
     MY.res.has_correct=false;
     k.innerHTML='✏️ <b>'+r.line+'-qatorning to\'g\'ri varianti:</b><span class="my-line">'+myH(r.correct_line)+'</span>Shundan keyingi qatorlarni o\'zingiz davom ettiring.';
     myAct();
