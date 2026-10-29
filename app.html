@@ -1705,6 +1705,73 @@ body[data-tema="yorug"] .page>div>div[style*="background:rgba(255,255,255,.0"]{b
 </div>
 
 <!-- KIMYOVIY REAKSIYALAR BAZASI -->
+<!-- MASALA YORDAMCHISI (AI ustoz) -->
+<div id="p-masala" class="page">
+<style>
+#p-masala{min-height:100vh;min-height:100dvh;background:var(--c-bg)}
+.my-top{position:sticky;top:0;z-index:20;background:var(--c-top);border-bottom:1px solid var(--c-border2)}
+.my-lim{font-size:.72rem;font-weight:800;color:var(--c-muted);background:var(--c-card3);border:1px solid var(--c-border2);border-radius:20px;padding:4px 10px;white-space:nowrap}
+.my-feed{display:flex;flex-direction:column;gap:10px;padding:14px 14px 150px}
+.my-m{max-width:88%;padding:10px 13px;border-radius:18px;font-size:.88rem;line-height:1.5;word-wrap:break-word;white-space:pre-wrap;animation:myIn .18s ease}
+.my-ai{align-self:flex-start;background:var(--c-card);border:1px solid var(--c-border2);color:var(--c-fg);border-bottom-left-radius:6px}
+.my-me{align-self:flex-end;background:linear-gradient(135deg,#00d4aa,#00a8ff);color:#fff;border-bottom-right-radius:6px}
+.my-me img{display:block;max-width:180px;max-height:200px;border-radius:12px;margin:2px 0}
+.my-imgs{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.my-imgs img{max-width:120px}
+.my-ai b{font-weight:800}
+.my-step{display:inline-block;font-size:.7rem;font-weight:800;letter-spacing:.5px;color:#00a88a;background:rgba(0,212,170,.12);border-radius:8px;padding:2px 8px;margin-bottom:4px}
+.my-hint{display:block;margin-top:6px;padding:8px 10px;border-radius:12px;background:var(--c-card3)}
+.my-line{display:block;font-family:var(--e-mono);font-size:.8rem;padding:5px 8px;border-radius:8px;margin-top:4px;background:var(--c-card3)}
+.my-line.bad{background:rgba(255,92,108,.14);color:#e0435a;font-weight:700}
+.my-line.ok{opacity:.65}
+.my-prog{height:5px;border-radius:5px;background:var(--c-card4);overflow:hidden;margin:6px 0 2px}
+.my-prog i{display:block;height:100%;background:linear-gradient(90deg,#00d4aa,#00a8ff);transition:width .3s}
+.my-dots{display:inline-flex;gap:4px;padding:4px 2px}
+.my-dots i{width:7px;height:7px;border-radius:50%;background:var(--c-muted);animation:myDot 1s infinite}
+.my-dots i:nth-child(2){animation-delay:.15s}.my-dots i:nth-child(3){animation-delay:.3s}
+.my-acts{display:flex;flex-wrap:wrap;gap:8px;align-self:flex-start;max-width:100%}
+.my-chip{border:1px solid var(--c-border2);background:var(--c-card);color:var(--c-fg);font-family:var(--e-f);font-weight:800;font-size:.8rem;padding:9px 13px;border-radius:14px;cursor:pointer}
+.my-chip.pri{background:var(--e-pill);color:var(--e-pill-fg);border-color:transparent}
+.my-bar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--c-top);border-top:1px solid var(--c-border2);padding:8px 10px calc(10px + env(safe-area-inset-bottom,0px))}
+.my-thumbs{display:flex;gap:6px;overflow-x:auto;padding:0 2px 8px}
+.my-thumbs:empty{display:none}
+.my-th{position:relative;flex-shrink:0}
+.my-th img{width:56px;height:56px;object-fit:cover;border-radius:10px;border:1px solid var(--c-border2)}
+.my-th button{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;border:0;background:#e0435a;color:#fff;font-size:12px;line-height:20px;padding:0;cursor:pointer}
+.my-row{display:flex;align-items:flex-end;gap:8px}
+.my-ib{width:42px;height:42px;flex-shrink:0;border-radius:14px;border:1px solid var(--c-border2);background:var(--c-card);color:var(--c-fg);display:grid;place-items:center;cursor:pointer}
+.my-send{background:linear-gradient(135deg,#00d4aa,#00a8ff);color:#fff;border:0}
+.my-send:disabled{opacity:.45}
+#my-txt{flex:1;min-width:0;resize:none;max-height:110px;border:1px solid var(--c-border2);background:var(--c-inp);color:var(--c-fg);border-radius:14px;padding:11px 12px;font-family:var(--e-f);font-size:.9rem;line-height:1.35;outline:none}
+#my-txt::placeholder{color:var(--c-ph)}
+@keyframes myIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes myDot{0%,80%,100%{opacity:.25;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+</style>
+  <div class="my-top">
+    <div class="top e-head">
+      <button class="e-ibtn" onclick="go('p1',0)" aria-label="Orqaga"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="tlogo">Masala yordamchisi</div>
+      <span class="my-lim" id="my-lim">— / —</span>
+    </div>
+    <div class="e-seg" style="margin:0 14px 10px">
+      <button id="my-tab-step" class="e-seg-b on" onclick="myRejim('step')">🪜 Qadamma-qadam</button>
+      <button id="my-tab-check" class="e-seg-b" onclick="myRejim('check')">🔍 Yechimni tekshir</button>
+    </div>
+  </div>
+  <div class="my-feed" id="my-feed"></div>
+  <div class="my-bar">
+    <div class="my-thumbs" id="my-thumbs"></div>
+    <div class="my-row">
+      <label class="my-ib" aria-label="Rasm qo'shish">
+        <input type="file" accept="image/*" id="my-file" multiple hidden onchange="myFayl(this)">
+        <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></g></svg>
+      </label>
+      <textarea id="my-txt" rows="1" placeholder="Rasm yoki matn yuboring…" oninput="myTxtO(this)"></textarea>
+      <button class="my-ib my-send" id="my-send" onclick="myYubor()" aria-label="Yuborish"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12 20 4l-6 16-3-7z" fill="currentColor"/></svg></button>
+    </div>
+  </div>
+</div>
+
 <div id="p-reaksiya" class="page" style="padding-bottom:80px">
   <div class="top e-head">
     <div class="tlogo">Reaksiyalar bazasi</div>
@@ -1939,11 +2006,12 @@ var sTogri='';
 
 // GO - sahifa almashtirish
 function go(id,nav){
-  var all=['p1','p2','p3','p3b','p3c','p4','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e','p9f','p9g','p9h','p9i','p9j','p9k','p9l','p9m','p9n','p9q','p9r','p9s','p-elon','p-games','p-game','p-memory','p-sort','p-jadval','p-moddabaza','p-reaksiya','p-oziq','p-kurs','p-kurs-mavzu','p-referral','p-dokon','p-kurslar','p-kbolim','p-kmavzu','p-knazariy'];
+  var all=['p-masala','p1','p2','p3','p3b','p3c','p4','p5','p6','p7','p7b','p7c','p8','p9','p9b','p9c','p9d','p9e','p9f','p9g','p9h','p9i','p9j','p9k','p9l','p9m','p9n','p9q','p9r','p9s','p-elon','p-games','p-game','p-memory','p-sort','p-jadval','p-moddabaza','p-reaksiya','p-oziq','p-kurs','p-kurs-mavzu','p-referral','p-dokon','p-kurslar','p-kbolim','p-kmavzu','p-knazariy'];
   all.forEach(function(x){var e=document.getElementById(x);if(e)e.style.display='none';});
   var el=document.getElementById(id);
   if(el)el.style.display='block';
   window.scrollTo(0,0);
+  var nvb=document.querySelector('.nav');if(nvb)nvb.style.display=id==='p-masala'?'none':'';
   var ne=document.getElementById('n-elon');
   if(nav>=0){
     for(var i=0;i<6;i++){var n=document.getElementById('n'+i);if(n)n.className='nitem'+(i===nav?' on':'');}
@@ -2080,12 +2148,241 @@ async function royxatOchishTayyorla(pTekshir,sekin){
   document.getElementById('p-royxat').style.display='flex';
 }
 
-function masalaYordamchi(){
-  // Botdagi masala yordamchisini ochadi (bot '/start masala' ni menyuga aylantiradi)
-  var url='https://t.me/Med_Star_Uz_bot?start=masala';
-  try{if(tg&&tg.openTelegramLink){tg.openTelegramLink(url);setTimeout(function(){try{tg.close()}catch(e){}},400);return;}}catch(e){}
-  window.open(url,'_blank');
+// ── MASALA YORDAMCHISI (AI ustoz) ─────────────────────────────────────────
+// Server: POST API+'/tutor/<amal>' (initData sarlavhasi global fetch o'ramida qo'shiladi).
+// Yashirin yechim serverda qoladi; bu yerda faqat joriy qadam va natija ko'rsatiladi.
+var MY={mode:'step',phase:'',rasmlar:[],cond:null,band:false,sess:null};
+function myH(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function myApi(amal,body){
+  return apiFetch(API+'/tutor/'+amal,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})},90000)
+    .then(function(r){
+      if(r.status===401)return{ok:false,error:'Ilovani Telegram ichida oching'};
+      return r.json().catch(function(){return{ok:false,error:'Server javobi buzuq'};});
+    })
+    .catch(function(){return{ok:false,error:'Internet yoki server bilan aloqa yo\'q. Qayta urinib ko\'ring.'};});
 }
+function myLim(l){var e=document.getElementById('my-lim');if(e&&l)e.textContent='Bugun '+l.used+' / '+l.limit;}
+function myFeed(){return document.getElementById('my-feed');}
+function myPast(){setTimeout(function(){window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});},30);}
+function myAi(html){var d=document.createElement('div');d.className='my-m my-ai';d.innerHTML=html;myFeed().appendChild(d);myPast();return d;}
+function myMe(text,imgs){
+  var d=document.createElement('div');d.className='my-m my-me';
+  var h='';
+  if(imgs&&imgs.length)h+='<div class="my-imgs">'+imgs.map(function(u){return '<img src="'+u+'" alt="">';}).join('')+'</div>';
+  if(text)h+=myH(text);
+  d.innerHTML=h;myFeed().appendChild(d);myPast();
+}
+function myKut(){return myAi('<span class="my-dots"><i></i><i></i><i></i></span>');}
+function myActs(btns){
+  myActsOl();
+  if(!btns||!btns.length)return;
+  var d=document.createElement('div');d.className='my-acts';d.id='my-acts';
+  btns.forEach(function(b){
+    var x=document.createElement('button');x.className='my-chip'+(b.pri?' pri':'');x.textContent=b.t;
+    x.onclick=function(){if(!MY.band){myActsOl();b.f();}};d.appendChild(x);
+  });
+  myFeed().appendChild(d);myPast();
+}
+function myActsOl(){var a=document.getElementById('my-acts');if(a)a.remove();}
+function myPh(t){var e=document.getElementById('my-txt');if(e)e.placeholder=t;}
+function myBand(b){MY.band=b;var s=document.getElementById('my-send');if(s)s.disabled=b;}
+
+function myOch(){
+  go('p-masala',-1);
+  if(MY.phase)return;
+  myFeed().innerHTML='';
+  var k=myKut();
+  myApi('holat').then(function(r){
+    k.remove();
+    if(r.ok)myLim(r.limit);
+    var s=r.ok&&r.session;
+    if(s&&s.mode==='step'){MY.mode='step';myTab();MY.sess=s;MY.phase='work';
+      myAi('📄 <b>Davom etamiz.</b> Masala: '+myH(s.problem_text));myQadam(s);return;}
+    if(s&&s.mode==='check'&&s.state==='confirm'){MY.mode='check';myTab();myOqildi(s);return;}
+    myBoshla();
+  });
+}
+function myTab(){
+  document.getElementById('my-tab-step').className='e-seg-b'+(MY.mode==='step'?' on':'');
+  document.getElementById('my-tab-check').className='e-seg-b'+(MY.mode==='check'?' on':'');
+}
+function myRejim(m){
+  if(MY.band||m===MY.mode)return;
+  MY.mode=m;myTab();myApi('reset');myBoshla();
+}
+function myBoshla(){
+  MY.rasmlar=[];MY.cond=null;MY.sess=null;myThumbs();myFeed().innerHTML='';
+  if(MY.mode==='step'){
+    MY.phase='problem';
+    myAi('🧪 <b>Qadamma-qadam yechamiz.</b>\nMasala rasmini yuboring yoki shartini yozing. Men faqat yo\'l ko\'rsataman — har qadamni o\'zingiz ishlaysiz.');
+    myPh('Masala rasmi yoki sharti…');
+  }else{
+    MY.phase='cond';
+    myAi('🔍 <b>Yechimingizni tekshiramiz.</b>\n1️⃣ Avval <b>masala shartini</b> yuboring — rasm yoki matn.');
+    myPh('Masala sharti…');
+  }
+}
+
+// ---- rasm tanlash va siqish ----
+function myFayl(inp){
+  var f=[].slice.call(inp.files||[]);inp.value='';
+  var bitta=MY.mode==='step'||MY.phase==='cond';
+  if(bitta){f=f.slice(0,1);MY.rasmlar=[];}
+  f=f.slice(0,Math.max(0,4-MY.rasmlar.length));
+  Promise.all(f.map(mySiq)).then(function(arr){
+    arr.forEach(function(u){if(u)MY.rasmlar.push(u);});myThumbs();
+  });
+}
+function mySiq(file){
+  return new Promise(function(res){
+    var fr=new FileReader();
+    fr.onload=function(){
+      var img=new Image();
+      img.onload=function(){
+        var m=1400,w=img.width,h=img.height,k=Math.min(1,m/Math.max(w,h));
+        var c=document.createElement('canvas');c.width=Math.round(w*k);c.height=Math.round(h*k);
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+        res(c.toDataURL('image/jpeg',0.82));
+      };
+      img.onerror=function(){res(null);};
+      img.src=fr.result;
+    };
+    fr.onerror=function(){res(null);};
+    fr.readAsDataURL(file);
+  });
+}
+function myThumbs(){
+  var t=document.getElementById('my-thumbs');if(!t)return;
+  t.innerHTML=MY.rasmlar.map(function(u,i){return '<div class="my-th"><img src="'+u+'" alt=""><button onclick="myOl('+i+')" aria-label="O\'chirish">×</button></div>';}).join('');
+}
+function myOl(i){MY.rasmlar.splice(i,1);myThumbs();}
+function myTxtO(e){e.style.height='auto';e.style.height=Math.min(110,e.scrollHeight)+'px';}
+
+// ---- yuborish ----
+function myYubor(){
+  if(MY.band)return;
+  var te=document.getElementById('my-txt'),txt=(te.value||'').trim(),imgs=MY.rasmlar.slice();
+  if(!txt&&!imgs.length)return;
+  te.value='';myTxtO(te);MY.rasmlar=[];myThumbs();myActsOl();
+  myMe(txt,imgs);
+  if(MY.phase==='problem')return myStepStart(txt,imgs[0]);
+  if(MY.phase==='work')return myStepJavob(txt,imgs[0]);
+  if(MY.phase==='cond'){
+    if(!imgs.length&&txt.length<15){myAi('Shartni to\'liq yozing yoki rasmini yuboring.');return;}
+    MY.cond={text:txt,image:imgs[0]||null};MY.phase='sol';
+    myAi('✅ Shart qabul qilindi.\n2️⃣ Endi <b>yechimingiz rasmini</b> yuboring (1–4 ta). Rasmlarni tanlab, yuborish tugmasini bosing.');
+    myPh('Yechim rasmlari…');return;
+  }
+  if(MY.phase==='sol'){
+    if(!imgs.length){myAi('Yechimni <b>rasm</b> qilib yuboring 📷');return;}
+    return myCheckRead(imgs);
+  }
+  if(MY.phase==='confirm'||MY.phase==='result'){myAi('Quyidagi tugmalardan birini tanlang 👇');myAct();}
+}
+function myXato(k,r){k.innerHTML='⚠️ '+myH(r.error||'Xato yuz berdi');}
+
+// 1-rejim
+function myStepStart(txt,img){
+  myBand(true);var k=myKut();
+  myApi('step_start',{text:txt,image:img||null}).then(function(r){
+    myBand(false);
+    if(!r.ok){myXato(k,r);return;}
+    k.remove();myLim(r.limit);MY.sess=r.session;MY.phase='work';
+    myAi('📄 <b>Masala:</b> '+myH(r.session.problem_text)+'\n\nJami <b>'+r.session.total+' qadam</b>. Har qadamni o\'zingiz ishlaysiz, men tekshirib boraman.');
+    myQadam(r.session);
+  });
+}
+function myQadam(s){
+  var n=s.step_index+1,p=Math.round(s.step_index/s.total*100);
+  myAi('<span class="my-step">'+n+'-QADAM / '+s.total+'</span><div class="my-prog"><i style="width:'+p+'%"></i></div><b>'+myH(s.step.goal)+'</b><span class="my-hint">💡 '+myH(s.step.hint)+'</span>Ishlab, rasmini yoki natijani yuboring.');
+  myPh(n+'-qadam ishlanishi…');myAct();
+}
+function myStepJavob(txt,img){
+  myBand(true);var k=myKut();
+  myApi('step_answer',{text:txt,image:img||null}).then(function(r){
+    myBand(false);
+    if(!r.ok){myXato(k,r);myAct();return;}
+    var ic=r.verdict==='correct'?'✅ ':r.verdict==='wrong'?'❌ ':'✋ ';
+    var h=ic+myH(r.message);
+    if(r.verdict==='wrong'&&!r.revealed&&r.session)h+='\n<i>Qayta urinib ko\'ring ('+r.session.tries+'/'+r.session.max_tries+').</i>';
+    if(r.revealed)h+='<span class="my-hint">📖 <b>To\'g\'ri ishlanishi:</b>\n'+myH(r.revealed)+'</span>';
+    k.innerHTML=h;
+    if(r.done){
+      MY.phase='done';MY.sess=null;
+      myAi('🎉 <b>Masala yechildi!</b>\nJavob: <b>'+myH(r.final_answer)+'</b>');
+      myActs([{t:'🆕 Yangi masala',pri:1,f:myBoshla}]);myPh('Yangi masala uchun tugmani bosing');return;
+    }
+    MY.sess=r.session;
+    if(r.verdict==='correct'||r.revealed)myQadam(r.session);else myAct();
+  });
+}
+
+// 2-rejim
+function myCheckRead(imgs){
+  myBand(true);var k=myKut();
+  myApi('check_read',{cond_text:MY.cond.text,cond_image:MY.cond.image,images:imgs}).then(function(r){
+    myBand(false);
+    if(!r.ok){myXato(k,r);myPh('Yechim rasmlari…');return;}
+    k.remove();myLim(r.limit);myOqildi(r.session);
+  });
+}
+function myOqildi(s){
+  MY.phase='confirm';
+  myAi('👀 <b>Yechimingizni shunday o\'qidim:</b>\n<i>Shart:</i> '+myH(s.problem_text)+s.lines.map(function(l,i){return '<span class="my-line">'+(i+1)+') '+myH(l)+'</span>';}).join('')+'To\'g\'ri o\'qildimi?');
+  myAct();
+}
+function myCheckRun(){
+  myBand(true);var k=myKut();
+  myApi('check_run').then(function(r){
+    myBand(false);
+    if(!r.ok){myXato(k,r);myAct();return;}
+    k.remove();MY.phase='result';MY.res=r.result;var x=r.result;
+    if(x.is_correct){
+      myAi('✅ <b>Yechim to\'liq to\'g\'ri!</b> Barakalla!'+(x.shorter_way?'<span class="my-hint">💡 Qisqaroq yo\'l: '+myH(x.shorter_way)+'</span>':''));
+      MY.phase='done';myActs([{t:'🆕 Yangi masala',pri:1,f:myBoshla}]);return;
+    }
+    var h='';
+    if(x.first_error_line){
+      if(x.first_error_line>1)h+='✅ 1'+(x.first_error_line>2?'–'+(x.first_error_line-1):'')+'-qator'+(x.first_error_line>2?'lar':'')+' to\'g\'ri\n';
+      h+='❌ <b>'+x.first_error_line+'-qatorda xato:</b><span class="my-line bad">'+myH(x.line_text)+'</span>';
+    }
+    h+=(x.first_error_line?'':'\n')+myH(x.explanation);
+    if(x.error_label)h+='\n<i>Xato turi: '+myH(x.error_label)+'</i>';
+    myAi(h);myAct();
+  });
+}
+function myShow(){
+  myBand(true);var k=myKut();
+  myApi('check_show').then(function(r){
+    myBand(false);
+    if(!r.ok){myXato(k,r);myAct();return;}
+    MY.res.has_correct=false;
+    k.innerHTML='✏️ <b>'+r.line+'-qatorning to\'g\'ri varianti:</b><span class="my-line">'+myH(r.correct_line)+'</span>Shundan keyingi qatorlarni o\'zingiz davom ettiring.';
+    myAct();
+  });
+}
+function myQaytaYechim(){
+  MY.phase='sol';
+  myAi('📸 Tuzatilgan yechim rasmini yuboring — shart saqlanib qoldi.');
+  myPh('Yechim rasmlari…');
+}
+// Joriy bosqichga mos tugmalar
+function myAct(){
+  var b=[];
+  if(MY.phase==='work')b=[
+    {t:'➡️ Keyingi qadam',f:function(){myAi('✋ Avval <b>'+(MY.sess.step_index+1)+'-qadam</b> ishlanishini yuboring — keyin davom etamiz.');myAct();}},
+    {t:'🆕 Boshqa masala',f:function(){myApi('reset');myBoshla();}}];
+  if(MY.phase==='confirm')b=[{t:'✅ Ha, tekshir',pri:1,f:myCheckRun},
+    {t:'🔄 Qayta yuboraman',f:function(){MY.cond?myQaytaYechim():myBoshla();}}];
+  if(MY.phase==='result'){
+    if(MY.res&&MY.res.has_correct)b.push({t:'👁 To\'g\'risini ko\'rsat',f:myShow});
+    b.push({t:'🔄 Tuzatib qayta yuboraman',pri:1,f:function(){MY.cond?myQaytaYechim():myBoshla();}});
+    b.push({t:'🆕 Yangi masala',f:myBoshla});
+  }
+  myActs(b);
+}
+
+function masalaYordamchi(){myOch();}
 
 document.getElementById('obuna-kanal-btn').onclick=function(){
   var url='https://t.me/'+KANAL;
