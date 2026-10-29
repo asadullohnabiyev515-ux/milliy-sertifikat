@@ -1710,6 +1710,10 @@ body[data-tema="yorug"] .page>div>div[style*="background:rgba(255,255,255,.0"]{b
 <style>
 #p-masala{min-height:100vh;min-height:100dvh;background:var(--c-bg);overflow-x:hidden}
 .my-m,.my-line{overflow-wrap:anywhere}
+.my-m{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default;position:relative}
+.my-cp{position:absolute;right:6px;bottom:-12px;width:28px;height:24px;border-radius:10px;border:1px solid var(--c-border2);background:var(--c-card);color:var(--c-muted);display:grid;place-items:center;cursor:pointer;padding:0;opacity:.9;-webkit-user-select:none;user-select:none}
+.my-ai.has-cp{margin-bottom:8px}
+.my-toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--e-pill);color:var(--e-pill-fg);font-weight:800;font-size:.8rem;padding:8px 14px;border-radius:12px;z-index:50;pointer-events:none}
 .my-top{position:sticky;top:0;z-index:20;background:var(--c-top);border-bottom:1px solid var(--c-border2)}
 .my-lim{font-size:.72rem;font-weight:800;color:var(--c-muted);background:var(--c-card3);border:1px solid var(--c-border2);border-radius:20px;padding:4px 10px;white-space:nowrap}
 .my-feed{display:flex;flex-direction:column;gap:10px;padding:14px 14px 150px}
@@ -2170,7 +2174,43 @@ function myApi(amal,body,_qayta){
 function myLim(l){var e=document.getElementById('my-lim');if(e&&l)e.textContent='Bugun '+l.used+' / '+l.limit;}
 function myFeed(){return document.getElementById('my-feed');}
 function myPast(){setTimeout(function(){window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});},30);}
-function myAi(html){var d=document.createElement('div');d.className='my-m my-ai';d.innerHTML=html;myFeed().appendChild(d);myPast();return d;}
+function myAi(html){var d=document.createElement('div');d.className='my-m my-ai';d.innerHTML=html;myFeed().appendChild(d);myCpQo(d);myPast();return d;}
+// Nusxa tugmasi: Telegram iOS'da bosib ushlab belgilash har doim ishlamaydi
+function myCpQo(d){
+  if(d.querySelector('.my-dots')){var mo=new MutationObserver(function(){if(!d.querySelector('.my-dots')){mo.disconnect();myCpQo(d);}});mo.observe(d,{childList:true});return;}
+  if(d.querySelector('.my-cp'))return;
+  var b=document.createElement('button');b.className='my-cp';b.setAttribute('aria-label','Nusxa olish');
+  b.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></g></svg>';
+  b.onclick=function(e){e.stopPropagation();myNusxa(myMatn(d));};
+  d.appendChild(b);d.classList.add('has-cp');
+}
+function myMatn(el){
+  // Ko'rinishdagidek qatorlar: blok bo'laklar (qadam, maslahat, qator) alohida qatorga
+  var out='';
+  (function yur(n){
+    n.childNodes.forEach(function(c){
+      if(c.nodeType===3){out+=c.nodeValue;return;}
+      if(c.nodeType!==1||c.classList.contains('my-cp')||c.classList.contains('my-prog'))return;
+      if(c.tagName==='BR'){out+='\n';return;}
+      var blok=c.tagName==='DIV'||/my-(hint|line|step)/.test(c.className);
+      if(blok&&out&&!/\n$/.test(out))out+='\n';
+      yur(c);
+      if(blok&&!/\n$/.test(out))out+='\n';
+    });
+  })(el);
+  return out.replace(/\n{3,}/g,'\n\n').trim();
+}
+function myNusxa(t){
+  function ok(){myToast('📋 Nusxalandi');}
+  function eski(){
+    var ta=document.createElement('textarea');ta.value=t;ta.setAttribute('readonly','');ta.style.cssText='position:fixed;top:0;left:0;opacity:0;font-size:16px';
+    document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,t.length);
+    var r=false;try{r=document.execCommand('copy');}catch(e){}
+    ta.remove();r?ok():myToast('Nusxa olib bo\'lmadi');
+  }
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,eski);else eski();
+}
+function myToast(t){var e=document.createElement('div');e.className='my-toast';e.textContent=t;document.body.appendChild(e);setTimeout(function(){e.remove();},1400);}
 function myMe(text,imgs){
   var d=document.createElement('div');d.className='my-m my-me';
   var h='';
