@@ -2368,8 +2368,9 @@ function myStepJavob(txt,img){
     k.innerHTML=h;
     if(r.done){
       MY.phase='done';MY.sess=null;
-      myAi('🎉 <b>Masala yechildi!</b>\nJavob: <b>'+myH(r.final_answer)+'</b>');
-      myActs([{t:'🆕 Yangi masala',pri:1,f:myBoshla}]);myPh('Yangi masala uchun tugmani bosing');return;
+      if(r.limit)myLim(r.limit);
+      myAi('🎉 <b>Masala yechildi!</b>\nJavob: <b>'+myH(r.final_answer)+'</b>'+(r.bonus?'\n\n🎁 Masalani o\'zingiz yechdingiz — <b>+1 masala</b> limitingizga qo\'shildi!':''));
+      myActs([{t:'🆕 Yangi masala',pri:1,f:myBoshla}]);myPh('Yangi masala yuboring…');MY.phase='problem';return;
     }
     MY.sess=r.session;
     if(r.verdict==='correct'||r.revealed)myQadam(r.session);else myAct();
@@ -2395,9 +2396,9 @@ function myCheckRun(){
   myApi('check_run').then(function(r){
     myBand(false);
     if(!r.ok){if(!myXato(k,r,myCheckRun))myAct();return;}
-    k.remove();MY.phase='result';MY.res=r.result;var x=r.result;
+    k.remove();MY.phase='result';MY.res=r.result;var x=r.result;if(r.limit)myLim(r.limit);
     if(x.is_correct){
-      myAi('✅ <b>Yechim to\'liq to\'g\'ri!</b> Barakalla!'+(x.shorter_way?'<span class="my-hint">💡 Qisqaroq yo\'l: '+myH(x.shorter_way)+'</span>':''));
+      myAi('✅ <b>Yechim to\'liq to\'g\'ri!</b> Barakalla!'+(r.bonus?'\n🎁 <b>+1 masala</b> limitingizga qo\'shildi!':'')+(x.shorter_way?'<span class="my-hint">💡 Qisqaroq yo\'l: '+myH(x.shorter_way)+'</span>':''));
       MY.phase='done';myActs([{t:'🆕 Yangi masala',pri:1,f:myBoshla}]);return;
     }
     var h='';
