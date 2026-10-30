@@ -2329,11 +2329,23 @@ function myXato(k,r,qayta){k.innerHTML='⚠️ '+myH(r.error||'Xato yuz berdi');
   if(r.net&&qayta){myActs([{t:'🔁 Qayta yuborish',pri:1,f:qayta}]);return true;}return false;}
 
 // 1-rejim
-function myStepStart(txt,img){
+function myStepStart(txt,img,pick){
   myBand(true);var k=myKut();
-  myApi('step_start',{text:txt,image:img||null}).then(function(r){
+  myApi('step_start',{text:txt,image:img||null,pick:pick||''}).then(function(r){
     myBand(false);
-    if(!r.ok){myXato(k,r,function(){myStepStart(txt,img);});return;}
+    if(!r.ok){myXato(k,r,function(){myStepStart(txt,img,pick);});return;}
+    if(r.choose&&r.choose.length){
+      // Rasmda bir nechta masala — bittasini tanlash
+      k.innerHTML='📋 Rasmda <b>'+r.choose.length+' ta masala</b> bor:'
+        +r.choose.map(function(p){return '<span class="my-line" style="font-family:inherit;font-size:.86rem"><b>'+myH(p.n)+'.</b> '+myH(p.title)+'</span>';}).join('')
+        +'👇 <b>Bitta masalani tanlang</b> — shuni qadamma-qadam yechamiz.';
+      myCpQo(k);MY.phase='problem';myPh('Yoki boshqa masala yuboring…');
+      myActs(r.choose.map(function(p){
+        var tanlov=p.n+'-masala — '+p.title;
+        return {t:p.n+'-masala',f:function(){myMe('✅ '+p.n+'-masala');myStepStart(txt,img,tanlov);}};
+      }));
+      return;
+    }
     k.remove();myLim(r.limit);MY.sess=r.session;MY.phase='work';
     myAi('📄 <b>Masala:</b> '+myH(r.session.problem_text)+'\n\nJami <b>'+r.session.total+' qadam</b>. Har qadamni o\'zingiz ishlaysiz, men tekshirib boraman.');
     myQadam(r.session);
