@@ -806,6 +806,7 @@ body[data-tema="yorug"] .page>div>div[style*="background:rgba(255,255,255,.0"]{b
     <div class="e-tile" onclick="uTab(7)"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g6"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M6 18V9M10 18V9M14 18V9M18 18V9M12 2 3 7h18z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><b>Kurs</b><small>Matematika mavzulari</small></div>
     <div class="e-tile" onclick="uTab(8)"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g7"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><b>Guruhlar</b><small>Guruh boshqaruvi</small></div>
     <div class="e-tile" onclick="uTab(9)"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g8"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><b>Varaq skaneri</b><small>Javob varag'i</small></div>
+    <div class="e-tile" onclick="uTab(10)"><span class="e-chev"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="e-ic e-g2"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="4"/><path d="M12 4v4M9.5 13.5h.01M14.5 13.5h.01M3 13v2M21 13v2"/></g></svg></div><b>Masala yordamchisi</b><small>Kim foydalandi</small></div>
   </div>
   <div id="ub1" style="display:none;padding:16px">
     <button class="btn btn-green" onclick="uTestYaratOch()" style="margin-bottom:8px">➕ Yangi test yaratish</button>
@@ -862,6 +863,34 @@ body[data-tema="yorug"] .page>div>div[style*="background:rgba(255,255,255,.0"]{b
       <button class="btn btn-green" style="width:auto;margin-top:0;padding:0 18px" onclick="uGuruhYarat()">➕</button>
     </div>
     <div id="uguruhlist"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
+  </div>
+  <div id="ub10" style="display:none;padding:16px">
+<style>
+.um-seg{margin-bottom:12px}
+.um-g{margin:16px 0 8px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.um-g b{font-size:.95rem;font-weight:900;color:var(--c-fg)}
+.um-g span{font-size:.75rem;color:var(--c-muted);white-space:nowrap}
+.um-c{background:var(--c-card);border:1px solid var(--c-border2);border-radius:16px;padding:12px 14px;margin-bottom:8px;cursor:pointer}
+.um-h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.um-h b{font-size:.9rem;color:var(--c-fg);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.um-h small{font-size:.7rem;color:var(--c-muted);white-space:nowrap}
+.um-k{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.um-k span{font-size:.72rem;font-weight:800;padding:4px 9px;border-radius:10px;background:var(--c-card3);color:var(--c-muted2)}
+.um-k .ok{background:rgba(0,184,148,.13);color:#1d8a6b}.um-k .bad{background:rgba(255,92,108,.12);color:#c53043}.um-k .warn{background:rgba(245,161,74,.15);color:#b7691f}
+.um-d{display:none;margin-top:10px;border-top:1px solid var(--c-border2);padding-top:8px}
+.um-c.open .um-d{display:block}
+.um-m{font-size:.8rem;line-height:1.45;padding:7px 0;border-bottom:1px dashed var(--c-border2);color:var(--c-fg)}
+.um-m:last-child{border:0}
+.um-m i{font-style:normal;font-size:.7rem;color:var(--c-muted)}
+.um-x{font-size:.75rem;color:var(--c-muted);margin-top:6px}
+.um-bo{font-size:.78rem;color:var(--c-muted);background:var(--c-card3);border-radius:12px;padding:10px 12px;line-height:1.5}
+</style>
+    <div class="e-seg um-seg">
+      <button class="e-seg-b" id="um-k1" onclick="uMyLoad(1)">Bugun</button>
+      <button class="e-seg-b on" id="um-k7" onclick="uMyLoad(7)">7 kun</button>
+      <button class="e-seg-b" id="um-k30" onclick="uMyLoad(30)">30 kun</button>
+    </div>
+    <div id="um-list"><div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div></div>
   </div>
   <div id="ub9" style="display:none;padding:16px">
     <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:14px;line-height:1.5">
@@ -4074,12 +4103,12 @@ async function uLoad(){
   }catch(e){li.innerHTML='<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4)">Xato</div>';}
 }
 var _uoqAll=[];
-var U_TAB_NOMLARI={1:'Testlar',2:'Savollar',3:'Kitoblar',5:"E'lonlar",6:"O'quvchilar",7:'Kurs',8:'Guruhlar',9:'Varaq skaneri'};
+var U_TAB_NOMLARI={1:'Testlar',2:'Savollar',3:'Kitoblar',5:"E'lonlar",6:"O'quvchilar",7:'Kurs',8:'Guruhlar',9:'Varaq skaneri',10:'Masala yordamchisi'};
 function uTab(n){
   document.getElementById('u-menu-grid').style.display='none';
   document.getElementById('u-back-btn').style.display='grid';
   document.getElementById('u-panel-title').textContent=U_TAB_NOMLARI[n]||'Ustoz paneli';
-  [1,2,3,5,6,7,8,9].forEach(function(i){
+  [1,2,3,5,6,7,8,9,10].forEach(function(i){
     document.getElementById('ub'+i).style.display=i===n?'block':'none';
   });
   if(n===1)uLoad();
@@ -4090,9 +4119,58 @@ function uTab(n){
   if(n===7)uKursTabLoad();
   if(n===8){uGuruhLoad();uUmumiyOtaLoad();}
   if(n===9)uSkanReset();
+  if(n===10)uMyLoad(uMyKun);
+}
+// ── Ustoz: Masala yordamchisi hisoboti ───────────────────────────────────
+var uMyKun=7;
+function uMyVaqt(t){
+  if(!t)return '';
+  var d=new Date(t),bugun=new Date(),k=Math.round((new Date(bugun.toDateString())-new Date(d.toDateString()))/864e5);
+  var hm=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);
+  return k===0?'bugun '+hm:k===1?'kecha '+hm:d.getDate()+'.'+('0'+(d.getMonth()+1)).slice(-2)+' '+hm;
+}
+function uMyLoad(kun){
+  uMyKun=kun;
+  [1,7,30].forEach(function(k){var b=document.getElementById('um-k'+k);if(b)b.className='e-seg-b'+(k===kun?' on':'');});
+  var el=document.getElementById('um-list');
+  el.innerHTML='<div style="text-align:center;padding:20px"><div class="sp" style="margin:0 auto"></div></div>';
+  apiFetch(API+'/tutor/ustoz_hisobot',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kun:kun})},60000)
+    .then(function(r){return r.json();})
+    .then(function(r){
+      if(uMyKun!==kun)return;
+      if(!r.ok){el.innerHTML='<div class="um-bo">⚠️ '+myH(r.error||r.detail||'Xato')+'</div>';return;}
+      if(!r.guruhlar.length){el.innerHTML='<div class="um-bo">Sizda hali guruh yo\'q. Guruh o\'quvchilarining yordamchidan foydalanishi shu yerda ko\'rinadi.</div>';return;}
+      el.innerHTML=r.guruhlar.map(uMyGuruh).join('')
+        +'<div class="um-x">«O\'zi yechdi» — qadamlarning kamida yarmini o\'quvchi o\'zi to\'g\'ri ishlagan. Kartani bosing — masalalar ro\'yxati ochiladi.</div>';
+    })
+    .catch(function(){el.innerHTML='<div class="um-bo">⚠️ Server bilan aloqa yo\'q. Qayta urinib ko\'ring.</div>';});
+}
+function uMyGuruh(g){
+  var h='<div class="um-g"><b>'+myH(g.nomi)+'</b><span>'+g.faol.length+' / '+(g.jami||g.faol.length)+' foydalangan</span></div>';
+  if(!g.faol.length)h+='<div class="um-bo">Bu davrda hech kim foydalanmagan.</div>';
+  h+=g.faol.map(function(o){
+    var k='';
+    if(o.boshladi)k+='<span>📘 '+o.boshladi+' masala</span>';
+    if(o.mustaqil)k+='<span class="ok">✅ '+o.mustaqil+' o\'zi yechdi</span>';
+    var yb=o.tugatdi-o.mustaqil;if(yb>0)k+='<span class="warn">🆘 '+yb+' yordam bilan</span>';
+    var tash=(o.masalalar||[]).filter(function(m){return m.holat==='tashlab ketgan';}).length;
+    if(tash)k+='<span class="bad">⏸ '+tash+' tashlab ketgan</span>';
+    if(o.togri||o.xato)k+='<span>Qadamlar: '+o.togri+' ✓ · '+o.xato+' ✗</span>';
+    var d='';
+    if(o.xato_turlari&&o.xato_turlari.length)d+='<div class="um-m"><i>Ko\'p uchragan xatolar:</i><br>'+o.xato_turlari.map(function(x){return myH(x.tur)+' ('+x.soni+')';}).join(', ')+'</div>';
+    d+=(o.masalalar||[]).map(function(m){
+      var ic=m.holat==='o\'zi yechdi'?'✅':m.holat==='yordam bilan yechdi'?'🆘':m.holat==='tashlab ketgan'?'⏸':'⏳';
+      return '<div class="um-m">'+ic+' '+myH(m.masala||'(sharti yozilmagan)')+'<br><i>'+uMyVaqt(m.t)+' · '+m.rejim+' · '+m.manba+' · '+m.holat+'</i></div>';
+    }).join('');
+    if(!d)d='<div class="um-m"><i>Batafsil tarix shu yangilanishdan keyin yig\'iladi.</i></div>';
+    return '<div class="um-c" onclick="this.classList.toggle(\'open\')"><div class="um-h"><b>'+myH(o.ism)+'</b><small>'+uMyVaqt(o.oxirgi)+'</small></div><div class="um-k">'+k+'</div><div class="um-d">'+d+'</div></div>';
+  }).join('');
+  if(g.foydalanmagan&&g.foydalanmagan.length)
+    h+='<div class="um-x">Foydalanmagan ('+g.foydalanmagan.length+'): '+g.foydalanmagan.map(myH).join(', ')+'</div>';
+  return h;
 }
 function uBoshga(){
-  [1,2,3,5,6,7,8,9].forEach(function(i){
+  [1,2,3,5,6,7,8,9,10].forEach(function(i){
     document.getElementById('ub'+i).style.display='none';
   });
   document.getElementById('u-menu-grid').style.display='grid';
