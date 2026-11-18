@@ -5638,6 +5638,39 @@ async function otaOnalarQaytaYubor(kod){
   }catch(e){xb('otaQaytaXb','err','Serverga ulanib bo\'lmadi');}
   if(btn){btn.disabled=false;btn.textContent='👨‍👩‍👧 Ota-onalar guruhiga qayta yuborish';}
 }
+// RASCH TAHLILI — haqiqiy Rasch modeli (girth) bilan hozirgi ballni taqqoslash.
+// Faqat ko'rsatadi: ballar, o'rinlar, sertifikatlar o'zgarmaydi.
+async function uRaschKor(kod){
+  var box=document.getElementById('raschNatija'), btn=document.getElementById('raschBtn');
+  if(!box)return;
+  if(box.dataset.ochiq==='1'){box.innerHTML='';box.dataset.ochiq='';return;}
+  box.dataset.ochiq='1';
+  box.innerHTML='<div style="text-align:center;padding:14px"><div class="sp" style="margin:0 auto"></div></div>';
+  try{
+    var r=await apiFetch(API+'/rasch/tahlil/'+encodeURIComponent(kod)+'?ustoz_id='+CU.id,{},90000);
+    var d=await r.json();
+    if(!r.ok||!d.success){box.innerHTML='<div style="font-size:.8rem;color:#ff6b6b;padding:8px">'+htmlEsc(d.detail||'Xato')+'</div>';return;}
+    var h='<div style="background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.3);border-radius:12px;padding:12px">';
+    h+='<div style="font-size:.72rem;color:rgba(255,255,255,.55);margin-bottom:8px">Faqat taqqoslash uchun — rasmiy ball o\'zgarmaydi. θ (logit) — Rasch bo\'yicha bilim darajasi. O\'rinlar mosligi: <b style="color:#a78bfa">'+Math.round(d.orin_mosligi*100)+'%</b></div>';
+    h+='<div style="display:grid;grid-template-columns:1fr auto auto auto;gap:4px 10px;font-size:.75rem;align-items:center">';
+    h+='<div style="color:rgba(255,255,255,.4)">O\'quvchi</div><div style="color:rgba(255,255,255,.4)">Ball</div><div style="color:rgba(255,255,255,.4)">θ</div><div style="color:rgba(255,255,255,.4)">O\'rin</div>';
+    d.oquvchilar.forEach(function(o){
+      var f=o.orin_hozir-o.orin_rasch, fr=f>0?'<span style="color:#00d4aa">▲'+f+'</span>':(f<0?'<span style="color:#ff6b6b">▼'+(-f)+'</span>':'');
+      h+='<div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+htmlEsc(o.ism)+'</div><div>'+o.ball+'</div><div>'+o.theta.toFixed(2)+'</div><div>'+o.orin_rasch+' '+fr+'</div>';
+    });
+    h+='</div>';
+    if(d.savollar&&d.savollar.length){
+      h+='<div style="font-size:.72rem;color:rgba(255,255,255,.55);margin:12px 0 6px">Eng qiyin savollar (Rasch):</div><div style="display:flex;flex-wrap:wrap;gap:6px">';
+      d.savollar.slice(0,8).forEach(function(s){h+='<span style="background:rgba(255,107,107,.12);border-radius:8px;padding:3px 8px;font-size:.72rem">'+htmlEsc(s.savol)+'-savol · '+Math.round(s.togri_ulush*100)+'%</span>';});
+      h+='</div>';
+    }
+    if(d.tashlangan&&d.tashlangan.length){
+      h+='<div style="font-size:.68rem;color:rgba(255,255,255,.4);margin-top:8px">Hamma topgan yoki hech kim topmagan (baholanmadi): '+d.tashlangan.map(function(x){return htmlEsc(x.savol);}).join(', ')+'</div>';
+    }
+    h+='<div style="font-size:.66rem;color:rgba(255,255,255,.35);margin-top:8px">▲/▼ — Rasch bo\'yicha o\'rin hozirgidan qancha farq qiladi</div></div>';
+    box.innerHTML=h;
+  }catch(e){box.innerHTML='<div style="font-size:.8rem;color:#ff6b6b;padding:8px">Serverga ulanib bo\'lmadi</div>';box.dataset.ochiq='';}
+}
 async function uNatijalarKor(kod){
   go('p9f',-1);
   var body=document.getElementById('natStatBody');
@@ -5682,6 +5715,10 @@ async function uNatijalarKor(kod){
         '<option value="60"'+(d.xato_kechikish===60?' selected':'')+'>1 soatdan keyin</option>'+
       '</select></div>'+
       '<div class="xb" id="xatoKechikishXb" style="margin-bottom:8px"></div>';
+    if(jami>=5){
+      html+='<button class="btn btn-outline" id="raschBtn" onclick="uRaschKor(\''+esc(kod)+'\')" style="width:100%;margin-bottom:8px">📐 Rasch tahlili (taqqoslash)</button>'+
+        '<div id="raschNatija" style="margin-bottom:8px"></div>';
+    }
 
     var chegara=d.maks_ball*0.8, orta=d.maks_ball*0.5;
     // Har bir savol necha ball ekanligi — natTalabaSavollar (o'quvchi bosilganda
