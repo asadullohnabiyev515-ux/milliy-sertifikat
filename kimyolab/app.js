@@ -6,6 +6,7 @@ const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(
 const rnd=a=>a[Math.random()*a.length|0];
 
 /* ---------- Holat ---------- */
+window.KL={};
 let S={xp:0,ach:{},rx:{},mols:{},els:{},lessons:{},chains:{},prac:{},steps:{},quiz:0};
 try{Object.assign(S,JSON.parse(localStorage.getItem("kimyolab")||"{}"));}catch(e){}
 const save=()=>{try{localStorage.setItem("kimyolab",JSON.stringify(S));}catch(e){}};
@@ -18,7 +19,7 @@ const cnt=o=>Object.keys(o).length;
 
 /* ---------- Tablar ---------- */
 const inited={};
-const tabs={lab:initLab,table:initTable,molecules:initMol,chains:initChains,lessons:initLessons,practicals:initPrac,tools:initTools,discoveries:renderAch};
+const tabs={lab:()=>window.KL_initLab(),table:initTable,molecules:initMol,chains:initChains,lessons:initLessons,practicals:initPrac,tools:initTools,discoveries:renderAch};
 function showTab(t){
   $$("#tabs button").forEach(b=>b.classList.toggle("active",b.dataset.tab===t));
   $$(".tab").forEach(s=>s.classList.toggle("active",s.id==="tab-"+t));
@@ -29,74 +30,6 @@ function showTab(t){
 }
 let current="lab";
 $("#tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(b)showTab(b.dataset.tab);});
-
-/* ---------- Laboratoriya ---------- */
-let bk={items:[],liq:"",layer:0,layerCol:"#fff",bub:[],ppt:[],until:0,strong:false,heat:0,msg:null};
-function hex2rgb(h){h=h.replace("#","");return[0,2,4].map(i=>parseInt(h.substr(i,2),16));}
-function initLab(){
-  const el=$("#tab-lab");
-  el.innerHTML=`<h2>🧪 Laboratoriya</h2><p class="sub">Reagentlarni tanlang, so'ng «Aralashtirish» tugmasini bosing. Barcha tajribalar xavfsiz — virtual!</p>
-  <div class="grid2"><div class="card"><h3 style="margin-top:0">Reagentlar</h3><div class="chips" id="rg"></div>
-  <p class="sub" style="margin-top:14px">Idishda: <span id="bkl">bo'sh</span></p>
-  <button class="btn pri" id="mix">Aralashtirish</button> <button class="btn" id="clr">Tozalash</button>
-  <p class="sub" style="margin-top:14px">Topilgan reaksiyalar: <b id="rxn"></b> / ${REACTIONS.length}</p></div>
-  <div class="card"><canvas id="beaker" width="340" height="340"></canvas><div class="obs" id="obs">Kuzatuv shu yerda ko'rinadi.</div></div></div>`;
-  $("#rg").innerHTML=Object.entries(REAGENTS).map(([k,r])=>`<button class="chip" data-k="${k}">${fmt(r.n)}</button>`).join("");
-  $("#rg").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;const k=b.dataset.k;
-    if(bk.items.includes(k))return;if(bk.items.length>=2)bk.items.shift();bk.items.push(k);bk.layer=0;bk.ppt=[];bk.bub=[];bk.until=0;bk.msg=null;bkUpdate();};
-  $("#clr").onclick=()=>{bk={items:[],liq:"",layer:0,layerCol:"#fff",bub:[],ppt:[],until:0,strong:false,heat:0,msg:null};bkUpdate();$("#obs").textContent="Idish tozalandi.";};
-  $("#mix").onclick=mixIt;
-  bkUpdate();requestAnimationFrame(drawBeaker);
-}
-function bkUpdate(){
-  $$("#rg .chip").forEach(c=>c.classList.toggle("on",bk.items.includes(c.dataset.k)));
-  $("#bkl").innerHTML=bk.items.length?bk.items.map(k=>fmt(REAGENTS[k].n)).join(" + "):"bo'sh";
-  $("#rxn").textContent=cnt(S.rx);
-}
-function mixIt(){
-  if(bk.items.length<2){$("#obs").textContent="Kamida ikkita reagent tanlang.";return;}
-  const [a,b]=bk.items;
-  const r=REACTIONS.find(r=>(r.a===a&&r.b===b)||(r.a===b&&r.b===a));
-  if(!r){$("#obs").innerHTML="<b>Reaksiya kuzatilmadi.</b> Bu juftlik sezilarli o'zgarish bermaydi.";bk.liq=mixCol(bk.items);bk.msg=null;return;}
-  bk.liq=r.col;bk.until=performance.now()+(r.strong?8000:5000);bk.strong=!!r.strong;bk.heat=r.fx==="heat"?1:0;bk.msg=r;
-  bk.layer=0;bk.layerCol=r.ppt||"#fff";bk.ppt=[];
-  $("#obs").innerHTML=`<div class="eq">${fmt(r.eq.replace(/₂/g,"2").replace(/₃/g,"3").replace(/₄/g,"4"))}</div><b>${r.type}</b><br>${r.obs}`;
-  const key=r.a+"+"+r.b;
-  if(!S.rx[key]){S.rx[key]=1;addXP(10);save();toast("🔬 Yangi reaksiya topildi! +10 XP");}
-  unlock("first_rx");if(cnt(S.rx)>=5)unlock("rx5");if(cnt(S.rx)>=10)unlock("rx10");
-  bkUpdate();
-}
-function mixCol(items){const ls=items.filter(k=>REAGENTS[k].s==="l");if(!ls.length)return"";
-  const c=ls.map(k=>hex2rgb(REAGENTS[k].c)).reduce((s,x)=>s.map((v,i)=>v+x[i]/ls.length),[0,0,0]);return"#"+c.map(v=>Math.round(v).toString(16).padStart(2,"0")).join("");}
-function drawBeaker(now){
-  if(current==="lab"){
-    const cv=$("#beaker");if(cv){const c=cv.getContext("2d");c.clearRect(0,0,340,340);
-      const L=70,R=270,T=40,B=300,liqs=bk.items.filter(k=>REAGENTS[k].s==="l").length;
-      const col=bk.liq||mixCol(bk.items);const lvl=bk.items.length?(liqs?.38+.16*liqs:.1):0;
-      const top=B-(B-T)*lvl;
-      if(col&&liqs||bk.liq){c.fillStyle=col+"cc";c.fillRect(L+2,top,R-L-4,B-top-2);
-        c.fillStyle="#ffffff30";c.fillRect(L+2,top,R-L-4,3);}
-      // qattiq bo'laklar
-      if(!bk.msg)bk.items.filter(k=>REAGENTS[k].s==="s").forEach((k,i)=>{c.fillStyle=REAGENTS[k].c;c.fillRect(L+30+i*60,B-18,34,14);c.fillRect(L+44+i*60,B-28,18,12);});
-      if(bk.items.includes("CO2")&&!bk.msg){c.fillStyle="#ffffff55";for(let i=0;i<5;i++)c.fillRect(L+20+i*35,T+10+(i%2)*14,6,6);}
-      // jarayonlar
-      const active=now<bk.until;
-      if(bk.msg){
-        if(bk.msg.fx==="gas"&&active){for(let i=0;i<(bk.strong?4:1);i++)bk.bub.push({x:L+15+Math.random()*(R-L-30),y:B-8,r:2+Math.random()*4,v:1+Math.random()*2});}
-        if(bk.msg.fx==="ppt"&&active&&bk.ppt.length<80)bk.ppt.push({x:L+15+Math.random()*(R-L-30),y:top+4,v:.8+Math.random()});
-        if(bk.msg.fx==="ppt"&&bk.layer<1)bk.layer+=.004;
-      }
-      bk.bub=bk.bub.filter(b=>(b.y-=b.v)>top);c.strokeStyle="#fff9";bk.bub.forEach(b=>{c.beginPath();c.arc(b.x,b.y,b.r,0,7);c.stroke();});
-      if(bk.msg&&bk.msg.fx==="ppt"){c.fillStyle=bk.layerCol;bk.ppt=bk.ppt.filter(p=>{p.y+=p.v;if(p.y>B-6-bk.layer*28)return false;c.fillRect(p.x,p.y,4,4);return true;});
-        c.fillRect(L+2,B-4-bk.layer*28,R-L-4,bk.layer*28+2);}
-      if(bk.heat&&active){const g=c.createLinearGradient(0,B,0,T);g.addColorStop(0,"#ff8a3d55");g.addColorStop(1,"#ff8a3d00");c.fillStyle=g;c.fillRect(L,T,R-L,B-T);}
-      // shisha
-      c.strokeStyle="#cfe3f5";c.lineWidth=4;c.beginPath();c.moveTo(L,T);c.lineTo(L,B);c.lineTo(R,B);c.lineTo(R,T);c.stroke();
-      c.beginPath();c.moveTo(L-12,T);c.lineTo(L+4,T);c.moveTo(R-4,T);c.lineTo(R+12,T);c.stroke();c.lineWidth=1;
-    }
-  }
-  requestAnimationFrame(drawBeaker);
-}
 
 /* ---------- Davriy jadval ---------- */
 function econf(z){
@@ -312,6 +245,8 @@ function renderAch(){
   $("#rst").onclick=()=>{if(confirm("Barcha natijalar o'chirilsinmi?")){S={xp:0,ach:{},rx:{},mols:{},els:{},lessons:{},chains:{},prac:{},steps:{},quiz:0};save();location.reload();}};
 }
 
+Object.assign(window.KL,{save,addXP,unlock,toast,fmt,cnt,shuffle,rnd,isLab:()=>current==="lab",go:showTab});
+Object.defineProperty(window.KL,"S",{get:()=>S});
 renderPlayer();
 const h0=location.hash.slice(1);showTab(tabs[h0]?h0:"lab");
 })();
