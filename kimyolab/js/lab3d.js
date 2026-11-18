@@ -1,7 +1,7 @@
 // KimyoLab — 3D laboratoriya xonasi (Three.js r150): xona, javon, tajriba stoli, jonli idish, asboblar, kamera
 (function(KL){
 "use strict";
-const BT=0.96, VX=0, VZ=-2.45;                       // stol usti balandligi va idish joyi
+const BT=0.96, VX=0, VZ=-2.25;                       // stol usti balandligi va idish joyi
 const PROF={                                            // idish ichki profili [radius, balandlik] (m)
   stakan:[[0,0],[.108,0],[.115,.008],[.115,.25]],
   kolba:[[0,0],[.122,0],[.13,.012],[.11,.07],[.075,.135],[.04,.19],[.034,.205],[.034,.28]],
@@ -29,14 +29,14 @@ class Lab3D{
   constructor(canvas,host,cb){
     this.cb=cb;this.host=host;this.canvas=canvas;
     this.mobile=matchMedia("(pointer:coarse)").matches;
-    const r=this.r=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:"high-performance"});
-    r.setPixelRatio(Math.min(devicePixelRatio,this.mobile?1.5:2));
+    const r=this.r=new THREE.WebGLRenderer({canvas,antialias:!this.mobile,powerPreference:"high-performance"});
+    this.dpr=Math.min(devicePixelRatio,this.mobile?1.5:2);r.setPixelRatio(this.dpr);
     r.outputEncoding=THREE.sRGBEncoding;r.toneMapping=THREE.ACESFilmicToneMapping;r.toneMappingExposure=.82;
-    r.shadowMap.enabled=true;r.shadowMap.type=THREE.PCFSoftShadowMap;
+    r.shadowMap.enabled=!this.mobile;r.shadowMap.type=THREE.PCFSoftShadowMap;
     this.sc=new THREE.Scene();this.sc.background=new THREE.Color(0xd5dde4);
     this.cam=new THREE.PerspectiveCamera(60,1,.02,60);
     this.inter=[];this.tweens=[];this.colliders=[];this.time=0;this.sheet=0;this.queue=[];this.busy=false;
-    this.env();this.room();this.decor();this.shelf();this.bench();this.hanger();this.teacherBuild();
+    this.env();this.room();this.decor();this.bench();this.rack();this.side();this.hanger();this.teacherBuild();
     this.vg=new THREE.Group();this.sc.add(this.vg);this.fxBuild();this.setVessel("stakan");
     this.P={x:-4.7,z:3.05,yaw:2.0,pitch:-.12};this.mode="walk";this.orb={yaw:.35,pitch:.32,dist:.85};
     this.input();this.resize();
@@ -144,27 +144,38 @@ class Lab3D{
     hand((d.getHours()%12+d.getMinutes()/60)*Math.PI/6,60,9,"#222");hand(d.getMinutes()*Math.PI/30,90,6,"#222");hand(d.getSeconds()*Math.PI/30,96,2,"#c62828");
   }
   /* ---------- reaktivlar shkafi (o'ng devor) ---------- */
-  shelf(){
-    const wood=M(0xa9794a,{roughness:.6}),X=7.62;
-    this.box(.04,3,6.7,M(0xf3efe6),7.96,1.5,0).receiveShadow=true;
-    [-3.33,3.33].forEach(z=>this.box(.62,3,.05,wood,7.67,1.5,z));
-    this.box(.64,.05,6.72,wood,7.67,3.01,0);this.box(.64,.1,6.72,wood,7.67,.05,0);
-    [.3,.86,1.42,1.98,2.54].forEach(y=>this.box(.56,.04,6.4,M(0x8a6238),7.64,y-.02,0));
-    this.colliders.push([7.05,8,-3.4,3.4]);
-    const groups=KL.SHELF_GROUPS.map(g=>g[0]),by=g=>KL.SHELF.filter(s=>s.g===g);
-    const salts=by("salt");
-    const rows=[[...by("solid")],[...by("acid"),...by("base"),...by("ind")],salts.slice(0,11),salts.slice(11),[...by("org")]];
-    const titles=["Metallar va qattiq moddalar","Kislotalar · Ishqorlar · Indikatorlar","Tuzlar","Tuzlar","Organik va boshqa moddalar"];
-    this.bottles={};void groups;
-    rows.forEach((row,ri)=>{
-      const y=[.3,.86,1.42,1.98,2.54][ri];const n=row.length,step=Math.min(.46,6/n);
-      const plate=ctex(512,48,(c,w,h)=>{c.fillStyle="#2c3e50";c.fillRect(0,0,w,h);c.fillStyle="#fff";c.font="bold 26px sans-serif";c.textAlign="center";c.fillText(titles[ri],w/2,33);});
-      const pl=new THREE.Mesh(new THREE.PlaneGeometry(1.6,.15),new THREE.MeshBasicMaterial({map:plate}));pl.position.set(7.34,y-.1,0);pl.rotation.y=-Math.PI/2;this.sc.add(pl);
-      row.forEach((s,i)=>{const z=-(n-1)*step/2+i*step;const b=this.bottle(s);b.position.set(X,y,z);b.userData.home={x:X,y,z};this.sc.add(b);this.bottles[s.id]=b;});
+  /* ---------- reaktivlar polkasi: tajriba stoli ustida, 4 pog'ona ---------- */
+  rack(){
+    const W=3.0,TY=[0,.2,.4,.6],TZ=[-2.8,-2.95,-3.1,-3.25],lam=M(0xf1ede4,{roughness:.55}),edge=M(0xb98a5a,{roughness:.5});
+    for(let i=1;i<4;i++){const st=this.box(W,TY[i],.15,lam,0,BT+TY[i]/2,TZ[i]);st.receiveShadow=true;this.box(W,.014,.006,edge,0,BT+TY[i]-.007,TZ[i]+.078);}
+    this.box(W,.03,.15,lam,0,BT+.015,TZ[0]);this.box(W,.014,.006,edge,0,BT+.023,TZ[0]+.078);
+    this.box(W+.06,.9,.03,M(0xe2ddd0),0,BT+.45,-3.34);[-1,1].forEach(k=>this.box(.03,.9,.64,edge,k*(W/2+.015),BT+.45,-3.03));
+    const by=g=>KL.SHELF.filter(x=>x.g===g),sol=by("solid");
+    const rows=[[sol.slice(0,6),sol.slice(6)],[[...by("acid"),...by("base")],by("ind")],[by("salt"),[]],[by("org"),[]]];
+    this.bottles={};
+    rows.forEach(([left,right],ri)=>{
+      const xs=[],gap=right.length?.62:0,a=-W/2+.12,d=W/2-.12;
+      const span=(n,x0,x1)=>{for(let i=0;i<n;i++)xs.push(n>1?x0+(x1-x0)*i/(n-1):(x0+x1)/2);};
+      if(gap){span(left.length,a,-gap/2);span(right.length,gap/2,d);}else span(left.length,a,d);
+      [...left,...right].forEach((sh,i)=>{const bo=this.bottle(sh);bo.scale.setScalar(ri===2?.82:.9);
+        const home={x:xs[i],y:BT+TY[ri]+(ri===0?.03:0),z:TZ[ri]};bo.position.set(home.x,home.y,home.z);bo.userData.home=home;this.sc.add(bo);this.bottles[sh.id]=bo;});
     });
-    // oyna eshiklar
-    const gl=new THREE.MeshStandardMaterial({color:0xddeeff,transparent:true,opacity:.1,roughness:.05,metalness:.2,depthWrite:false});
-    [-1.6,1.6].forEach(z=>{const d=new THREE.Mesh(new THREE.PlaneGeometry(3.2,2.8),gl);d.position.set(7.32,1.5,z);d.rotation.y=-Math.PI/2;this.sc.add(d);});
+  }
+  /* ---------- o'ng devor: mo'rili shkaf va yuvinish joyi ---------- */
+  side(){
+    const lam=M(0xe9ecef,{roughness:.5}),dark=M(0x2e3a44,{roughness:.35,metalness:.1}),Z=.4;
+    this.box(.8,.9,1.6,lam,7.58,.45,Z);this.box(.86,.05,1.66,dark,7.57,.925,Z);
+    [-.77,.77].forEach(dz=>this.box(.8,1.3,.06,lam,7.58,1.6,Z+dz));this.box(.86,.5,1.66,lam,7.57,2.5,Z);this.box(.04,1.3,1.5,M(0xdde4ea),7.96,1.6,Z);
+    const g=new THREE.Mesh(new THREE.PlaneGeometry(1.5,.75),new THREE.MeshStandardMaterial({color:0xcfe6f5,transparent:true,opacity:.22,roughness:.05,metalness:.2,depthWrite:false}));g.position.set(7.17,1.87,Z);g.rotation.y=-Math.PI/2;this.sc.add(g);
+    this.box(.02,.04,1.5,M(0x888888,{metalness:.7}),7.16,1.48,Z);this.box(.5,.02,1.3,M(0xffffff,{emissive:0xffffff,emissiveIntensity:.8}),7.6,2.24,Z);
+    const pt=ctex(256,48,(c,w,h)=>{c.fillStyle="#2c3e50";c.fillRect(0,0,w,h);c.fillStyle="#fff";c.font="bold 24px sans-serif";c.textAlign="center";c.fillText("Mo'rili shkaf",w/2,32);});
+    const pl=new THREE.Mesh(new THREE.PlaneGeometry(.8,.15),new THREE.MeshBasicMaterial({map:pt}));pl.position.set(7.13,2.5,Z);pl.rotation.y=-Math.PI/2;this.sc.add(pl);
+    const f=new THREE.Mesh(lathe(PROF.kolba,0,.28),new THREE.MeshStandardMaterial({color:0xeef6fb,transparent:true,opacity:.3,depthWrite:false}));f.position.set(7.6,.95,Z+.25);this.sc.add(f);
+    const l=new THREE.Mesh(lathe(PROF.kolba,.004,.1),new THREE.MeshStandardMaterial({color:0xf28c28,transparent:true,opacity:.75}));l.position.set(7.6,.95,Z+.25);this.sc.add(l);
+    this.colliders.push([7.05,8,Z-.9,Z+.9]);
+    this.box(.7,.9,1.5,lam,7.62,.45,-3.1);this.box(.76,.05,1.56,dark,7.61,.925,-3.1);this.box(.5,.03,.6,M(0x9aa4ae,{metalness:.6,roughness:.3}),7.58,.94,-3.1);
+    this.cyl(.015,.015,.3,M(0xcccccc,{metalness:.9,roughness:.2}),7.85,1.1,-3.1);this.box(.22,.02,.02,M(0xcccccc,{metalness:.9,roughness:.2}),7.75,1.25,-3.1);
+    this.colliders.push([7.15,8,-3.9,-2.3]);
   }
   bottle(s){
     const g=new THREE.Group(),k=s.k;
@@ -194,8 +205,8 @@ class Lab3D{
     const lbl=ctex(160,72,(c,w,hh)=>{c.fillStyle="#fffdf4";c.fillRect(0,0,w,hh);const gc={acid:"#c0392b",base:"#2e5ea8",salt:"#2e7d32",solid:"#6d4c41",org:"#8e24aa",ind:"#f39c12"}[s.g];c.fillStyle=gc;c.fillRect(0,0,w,10);
       c.fillStyle="#1b1b1b";const t=KL.uni(s.f.length>11?s.f.replace(/\(C6H10O5\)n/,"kraxmal"):s.f);let fs=34;c.font=`bold ${fs}px sans-serif`;while(c.measureText(t).width>w-10&&fs>14){fs-=2;c.font=`bold ${fs}px sans-serif`;}c.textAlign="center";c.fillText(t,w/2,48);
       if(s.hz){c.fillStyle="#c62828";c.font="bold 14px sans-serif";c.fillText("⚠",w-12,hh-6);}});
-    const lw=k==="drop"?.075:.11;const L=new THREE.Mesh(new THREE.PlaneGeometry(lw,lw*.45),new THREE.MeshBasicMaterial({map:lbl}));
-    L.position.set(k==="gas"?-.075:-(k==="drop"?.043:k==="piece"||k==="powder"?.073:.064),k==="gas"?.1:(h||.15)*.5,0);L.rotation.y=-Math.PI/2;g.add(L);
+    const lw=k==="drop"?.085:.125;const L=new THREE.Mesh(new THREE.PlaneGeometry(lw,lw*.45),new THREE.MeshBasicMaterial({map:lbl}));
+    L.position.set(0,k==="gas"?.1:(h||.15)*.5,k==="gas"?.075:k==="drop"?.045:k==="piece"||k==="powder"?.074:k==="water"?.068:.065);g.add(L);
     g.traverse(o=>{if(o.isMesh){o.castShadow=true;}});
     g.userData.h=h;g.userData.body=body;this.pick(g,{type:"bottle",id:s.id});
     return g;
@@ -207,13 +218,6 @@ class Lab3D{
     for(let i=0;i<4;i++)this.box(.9,.32,.01,M(0xd5dade),-1.5+i,.55,-1.965);
     for(let i=0;i<4;i++)this.cyl(.012,.012,.12,M(0xaaaaaa,{metalness:.8}),-1.5+i,.55,-1.95).rotation.z=Math.PI/2;
     this.colliders.push([-2.35,2.35,-3.45,-1.8]);
-    // probirkalar shtativi (bezak)
-    const rack=this.box(.42,.05,.12,M(0xb5895a),-1.45,BT+.12,-2.9);void rack;this.box(.42,.05,.12,M(0xb5895a),-1.45,BT+.025,-2.9);
-    ["#e8505b","#2f86f6","#f2c81b","#7fd17f","#b36ae2"].forEach((c,i)=>{const x=-1.61+i*.08;const t=new THREE.Mesh(new THREE.CylinderGeometry(.013,.013,.2,12),new THREE.MeshStandardMaterial({color:0xeef6fb,transparent:true,opacity:.35,depthWrite:false}));t.position.set(x,BT+.12,-2.9);this.sc.add(t);
-      const l=new THREE.Mesh(new THREE.CylinderGeometry(.011,.011,.08,10),new THREE.MeshStandardMaterial({color:new THREE.Color(c),transparent:true,opacity:.8}));l.position.set(x,BT+.06,-2.9);this.sc.add(l);});
-    // kolbalar (bezak)
-    [[1.5,-2.95,"#f28c28"],[1.75,-2.85,"#3d8bfd"]].forEach(([x,z,c])=>{const f=new THREE.Mesh(lathe(PROF.kolba,0,.28),new THREE.MeshStandardMaterial({color:0xeef6fb,transparent:true,opacity:.3,depthWrite:false,roughness:.05,metalness:.1}));f.position.set(x,BT,z);f.scale.setScalar(.8);this.sc.add(f);
-      const l=new THREE.Mesh(lathe(PROF.kolba,.004,.09),new THREE.MeshStandardMaterial({color:new THREE.Color(c),transparent:true,opacity:.75}));l.position.set(x,BT,z);l.scale.setScalar(.8);this.sc.add(l);});
     // uch oyoq va to'r
     this.tripod=new THREE.Group();this.tripod.position.set(VX,BT,VZ);this.sc.add(this.tripod);
     const ring=new THREE.Mesh(new THREE.TorusGeometry(.13,.006,8,32),M(0x555555,{metalness:.7,roughness:.4}));ring.rotation.x=Math.PI/2;ring.position.y=.16;this.tripod.add(ring);
@@ -236,17 +240,17 @@ class Lab3D{
     this.flame=new THREE.Group();this.flame.add(fo,fi);fo.position.y=.037;fi.position.y=.019;this.flame.position.y=.112;lamp.add(this.flame);
     this.flameL=new THREE.PointLight(0xff9a3c,0,1.6);this.flameL.position.y=.16;lamp.add(this.flameL);
     // tok manbai (elektroliz)
-    const bat=this.battery=new THREE.Group();bat.position.set(.62,BT,-2.75);this.sc.add(bat);
+    const bat=this.battery=new THREE.Group();bat.position.set(.62,BT,VZ-.05);this.sc.add(bat);
     this.box(.26,.13,.16,M(0x37474f,{roughness:.5}),0,.065,0,bat);this.box(.2,.06,.005,M(0x263238,{emissive:0x0,}),0,.07,.082,bat);
     this.batLed=this.cyl(.008,.008,.01,M(0x330000,{emissive:0x000000}),.08,.135,.04,bat);
     this.cyl(.012,.012,.03,M(0xc62828),-.06,.14,0,bat);this.cyl(.012,.012,.03,M(0x222222),.04,.14,0,bat);
     bat.traverse(o=>{if(o.isMesh)this.pick(o,{type:"battery"});});
     // UV lampa
-    const uv=this.uvLamp=new THREE.Group();uv.position.set(-.48,BT,-2.75);this.sc.add(uv);
+    const uv=this.uvLamp=new THREE.Group();uv.position.set(-.5,BT,VZ-.08);this.sc.add(uv);
     this.box(.14,.02,.14,M(0x333333),0,.01,0,uv);this.cyl(.007,.007,.6,M(0x999999,{metalness:.8}),0,.3,0,uv);
     const arm=this.box(.36,.012,.012,M(0x999999,{metalness:.8}),.17,.6,.0,uv);void arm;
     this.uvHead=this.box(.14,.05,.07,M(0x2b2b2b),.34,.58,.0,uv);this.uvTube=this.box(.12,.012,.05,M(0x6a3fb5,{emissive:0x000000}),.34,.552,0,uv);
-    this.uvL=new THREE.SpotLight(0x9b5cff,0,1.8,.7,.5);this.uvL.position.set(.34,.55,0);uv.add(this.uvL);this.uvL.target.position.set(.48,.1,.3);uv.add(this.uvL.target);
+    this.uvL=new THREE.SpotLight(0x9b5cff,0,1.8,.7,.5);this.uvL.position.set(.34,.55,0);uv.add(this.uvL);this.uvL.target.position.set(.5,.25,.08);uv.add(this.uvL.target);
     uv.traverse(o=>{if(o.isMesh)this.pick(o,{type:"uv"});});
   }
   hanger(){
@@ -396,7 +400,7 @@ class Lab3D{
   }
   wireUpdate(on,rx){
     this.wires.forEach((w,i)=>{w.visible=on;if(!on||w.userData.rx===rx&&w.userData.t===this.type)return;w.userData.rx=rx;w.userData.t=this.type;
-      const a=new THREE.Vector3(VX+(i?rx:-rx),BASE[this.type]+.32,VZ),b=new THREE.Vector3(.62+(i?-.06:.04),BT+.15,-2.75);
+      const bp=this.battery.position,a=new THREE.Vector3(VX+(i?rx:-rx),BASE[this.type]+.32,VZ),b=new THREE.Vector3(bp.x+(i?-.06:.04),BT+.15,bp.z);
       const mid=a.clone().lerp(b,.5).add(new THREE.Vector3(0,.12,.05));w.geometry.dispose();w.geometry=new THREE.TubeGeometry(new THREE.CatmullRomCurve3([a,mid,b]),16,.004,6,false);});
   }
   bubbles(dt,v,top,ly,rx){
@@ -445,7 +449,7 @@ class Lab3D{
     const home=b.userData.home,h=b.userData.h||.15,from=new THREE.Vector3(home.x,home.y,home.z);
     const vt=this.vg.position.y+this.H;const to=new THREE.Vector3(VX+.1+h*.5,vt+.1+(s.k==="drop"?.02:0),VZ+.02);
     const tilt=s.k==="drop"?1.2:s.k==="piece"||s.k==="powder"?1.55:1.95;
-    let t=0,phase=0,poured=false;const D=[.75,.3,.6,.3,.75];
+    let t=0,phase=0,poured=false;const q=this.queue.length?.6:1,D=[.5,.22,.45,.2,.5].map(x=>x*q);
     const mouth=new THREE.Vector3();
     this.tweens.push(dt=>{
       t+=dt;if(t>D[phase]){t-=D[phase];phase++;}
@@ -472,10 +476,13 @@ class Lab3D{
   focus(on){
     const was=this.mode;this.mode=on?"orbit":"walk";if(was===this.mode)return;
     this.camFrom={p:this.cam.position.clone(),q:this.cam.quaternion.clone(),t:0};
-    if(!on){this.P.x=VX;this.P.z=VZ+1.75;this.P.yaw=0;this.P.pitch=-.32;}
-    else{this.orb.yaw=Math.atan2(this.cam.position.x-VX,this.cam.position.z-VZ)*.3;this.orb.dist=this.type==="probirka"?.62:.82;this.orb.pitch=.3;}
+    if(!on)this.benchPose();
+    else{const tall=this.w/this.h<.8;this.orb.yaw=Math.atan2(this.cam.position.x-VX,this.cam.position.z-VZ)*.3;this.orb.dist=(this.type==="probirka"?.62:.82)*(tall?1.25:1);this.orb.pitch=.3;}
   }
-  goBench(){this.mode="walk";this.camFrom={p:this.cam.position.clone(),q:this.cam.quaternion.clone(),t:0};this.P.x=VX;this.P.z=VZ+1.75;this.P.yaw=0;this.P.pitch=-.32;}
+  benchPose(){const tall=this.w/this.h<.8;this.P.x=VX;this.P.z=VZ+(tall?1.55:1.2);this.P.yaw=0;this.P.pitch=tall?-.36:-.42;}
+  goBench(){this.mode="walk";this.camFrom={p:this.cam.position.clone(),q:this.cam.quaternion.clone(),t:0};this.benchPose();}
+  // idish va orqasidagi reaktivlar polkasini birga ko'rsatish (telefonda panel ochilganda)
+  showRack(){if(this.mode!=="orbit"){this.camFrom={p:this.cam.position.clone(),q:this.cam.quaternion.clone(),t:0};this.mode="orbit";}this.orb.yaw=0;this.orb.pitch=.42;this.orb.dist=this.w/this.h<.8?1.75:1.35;}
   goHanger(){this.mode="walk";this.camFrom={p:this.cam.position.clone(),q:this.cam.quaternion.clone(),t:0};this.P.x=-5.6;this.P.z=4.1;this.P.yaw=1.2;this.P.pitch=-.18;}
   ok(x,z){return x>-7.6&&x<7&&z>-5.6&&z<5.6&&!this.colliders.some(w=>x>w[0]-.22&&x<w[1]+.22&&z>w[2]-.22&&z<w[3]+.22);}
   input(){
@@ -484,12 +491,15 @@ class Lab3D{
     addEventListener("keyup",e=>{delete keys[e.key.toLowerCase()];});
     addEventListener("blur",()=>{for(const k in keys)delete keys[k];});
     const pts=new Map();let down=null,pinch=null,hoverT=0;
-    cv.addEventListener("pointerdown",e=>{cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
-      if(pts.size===2){const[a,b]=[...pts.values()];pinch={d:Math.hypot(a.x-b.x,a.y-b.y),dist:this.orb.dist};down=null;}
+    cv.addEventListener("pointerdown",e=>{try{cv.setPointerCapture(e.pointerId);}catch(x){}pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+      if(pts.size===2){const[a,b]=[...pts.values()];const d=Math.hypot(a.x-b.x,a.y-b.y);pinch={d,last:d,dist:this.orb.dist};down=null;}
       else down={x:e.clientX,y:e.clientY,lx:e.clientX,ly:e.clientY,t:performance.now(),moved:0};});
     cv.addEventListener("pointermove",e=>{
       if(pts.has(e.pointerId))pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
-      if(pinch&&pts.size===2){const[a,b]=[...pts.values()];const d=Math.hypot(a.x-b.x,a.y-b.y);this.orb.dist=Math.max(.3,Math.min(2,pinch.dist*pinch.d/d));return;}
+      if(pinch&&pts.size===2){const[a,b]=[...pts.values()];const d=Math.hypot(a.x-b.x,a.y-b.y);
+        if(this.mode==="orbit")this.orb.dist=Math.max(.3,Math.min(2.4,pinch.dist*pinch.d/d));
+        else{const k=(d-pinch.last)*.006;this.tryMove(-Math.sin(this.P.yaw)*k,-Math.cos(this.P.yaw)*k);}
+        pinch.last=d;return;}
       if(down){const dx=e.clientX-down.lx,dy=e.clientY-down.ly;down.moved+=Math.abs(dx)+Math.abs(dy);down.lx=e.clientX;down.ly=e.clientY;
         if(this.mode==="orbit"){this.orb.yaw-=dx*.008;this.orb.pitch=Math.max(-.2,Math.min(1.3,this.orb.pitch+dy*.006));}
         else{this.P.yaw+=dx*.0045;this.P.pitch=Math.max(-1.2,Math.min(1,this.P.pitch+dy*.0035));}
@@ -524,8 +534,11 @@ class Lab3D{
     const sp=(k.shift?3.6:2.3)*dt,c=Math.cos(this.P.yaw),s=Math.sin(this.P.yaw);
     this.tryMove((-s*fx+c*sx)*sp,(-c*fx-s*sx)*sp);
   }
-  resize(){const w=this.host.clientWidth,h=this.host.clientHeight;if(!w||!h)return;this.r.setSize(w,h,false);this.cam.aspect=w/h;this.cam.updateProjectionMatrix();this.w=w;this.h=h;}
-  setSheet(px){this.sheet=px||0;}
+  resize(){const w=this.host.clientWidth,h=this.host.clientHeight;if(!w||!h)return;this.r.setSize(w,h,false);const asp=w/h;this.cam.aspect=asp;
+    // tik ekranda gorizontal ko'rish burchagi juda tor bo'lmasligi uchun
+    this.cam.fov=asp>=1?60:Math.min(84,Math.max(60,2*Math.atan(Math.tan(27*Math.PI/180)/asp)*180/Math.PI));
+    this.cam.updateProjectionMatrix();this.w=w;this.h=h;}
+  setSheet(px,right){this.sheet=px||0;this.sideOff=right||0;}
   render(dt){
     const cam=this.cam;
     if(this.mode==="orbit"){const o=this.orb,t=this.target;const p=new THREE.Vector3(t.x+Math.sin(o.yaw)*Math.cos(o.pitch)*o.dist,t.y+Math.sin(o.pitch)*o.dist,t.z+Math.cos(o.yaw)*Math.cos(o.pitch)*o.dist);
@@ -536,10 +549,13 @@ class Lab3D{
     else q=new THREE.Quaternion().setFromEuler(new THREE.Euler(g.pitch,g.yaw,0,"YXZ"));
     if(this.camFrom){const f=this.camFrom;f.t+=dt/.7;const k=ease(Math.min(1,f.t));cam.position.lerpVectors(f.p,g.p,k);cam.quaternion.slerpQuaternions(f.q,q,k);if(f.t>=1)this.camFrom=null;}
     else{cam.position.copy(g.p);cam.quaternion.copy(q);}
-    if(this.sheet>0&&this.w<760&&this.mode==="orbit")cam.setViewOffset(this.w,this.h,0,this.sheet*.42,this.w,this.h);else cam.clearViewOffset();
+    // panel ochiq bo'lsa, idish panel ortida qolmasligi uchun tasvirni bo'sh tomonga suramiz
+    if(this.mode==="orbit"&&(this.sheet>0||this.sideOff>0))cam.setViewOffset(this.w,this.h,this.sideOff*.5,this.sheet*.42,this.w,this.h);else cam.clearViewOffset();
     // o'qituvchi
     if(this.teacher){const tp=this.teacher.position,a=Math.atan2(cam.position.x-tp.x,cam.position.z-tp.z);this.teacher.rotation.y+=(Math.max(-1,Math.min(1,a))-this.teacher.rotation.y)*Math.min(1,dt*2);this.tHead.position.y=1.78+Math.sin(this.time*1.6)*.006;}
     if(!this.ct||this.time-this.ct>1){this.ct=this.time;redraw(this.clockT,(c,w,h)=>this.drawClock(c,w,h));}
+    this.ft=(this.ft||0)+dt;this.fn=(this.fn||0)+1;
+    if(this.fn>=90){const avg=this.ft/this.fn;this.ft=0;this.fn=0;if(avg>1/26&&this.dpr>1){this.dpr=Math.max(1,this.dpr-.25);this.r.setPixelRatio(this.dpr);this.resize();}}
     this.r.render(this.sc,cam);
   }
 }
