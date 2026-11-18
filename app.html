@@ -8945,5 +8945,71 @@ function pgamesBoshga(){
 }
 
 </script>
+<script>
+// KIMYO FORMULALARI (KaTeX + mhchem) — faqat \( ... \), \[ ... \] yoki $$ ... $$ ichidagi
+// matn formula bo'lib chiziladi, masalan: \(\ce{2H2 + O2 -> 2H2O}\), \(\ce{Fe^3+}\), \(\ce{N2 + 3H2 <=> 2NH3}\).
+// Mavjud oddiy matnlarga tegmaydi. Kutubxona faqat sahifada shunday belgi paydo bo'lganda
+// yuklanadi (aks holda hech narsa yuklanmaydi). CDN ishlamasa — matn avvalgidek qoladi.
+(function(){
+  var B='https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/';
+  var FAYLLAR=[['katex.min.js','sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8'],
+    ['contrib/mhchem.min.js','sha384-ifpG+NlgMq0kvOSGqGQxW1mJKpjjMDmZdpKGq3tbvD3WPhyshCEEYClriK/wRVU0'],
+    ['contrib/auto-render.min.js','sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05']];
+  var BELGI=/\\\(|\\\[|\$\$/;
+  var holat=0, navbat=[], kutish=null; // 0=yuklanmagan, 1=yuklanmoqda, 2=tayyor, 3=xato
+  var SOZ={delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],
+    ignoredTags:['script','noscript','style','textarea','pre','code','option','input','select'],throwOnError:false,strict:'ignore'};
+  function yukla(){
+    if(holat)return; holat=1;
+    var css=document.createElement('link');css.rel='stylesheet';css.href=B+'katex.min.css';css.crossOrigin='anonymous';
+    css.integrity='sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV';document.head.appendChild(css);
+    var i=0;(function keyingi(){
+      if(i>=FAYLLAR.length){holat=2;bajar();return;}
+      var s=document.createElement('script');s.src=B+FAYLLAR[i][0];s.integrity=FAYLLAR[i][1];s.crossOrigin='anonymous';
+      s.onload=function(){i++;keyingi();};s.onerror=function(){holat=3;navbat=[];};
+      document.head.appendChild(s);
+    })();
+  }
+  var SKIP={SCRIPT:1,STYLE:1,NOSCRIPT:1,TEXTAREA:1,TEMPLATE:1};
+  function matnBor(e){ // faqat ko'rinadigan matn tugunlari (script/style ichidagi kod hisobga olinmaydi)
+    if(!e||SKIP[e.nodeName])return false;
+    if(!BELGI.test(e.textContent||''))return false;
+    var w=document.createTreeWalker(e,NodeFilter.SHOW_TEXT,{acceptNode:function(t){
+      var p=t.parentNode;return p&&SKIP[p.nodeName]?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT;}});
+    var t,oldingi='';
+    while((t=w.nextNode())){var v=oldingi+t.nodeValue;if(BELGI.test(v))return true;oldingi=v.slice(-1);}
+    return false;
+  }
+  function bajar(){
+    kutish=null;
+    if(holat!==2||typeof window.renderMathInElement!=='function'){return;}
+    var el=navbat;navbat=[];
+    el.forEach(function(e){
+      if(!e.isConnected||!matnBor(e))return;
+      try{window.renderMathInElement(e,SOZ);}catch(x){}
+    });
+  }
+  function qosh(e){
+    if(!e||e.nodeType!==1)e=e&&e.parentElement;
+    if(!e||e.closest('.katex,textarea,input,script,style'))return;
+    if(!matnBor(e))return;
+    navbat.push(e);
+    if(holat===0)yukla();
+    else if(holat===2&&!kutish)kutish=setTimeout(bajar,60);
+  }
+  window.kimyoFormulaChiz=function(el){qosh(el||document.body);};
+  function boshla(){
+    qosh(document.body);
+    new MutationObserver(function(ro){
+      for(var k=0;k<ro.length;k++){
+        var r=ro[k];
+        if(r.type==='characterData')qosh(r.target);
+        else for(var j=0;j<r.addedNodes.length;j++)qosh(r.addedNodes[j]);
+      }
+    }).observe(document.body,{childList:true,subtree:true,characterData:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boshla);else boshla();
+})();
+</script>
 </body>
 </html>
