@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="KimyoLab 3D — davriy jadval, 3D molekulalar, virtual laboratoriya, darslar va hisoblash vositalari.">
+<meta name="theme-color" content="#0f1722">
+<title>KimyoLab 3D — Kimyo laboratoriyasi</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+ <header class="topbar">
+  <div class="brand"><span class="logo">⚗️</span><span><b>Kimyo</b>Lab <small>3D</small></span></div>
+  <nav class="tabs" id="tabs">
+   <button data-tab="lab" class="active"><span>🧪</span><em>Laboratoriya</em></button>
+   <button data-tab="table"><span>📋</span><em>Davriy jadval</em></button>
+   <button data-tab="molecules"><span>⚛️</span><em>Molekulalar</em></button>
+   <button data-tab="chains"><span>🔗</span><em>Zanjirlar</em></button>
+   <button data-tab="lessons"><span>📚</span><em>Darslar</em></button>
+   <button data-tab="practicals"><span>🥼</span><em>Amaliyot</em></button>
+   <button data-tab="tools"><span>🧮</span><em>Hisoblash</em></button>
+   <button data-tab="discoveries"><span>🏆</span><em>Yutuqlar</em></button>
+  </nav>
+  <div class="player" id="player"></div>
+ </header>
+ <main>
+  <section class="tab active" id="tab-lab"></section>
+  <section class="tab" id="tab-table"></section>
+  <section class="tab" id="tab-molecules"></section>
+  <section class="tab" id="tab-chains"></section>
+  <section class="tab" id="tab-lessons"></section>
+  <section class="tab" id="tab-practicals"></section>
+  <section class="tab" id="tab-tools"></section>
+  <section class="tab" id="tab-discoveries"></section>
+ </main>
+</div>
+<div id="modal-root"></div>
+<div id="toasts"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
