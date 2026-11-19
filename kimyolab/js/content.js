@@ -3,6 +3,17 @@
 "use strict";
 /* ---------- Darslar: t — mavzu, h — matn, q — [savol, to'g'ri, [noto'g'rilar]], pr — amaliy ish ---------- */
 KL.LESSONS=[
+ {id:"safety",t:"Xavfsizlik va favqulodda holatlar",drill:1,h:`<p>Laboratoriyada ishlashdan oldin <b>xalat, himoya ko'zoynagi va qo'lqop</b> kiyiladi. Favqulodda holatda vahima qilmasdan, quyidagicha harakat qilinadi:</p>
+<table class="tbl"><tr><th>Holat</th><th>To'g'ri harakat</th><th>Mumkin emas</th></tr>
+<tr><td>🔥 Yonuvchi suyuqlik yondi</td><td>Spirtovkani o'chirish, namat yoki qopqoq bilan yopish</td><td>Suv sepish, puflash</td></tr>
+<tr><td>🔥 Natriy yondi</td><td>Quruq qum sepish</td><td>Suv, CO₂ o't o'chirgich</td></tr>
+<tr><td>💥 Portlash</td><td>Alangani o'chirish, uzoqlashish, o'qituvchiga aytish</td><td>Shishani qo'l bilan yig'ish</td></tr>
+<tr><td>♨️ Kuyish</td><td>10–20 daqiqa sovuq oqar suv</td><td>Yog', krem, muz</td></tr>
+<tr><td>💦 Kislota/ishqor sachradi</td><td>15 daqiqa ko'p oqar suv bilan yuvish</td><td>Neytrallash, artish</td></tr>
+<tr><td>☠️ Zaharli gaz</td><td>Jarayonni to'xtatish, shamollatish, toza havo</td><td>Hidlab ko'rish</td></tr>
+<tr><td>🩸 Shishadan kesilish</td><td>Yuvish, steril bint bilan bosish</td><td>Shishani o'zi sug'urish</td></tr></table>
+<p>Laboratoriyadagi tajribalarda shunday holatlar real ro'y berishi mumkin. Pastdagi tugma bilan mashq ham qilishingiz mumkin.</p>`,
+  q:[["Yonayotgan natriyni nima bilan o'chirish kerak?","Quruq qum",["Suv","CO₂ o't o'chirgich"]],["Qo'lga kislota sachrasa, birinchi navbatda nima qilinadi?","Ko'p oqar suv bilan yuviladi",["Ishqor bilan neytrallanadi","Latta bilan artiladi"]],["Kuygan joyga nima qilinadi?","Sovuq oqar suv ostida tutiladi",["Yog' surtiladi","Muz bosiladi"]]]},
  {id:"atom",t:"Atom tuzilishi",h:`<p>Atom — musbat zaryadli <b>yadro</b> va uning atrofida harakatlanuvchi <b>elektronlar</b>dan iborat. Yadro protonlar (p⁺) va neytronlardan (n⁰) tashkil topgan.</p>
 <ul><li>Protonlar soni = tartib raqami <b>Z</b> = yadro zaryadi</li><li>Neytronlar soni: <b>N = A − Z</b> (A — massa soni)</li><li>Neytral atomda elektronlar soni protonlar soniga teng</li><li><b>Izotoplar</b> — protonlari bir xil, neytronlari har xil atomlar (¹²C va ¹⁴C)</li></ul>
 <p>Elektronlar energetik pog'onalarda joylashadi: n-pog'onada ko'pi bilan <b>2n²</b> ta elektron bo'ladi. Pog'onachalar to'lish tartibi: 1s 2s 2p 3s 3p 4s 3d 4p 5s…</p>`,
@@ -217,6 +228,8 @@ KL.ACHS=[
  ["el30","📋","Jadval bilimdoni","30 ta elementni oching"],
  ["quiz10","🎯","Aniq nishon","Element viktorinasida 10 ta to'g'ri javob"],
  ["calc","🧮","Hisobchi","Hisoblash vositasidan foydalaning"],
+ ["safe3","🧯","Xavfsizlik bilimdoni","Favqulodda holatda 3 marta to'g'ri harakat qiling"],
+ ["safe_all","🚑","Qutqaruvchi","Barcha 7 turdagi favqulodda holatni to'g'ri hal qiling"],
  ["balance","⚖️","Tenglamachi","Tenglamani tenglashtiring"]
 ];
 })(globalThis.KL=globalThis.KL||{});

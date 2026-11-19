@@ -79,12 +79,14 @@ function elecRule(key,cT,aT,c,a){
 }
 
 /* ---------- Idish ---------- */
+// loyqalikning tinish vaqti (s): suzmasimon parchalar tez cho'kadi, mayda kristallar uzoq «sut» bo'lib turadi
+const TURB_TAU={curd:2.4,glitter:3.6,flake:3,powder:3,gel:6,cryst:9};
 class Vessel{
   constructor(type){this.type=KL.VESSELS[type]?type:"stakan";this.reset();}
   reset(){
     this.a={};this.ind={};this.water=0;this.org=0;this.T=20;this.heat=false;this.uv=false;this.elec=false;this.stirT=0;
     this.src={};this.comp={};this.log=[];this.fired={};this.time=0;this.events=[];this.added=[];this.order=[];
-    this.gasFx={};this.gasTot={};this.pptNew=[];this.turb=0;this.turbCol="#ffffff";this.boil=false;this.elecFx=null;
+    this.gasFx={};this.gasTot={};this.pptNew=[];this.turb=0;this.turbF="cryst";this.turbCol="#ffffff";this.boil=false;this.elecFx=null;
     this.gasIn=0;this.lastAdd=-9;this.lastRx=-9;this.resCol=null;this.addSeq=0;this.seq=0;this.ctime={};
   }
   get cap(){return KL.VESSELS[this.type].cap;}
@@ -140,7 +142,7 @@ class Vessel{
     for(const r of SLOW){
       if(!this.okCond(r))continue;
       const mx=this.maxExt(r);if(mx<=EPS)continue;
-      const k=SPEED[r.sp]*(r.need.heat?Math.max(1,f/3):f);
+      const k=(r.k||SPEED[r.sp])*(r.need.heat?Math.max(1,f/3):f);
       this.apply(r,Math.min(mx,k*dt*(mx<.03?4:1)));
     }
     this.fastLoop();
@@ -153,7 +155,8 @@ class Vessel{
       if(t.k==="g"){this.gasOut(t.id,n);continue;}
       this.inc(t.id,n);
       if(t.k==="s"){const S=KL.SOLIDS[t.id];this.pptNew.push([t.id,n]);
-        if(S.kind==="ppt"||S.kind==="powder"){const w=Math.min(1,n*1.5);this.turbCol=this.turb>.05?KL.mixCol(this.turbCol,S.c,w/(this.turb+w)):S.c;this.turb=Math.min(1.2,this.turb+n*1.4);}}
+        if(S.kind==="ppt"||S.kind==="powder"){const w=Math.min(1,n*1.5),tk={cryst:1.7,gel:1.25,curd:.55,glitter:.85,flake:.8}[S.form]||1;this.turbCol=this.turb>.05?KL.mixCol(this.turbCol,S.c,w/(this.turb+w)):S.c;
+          if(n*tk>=this.turb*.3)this.turbF=S.form||"cryst";this.turb=Math.min(1.2,this.turb+n*1.4*tk);}}
     }
     if(r.exo)this.T=Math.min(this.vol>EPS?100:450,this.T+r.exo*x/Math.max(1,this.vol));
     this.lastRx=this.time;
@@ -184,7 +187,7 @@ class Vessel{
     if(this.has("CO2aq")){const e=Math.min(this.a.CO2aq,(this.T>60?.5:.12)*dt*(this.gasIn>0?.3:1));this.a.CO2aq-=e;this.gasOut("CO2",e,true);}
     if(this.gasIn>0)this.gasIn-=dt;
     for(const g in this.gasFx){this.gasFx[g]*=Math.exp(-dt*1.2);if(this.gasFx[g]<2e-3)delete this.gasFx[g];}
-    this.turb*=Math.exp(-dt/4);
+    this.turb*=Math.exp(-dt/(TURB_TAU[this.turbF]||4));
     if(this.stirT>0)this.stirT-=dt;
   }
   dryUp(){
@@ -303,16 +306,18 @@ class Vessel{
       level:Math.min(1,this.vol/this.cap),col:this.color(),T:this.T,heat:this.heat,uv:this.uv,boil:this.boil,stir:this.stirT>0,
       layers:this.order.filter(id=>this.has(id)&&S[id].kind!=="piece"&&S[id].kind!=="mirror").map(id=>({id,amt:this.a[id],c:id==="res"&&this.resCol?this.resCol:S[id].c})),
       pieces:this.order.filter(id=>this.has(id)&&S[id].kind==="piece").map(id=>({id,amt:this.a[id]})),
-      mirror:Math.min(1,(this.a.mirAg||0)*2.5),gas:this.gasFx,gasIn:this.gasIn>0,turb:Math.min(1,this.turb),turbCol:this.turbCol,
-      elec:this.elec?this.elecFx||{cat:0,an:0}:null
+      mirror:Math.min(1,(this.a.mirAg||0)*2.5),gas:this.gasFx,gasIn:this.gasIn>0,turb:Math.min(1,this.turb),turbCol:this.turbCol,turbF:this.turbF||"cryst",
+      elec:this.elec?this.elecFx||{cat:0,an:0}:null,
+      smell:this.smells(),vap:{br2:this.has("Br2")&&this.T>45,i2:this.has("I2")&&this.T>75}
     };
   }
+  smells(){const out=[];for(const id in this.a){const M=KL.MOLS[id];if(M&&M.smell&&this.a[id]>1e-3)out.push(M.smell);}
+    for(const g in this.gasFx){const G=KL.GASES[g];if(G&&G.smell&&this.gasFx[g]>.01)out.push(G.smell);}return[...new Set(out)];}
   contents(){
     const ions=[],mols=[],sol=[];
     for(const id in this.a){const v=this.a[id];if(v<1e-4)continue;
       if(KL.IONS[id])ions.push([id,this.conc(id)]);else if(KL.MOLS[id])mols.push([id,this.conc(id)]);else if(KL.SOLIDS[id])sol.push([id,v]);}
-    const smell=mols.map(([id])=>KL.MOLS[id].smell).filter(Boolean);
-    return{ions:ions.sort((a,b)=>KL.IONS[b[0]].z-KL.IONS[a[0]].z),mols,sol,ind:Object.keys(this.ind),smell:[...new Set(smell)]};
+    return{ions:ions.sort((a,b)=>KL.IONS[b[0]].z-KL.IONS[a[0]].z),mols,sol,ind:Object.keys(this.ind),smell:this.smells()};
   }
   // Reaksiya kuzatilmaganda tushuntirish
   hint(){

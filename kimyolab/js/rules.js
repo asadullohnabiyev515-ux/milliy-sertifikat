@@ -148,6 +148,8 @@ R("h_CaHCO3","Ca + 2HCO3","CaCO3 + CO2 + H2O",{sp:"mid",need:{heat:85},t:"Parcha
 R("h_HCO3","2HCO3","CO3 + CO2 + H2O",{sp:"slow",need:{heat:85},t:"Parchalanish",obs:"Qaynatilganda gidrokarbonat parchalanib, CO₂ ajralmoqda."});
 R("h_KMnO4","2KMnO4s","K2MnO4s + MnO2 + O2",{sp:"mid",need:{heat:200,dry:1},t:"Parchalanish",obs:"Kristallar qizdirilganda kislorod ajraldi — cho'g'langan cho'p alangalanadi."});
 R("h_NaHCO3","2NaHCO3s","Na2CO3s + CO2 + H2O",{sp:"mid",need:{heat:150,dry:1},t:"Parchalanish",obs:"Soda qizdirilganda parchalanib, CO₂ va suv bug'i ajraldi."});
+R("f_KMnO4gly","14KMnO4s + 4C3H8O3","7K2CO3s + 7Mn2O3 + 5CO2 + 16H2O",{sp:"vslow",k:.0015,exo:4000,need:{nowater:1},t:"O'z-o'zidan alangalanish",fx:"fire",
+  obs:"Bir necha soniyadan so'ng aralashma o'z-o'zidan qizib, binafsha alanga bilan yonib ketdi! Kuchli oksidlovchi organik modda bilan aralashtirilmaydi."});
 R("h_FeOH3","2FeOH3","Fe2O3 + 3H2O",{sp:"mid",need:{heat:250,dry:1},t:"Parchalanish",obs:"Qizdirilganda Fe(OH)₃ qizil-qo'ng'ir Fe₂O₃ ga aylandi."});
 R("r_H2O2cat","2H2O2","2H2O + O2",{sp:"mid",cat:["MnO2"],t:"Katalitik parchalanish",obs:"MnO₂ katalizatorligida shiddatli kislorod ajraldi — cho'g'langan cho'p alangalanadi."});
 R("r_H2O2heat","2H2O2","2H2O + O2",{sp:"slow",need:{heat:70},t:"Parchalanish",obs:"Qizdirilganda vodorod peroksid parchalanib, kislorod ajralmoqda."});

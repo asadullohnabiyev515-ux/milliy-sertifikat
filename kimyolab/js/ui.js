@@ -56,7 +56,13 @@ KL.sfx={
   ding:()=>{tone(880,.5,"sine",.15);setTimeout(()=>tone(1320,.6,"sine",.12),120);},
   win:()=>[523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,.35,"triangle",.12),i*110)),
   err:()=>tone(180,.18,"sawtooth",.06),
-  zap:()=>noise(.25,2000,6000,.1,"bandpass")
+  zap:()=>noise(.25,2000,6000,.1,"bandpass"),
+  boom:()=>{noise(1.6,900,60,.9,"lowpass");tone(70,1.2,"sine",.6,28);setTimeout(()=>noise(1.2,3000,400,.25,"bandpass"),80);},
+  glass:()=>{for(let i=0;i<5;i++)setTimeout(()=>{tone(2600+Math.random()*2400,.12,"triangle",.07);noise(.08,6000,3000,.12,"highpass");},i*45);},
+  splash:()=>{noise(.45,1800,500,.3,"bandpass");setTimeout(()=>noise(.3,1200,400,.18,"bandpass"),120);},
+  cough:()=>[0,320,640].forEach(t=>setTimeout(()=>noise(.18,700,300,.35,"bandpass"),t)),
+  alarm:()=>[0,260,520].forEach(t=>setTimeout(()=>tone(t%520?740:980,.2,"square",.07),t)),
+  crackle:()=>noise(.06,3500+Math.random()*2500,1500,.08,"highpass")
 };
 KL.setSound=on=>{S.sound=on;KL.save();const b=$("#snd");if(b){b.textContent=on?"🔊":"🔇";b.title=on?"Ovozni o'chirish":"Ovozni yoqish";}};
 
@@ -85,7 +91,8 @@ KL.checkAch=function(){
     redox3:has("r_MnSO3a")&&has("r_MnSO3b")&&has("r_MnSO3n"),ind4:c(S.ind)>=4,evap:has("evap"),
     prac1:c(S.prac)>=1,prac5:c(S.prac)>=5,prac_all:c(S.prac)>=KL.PRACTICALS.length,
     lesson1:c(S.lessons)>=1,lesson_all:c(S.lessons)>=KL.LESSONS.length,chain1:c(S.chains)>=1,chain_all:c(S.chains)>=KL.CHAINS.length,
-    mol10:c(S.mols)>=10,el30:c(S.els)>=30,quiz10:S.quiz>=10,calc:S.calc>0,balance:!!S.balanced};
+    mol10:c(S.mols)>=10,el30:c(S.els)>=30,quiz10:S.quiz>=10,calc:S.calc>0,balance:!!S.balanced,
+    safe3:(S.safety&&S.safety.ok||0)>=3,safe_all:!!(S.safety&&KL.INC_TYPES&&KL.INC_TYPES.every(t=>S.safety.types[t]))};
   KL.ACHS.forEach(([id,ic,name])=>{if(cond[id]&&!S.ach[id]){S.ach[id]=Date.now();S.xp+=15;KL.toast(`${ic} <b>Yutuq:</b> ${name} <small>+15 XP</small>`,"gold");KL.sfx.win();}});
   KL.save();KL.renderPlayer();
 };

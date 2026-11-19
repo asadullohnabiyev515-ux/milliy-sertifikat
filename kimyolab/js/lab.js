@@ -3,7 +3,7 @@
 "use strict";
 const $=KL.$,$$=KL.$$,fmt=KL.fmt,S=()=>KL.S;
 const LAB=KL.lab={active:false,dbg:()=>({V,D3})};
-let V,D3=null,el,last=0,hudT=0,joy={x:0,y:0},prac=null,ctx=null,board=[],pending=null,now=0,popT=0;
+let V,D3=null,el,last=0,hudT=0,joy={x:0,y:0},prac=null,ctx=null,board=[],pending=null,now=0,popT=0,crT=0,lastEntry=null,chipT=null;
 const GEAR=[["xalat","🥼","Laboratoriya xalati"],["koz","🥽","Himoya ko'zoynagi"],["qol","🧤","Rezina qo'lqop"]];
 const gearOk=()=>GEAR.every(g=>S().gear[g[0]]);
 const newSince=()=>({add:new Set,rx:new Set,gas:new Set,clean:false});
@@ -24,17 +24,19 @@ function build(){
   <div class="hud-tl"><div class="task glass" id="task"></div></div>
   <div class="hud-tr">
     <button class="hbtn glass" id="gearBtn" title="Himoya vositalari">${GEAR.map(g=>`<span data-g="${g[0]}">${g[1]}</span>`).join("")}</button>
-    <button class="hbtn glass" id="benchBtn" title="Tajriba stoliga qaytish">🧪<span class="lbl"> Stol</span></button>
     <button class="hbtn glass" id="helpBtn" title="Boshqaruv va yordam">?</button>
   </div>
+  <div class="scrfx" id="scrfx" aria-hidden="true">${Array.from({length:11},()=>`<i style="left:${(Math.random()*92).toFixed(1)}%;top:${(Math.random()*85).toFixed(1)}%;--s:${(.6+Math.random()*1.3).toFixed(2)}"></i>`).join("")}</div>
+  <button class="evt glass" id="evt" hidden></button>
   <div class="pop glass" id="pop" hidden></div>
-  <div class="joy" id="joy" aria-hidden="true"><i></i></div>
-  <div class="hud-b">
+  <div class="joyz" id="joyz" aria-hidden="true"><div class="joy" id="joy"><i></i></div></div>
+  <div class="hud-b" id="hudB">
+    <button class="btn glass ctx" id="ctxBtn"><i>🧪</i><span class="l"> Stolga borish</span><span class="m">Stol</span></button>
     <button class="btn glass" data-p="rg"><i>⚗️</i><span class="l"> Reaktivlar</span><span class="m">Moddalar</span></button>
-    <button class="btn glass" data-p="vessel"><i>🧪</i><span class="l"> Idish</span><span class="m">Idish</span></button>
+    <button class="btn glass" data-p="vessel"><i>🧫</i><span class="l"> Idish</span><span class="m">Idish</span></button>
     <button class="btn glass" data-p="chat"><i>🎓</i><span class="l"> Ustoz</span><span class="m">Ustoz</span></button>
-    <button class="btn glass" id="focusBtn"><i>🔍</i><span class="l"> Yaqinlashish</span><span class="m">Yaqin</span></button>
   </div>
+  <section class="panel" id="p-xc" aria-label="Reaksiya izohi"><header><span class="grip" aria-hidden="true"></span><h3>🔬 Nima bo'ldi?</h3><button class="x" data-cp>✕</button></header><div id="xc"></div></section>
   <section class="panel" id="p-rg" aria-label="Reaktivlar"><header><span class="grip" aria-hidden="true"></span><h3>⚗️ Reaktivlar</h3><button class="x" data-cp>✕</button></header>
     <input id="rgq" type="search" placeholder="Qidirish: HCl, mis, indikator…" autocomplete="off">
     <div class="chips gf" id="rgf">${[["","Hammasi"],["acid","Kislota"],["base","Ishqor"],["salt","Tuz"],["solid","Qattiq"],["org","Organik"],["ind","Indikator"]].map(([g,n],i)=>`<button class="chip${i?"":" on"}" data-gf="${g}">${n}</button>`).join("")}</div>
@@ -50,11 +52,12 @@ function build(){
   <section class="panel" id="p-gear" aria-label="Himoya vositalari"><header><span class="grip" aria-hidden="true"></span><h3>🥽 Himoya vositalari</h3><button class="x" data-cp>✕</button></header>
     <p class="mut">Tajribadan oldin tartib bilan kiying: avval xalat, keyin ko'zoynak, oxirida qo'lqop. Kiyim ilgichi eshik yonida.</p>
     <button class="btn pri wide" id="gearAll">🥼🥽🧤 Hammasini kiyish</button>
-    <div id="gearL"></div><div class="row"><button class="btn" id="goHang">🚶 Kiyim ilgichiga borish</button><button class="btn ghost" id="unGear">Yechish</button></div></section>
+    <div id="gearL"></div><div class="row"><button class="btn" id="goHang">🚶 Kiyim ilgichiga borish</button><button class="btn ghost" id="unGear">Yechish</button></div>
+    <label class="tgl"><input type="checkbox" id="hzT"> <span>⚠️ <b>Real xavflar</b> — portlash, yong'in, sachrash, kuyish. Xato harakat qilinsa, favqulodda holat yuz beradi va Ustoz nima qilish kerakligini o'rgatadi.</span></label></section>
   <section class="panel" id="p-chat" aria-label="Ustoz"><header><span class="grip" aria-hidden="true"></span><h3>🎓 Ustoz</h3><button class="x" data-cp>✕</button></header>
     <p class="mut">Ichki yordamchi (internetsiz): reaksiyalar, moddalar va darslar bo'yicha javob beradi.</p>
     <div class="chat" id="chat"></div>
-    <div class="chips" id="qs">${["Oxirgi reaksiyani tushuntir","Idishda nima bor?","pH nima?","Qanday tajriba qilay?","Boshqaruv"].map(q=>`<button class="chip" data-q="${q}">${q}</button>`).join("")}</div>
+    <div class="chips" id="qs">${["Oxirgi reaksiyani tushuntir","Idishda nima bor?","pH nima?","Qanday tajriba qilay?","🚨 Favqulodda holat mashqi","Boshqaruv"].map(q=>`<button class="chip" data-q="${q}">${q}</button>`).join("")}</div>
     <form id="qf" class="row"><input id="qi" placeholder="Savolingizni yozing… (masalan: CuSO4 nima?)" autocomplete="off"><button class="btn pri" aria-label="Yuborish">➤</button></form></section>
   <div class="rot glass" id="rot" hidden>📱↻ Telefonni yonboshiga buring — tajriba stoli kengroq ko'rinadi <button class="x" id="rotX">✕</button></div>
   </div>`;
@@ -63,23 +66,26 @@ function build(){
   // hodisalar
   $("#scene").addEventListener("click",e=>{const b=e.target.closest("[data-p]");if(b)togglePanel(b.dataset.p);if(e.target.closest("[data-cp]"))closePanels();});
   $("#gearBtn").onclick=()=>togglePanel("gear");
-  $("#benchBtn").onclick=()=>{if(D3){D3.goBench();setFocusBtn();}};
   $("#helpBtn").onclick=help;
-  $("#focusBtn").onclick=()=>{if(!D3)return;D3.focus(D3.mode!=="orbit");setFocusBtn();};
+  $("#ctxBtn").onclick=ctxAction;
+  $("#evt").onclick=()=>{$("#evt").hidden=true;openXC(lastEntry);};
+  $("#xc").onclick=e=>{const w=e.target.closest("[data-xw]");if(w){const en=V.log.find(x=>x.id===w.dataset.xw)||lastEntry;openPanel("chat");chatSay("Bu reaksiyani tushuntiring","me");chatSay(explain(en),"ai");}
+    if(e.target.closest("[data-xv]"))openPanel("vessel");};
+  $("#hzT").checked=S().hazards!==false;$("#hzT").onchange=()=>{S().hazards=$("#hzT").checked;KL.save();KL.toast(S().hazards?"⚠️ Real xavflar yoqildi":"Real xavflar o'chirildi");};
   $("#rgq").oninput=()=>renderReagents();
   $("#rgf").onclick=e=>{const b=e.target.closest("[data-gf]");if(!b)return;rgGroup=b.dataset.gf;$$("#rgf .chip").forEach(x=>x.classList.toggle("on",x===b));renderReagents();};
   const pickR=e=>{const b=e.target.closest("[data-k]");if(b){addReagent(b.dataset.k);b.classList.remove("tap");void b.offsetWidth;b.classList.add("tap");}};
   $("#rgl").onclick=pickR;$("#rgr").onclick=pickR;
-  $("#gearAll").onclick=equipAll;
-  $("#vt").onclick=e=>{const b=e.target.closest("[data-v]");if(b&&b.dataset.v!==V.type)newVessel(b.dataset.v,true);};
+  $("#gearAll").onclick=()=>equipAll();
+  $("#vt").onclick=e=>{const b=e.target.closest("[data-v]");if(!b||b.dataset.v===V.type)return;if(hotTouch())return;newVessel(b.dataset.v,true);};
   $$("[data-act]",el).forEach(b=>b.onclick=()=>act(b.dataset.act));
   $("#gearL").onclick=e=>{const b=e.target.closest("[data-gi]");if(b)equip(b.dataset.gi);};
-  $("#goHang").onclick=()=>{if(D3){D3.goHanger();setFocusBtn();closePanels();}};
+  $("#goHang").onclick=()=>{if(D3){closePanels();D3.goHanger();setFocusBtn();}};
   $("#unGear").onclick=()=>{S().gear={};KL.save();renderGear();if(D3)D3.setGear(S().gear);};
   $("#log").onclick=e=>{const b=e.target.closest("[data-why]");if(b){const en=V.log.find(x=>x.id===b.dataset.why);if(en){openPanel("chat");chatSay("Bu reaksiyani tushuntiring","me");chatSay(explain(en),"ai");}}};
   $("#qf").onsubmit=e=>{e.preventDefault();const q=$("#qi").value.trim();if(!q)return;$("#qi").value="";chatSay(KL.esc(q),"me");chatSay(ask(q),"ai");};
-  $("#qs").onclick=e=>{const b=e.target.closest("[data-q]");if(b){chatSay(b.dataset.q,"me");chatSay(ask(b.dataset.q),"ai");}};
-  $("#pop").onclick=()=>openPanel("vessel");
+  $("#qs").onclick=e=>{const b=e.target.closest("[data-q]");if(!b)return;if(/^🚨/.test(b.dataset.q)){closePanels();KL.safety.drill();return;}chatSay(b.dataset.q,"me");chatSay(ask(b.dataset.q),"ai");};
+  $("#pop").onclick=()=>{$("#pop").hidden=true;};
   $("#rotX").onclick=()=>{S().seen.rot=1;KL.save();$("#rot").hidden=true;};
   $("#task").onclick=e=>{const b=e.target.closest("[data-ta]");if(!b)return;const a=b.dataset.ta;
     if(a==="cancel"){prac=null;renderTask();KL.toast("Amaliy ish to'xtatildi");}if(a==="list")KL.go("practicals");if(a==="gear")togglePanel("gear");if(a==="gearAll")equipAll();
@@ -90,12 +96,13 @@ function build(){
     if(!window.THREE)throw Error("Three.js yuklanmadi");
     D3=new KL.Lab3D($("#gl"),$("#scene"),{onPick,onHover:tip,onMode:setFocusBtn});
     D3.active=LAB.active;D3.setGear(S().gear);D3.setVessel(V.type);
-    if(gearOk())D3.goBench();
+    if(gearOk())setTimeout(()=>{D3.goBench();setFocusBtn();},600);
   }catch(err){
     console.warn("3D ishga tushmadi:",err);D3=null;$("#gl").hidden=true;$("#v2d").hidden=false;$("#scene").classList.add("no3d");
     openPanel("vessel");KL.toast("3D grafika ishlamadi — soddalashtirilgan ko'rinish yoqildi.");
   }
-  setVesselTabs();renderTask();requestAnimationFrame(loop);
+  LAB.api={V:()=>V,D3:()=>D3,newVessel:()=>{newVessel(V.type);$("#evt").hidden=true;},closePanels,chatSay};
+  setVesselTabs();renderTask();setFocusBtn();requestAnimationFrame(loop);
 }
 
 /* ---------- asosiy sikl ---------- */
@@ -103,7 +110,8 @@ function loop(t){
   requestAnimationFrame(loop);
   const dt=Math.min(.1,(t-last)/1000||0);last=t;
   if(!LAB.active)return;
-  now+=dt;V.step(dt);drain();
+  now+=dt;V.step(dt);drain();if(KL.safety)KL.safety.check(dt);
+  if(D3&&D3.efx.fire){crT-=dt;if(crT<=0){crT=.1+Math.random()*.2;KL.sfx.crackle();}}
   if(D3){D3.pptQ=(D3.pptQ||[]).concat(V.pptNew);V.pptNew.length=0;D3.move(dt,joy);D3.update(dt,V.view());D3.render(dt);}
   else{V.pptNew.length=0;draw2D();}
   if(pending&&now-pending.t>1.8){
@@ -122,21 +130,28 @@ function drain(){
     if(e.type==="rx"){
       since.rx.add(e.id);const en=e.entry;renderLog();
       const isNew=KL.discover(en);
-      pop(`<span class="tag">${en.t}</span>${en.mol?`<div class="eq">${en.mol}</div>`:en.ionic?`<div class="eq">${en.ionic}</div>`:""}<p>${en.obs}</p>${isNew?`<small class="gold">🔬 Yangi kashfiyot! +10 XP</small>`:""}`);
+      queueChip(en,isNew);
       const line=uniHTML(en.mol||en.ionic||"");if(line){board.unshift(line);board=board.slice(0,4);if(D3)D3.setBoard(board);}
       if(e.rule&&e.rule.fx==="violent")KL.sfx.sizzle();else if(/Gaz|gaz/.test(en.t)||/ajral/.test(en.obs))KL.sfx.fizz();else KL.sfx.ding();
-    }else if(e.type==="gas"){since.gas.add(e.id);const G=KL.GASES[e.id];if(G&&G.note&&!V["n_"+e.id]){V["n_"+e.id]=1;setTimeout(()=>KL.toast(`💨 <b>${fmt(G.f)}</b> — ${G.note}`),900);}}
+    }else if(e.type==="gas"){since.gas.add(e.id);}
     else if(e.type==="hint"){KL.toast("💡 "+e.msg);}
   });
 }
 
 /* ---------- reaktiv qo'shish ---------- */
-function addReagent(id){
+function addReagent(id,walked){
   const s=KL.SHELF_BY_ID[id];if(!s)return;
   if(!gearOk()){warnGear();return;}
+  if(KL.safety&&KL.safety.active)return;
   const liquid=s.k==="sol"||s.k==="liq"||s.k==="water";
   if(liquid&&V.vol+1>V.cap+1e-6){KL.toast("⚠️ Idish to'ldi! Tozalang yoki kattaroq idish tanlang.");KL.sfx.err();return;}
-  const doAdd=()=>{const before=V.color();const r=V.add(id);if(!r.ok){KL.toast(r.msg);return;}
+  if(D3&&!walked&&!D3.nearBench()){KL.toast("🚶 Tajriba stoliga boryapmiz…");D3.goBench(()=>addReagent(id,true));setFocusBtn();return;}
+  const doAdd=()=>{const before=V.color(),T0=V.T,hotDry=liquid&&V.vol<1e-6&&V.T>150;
+    if(s.id==="mNa"&&(V.has("mNa")||V.conc("H")>.01||V.T>50))V._naBig=1;
+    const r=V.add(id);if(!r.ok){KL.toast(r.msg);return;}
+    const col=s.ind?KL.indColor(s.ind,V.pH()):(s.b||(s.ions&&s.ions.map(([i])=>KL.IONS[i].c).find(Boolean))||(s.mol&&s.mol.map(([m])=>KL.MOLS[m].c).find(Boolean)));
+    if(col&&D3)D3.plume(col);
+    if(hotDry&&KL.safety)setTimeout(()=>KL.safety.trigger("crack",{why:`Quruq idish ${Math.round(T0)}°C gacha qizigan edi — unga sovuq suyuqlik quyilganda shisha keskin soviб yorildi.`.replace("soviб","sovib"),col:(V.color()||{}).c}),350);
     ({sol:KL.sfx.pour,liq:KL.sfx.pour,water:KL.sfx.pour,drop:KL.sfx.drop,piece:KL.sfx.clink,powder:KL.sfx.clink,gas:KL.sfx.whoosh})[s.k]();
     since.add.add(id);if(s.ind){S().ind[s.ind]=1;KL.checkAch();}
     if(!S().seen.added){S().seen.added=1;KL.save();renderTask();}
@@ -146,12 +161,14 @@ function addReagent(id){
   if(!$("#p-rg").classList.contains("open"))KL.toast(`${s.k==="drop"?"💧":s.k==="piece"||s.k==="powder"?"🥄":"🧪"} ${fmt(s.f)} — ${s.n}`);
 }
 function newVessel(type,user){
-  V=new KL.Vessel(type);S().vessel=type;KL.save();since.clean=true;
+  V=new KL.Vessel(type);S().vessel=type;KL.save();since.clean=true;pending=null;clearTimeout(chipT);$("#pop").hidden=true;$("#evt").hidden=true;
   if(D3){D3.setVessel(type);D3.fx.B.length=0;D3.fx.Pp.length=0;D3.pptQ=[];}
   setVesselTabs();renderLog();hud();if(user)KL.toast(`🧪 ${KL.VESSELS[type].n} olindi`);
 }
+// qizigan idishni qo'l bilan ushlash — kuyish
+function hotTouch(){if(V.T>55&&S().hazards!==false&&KL.safety&&!KL.safety.active){KL.safety.trigger("burn",{why:`Qizigan idishni qo'l bilan ushladingiz — uning harorati ${Math.round(V.T)}°C edi. Issiq idish tutqich bilan olinadi yoki sovishi kutiladi.`,after:"clean"});return true;}return false;}
 function act(a){
-  if(a==="clean"){newVessel(V.type);KL.sfx.pour();KL.toast("🧽 Idish yuvildi");return;}
+  if(a==="clean"){if(hotTouch())return;newVessel(V.type);$("#evt").hidden=true;KL.sfx.pour();KL.toast("🧽 Idish yuvildi");return;}
   if(a==="heat"){if(!V.heat&&!gearOk()){warnGear();return;}V.heat=!V.heat;KL.sfx[V.heat?"whoosh":"click"]();KL.toast(V.heat?"🔥 Spirtovka yoqildi":"Spirtovka o'chirildi (qopqog'i bilan)");}
   if(a==="uv"){V.uv=!V.uv;KL.sfx.click();}
   if(a==="elec"){if(!V.elec&&V.water<1e-6){KL.toast("⚡ Elektroliz uchun idishga eritma quying.");KL.sfx.err();return;}V.elec=!V.elec;KL.sfx.zap();}
@@ -161,7 +178,7 @@ function act(a){
 function onPick(p){
   if(p.type==="bottle")addReagent(p.id);
   else if(p.type==="gear")equip(p.item);
-  else if(p.type==="vessel"){openPanel("vessel");}
+  else if(p.type==="vessel"){if(V.log.length)openXC(V.log[0]);else openPanel("vessel");}
   else if(p.type==="lamp")act("heat");
   else if(p.type==="battery")act("elec");
   else if(p.type==="uv")act("uv");
@@ -173,15 +190,16 @@ function onPick(p){
 function tip(p,x,y){
   const t=$("#tip");if(!t)return;if(!p){t.hidden=true;return;}
   const s=p.type==="bottle"&&KL.SHELF_BY_ID[p.id];
-  const txt=s?`<b>${fmt(s.f)}</b> ${s.n}${s.hz?` <span class="hz">⚠ ${s.hz}</span>`:""}`:{gear:(GEAR.find(g=>g[0]===p.item)||[])[2],vessel:"Idish — bosing",lamp:"Spirtovka (yoqish / o'chirish)",battery:"Tok manbai — elektroliz",uv:"UV lampa",teacher:"Ustoz — savol bering",board:"Doska",poster:"Davriy jadvalni ochish",door:"Eshik"}[p.type];
+  const txt=s?`<b>${fmt(s.f)}</b> ${s.n}${s.hz?` <span class="hz">⚠ ${s.hz}</span>`:""}`:{gear:(GEAR.find(g=>g[0]===p.item)||[])[2],vessel:"Idish — bosing: nima bo'ldi?",lamp:"Spirtovka (yoqish / o'chirish)",battery:"Tok manbai — elektroliz",uv:"UV lampa",teacher:"Ustoz — savol bering",board:"Doska",poster:"Davriy jadvalni ochish",door:"Eshik"}[p.type];
   if(!txt){t.hidden=true;return;}
   const r=$("#scene").getBoundingClientRect();t.innerHTML=txt;t.hidden=false;t.style.left=Math.min(r.width-220,x-r.left+14)+"px";t.style.top=(y-r.top+16)+"px";
 }
 
 /* ---------- himoya vositalari ---------- */
-function equip(item){
+function equip(item,walked){
   const g=S().gear,i=GEAR.findIndex(x=>x[0]===item);
   if(g[item])return;
+  if(D3&&!walked&&!D3.nearHanger()){closePanels();D3.goHanger(()=>equip(item,true));setFocusBtn();return;}
   const miss=GEAR.slice(0,i).find(x=>!g[x[0]]);
   if(miss){KL.toast(`⚠️ Tartib: avval ${miss[2].toLowerCase()}ni kiying.`);KL.sfx.err();return;}
   g[item]=1;KL.save();KL.sfx.whoosh();KL.toast(`${GEAR[i][1]} ${GEAR[i][2]} kiyildi`);
@@ -189,7 +207,9 @@ function equip(item){
   if(gearOk()){KL.toast("✅ To'liq himoyalangansiz! Tajriba stoliga o'tamiz…","gold");if(!S().seen.gearXp){S().seen.gearXp=1;KL.addXP(5);}KL.checkAch();renderTask();
     setTimeout(()=>{closePanels();if(D3){D3.goBench();setFocusBtn();}},900);}
 }
-function equipAll(){const miss=GEAR.filter(g=>!S().gear[g[0]]);miss.forEach((g,i)=>setTimeout(()=>equip(g[0]),i*380));}
+function equipAll(walked){const miss=GEAR.filter(g=>!S().gear[g[0]]);if(!miss.length)return;
+  if(D3&&!walked&&!D3.nearHanger()){closePanels();KL.toast("🚶 Kiyim ilgichiga boryapmiz…");D3.goHanger(()=>equipAll(true));setFocusBtn();return;}
+  miss.forEach((g,i)=>setTimeout(()=>equip(g[0],true),i*420));}
 function warnGear(){KL.toast("⚠️ Avval himoya vositalarini kiying: xalat → ko'zoynak → qo'lqop.");KL.sfx.err();openPanel("gear");}
 function renderGear(){
   const g=S().gear;
@@ -204,15 +224,16 @@ function openPanel(id){
   $$(".panel",el).forEach(p=>p.classList.toggle("open",p.id==="p-"+id));
   $$("[data-p]",el).forEach(b=>b.classList.toggle("on",b.dataset.p===id));
   const phone=innerWidth<760;
-  if(id==="vessel"&&D3&&D3.mode!=="orbit"){D3.focus(true);setFocusBtn();}
-  if(id==="rg"&&D3&&phone){D3.showRack();setFocusBtn();}
+  if(id==="vessel"&&D3&&(D3.mode!=="orbit"||D3.rackMode)){D3.focusVessel();setFocusBtn();}
+  if(id==="rg"&&D3&&phone&&D3.nearBench()){D3.showRack();setFocusBtn();}
+  if(id==="xc"&&D3&&D3.nearBench()&&(D3.mode!=="orbit"||D3.rackMode)){D3.focusVessel();setFocusBtn();}
   $("#scene").classList.add("sheet");
   if(id==="vessel")renderLog();
   if(id==="chat")setTimeout(()=>{const c=$("#chat");c.scrollTop=c.scrollHeight;},30);
   sheet();
 }
 function togglePanel(id){const p=$("#p-"+id);if(p&&p.classList.contains("open"))closePanels();else openPanel(id);}
-function closePanels(){$$(".panel",el).forEach(p=>p.classList.remove("open"));$$("[data-p]",el).forEach(b=>b.classList.remove("on"));$("#scene").classList.remove("sheet");sheet();}
+function closePanels(){$$(".panel",el).forEach(p=>p.classList.remove("open"));$$("[data-p]",el).forEach(b=>b.classList.remove("on"));$("#scene").classList.remove("sheet");if(D3&&D3.rackMode){D3.unRack();setFocusBtn();}sheet();}
 // telefonda pastki panelni barmoq bilan cho'zish / qisqartirish (bosilsa — yarim / to'liq)
 function sheetDrag(){
   $$(".panel header",el).forEach(h=>{
@@ -228,7 +249,26 @@ function sheetDrag(){
 const isSheet=()=>innerWidth<760&&innerHeight>=500;
 function sheet(){if(!D3)return;const p=$(".panel.open",el);if(!p){D3.setSheet(0,0);return;}
   if(isSheet())D3.setSheet(p.offsetHeight,0);else D3.setSheet(0,p.offsetWidth/innerWidth>.28?p.offsetWidth+10:0);}
-function setFocusBtn(){const b=$("#focusBtn");if(!b||!D3)return;const o=D3.mode==="orbit";b.innerHTML=o?`<i>🚶</i><span class="l"> Yurish</span><span class="m">Yurish</span>`:`<i>🔍</i><span class="l"> Yaqinlashish</span><span class="m">Yaqin</span>`;b.classList.toggle("on",o);}
+// kontekst tugmasi: uzoqda — «Stolga borish», stol oldida — «Yaqinlashish», yaqinda — «Orqaga»
+function setFocusBtn(){const b=$("#ctxBtn");if(!b||!D3)return;const m=D3.mode;
+  const[ic,l,sh]=m==="orbit"?["🚶"," Orqaga","Orqaga"]:m==="bench"?["🔍"," Yaqinlashish","Yaqin"]:["🧪"," Stolga borish","Stol"];
+  b.innerHTML=`<i>${ic}</i><span class="l">${l}</span><span class="m">${sh}</span>`;b.classList.toggle("on",m==="orbit");}
+function ctxAction(){if(!D3)return;const m=D3.mode;closePanels();if(m==="orbit")D3.focus(false);else if(m==="bench")D3.focus(true);else D3.goBench();setFocusBtn();}
+// reaksiya bo'lganda: avval o'zgarishni ko'rsin, keyin kichik belgi chiqadi — izoh bosilganda ochiladi
+function queueChip(en,isNew){lastEntry=en;clearTimeout(chipT);chipT=setTimeout(()=>{const c=$("#evt");if(!c)return;
+  c.innerHTML=`<i>🔬</i><div><b>${en.t}</b><small>Nima bo'ldi? — bosing</small></div>${isNew?`<em>✨+10</em>`:""}`;c.hidden=false;c.classList.remove("pulse");void c.offsetWidth;c.classList.add("pulse");},1500);}
+function openXC(e){
+  if(!e)return;lastEntry=e;const r=KL.RULE_BY_ID[e.id],ex=[];
+  if(r){const sp={fast:"bir zumda",mid:"tez",slow:"sekin",vslow:"juda sekin"}[r.sp];
+    if(sp)ex.push(`⏱ <b>Tezligi:</b> ${sp}${r.exo>=10?", ko'p issiqlik ajraladi":r.exo?", issiqlik ajraladi":""}${r.need&&r.need.heat?", qizdirilganda":""}`);
+    r.P.forEach(t=>{
+      if(t.k==="s"){const S=KL.SOLIDS[t.id];if(S.kind!=="piece")ex.push(`<i class="dot" style="background:${S.c}"></i> <b>${S.np?S.n:fmt(S.f)}</b>${S.form?` <small class="form">${KL.FORM_NAME[S.form]}</small>`:""} — ${S.d||S.n}`);}
+      if(t.k==="g"){const G=KL.GASES[t.id];ex.push(`💨 <b>${fmt(G.f)}</b> (${G.n}) — ${G.note}${G.smell?` 👃 ${G.smell[0].toUpperCase()+G.smell.slice(1)}.`:""}${G.tox?" ☠️ <b>Zaharli!</b>":""}`);}
+      if(t.k==="mol"){const M=KL.MOLS[t.id];if(M.smell)ex.push(`👃 Hid: ${M.smell}`);}});}
+  $("#xc").innerHTML=`<span class="tag">${e.t}</span>${e.mol?`<div class="eq">${e.mol}</div>`:""}${e.ionic?`<div class="ion"><small>Qisqa ionli:</small> ${e.ionic}</div>`:""}<p class="obs">${e.obs}</p>${ex.length?`<ul class="xl">${ex.map(x=>`<li>${x}</li>`).join("")}</ul>`:""}
+    <div class="row"><button class="btn sm pri" data-xw="${e.id}">🎓 Ustoz tushuntirsin</button><button class="btn sm ghost" data-xv>🧫 Idish va jurnal</button></div>`;
+  openPanel("xc");
+}
 function setVesselTabs(){$$("#vt [data-v]").forEach(b=>b.classList.toggle("on",b.dataset.v===V.type));}
 let rgGroup="";
 const rgChip=s=>`<button class="chip rg rg-${s.g}" data-k="${s.id}" title="${KL.esc(s.n)}${s.hz?" — "+s.hz:""}"><b>${s.id==="starch"?"kraxmal":fmt(s.f)}</b><small>${s.n}</small>${s.hz?`<i class="hz">⚠</i>`:""}</button>`;
@@ -337,20 +377,23 @@ function ask(q){
     return`📚 <b>${best.t}</b>: ${txt.slice(0,420)}${txt.length>420?"…":""}${best.id?` <button class="lnk" onclick="KL.go('lessons','${best.id}')">Darsni ochish →</button>`:""}`;}
   return"Bu savolga aniq javob topa olmadim. Boshqacha so'rab ko'ring yoki «📚 Darslar» bo'limiga qarang. Masalan: «ion almashinish», «elektroliz», «KMnO4».";
 }
-function helpText(){return`<ul class="help"><li><b>Yurish:</b> ${matchMedia("(pointer:coarse)").matches?"chapdagi joystik":"W A S D yoki strelkalar"}; atrofga qarash — ekranni suring.</li><li><b>Tanlash:</b> stoldagi polkadan shishani, spirtovkani, tok manbaini yoki kiyimni bosing.</li><li><b>🔍 Yaqinlashish:</b> idishni yaqindan ko'rish (aylantirish va ${matchMedia("(pointer:coarse)").matches?"ikki barmoq bilan":"g'ildirak bilan"} kattalashtirish).</li><li><b>🧪 Idish:</b> qizdirish, UV nur, elektroliz, pH va kuzatuvlar jurnali.</li><li><b>🎓 Ustoz:</b> istalgan reaksiyani tushuntirib beradi.</li></ul>`;}
+function helpText(){const t=matchMedia("(pointer:coarse)").matches;return`<ul class="help"><li><b>Yurish:</b> ${t?"barmoqni ekranning chap pastki qismiga qo'ying — joystik paydo bo'ladi (oxirigacha bossangiz — yugurasiz)":"W A S D yoki strelkalar, Shift — yugurish"}. Polga bosing — personaj o'sha joyga boradi.</li><li><b>Kamera:</b> ${t?"ekranning o'ng qismini suring, ikki barmoq bilan yaqinlashtiring":"sichqonchani bosib suring, g'ildirak — yaqinlashtirish"}.</li><li><b>🧪 Stol / 🔍 Yaqin:</b> pastdagi asosiy tugma — stolga borish, idishga yaqinlashish va orqaga qaytish.</li><li><b>Tanlash:</b> stoldagi polkadan shishani, spirtovkani, tok manbaini yoki kiyimni bosing.</li><li><b>Reaksiya izohi:</b> reaksiyadan keyin yuqorida «🔬 nima bo'ldi?» belgisi chiqadi — uni yoki idishni bosing.</li><li><b>🧪 Idish:</b> qizdirish, UV nur, elektroliz, pH va kuzatuvlar jurnali.</li><li><b>🎓 Ustoz:</b> istalgan reaksiyani tushuntirib beradi.</li></ul>`;}
 function help(){KL.modal(`<h3>🧪 Laboratoriyada ishlash</h3>${helpText()}<p class="mut">Tajribalar xavfsiz — hammasi virtual. Lekin haqiqiy laboratoriyada himoya vositalarisiz ishlamang!</p><div class="row"><button class="btn pri" data-close>Tushunarli</button><button class="btn" id="hPr">📋 Amaliy ishlar</button></div>`).el.querySelector("#hPr").onclick=function(){this.closest(".back").remove();KL.go("practicals");};}
 
 /* ---------- joystik ---------- */
 function joystick(){
-  const j=$("#joy"),k=j.firstElementChild;let id=null;
-  const set=e=>{const b=j.getBoundingClientRect(),dx=e.clientX-b.left-b.width/2,dy=e.clientY-b.top-b.height/2,r=b.width/2-14,m=Math.min(1,Math.hypot(dx,dy)/r),a=Math.atan2(dy,dx);joy={x:Math.cos(a)*m,y:Math.sin(a)*m};k.style.transform=`translate(${joy.x*r}px,${joy.y*r}px)`;};
-  j.addEventListener("pointerdown",e=>{id=e.pointerId;j.setPointerCapture(id);set(e);if(D3&&D3.mode==="orbit"){D3.focus(false);setFocusBtn();}});
-  j.addEventListener("pointermove",e=>{if(e.pointerId===id)set(e);});
-  const end=e=>{if(e.pointerId!==id)return;id=null;joy={x:0,y:0};k.style.transform="";};
-  j.addEventListener("pointerup",end);j.addEventListener("pointercancel",end);
+  const z=$("#joyz"),j=$("#joy"),k=j.firstElementChild;let id=null,cx=0,cy=0,t0=0,mv=0;const R=46;
+  const home=()=>{j.style.left="84px";j.style.top=Math.max(60,z.clientHeight-92)+"px";};home();addEventListener("resize",home);
+  const set=e=>{const dx=e.clientX-cx,dy=e.clientY-cy,d=Math.hypot(dx,dy);mv=Math.max(mv,d);const m=d<7?0:Math.min(1,d/R),a=Math.atan2(dy,dx);joy={x:Math.cos(a)*m,y:Math.sin(a)*m};k.style.transform=`translate(${Math.cos(a)*Math.min(1,d/R)*R}px,${Math.sin(a)*Math.min(1,d/R)*R}px)`;};
+  z.addEventListener("pointerdown",e=>{if(id!==null)return;id=e.pointerId;try{z.setPointerCapture(id);}catch(x){}const r=z.getBoundingClientRect();cx=e.clientX;cy=e.clientY;t0=performance.now();mv=0;
+    j.style.left=(cx-r.left)+"px";j.style.top=(cy-r.top)+"px";j.classList.add("act");set(e);});
+  z.addEventListener("pointermove",e=>{if(e.pointerId===id)set(e);});
+  // qisqa bosish (surilmasa) — joystik emas, sahnaga bosish: shisha, idish yoki polga
+  const end=e=>{if(e.pointerId!==id)return;id=null;joy={x:0,y:0};k.style.transform="";j.classList.remove("act");home();
+    if(e.type==="pointerup"&&mv<9&&performance.now()-t0<350&&D3)D3.tap(e);};
+  z.addEventListener("pointerup",end);z.addEventListener("pointercancel",end);
 }
-let rotT=null;
-function rotHint(){const r=$("#rot");if(!r)return;r.hidden=!(matchMedia("(pointer:coarse)").matches&&innerHeight>innerWidth&&!S().seen.rot);
+function rotHint(){const r=$("#rot");if(!r)return;r.hidden=true;
   if(!r.hidden){clearTimeout(rotT);rotT=setTimeout(()=>{r.hidden=true;},9000);}}
 addEventListener("resize",()=>{rotHint();sheet();});
 
