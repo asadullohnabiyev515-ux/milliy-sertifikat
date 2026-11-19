@@ -116,16 +116,24 @@ const SOLIDS={
   dFe:{f:"Fe",n:"temir qatlami",c:"#3b3f45",kind:"dep",d:"qora temir qatlami"},
   mirAg:{f:"Ag",n:"kumush ko'zgu",c:"#dfe3e8",kind:"mirror",d:"idish devorida yaltiroq kumush ko'zgu"},
   phAg:{f:"Ag",n:"mayda kumush",c:"#5c5566",kind:"ppt",d:"cho'kma qoraydi (mayda kumush)"},
-  res:{f:"tuz",np:1,n:"tuz kristallari",c:"#f4f4f4",kind:"res",d:"idish tubida tuz kristallari"}
+  res:{f:"tuz",np:1,n:"tuz kristallari",c:"#f4f4f4",kind:"res",d:"idish tubida tuz kristallari"},
+  Mn2O3:{f:"Mn2O3",n:"marganes(III) oksid",c:"#3a2418",kind:"powder",d:"qo'ng'ir-qora kul"},
+  K2CO3s:{f:"K2CO3",n:"kaliy karbonat",c:"#efefef",kind:"powder",dis:[["K",2],["CO3",1]]}
 };
+// cho'kmaning tashqi ko'rinishi: gel — iviqsimon, curd — suzmasimon, cryst — mayda kristall, glitter — yaltiroq tangachalar
+const FORMS={gel:"CuOH2 FeOH3 FeOH2 AlOH3 ZnOH2 MgOH2 MnOH2 CrOH3 PbOH2",curd:"AgCl AgBr AgI",glitter:"PbI2",flake:"proteinC C6H2Br3OH",
+  powder:"MnO2 CuO Fe2O3 KMnO4s NaHCO3s Na2CO3s K2MnO4s phAg res Mn2O3 K2CO3s Ag2O",metal:"dCu dAg dPb dZn dFe"};
+Object.entries(FORMS).forEach(([f,ids])=>ids.split(" ").forEach(id=>{if(SOLIDS[id])SOLIDS[id].form=f;}));
+Object.values(SOLIDS).forEach(x=>{if(!x.form&&x.kind==="ppt")x.form="cryst";});
+KL.FORM_NAME={gel:"iviqsimon (gelsimon)",curd:"suzmasimon (parcha-parcha)",cryst:"mayda kristall (sutsimon loyqa)",glitter:"yaltiroq kristall tangachalar",flake:"oq parchalar",powder:"kukunsimon",metal:"metall qatlami"};
 const GASES={
   H2:{f:"H2",n:"vodorod",note:"Yonuvchi gaz: yonib turgan cho'p yaqinlashtirilsa «pang» etib yonadi."},
   O2:{f:"O2",n:"kislorod",note:"Cho'g'langan cho'p kislorodda alangalanib ketadi."},
   CO2:{f:"CO2",n:"karbonat angidrid",note:"Yonayotgan cho'p o'chadi, gaz ohakli suvni loyqalatadi."},
-  Cl2:{f:"Cl2",n:"xlor",c:"#cfe65a",note:"Sarg'ish-yashil, o'tkir hidli zaharli gaz (mo'rili shkafda ishlang!)."},
-  NH3g:{f:"NH3",n:"ammiak",note:"O'tkir hidli gaz, ho'l qizil lakmus qog'ozini ko'k qiladi."},
-  SO2:{f:"SO2",n:"oltingugurt(IV) oksid",note:"O'tkir, bo'g'uvchi hidli gaz."},
-  NO:{f:"NO",n:"azot(II) oksid",c:"#b5541c",note:"Rangsiz gaz, havoda tezda qo'ng'ir NO₂ ga aylanadi."}
+  Cl2:{f:"Cl2",n:"xlor",c:"#cfe65a",tox:1,smell:"xlorning o'tkir, bo'g'uvchi hidi",note:"Sarg'ish-yashil, o'tkir hidli zaharli gaz (mo'rili shkafda ishlang!)."},
+  NH3g:{f:"NH3",n:"ammiak",tox:.5,smell:"o'tkir ammiak hidi",note:"O'tkir hidli gaz, ho'l qizil lakmus qog'ozini ko'k qiladi."},
+  SO2:{f:"SO2",n:"oltingugurt(IV) oksid",tox:1,smell:"yongan gugurtning o'tkir, bo'g'uvchi hidi",note:"O'tkir, bo'g'uvchi hidli gaz."},
+  NO:{f:"NO",n:"azot(II) oksid",c:"#b5541c",tox:1.5,smell:"NO₂ ning o'tkir hidi",note:"Rangsiz gaz, havoda tezda qo'ng'ir NO₂ ga aylanadi."}
 };
 const IND={php:{n:"fenolftalein"},lit:{n:"lakmus"},mo:{n:"metiloranj"},uni:{n:"universal indikator"}};
 const hex=h=>[1,3,5].map(i=>parseInt(h.substr(i,2),16));

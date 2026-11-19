@@ -15,6 +15,11 @@ function redraw(t,draw){const c=t.userData.canvas;draw(c.getContext("2d"),c.widt
 const M=(c,o)=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.75,metalness:0},o||{}));
 const rr=(a,b)=>a+Math.random()*(b-a);
 const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+const lerpA=(a,b,t)=>{let d=(b-a)%(Math.PI*2);if(d>Math.PI)d-=Math.PI*2;if(d<-Math.PI)d+=Math.PI*2;return a+d*t;};
+// cho'kma turlari: n — zarrachalar soni (1 ulushga), s — o'lcham, v — cho'kish tezligi, m — ko'rinish
+const FORMS={gel:{n:55,cap:44,s:[.007,.016],v:[.004,.01],m:"gel"},curd:{n:44,cap:44,s:[.0035,.0075],v:[.016,.03],m:"o",clump:1},
+  cryst:{n:110,cap:80,s:[.0011,.002],v:[.005,.01],m:"o"},glitter:{n:70,cap:60,s:[.003,.0055],v:[.008,.015],m:"gl"},
+  powder:{n:55,cap:40,s:[.0014,.0028],v:[.015,.025],m:"o"},flake:{n:40,cap:30,s:[.003,.006],v:[.01,.02],m:"o",clump:1}};
 function rIn(prof,y){for(let i=1;i<prof.length;i++){const[a,ya]=prof[i-1],[b,yb]=prof[i];if(y<=yb)return yb===ya?b:a+(b-a)*(y-ya)/(yb-ya);}return prof[prof.length-1][0];}
 function lathe(prof,y0,y1,seg=40){
   const pts=[new THREE.Vector2(0,y0)];
@@ -23,6 +28,14 @@ function lathe(prof,y0,y1,seg=40){
   pts.push(new THREE.Vector2(Math.max(.001,rIn(prof,y1)),y1),new THREE.Vector2(0,y1));
   return new THREE.LatheGeometry(pts,seg);
 }
+// Frenel effekti: sirtga qiya qaralganda shaffoflik kamayadi — shisha devorlari va suyuqlik hajmi aniq ko'rinadi
+function fresnel(mat,k,pw,glow){mat.onBeforeCompile=sh=>{sh.fragmentShader=sh.fragmentShader.replace("#include <output_fragment>",
+  `float fr_=pow(1.0-abs(dot(normal,normalize(vViewPosition))),${pw.toFixed(2)});outgoingLight+=vec3(fr_*${glow.toFixed(3)});diffuseColor.a=min(1.0,diffuseColor.a+fr_*${k.toFixed(3)});
+  #include <output_fragment>`);};mat.customProgramCacheKey=()=>"fr"+k+"_"+pw+"_"+glow;return mat;}
+// loyqalik turi: qanchalik xira qiladi (op) va suyuqlikni qanchalik bo'yaydi (cw)
+const TURB={cryst:{op:.93,cw:1},powder:{op:.72,cw:.9},gel:{op:.42,cw:.7},curd:{op:.3,cw:.45},glitter:{op:.26,cw:.4},flake:{op:.38,cw:.5}};
+// cho'kma hosil bo'lganda ichida tarqaladigan bulut: soni, shaffofligi, umri
+const CLOUD={gel:[7,.5,6],curd:[6,.55,2.6],cryst:[9,.55,8],glitter:[3,.28,3],powder:[4,.5,3],flake:[4,.45,3]};
 function wrapText(c,txt,x,y,maxW,lh){const words=txt.split(" ");let line="";for(const w of words){const t=line?line+" "+w:w;if(c.measureText(t).width>maxW&&line){c.fillText(line,x,y);y+=lh;line=w;}else line=t;}if(line)c.fillText(line,x,y);return y;}
 
 class Lab3D{
@@ -35,10 +48,14 @@ class Lab3D{
     r.shadowMap.enabled=!this.mobile;r.shadowMap.type=THREE.PCFSoftShadowMap;
     this.sc=new THREE.Scene();this.sc.background=new THREE.Color(0xd5dde4);
     this.cam=new THREE.PerspectiveCamera(60,1,.02,60);
-    this.inter=[];this.tweens=[];this.colliders=[];this.time=0;this.sheet=0;this.queue=[];this.busy=false;
-    this.env();this.room();this.decor();this.bench();this.rack();this.side();this.hanger();this.teacherBuild();
-    this.vg=new THREE.Group();this.sc.add(this.vg);this.fxBuild();this.setVessel("stakan");
-    this.P={x:-4.7,z:3.05,yaw:2.0,pitch:-.12};this.mode="walk";this.orb={yaw:.35,pitch:.32,dist:.85};
+    this.inter=[];this.tweens=[];this.colliders=[];this.time=0;this.sheet=0;this.sideOff=0;this.queue=[];this.busy=false;
+    this.env();this.room();this.decor();this.bench();this.rack();this.side();this.hanger();this.people();
+    this.vg=new THREE.Group();this.sc.add(this.vg);this.fxBuild();this.efx=new KL.FX(this);this.setVessel("stakan");
+    this.navBuild();
+    // o'quvchi eshik yonida, kiyim ilgichiga qarab turadi; kamera — orqasidan (3-shaxs)
+    this.pl={x:-5.9,z:4.7,rot:-1.53,spd:0,path:null,cb:null};this.mode="follow";
+    this.camO={yaw:-1.53+Math.PI,pitch:.3,dist:2.8,drag:-9};this.orb={yaw:0,pitch:.32,dist:.85};
+    this.cpos=new THREE.Vector3();this.clook=new THREE.Vector3();this.camSnap=true;
     this.input();this.resize();
     if(window.ResizeObserver)new ResizeObserver(()=>this.resize()).observe(host);
   }
@@ -272,23 +289,13 @@ class Lab3D{
     [[coat,"xalat"],[gog,"koz"],[glv,"qol"]].forEach(([o,id])=>o.traverse(m=>{if(m.isMesh){m.castShadow=true;this.pick(m,{type:"gear",item:id});}}));
     this.colliders.push([-7.6,-6.3,4.35,5.6],[-7.9,-7.4,3.1,3.6]);
   }
-  setGear(g){this.coat.visible=!g.xalat;this.gog.visible=!g.koz;this.glv.visible=!g.qol;}
-  teacherBuild(){
-    const t=this.teacher=new THREE.Group();t.position.set(-2.4,0,-4.95);this.sc.add(t);
-    const coat=M(0xf7f7f7,{roughness:.8}),skin=M(0xe2b48e,{roughness:.7}),dark=M(0x2f3640);
-    [-.08,.08].forEach(x=>this.cyl(.05,.045,.8,dark,x,.4,0,t));
-    this.add(new THREE.Mesh(new THREE.CylinderGeometry(.16,.22,.78,16),coat),0,1.17,0,t);
-    this.add(new THREE.Mesh(new THREE.SphereGeometry(.16,16,10,0,Math.PI*2,0,Math.PI/2),coat),0,1.55,0,t).scale.set(1,.5,.8);
-    [-1,1].forEach(s=>{const a=this.add(new THREE.Mesh(new THREE.CylinderGeometry(.045,.05,.62,10),coat),s*.21,1.22,0,t);a.rotation.z=s*.12;
-      this.add(new THREE.Mesh(new THREE.SphereGeometry(.045,10,8),skin),s*.25,.9,0,t);});
-    this.cyl(.05,.055,.08,skin,0,1.62,0,t);
-    const head=this.tHead=this.add(new THREE.Mesh(new THREE.SphereGeometry(.13,20,16),skin),0,1.78,0,t);
-    const hair=new THREE.Mesh(new THREE.SphereGeometry(.137,20,10,0,Math.PI*2,0,Math.PI*.55),M(0x3a2a20));hair.position.y=.02;hair.rotation.x=-.25;head.add(hair);
-    [-1,1].forEach(s=>{const e=new THREE.Mesh(new THREE.TorusGeometry(.03,.006,6,14),M(0x222222));e.position.set(s*.05,.01,.12);head.add(e);
-      const p=new THREE.Mesh(new THREE.SphereGeometry(.012,8,6),M(0x222222));p.position.set(s*.05,.01,.118);head.add(p);});
-    const m=new THREE.Mesh(new THREE.TorusGeometry(.03,.006,6,12,Math.PI),M(0x8a3b2e));m.position.set(0,-.05,.115);m.rotation.z=Math.PI;head.add(m);
-    t.traverse(o=>{if(o.isMesh){o.castShadow=true;this.pick(o,{type:"teacher"});}});
-    this.colliders.push([-2.75,-2.05,-5.3,-4.6]);
+  setGear(g){this.coat.visible=!g.xalat;this.gog.visible=!g.koz;this.glv.visible=!g.qol;KL.dressHuman(this.player,g);}
+  people(){
+    this.player=KL.makeHuman({shirt:0x3d6fb5,pants:0x2f3640,hair:0x2b1d14});this.sc.add(this.player);
+    const t=this.teacher=KL.makeHuman({coat:1,glasses:1,hair:0x8a8a8a,pants:0x3b3f4a,shirt:0xffffff,long:0});
+    t.userData.h.P.gog.userData.fixed=1;t.userData.h.P.gog.visible=true;this.sc.add(t);
+    t.traverse(o=>{if(o.isMesh)this.pick(o,{type:"teacher"});});
+    this.tch={x:-2.4,z:-4.95,rot:.5,path:null,spd:0,cb:null};
   }
   /* ---------- idish ---------- */
   setVessel(type){
@@ -296,16 +303,18 @@ class Lab3D{
     const P=this.prof=PROF[type];this.H=P[P.length-1][1];this.fillMax=FILL[type];
     g.position.set(VX,BASE[type],VZ);
     const outer=P.map(([r,y],i)=>[r+.0035,i===0?-.0035:y]);outer.push([P[P.length-1][0]+.007,this.H+.004]);
-    this.glassMat=new THREE.MeshStandardMaterial({color:0xf2f8fc,transparent:true,opacity:.12,roughness:.04,metalness:.1,side:THREE.DoubleSide,depthWrite:false,envMapIntensity:1.1});
+    this.glassMat=fresnel(new THREE.MeshStandardMaterial({color:0xf2f8fc,transparent:true,opacity:.1,roughness:.04,metalness:.1,side:THREE.DoubleSide,depthWrite:false,envMapIntensity:1.1}),.5,2.6,.16);
     const glass=new THREE.Mesh(new THREE.LatheGeometry(outer.map(p=>new THREE.Vector2(p[0],p[1])),48),this.glassMat);glass.renderOrder=3;g.add(glass);this.pick(glass,{type:"vessel"});
     const hl=new THREE.Mesh(new THREE.PlaneGeometry(.012,this.H*.8),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.18,depthWrite:false}));hl.position.set(-rIn(P,this.H*.5)*.7,this.H*.5,rIn(P,this.H*.5)*.72);hl.rotation.y=-.75;hl.renderOrder=4;g.add(hl);
     if(type!=="probirka"){for(let i=1;i<=4;i++){const y=this.fillMax*i/4;const r0=rIn(P,y);const m=new THREE.Mesh(new THREE.BoxGeometry(.025,.002,.002),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.5}));m.position.set(0,y,r0+.004);g.add(m);}}
-    this.liqMat=new THREE.MeshStandardMaterial({color:0xdcecf6,emissive:0x000000,transparent:true,opacity:.35,roughness:.35,metalness:0,depthWrite:false,envMapIntensity:.25});
+    this.liqMat=fresnel(new THREE.MeshStandardMaterial({color:0xdcecf6,emissive:0x000000,transparent:true,opacity:.35,roughness:.35,metalness:0,depthWrite:false,envMapIntensity:.25}),.24,1.8,0);
     this.liq=new THREE.Mesh(new THREE.BufferGeometry(),this.liqMat);this.liq.renderOrder=1;g.add(this.liq);this.liqH=-1;
+    // menisk: suyuqlik sathidagi yorqin halqa — tiniq suyuqlik ham ko'rinadi
+    this.men=new THREE.Mesh(new THREE.TorusGeometry(1,.011,6,56),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.5,depthWrite:false}));this.men.rotation.x=Math.PI/2;this.men.renderOrder=2;this.men.visible=false;g.add(this.men);
     this.layerG=new THREE.Group();g.add(this.layerG);this.layerKey="";
     this.pieceG=new THREE.Group();g.add(this.pieceG);this.pieceMap={};
     this.tripod.visible=type!=="probirka";this.clamp.visible=type==="probirka";
-    if(this.fx){g.add(this.fx.bub,this.fx.ppt,this.fx.cloud,this.fx.rods,this.fx.stir,this.fx.tube);}
+    if(this.fx){const f=this.fx;g.add(f.bub,f.pO,f.pG,f.pS,f.lumps,f.foam,f.rods,f.stir,f.tube);f.B.length=0;f.Pp.length=0;f.L.length=0;this.foam=0;this.foamH=-1;}
     this.vol=this.volTable();this.layerTop=.0015;
     // kamera fokus nuqtasi
     this.target=new THREE.Vector3(VX,BASE[type]+this.H*.45,VZ);
@@ -313,18 +322,22 @@ class Lab3D{
   volTable(){const P=this.prof,N=80,t=[0];for(let i=1;i<=N;i++){const y0=this.fillMax*(i-1)/N,y1=this.fillMax*i/N,r=rIn(P,(y0+y1)/2);t.push(t[i-1]+Math.PI*r*r*(y1-y0));}return t;}
   levelY(f){const t=this.vol,N=t.length-1,v=f*t[N];for(let i=1;i<=N;i++)if(t[i]>=v){const a=(v-t[i-1])/(t[i]-t[i-1]||1);return this.fillMax*(i-1+a)/N;}return this.fillMax;}
   fxBuild(){
-    const sg=new THREE.SphereGeometry(1,8,6);
-    const bub=new THREE.InstancedMesh(sg,new THREE.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.55,roughness:.05,depthWrite:false}),200);bub.renderOrder=2;bub.frustumCulled=false;
-    const ppt=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,0),new THREE.MeshStandardMaterial({color:0xffffff,roughness:.9}),160);ppt.frustumCulled=false;
-    const z=new THREE.Matrix4().makeScale(0,0,0);for(let i=0;i<200;i++)bub.setMatrixAt(i,z);for(let i=0;i<160;i++){ppt.setMatrixAt(i,z);ppt.setColorAt(i,new THREE.Color(1,1,1));}
-    const cloud=new THREE.Mesh(new THREE.CylinderGeometry(.1,.1,.12,24,1,true),new THREE.MeshBasicMaterial({color:0xcfe65a,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}));
+    const sg=new THREE.SphereGeometry(1,8,6),z=new THREE.Matrix4().makeScale(0,0,0),wc=new THREE.Color(1,1,1);
+    const bub=new THREE.InstancedMesh(sg,new THREE.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.55,roughness:.05,depthWrite:false}),260);bub.renderOrder=2;bub.frustumCulled=false;
+    const inst=(geo,mat,n)=>{const m=new THREE.InstancedMesh(geo,mat,n);m.frustumCulled=false;for(let i=0;i<n;i++){m.setMatrixAt(i,z);m.setColorAt(i,wc);}return m;};
+    const pO=inst(new THREE.IcosahedronGeometry(1,0),new THREE.MeshStandardMaterial({color:0xffffff,roughness:.9}),240);
+    const pG=inst(new THREE.SphereGeometry(1,10,8),new THREE.MeshStandardMaterial({color:0xffffff,roughness:.35,transparent:true,opacity:.74,depthWrite:false,envMapIntensity:.35}),100);pG.renderOrder=2;
+    const pS=inst(new THREE.CylinderGeometry(1,1,.22,6),new THREE.MeshStandardMaterial({color:0xffffff,roughness:.2,metalness:.85,emissive:0x5a4400}),90);
+    const lumps=inst(new THREE.DodecahedronGeometry(1,0),new THREE.MeshStandardMaterial({color:0xffffff,roughness:1}),140);
+    for(let i=0;i<260;i++)bub.setMatrixAt(i,z);
+    const foam=new THREE.Mesh(new THREE.BufferGeometry(),new THREE.MeshStandardMaterial({color:0xfbfbf8,transparent:true,opacity:.9,roughness:.95,depthWrite:false}));foam.renderOrder=2;
     const rods=new THREE.Group();const rm=M(0x2b2b2b,{roughness:.6});
     this.rodC=new THREE.Mesh(new THREE.CylinderGeometry(.005,.005,.27,10),rm.clone());this.rodA=new THREE.Mesh(new THREE.CylinderGeometry(.005,.005,.27,10),rm.clone());
     rods.add(this.rodC,this.rodA);const bar=new THREE.Mesh(new THREE.BoxGeometry(.2,.012,.03),M(0xe0e0e0));rods.add(bar);this.rodBar=bar;
     const wireM=[M(0x222222),M(0xc62828)];this.wires=[0,1].map(i=>{const w=new THREE.Mesh(new THREE.BufferGeometry(),wireM[i]);this.sc.add(w);return w;});
     const stir=new THREE.Mesh(new THREE.CylinderGeometry(.004,.004,.32,8),new THREE.MeshStandardMaterial({color:0xeef6fb,transparent:true,opacity:.55}));
     const tube=new THREE.Mesh(new THREE.CylinderGeometry(.005,.005,.34,8),new THREE.MeshStandardMaterial({color:0xeef6fb,transparent:true,opacity:.6}));
-    this.fx={bub,ppt,cloud,rods,stir,tube,B:[],Pp:[],steam:[],m:new THREE.Matrix4(),q:new THREE.Quaternion(),s:new THREE.Vector3(),p:new THREE.Vector3()};
+    this.fx={bub,pO,pG,pS,lumps,foam,rods,stir,tube,B:[],Pp:[],L:[],steam:[],m:new THREE.Matrix4(),q:new THREE.Quaternion(),s:new THREE.Vector3(),p:new THREE.Vector3()};
     const st=ctex(64,64,(c,w)=>{const g=c.createRadialGradient(w/2,w/2,2,w/2,w/2,w/2);g.addColorStop(0,"rgba(255,255,255,.9)");g.addColorStop(1,"rgba(255,255,255,0)");c.fillStyle=g;c.fillRect(0,0,w,w);});
     for(let i=0;i<26;i++){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:st,transparent:true,opacity:0,depthWrite:false}));s.visible=false;this.sc.add(s);this.fx.steam.push({s,life:0});}
     const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:st,color:0xffd54a,transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending}));sp.scale.setScalar(.12);this.sc.add(sp);this.fx.spark=sp;
@@ -334,19 +347,23 @@ class Lab3D{
     this.time+=dt;const f=this.fx,P=this.prof;
     // suyuqlik
     const top=v.level>0?this.levelY(v.level):0;
-    if(Math.abs(top-this.liqH)>.0008){this.liqH=top;this.liq.geometry.dispose();this.liq.geometry=top>.002?lathe(P,.0015,top):new THREE.BufferGeometry();}
-    if(v.col){const c=new THREE.Color(v.col.c);if(v.turb>.02)c.lerp(new THREE.Color(v.turbCol),Math.min(.85,v.turb*.8));
+    if(Math.abs(top-this.liqH)>.0008){this.liqH=top;this.liq.geometry.dispose();this.liq.geometry=top>.002?lathe(P,.0015,top):new THREE.BufferGeometry();
+      this.men.visible=top>.004;const mr=rIn(P,top)-.0005;this.men.position.y=top;this.men.scale.set(mr,mr,mr);}
+    const TB=TURB[v.turbF]||TURB.cryst;
+    if(v.col){const c=new THREE.Color(v.col.c);if(v.turb>.02)c.lerp(new THREE.Color(v.turbCol),Math.min(.85,v.turb*.8*TB.cw));
       const h0={};c.getHSL(h0);if(h0.s>.35)c.setHSL(h0.h,Math.min(1,h0.s*1.1),h0.l*(.62+.3*(1-h0.s)));
-      this.liqMat.color.lerp(c,Math.min(1,dt*3));
+      if(this.slowCol>0)this.slowCol-=dt;this.liqMat.color.lerp(c,Math.min(1,dt*(this.slowCol>0?.8:3)));
       const hsl={};this.liqMat.color.getHSL(hsl);const sat=Math.min(1,hsl.s*(1-Math.abs(hsl.l-.5)*1.4)*1.6);
       this.liqMat.emissive.copy(this.liqMat.color).multiplyScalar(.2*sat+.03);
-      const op=Math.min(.95,Math.max(v.col.alpha<.33?.2:v.col.alpha,v.turb*.95));this.liqMat.opacity+=(op-this.liqMat.opacity)*Math.min(1,dt*3);}
+      const op=Math.min(.95,Math.max(v.col.alpha<.33?.2:v.col.alpha,v.turb*TB.op));this.liqMat.opacity+=(op-this.liqMat.opacity)*Math.min(1,dt*3);}
     // cho'kma qatlamlari
     const key=v.layers.map(l=>l.id+":"+(l.amt*20|0)).join("|");
     let ly=.0015;
     if(key!==this.layerKey){this.layerKey=key;this.layerG.children.forEach(m=>m.geometry.dispose());this.layerG.clear();
       const k=this.type==="probirka"?.03:this.type==="kolba"?.014:.012;
-      v.layers.forEach(l=>{const S=KL.SOLIDS[l.id],gel=/OH/.test(S.f)?1.6:1,h=Math.min(.07,Math.max(.004,l.amt*k*gel));const m=new THREE.Mesh(lathe(P,ly,ly+h,32),M(l.c,{roughness:.95}));this.layerG.add(m);ly+=h;});
+      v.layers.forEach(l=>{const S=KL.SOLIDS[l.id],fm=S.form||"cryst",fk={gel:2.6,curd:1.5,flake:1.3,cryst:.75,glitter:.9,metal:.5}[fm]||.85,h=Math.min(.08,Math.max(.003,l.amt*k*fk));
+        const mat=fm==="gel"?new THREE.MeshStandardMaterial({color:l.c,transparent:true,opacity:.74,roughness:.35,depthWrite:false}):fm==="glitter"?M(l.c,{roughness:.28,metalness:.6,emissive:new THREE.Color(l.c).multiplyScalar(.12)}):fm==="metal"?M(l.c,{roughness:.5,metalness:.7}):M(l.c,{roughness:fm==="curd"?1:.85});
+        const m=new THREE.Mesh(lathe(P,ly,ly+h,32),mat);if(fm==="gel")m.renderOrder=1;this.layerG.add(m);ly+=h;});
       this.layerTop=ly;}
     ly=this.layerTop||.0015;
     // kumush ko'zgu
@@ -379,11 +396,21 @@ class Lab3D{
     this.flame.visible=!!v.heat;this.lampCap.visible=!v.heat;
     if(v.heat){const k=1+Math.sin(this.time*23)*.08+Math.random()*.08;this.flame.scale.set(1,k,1);this.flameL.intensity=.9+Math.random()*.3;}else this.flameL.intensity=0;
     this.uvL.intensity=v.uv?2.2:0;this.uvTube.material.emissive.setHex(v.uv?0x9b5cff:0);
-    // rangli gaz buluti
-    const gc=v.gas.Cl2?["#cfe65a",v.gas.Cl2]:v.gas.NO?["#b5541c",v.gas.NO*1.5]:null;
-    if(gc){f.cloud.material.color.set(gc[0]);f.cloud.material.opacity=Math.min(.45,gc[1]*2.5);}else f.cloud.material.opacity*=Math.pow(.2,dt);
-    const cr=rIn(P,Math.min(this.H-.01,top+.05));f.cloud.scale.set(cr/.1,1,cr/.1);f.cloud.position.y=Math.min(this.H-.06,top+.06);
-    this.bubbles(dt,v,top,ly,rx);this.particles(dt,v,top,ly);this.steamFx(dt,v,top);
+    // ko'pik: shiddatli gaz ajralganda yuzada yig'iladi
+    const fk=(v.gas.CO2||0)*1.7+(v.gas.O2||0)*1.5+(v.gas.H2||0)*.4;
+    this.foam=Math.max(0,Math.min(1.3,(this.foam||0)+fk*dt*1.5-(this.foam||0)*dt/2.2));
+    const fh=top>.003?Math.min(.08,this.foam*.055):0;
+    if(Math.abs(fh-this.foamH)>.0015||Math.abs(top-(this.foamTop||0))>.002){this.foamH=fh;this.foamTop=top;f.foam.geometry.dispose();f.foam.geometry=fh>.002?lathe(P,top,Math.min(this.H+.02,top+fh),32):new THREE.BufferGeometry();}
+    this.foamOver=fh>0&&top+fh>this.H-.004&&this.foam>.45;
+    // rangli gazlar, bug'lar va hid
+    const mouth=this.vg.position.clone().add(new THREE.Vector3(0,this.H+.01,0)),E=this.efx;
+    if(this.vg.visible){
+      if(v.gas.Cl2)E.fume(mouth,0xcbe25a,v.gas.Cl2*30*dt);
+      if(v.gas.NO)E.fume(mouth,0xa5491c,v.gas.NO*45*dt);
+      if(v.vap&&v.vap.br2)E.fume(mouth,0xd98a2a,3.5*dt);
+      if(v.vap&&v.vap.i2)E.fume(mouth,0x8a4fd1,3.5*dt);
+      if(v.smell&&v.smell.length&&top>0){this.smT=(this.smT||0)-dt;if(this.smT<=0){this.smT=.9;E.smell(mouth);}}}
+    this.bubbles(dt,v,top,ly,rx);this.particles(dt,v,top,ly);this.steamFx(dt,v,top);E.update(dt);
     const ts=this.tweens;this.tweens=[];const keep=ts.filter(t=>t(dt)!==false);this.tweens=keep.concat(this.tweens);
   }
   makePiece(id){
@@ -408,10 +435,11 @@ class Lab3D{
     if(top>.003){
       let rate=0;for(const g in v.gas)rate+=v.gas[g];rate=Math.min(260,rate*110);
       const boil=v.boil?70:0,tube=v.gasIn?45:0,ec=v.elec?Math.min(60,v.elec.cat*1100):0,ea=v.elec?Math.min(60,v.elec.an*1100):0;
-      const spawn=(n,fn)=>{let k=n*dt;while(k>0&&B.length<200){if(k<1&&Math.random()>k)break;k--;B.push(fn());}};
+      const spawn=(n,fn)=>{let k=n*dt;while(k>0&&B.length<260){if(k<1&&Math.random()>k)break;k--;B.push(fn());}};
       const pc=Object.values(this.pieceMap);
+      const big=rate>110;
       spawn(rate,()=>{let x,z;const fromPiece=pc.length&&Math.random()<.8;if(fromPiece){const o=pc[Math.random()*pc.length|0];x=o.position.x+rr(-.01,.01);z=o.position.z+rr(-.01,.01);}else{const r=rIn(P,ly+.01)*.75*Math.sqrt(Math.random()),a=Math.random()*7;x=Math.cos(a)*r;z=Math.sin(a)*r;}
-        return{x,y:ly+.006,z,r:rr(.0015,.0042),v:rr(.06,.13),w:Math.random()*7};});
+        return{x,y:ly+.006,z,r:big?rr(.0028,.0072):rr(.0015,.0042),v:big?rr(.1,.2):rr(.06,.13),w:Math.random()*7};});
       spawn(boil,()=>{const r=rIn(P,ly+.01)*.7*Math.sqrt(Math.random()),a=Math.random()*7;return{x:Math.cos(a)*r,y:ly+.004,z:Math.sin(a)*r,r:rr(.003,.007),v:rr(.1,.2),w:Math.random()*7};});
       spawn(tube,()=>({x:rx*.6+rr(-.004,.004),y:.01,z:rr(-.004,.004),r:rr(.002,.004),v:rr(.08,.12),w:0}));
       spawn(ec,()=>({x:-rx+rr(-.004,.004),y:rr(.06,top*.9),z:rr(-.004,.004),r:rr(.0012,.0025),v:rr(.05,.09),w:0}));
@@ -421,18 +449,33 @@ class Lab3D{
     for(let i=B.length-1;i>=0;i--){const b=B[i];b.y+=b.v*dt;b.x+=Math.sin(this.time*8+b.w)*.004*dt;if(b.y>=top-.002){B.splice(i,1);popped++;}}
     if(popped&&Math.random()<.5)KL.sfx.bubble();
     const m=f.m,q=f.q,s=f.s,p=f.p;
-    for(let i=0;i<200;i++){if(i<B.length){const b=B[i];p.set(b.x,b.y,b.z);s.setScalar(b.r);m.compose(p,q,s);}else m.makeScale(0,0,0);f.bub.setMatrixAt(i,m);}
+    for(let i=0;i<260;i++){if(i<B.length){const b=B[i];p.set(b.x,b.y,b.z);s.setScalar(b.r);m.compose(p,q,s);}else m.makeScale(0,0,0);f.bub.setMatrixAt(i,m);}
     f.bub.instanceMatrix.needsUpdate=true;
   }
   particles(dt,v,top,ly){
-    const f=this.fx,Pp=f.Pp,P=this.prof;
-    if(this.pptQ&&this.pptQ.length&&top>.003){this.pptQ.forEach(([id,n])=>{const S=KL.SOLIDS[id];if(!S||S.kind==="dep"||S.kind==="mirror"||S.kind==="res")return;
-      const c=new THREE.Color(S.c);let k=Math.min(50,Math.ceil(n*70));while(k-->0&&Pp.length<160){const y=rr(ly+.01,top),r=rIn(P,y)*.8*Math.sqrt(Math.random()),a=Math.random()*7;Pp.push({x:Math.cos(a)*r,y,z:Math.sin(a)*r,v:rr(.015,.04),s:rr(.0015,.003),c});}});}
+    const f=this.fx,P=this.prof;
+    if(this.pptQ&&this.pptQ.length&&top>.003){this.pptQ.forEach(([id,n])=>{const S=KL.SOLIDS[id];if(!S)return;const F=FORMS[S.form||"cryst"];if(!F)return;
+      const c=new THREE.Color(S.c);let k=Math.min(F.cap,Math.ceil(n*F.n));
+      const C=CLOUD[S.form||"cryst"];if(C&&this.vg.visible){const cn=Math.min(C[0]*1.6,Math.ceil(C[0]*Math.min(1.5,n*1.4))),o=this.vg.position;
+        for(let j=0;j<cn;j++){const y=rr(ly+.01,top-.006),r=rIn(P,y)*.62*Math.sqrt(Math.random()),a=Math.random()*7;
+          this.efx.spawn({col:S.c,pos:new THREE.Vector3(o.x+Math.cos(a)*r,o.y+y,o.z+Math.sin(a)*r),vel:new THREE.Vector3(rr(-.004,.004),-rr(.004,.016),rr(-.004,.004)),life:rr(C[2]*.6,C[2]),size:rr(.035,.065)*(this.type==="probirka"?.55:1),grow:.012,op:C[1],ro:2,fin:.3});}}
+      const sc=this.type==="probirka"?.6:1;
+      while(k-->0&&f.Pp.length<400){const y=rr(ly+.01,top),r=rIn(P,y)*.8*Math.sqrt(Math.random()),a=Math.random()*7;
+        const irr=F.m==="gel"||F.clump;
+        const q={x:Math.cos(a)*r,y,z:Math.sin(a)*r,v:rr(F.v[0],F.v[1]),s:rr(F.s[0],F.s[1])*sc,c,m:F.m,id,cl:F.clump,w:Math.random()*7,kx:irr?rr(.75,1.6):1,ky:irr?rr(.45,1):1,kz:irr?rr(.75,1.5):1};f.Pp.push(q);
+        if(F.clump){for(let j=0;j<3&&k>0;j++,k--)f.Pp.push(Object.assign({},q,{x:q.x+rr(-.005,.005),y:q.y+rr(-.004,.004),z:q.z+rr(-.005,.005),s:q.s*rr(.5,1),kx:rr(.7,1.5),ky:rr(.5,1),kz:rr(.7,1.4)}));}}});}
     this.pptQ=[];
-    for(let i=Pp.length-1;i>=0;i--){const q=Pp[i];q.y-=q.v*dt;if(q.y<=ly+.002)Pp.splice(i,1);}
-    const m=f.m,s=f.s,p=f.p,q=f.q;
-    for(let i=0;i<160;i++){if(i<Pp.length){const a=Pp[i];p.set(a.x,a.y,a.z);s.setScalar(a.s);m.compose(p,q,s);f.ppt.setColorAt(i,a.c);}else m.makeScale(0,0,0);f.ppt.setMatrixAt(i,m);}
-    f.ppt.instanceMatrix.needsUpdate=true;if(f.ppt.instanceColor)f.ppt.instanceColor.needsUpdate=true;
+    for(let i=f.Pp.length-1;i>=0;i--){const q=f.Pp[i];q.y-=q.v*dt;
+      if(q.m==="gel"){q.x+=Math.sin(this.time*1.5+q.w)*.004*dt;q.z+=Math.cos(this.time*1.3+q.w)*.004*dt;}
+      if(q.y<=ly+.002){if(q.cl&&f.L.length<140)f.L.push({x:q.x,z:q.z,s:q.s*1.35,c:q.c,id:q.id,w:q.w,kx:q.kx,ky:q.ky*.8,kz:q.kz});f.Pp.splice(i,1);}}
+    if(f.L.length){const have=new Set(v.layers.map(l=>l.id));f.L=f.L.filter(l=>have.has(l.id));}
+    const m=f.m,s=f.s,p=f.p,q=f.q,e=new THREE.Euler();
+    const fill=(mesh,list,cap,rot)=>{let n=0;for(const a of list){if(n>=cap)break;p.set(a.x,a.y,a.z);s.set(a.s*(a.kx||1),a.s*(a.ky||1),a.s*(a.kz||1));if(rot){e.set(this.time*2.5+a.w,a.w,this.time+a.w);q.setFromEuler(e);}else q.identity();
+        m.compose(p,q,s);mesh.setMatrixAt(n,m);mesh.setColorAt(n,a.c);n++;}
+      for(let i=n;i<cap;i++){m.makeScale(0,0,0);mesh.setMatrixAt(i,m);}mesh.instanceMatrix.needsUpdate=true;if(mesh.instanceColor)mesh.instanceColor.needsUpdate=true;};
+    fill(f.pO,f.Pp.filter(a=>a.m==="o"),240,false);fill(f.pG,f.Pp.filter(a=>a.m==="gel"),100,false);fill(f.pS,f.Pp.filter(a=>a.m==="gl"),90,true);
+    fill(f.lumps,f.L.map(l=>({x:l.x,y:ly+l.s*.3,z:l.z,s:l.s,c:l.c,w:l.w,kx:l.kx,ky:l.ky,kz:l.kz})),140,false);
+    q.identity();f.pS.material.emissiveIntensity=.55+Math.sin(this.time*9)*.45;
   }
   steamFx(dt,v,top){
     const n=v.boil?14:v.T>70&&top>0?(v.T-70)/30*6:v.heat&&top===0&&v.T>150?3:0;
@@ -453,8 +496,9 @@ class Lab3D{
     const mouth=new THREE.Vector3();
     this.tweens.push(dt=>{
       t+=dt;if(t>D[phase]){t-=D[phase];phase++;}
-      if(phase>=5){b.position.copy(from);b.rotation.set(0,0,0);this.stream(false);this.nextPour();return false;}
-      const k=ease(Math.min(1,t/D[phase]));
+      const hh=this.player.userData.h;
+      if(phase>=5){b.position.copy(from);b.rotation.set(0,0,0);this.stream(false);hh.reach=0;this.nextPour();return false;}
+      const k=ease(Math.min(1,t/D[phase]));hh.reach=phase===0?k*.8:phase<3?.8+.2*Math.min(1,phase+k-1):phase===3?1-k*.4:.6*(1-k);
       if(phase===0){b.position.lerpVectors(from,to,k);b.position.y+=Math.sin(k*Math.PI)*.35;}
       if(phase===1)b.rotation.z=tilt*k;
       if(phase===2){b.rotation.z=tilt;if(!poured){poured=true;onPour();}mouth.set(0,h+.04,0);b.localToWorld(mouth);this.stream(true,mouth,s);}
@@ -473,18 +517,113 @@ class Lab3D{
     const len=from.distanceTo(end);m.position.lerpVectors(from,end,.5);m.scale.set(1,len,1);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),from.clone().sub(end).normalize());
   }
   /* ---------- kamera va boshqaruv ---------- */
-  focus(on){
-    const was=this.mode;this.mode=on?"orbit":"walk";if(was===this.mode)return;
-    this.camFrom={p:this.cam.position.clone(),q:this.cam.quaternion.clone(),t:0};
-    if(!on)this.benchPose();
-    else{const tall=this.w/this.h<.8;this.orb.yaw=Math.atan2(this.cam.position.x-VX,this.cam.position.z-VZ)*.3;this.orb.dist=(this.type==="probirka"?.62:.82)*(tall?1.25:1);this.orb.pitch=.3;}
-  }
-  benchPose(){const tall=this.w/this.h<.8;this.P.x=VX;this.P.z=VZ+(tall?1.55:1.2);this.P.yaw=0;this.P.pitch=tall?-.36:-.42;}
-  goBench(){this.mode="walk";this.camFrom={p:this.cam.position.clone(),q:this.cam.quaternion.clone(),t:0};this.benchPose();}
-  // idish va orqasidagi reaktivlar polkasini birga ko'rsatish (telefonda panel ochilganda)
-  showRack(){if(this.mode!=="orbit"){this.camFrom={p:this.cam.position.clone(),q:this.cam.quaternion.clone(),t:0};this.mode="orbit";}this.orb.yaw=0;this.orb.pitch=.42;this.orb.dist=this.w/this.h<.8?1.75:1.35;}
-  goHanger(){this.mode="walk";this.camFrom={p:this.cam.position.clone(),q:this.cam.quaternion.clone(),t:0};this.P.x=-5.6;this.P.z=4.1;this.P.yaw=1.2;this.P.pitch=-.18;}
+  /* ---------- harakat: o'quvchi (3-shaxs), yo'l topish, o'qituvchi ---------- */
   ok(x,z){return x>-7.6&&x<7&&z>-5.6&&z<5.6&&!this.colliders.some(w=>x>w[0]-.22&&x<w[1]+.22&&z>w[2]-.22&&z<w[3]+.22);}
+  navBuild(){const C=.25,X0=-8,Z0=-6,NX=64,NZ=48,b=new Uint8Array(NX*NZ);
+    for(let j=0;j<NZ;j++)for(let i=0;i<NX;i++)b[j*NX+i]=this.ok(X0+(i+.5)*C,Z0+(j+.5)*C)?0:1;this.nav={C,X0,Z0,NX,NZ,b};}
+  los(x0,z0,x1,z1){const d=Math.hypot(x1-x0,z1-z0),n=Math.max(1,Math.ceil(d/.1));for(let i=1;i<=n;i++){const t=i/n;if(!this.ok(x0+(x1-x0)*t,z0+(z1-z0)*t))return false;}return true;}
+  // A* qidiruvi (0,25 m katakli to'r) + ko'rinish chizig'i bo'yicha to'g'rilash
+  findPath(x0,z0,x1,z1){
+    if(this.ok(x1,z1)&&this.los(x0,z0,x1,z1))return[{x:x1,z:z1}];
+    const n=this.nav,NX=n.NX,NZ=n.NZ,idx=(i,j)=>j*NX+i,free=(i,j)=>i>=0&&j>=0&&i<NX&&j<NZ&&!n.b[idx(i,j)];
+    const cell=(x,z)=>[Math.floor((x-n.X0)/n.C),Math.floor((z-n.Z0)/n.C)];
+    const near=([i,j])=>{if(free(i,j))return[i,j];for(let r=1;r<8;r++)for(let a=-r;a<=r;a++)for(const[b,c]of[[a,-r],[a,r],[-r,a],[r,a]])if(free(i+b,j+c))return[i+b,j+c];return null;};
+    const S=near(cell(x0,z0)),T=near(cell(x1,z1));if(!S||!T)return null;
+    const N=NX*NZ,g=new Float32Array(N).fill(1e9),from=new Int32Array(N).fill(-1),closed=new Uint8Array(N),H=[];
+    const push=(k,f)=>{H.push([f,k]);let i=H.length-1;while(i>0){const q=(i-1)>>1;if(H[q][0]<=H[i][0])break;[H[q],H[i]]=[H[i],H[q]];i=q;}};
+    const pop=()=>{const t=H[0],l=H.pop();if(H.length){H[0]=l;let i=0;for(;;){const a=2*i+1,b=a+1;let m=i;if(a<H.length&&H[a][0]<H[m][0])m=a;if(b<H.length&&H[b][0]<H[m][0])m=b;if(m===i)break;[H[m],H[i]]=[H[i],H[m]];i=m;}}return t;};
+    const s0=idx(S[0],S[1]),t0=idx(T[0],T[1]);g[s0]=0;push(s0,0);
+    while(H.length){const k=pop()[1];if(closed[k])continue;closed[k]=1;if(k===t0)break;const i=k%NX,j=(k/NX)|0;
+      for(let di=-1;di<=1;di++)for(let dj=-1;dj<=1;dj++){if(!di&&!dj)continue;const a=i+di,b=j+dj;if(!free(a,b))continue;if(di&&dj&&(!free(i+di,j)||!free(i,j+dj)))continue;
+        const kk=idx(a,b),ng=g[k]+(di&&dj?1.414:1);if(ng<g[kk]){g[kk]=ng;from[kk]=k;push(kk,ng+Math.hypot(a-T[0],b-T[1]));}}}
+    if(t0!==s0&&from[t0]<0)return null;
+    const pts=[];for(let k=t0;k!==-1&&k!==s0;k=from[k])pts.push({x:n.X0+((k%NX)+.5)*n.C,z:n.Z0+(((k/NX)|0)+.5)*n.C});
+    pts.reverse();if(this.ok(x1,z1))pts.push({x:x1,z:z1});if(!pts.length)return null;
+    const out=[];let cx=x0,cz=z0,i=0;
+    while(i<pts.length){let j=pts.length-1;while(j>i&&!this.los(cx,cz,pts[j].x,pts[j].z))j--;out.push(pts[j]);cx=pts[j].x;cz=pts[j].z;i=j+1;}
+    return out;
+  }
+  benchSpot(){return{x:VX-.42,z:VZ+.86,rot:Math.PI};}
+  nearBench(){const b=this.benchSpot();return Math.hypot(this.pl.x-b.x,this.pl.z-b.z)<1.05;}
+  hangerSpot(){return{x:-6.4,z:4.05};}
+  nearHanger(){const h=this.hangerSpot();return Math.hypot(this.pl.x-h.x,this.pl.z-h.z)<1.3;}
+  walkTo(x,z,cb){const p=this.findPath(this.pl.x,this.pl.z,x,z);if(!p){this.pl.x=x;this.pl.z=z;cb&&cb();return false;}
+    this.pl.path=p;this.pl.cb=cb||null;if(this.mode!=="follow"){this.toFollow();}return true;}
+  toFollow(){if(this.mode==="follow")return;this.camO.yaw=Math.atan2(this.cam.position.x-this.pl.x,this.cam.position.z-this.pl.z);this.camO.pitch=Math.max(.18,Math.min(.8,this.camO.pitch));this.mode="follow";this.player.visible=true;this.rackMode=false;}
+  goBench(cb){const b=this.benchSpot();
+    const arrive=()=>{this.pl.x=b.x;this.pl.z=b.z;this.pl.rot=b.rot;this.pl.path=null;if(this.mode!=="orbit"){this.mode="bench";this.player.visible=true;}this.cb.onMode&&this.cb.onMode();cb&&cb();};
+    if(Math.hypot(this.pl.x-b.x,this.pl.z-b.z)<.3){arrive();return;}
+    if(this.mode==="orbit")this.toFollow();
+    if(!this.walkTo(b.x,b.z,arrive))arrive();this.cb.onMode&&this.cb.onMode();}
+  goHanger(cb){const h=this.hangerSpot();
+    const arrive=()=>{this.pl.rot=Math.atan2(-7.25-this.pl.x,4.75-this.pl.z);this.camO.yaw=this.pl.rot+Math.PI;cb&&cb();};
+    if(this.nearHanger()&&this.mode!=="orbit"){this.toFollow();arrive();return;}
+    this.toFollow();this.walkTo(h.x,h.z,arrive);}
+  focus(on){
+    if(on){if(this.mode==="orbit")return;this.mode="orbit";this.player.visible=false;const tall=this.w/this.h<.8;this.orb.yaw=0;this.orb.pitch=.3;this.orb.dist=(this.type==="probirka"?.62:.82)*(tall?1.25:1);}
+    else{if(this.mode!=="orbit")return;this.rackMode=false;this.player.visible=true;if(this.nearBench()){const b=this.benchSpot();this.pl.x=b.x;this.pl.z=b.z;this.pl.rot=b.rot;this.mode="bench";}else this.toFollow();}
+  }
+  showRack(){if(this.mode!=="orbit"){this.mode="orbit";this.player.visible=false;}this.rackMode=true;this.orb.yaw=0;this.orb.pitch=.42;this.orb.dist=this.w/this.h<.8?1.75:1.35;}
+  unRack(){if(this.rackMode)this.focus(false);}
+  // idishga yaqindan qarash (javon ko'rinishidan ham)
+  focusVessel(){if(this.mode==="orbit"&&!this.rackMode)return;if(this.rackMode){this.rackMode=false;this.mode="bench";}this.focus(true);}
+  move(dt,jv){
+    const k=this.keys,pl=this.pl;let ix=jv?jv.x:0,iy=jv?jv.y:0;
+    if(k.w||k.arrowup||k["ц"])iy-=1;if(k.s||k.arrowdown||k["ы"])iy+=1;if(k.a||k.arrowleft||k["ф"])ix-=1;if(k.d||k.arrowright||k["в"])ix+=1;
+    const mag=Math.min(1,Math.hypot(ix,iy));let mx=0,mz=0,spd=0;
+    if(mag>.08){
+      if(this.mode!=="follow"){this.toFollow();this.cb.onMode&&this.cb.onMode();}
+      pl.path=null;pl.cb=null;
+      // kameraga nisbatan yo'nalish: joystik yuqoriga — kamera qaragan tomonga
+      const y=this.camO.yaw,fx=-Math.sin(y),fz=-Math.cos(y);
+      mx=fx*(-iy)-fz*ix;mz=fz*(-iy)+fx*ix;const L=Math.hypot(mx,mz)||1;mx/=L;mz/=L;
+      spd=(k.shift||mag>.93?3.3:1.7)*Math.max(.4,mag);
+    }else if(pl.path&&pl.path.length){
+      const w=pl.path[0],dx=w.x-pl.x,dz=w.z-pl.z,d=Math.hypot(dx,dz);
+      if(d<.1){pl.path.shift();if(!pl.path.length){pl.path=null;const cb=pl.cb;pl.cb=null;cb&&cb();}}
+      else{mx=dx/d;mz=dz/d;spd=Math.min(3,d*4+.8);}
+    }
+    if(spd>0){const nx=pl.x+mx*spd*dt,nz=pl.z+mz*spd*dt;let moved=false;
+      if(this.ok(nx,pl.z)){pl.x=nx;moved=true;}if(this.ok(pl.x,nz)){pl.z=nz;moved=true;}
+      if(!moved&&pl.path){pl.path=null;pl.cb=null;}
+      pl.rot=lerpA(pl.rot,Math.atan2(mx,mz),Math.min(1,dt*10));}
+    pl.spd+=(spd-pl.spd)*Math.min(1,dt*9);
+    // kamera asta-sekin o'quvchining orqasiga o'tadi (GTA uslubi)
+    if(this.mode==="follow"&&pl.spd>.4&&this.time-this.camO.drag>1.3)this.camO.yaw=lerpA(this.camO.yaw,pl.rot+Math.PI,Math.min(1,dt*(pl.path?2.2:1.5)));
+    this.player.position.set(pl.x,0,pl.z);this.player.rotation.y=pl.rot;KL.animHuman(this.player,dt,pl.spd);
+    this.tchUpdate(dt);
+  }
+  tchUpdate(dt){const t=this.tch;let spd=0;
+    if(t.path&&t.path.length){const w=t.path[0],dx=w.x-t.x,dz=w.z-t.z,d=Math.hypot(dx,dz);
+      if(d<.1){t.path.shift();if(!t.path.length){t.path=null;const cb=t.cb;t.cb=null;cb&&cb();}}
+      else{const v=t.fast?3.2:1.5;t.x+=dx/d*Math.min(d,v*dt);t.z+=dz/d*Math.min(d,v*dt);t.rot=lerpA(t.rot,Math.atan2(dx,dz),Math.min(1,dt*10));spd=v;}}
+    else t.rot=lerpA(t.rot,Math.atan2(this.pl.x-t.x,this.pl.z-t.z),Math.min(1,dt*2));
+    t.spd+=(spd-t.spd)*Math.min(1,dt*8);
+    this.teacher.position.set(t.x,0,t.z);this.teacher.rotation.y=t.rot;KL.animHuman(this.teacher,dt,t.spd);}
+  teacherTo(x,z,fast,cb){const p=this.findPath(this.tch.x,this.tch.z,x,z);this.tch.fast=fast;if(p){this.tch.path=p;this.tch.cb=cb||null;}else{this.tch.x=x;this.tch.z=z;cb&&cb();}}
+  teacherHelp(){const b=this.benchSpot();this.teacherTo(b.x-.85,b.z+.3,true);}
+  teacherHome(){this.teacherTo(-2.4,-4.95,false);}
+  /* ---------- favqulodda holat effektlari ---------- */
+  mouthPos(){return this.vg.position.clone().add(new THREE.Vector3(0,this.H+.01,0));}
+  effect(kind,o){o=o||{};const E=this.efx,m=this.mouthPos(),c=this.vg.position.clone().add(new THREE.Vector3(0,this.H*.5,0)),r=rIn(this.prof,this.H*.5)+.04;
+    if(kind==="explode"){E.explode(c,o.power||1);this.vg.visible=false;}
+    if(kind==="fire")E.startFire(m,Math.max(.03,rIn(this.prof,this.H)*.9),o);
+    if(kind==="splash"){const to=new THREE.Vector3(this.pl.x-m.x,0,this.pl.z-m.z).normalize();E.splash(m,o.col||0xdcecf6,o.n||34,to);}
+    if(kind==="steam")E.steam(m,16);
+    if(kind==="crack"){E.crack(this.glassMat);E.splash(this.vg.position.clone().add(new THREE.Vector3(0,.03,0)),o.col||0xdcecf6,22,null);}
+    if(kind==="gas")E.gasRoom(o.col||0xc8d86a,true);
+    if(kind==="gasClear")E.gasRoom(0,false);
+    if(kind==="blanket"){E.blanket(this.vg.position.clone().add(new THREE.Vector3(0,this.H,0)),r);E.stopFire();}
+    if(kind==="sand"){E.sand(this.vg.position.clone().add(new THREE.Vector3(0,this.H,0)),r);setTimeout(()=>E.stopFire(),900);}
+    if(kind==="spray"){E.sprayAt(new THREE.Vector3(this.tch.x,1.1,this.tch.z),m,1.6);setTimeout(()=>E.stopFire(),1100);}
+    if(kind==="water"){E.splash(m,0xbfe3ff,22,null);E.steam(m,16);E.flare();}
+    if(kind==="flare")E.flare();
+    if(kind==="flinch")this.player.userData.h.flinch=1;
+  }
+  resetFx(){this.efx.clear();this.vg.visible=true;}
+  // rangli eritma qo'shilganda — rang bulut bo'lib pastga tarqaladi, keyin aralashadi
+  plume(col){if(!this.vg.visible)return;const y=Math.max(.014,this.liqH||0),p=this.vg.position.clone().add(new THREE.Vector3(0,y-.006,0));
+    this.efx.plume(p,new THREE.Color(col).getHex(),rIn(this.prof,y)*.7);this.slowCol=2.2;}
   input(){
     const cv=this.canvas,keys=this.keys={};
     addEventListener("keydown",e=>{if(!this.active||/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||""))return;keys[e.key.toLowerCase()]=1;if(["arrowup","arrowdown","arrowleft","arrowright"," "].includes(e.key.toLowerCase()))e.preventDefault();});
@@ -492,47 +631,43 @@ class Lab3D{
     addEventListener("blur",()=>{for(const k in keys)delete keys[k];});
     const pts=new Map();let down=null,pinch=null,hoverT=0;
     cv.addEventListener("pointerdown",e=>{try{cv.setPointerCapture(e.pointerId);}catch(x){}pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
-      if(pts.size===2){const[a,b]=[...pts.values()];const d=Math.hypot(a.x-b.x,a.y-b.y);pinch={d,last:d,dist:this.orb.dist};down=null;}
+      if(pts.size===2){const[a,b]=[...pts.values()];const d=Math.hypot(a.x-b.x,a.y-b.y);pinch={d,dist:this.mode==="orbit"?this.orb.dist:this.camO.dist};down=null;}
       else down={x:e.clientX,y:e.clientY,lx:e.clientX,ly:e.clientY,t:performance.now(),moved:0};});
     cv.addEventListener("pointermove",e=>{
       if(pts.has(e.pointerId))pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
       if(pinch&&pts.size===2){const[a,b]=[...pts.values()];const d=Math.hypot(a.x-b.x,a.y-b.y);
-        if(this.mode==="orbit")this.orb.dist=Math.max(.3,Math.min(2.4,pinch.dist*pinch.d/d));
-        else{const k=(d-pinch.last)*.006;this.tryMove(-Math.sin(this.P.yaw)*k,-Math.cos(this.P.yaw)*k);}
-        pinch.last=d;return;}
+        if(this.mode==="orbit")this.orb.dist=Math.max(.3,Math.min(2.4,pinch.dist*pinch.d/d));else{this.toFollow();this.camO.dist=Math.max(1.3,Math.min(5.5,pinch.dist*pinch.d/d));}return;}
       if(down){const dx=e.clientX-down.lx,dy=e.clientY-down.ly;down.moved+=Math.abs(dx)+Math.abs(dy);down.lx=e.clientX;down.ly=e.clientY;
+        if(down.moved<6)return;
         if(this.mode==="orbit"){this.orb.yaw-=dx*.008;this.orb.pitch=Math.max(-.2,Math.min(1.3,this.orb.pitch+dy*.006));}
-        else{this.P.yaw+=dx*.0045;this.P.pitch=Math.max(-1.2,Math.min(1,this.P.pitch+dy*.0035));}
-        if(down.moved>6)cv.style.cursor="grabbing";return;}
+        else{if(this.mode==="bench"){this.toFollow();this.cb.onMode&&this.cb.onMode();}this.camO.yaw-=dx*.0065;this.camO.pitch=Math.max(-.12,Math.min(1.15,this.camO.pitch+dy*.0045));this.camO.drag=this.time;}
+        cv.style.cursor="grabbing";return;}
       if(e.pointerType==="mouse"){const n=performance.now();if(n-hoverT>70){hoverT=n;this.hover(e);}}
     });
-    const up=e=>{pts.delete(e.pointerId);if(pts.size<2)pinch=null;cv.style.cursor="";const d=down;down=null;
-      if(d&&d.moved<8&&performance.now()-d.t<450)this.tap(e);};
+    const up=e=>{pts.delete(e.pointerId);if(pts.size<2)pinch=null;cv.style.cursor="";const d=down;down=null;if(d&&d.moved<8&&performance.now()-d.t<450)this.tap(e);};
     cv.addEventListener("pointerup",up);cv.addEventListener("pointercancel",e=>{pts.delete(e.pointerId);down=null;pinch=null;});
     cv.addEventListener("pointerleave",()=>this.cb.onHover(null));
-    cv.addEventListener("wheel",e=>{e.preventDefault();if(this.mode==="orbit")this.orb.dist=Math.max(.3,Math.min(2,this.orb.dist*(1+e.deltaY*.0012)));else{const s=-e.deltaY*.0025;this.tryMove(-Math.sin(this.P.yaw)*s,-Math.cos(this.P.yaw)*s);}},{passive:false});
-    cv.addEventListener("dblclick",()=>{if(this.mode==="walk"){this.cb.onPick({type:"vessel",dbl:1});}});
+    cv.addEventListener("wheel",e=>{e.preventDefault();if(this.mode==="orbit")this.orb.dist=Math.max(.3,Math.min(2.4,this.orb.dist*(1+e.deltaY*.0012)));else{this.toFollow();this.camO.dist=Math.max(1.3,Math.min(5.5,this.camO.dist*(1+e.deltaY*.001)));}},{passive:false});
     this.ray=new THREE.Raycaster();
   }
   rayAt(e){const b=this.canvas.getBoundingClientRect();this.ray.setFromCamera(new THREE.Vector2((e.clientX-b.left)/b.width*2-1,-((e.clientY-b.top)/b.height*2-1)),this.cam);
     const vis=o=>{while(o){if(!o.visible)return false;o=o.parent;}return true;};
-    const h=this.ray.intersectObjects(this.inter,true).find(x=>x.distance<9&&vis(x.object));
+    const h=this.ray.intersectObjects(this.inter,true).find(x=>x.distance<12&&vis(x.object));
     if(!h)return null;let o=h.object;while(!o.userData.pick)o=o.parent;return{pick:o.userData.pick,obj:o,dist:h.distance};}
-  tap(e){const h=this.rayAt(e);if(h)this.cb.onPick(h.pick,h);}
+  tap(e){
+    const h=this.rayAt(e);if(h){this.cb.onPick(h.pick,h);return;}
+    if(this.mode==="orbit")return;
+    // polga bosilsa — o'sha joyga yuradi; stol yoniga bosilsa — stolga
+    const r=this.ray.ray;if(r.direction.y>-.02)return;const t=-r.origin.y/r.direction.y,x=r.origin.x+r.direction.x*t,z=r.origin.z+r.direction.z*t;
+    if(Math.abs(x)<2.6&&z<-1.3&&z>-3.7){this.goBench();return;}
+    if(!this.ok(x,z))return;
+    if(this.walkTo(x,z,null)){this.efx.spawn({map:this.efx.T.ring,col:0x4fd1c5,pos:new THREE.Vector3(x,.03,z),size:.12,grow:.8,life:.55,op:.9,fin:.05});this.cb.onMode&&this.cb.onMode();}
+  }
   hover(e){
     const h=this.rayAt(e);const id=h&&h.pick.type==="bottle"?h.pick.id:null;
-    if(this.hl&&this.hl!==id){const b=this.bottles[this.hl];if(b&&b.userData.body)b.userData.body.material.emissive&&b.userData.body.material.emissive.setHex(0);this.hl=null;}
+    if(this.hl&&this.hl!==id){const b=this.bottles[this.hl];if(b&&b.userData.body&&b.userData.body.material.emissive)b.userData.body.material.emissive.setHex(0);this.hl=null;}
     if(id&&this.hl!==id){const b=this.bottles[id];if(b.userData.body.material.emissive)b.userData.body.material.emissive.setHex(0x334455);this.hl=id;}
     this.canvas.style.cursor=h?"pointer":"";this.cb.onHover(h?h.pick:null,e.clientX,e.clientY);
-  }
-  tryMove(dx,dz){if(this.ok(this.P.x+dx,this.P.z))this.P.x+=dx;if(this.ok(this.P.x,this.P.z+dz))this.P.z+=dz;}
-  move(dt,jv){
-    const k=this.keys;let fx=-(jv?jv.y:0),sx=jv?jv.x:0;
-    if(k.w||k.arrowup||k["ц"])fx+=1;if(k.s||k.arrowdown||k["ы"])fx-=1;if(k.d||k["в"])sx+=1;if(k.a||k["ф"])sx-=1;
-    if(k.arrowleft)this.P.yaw+=dt*1.7;if(k.arrowright)this.P.yaw-=dt*1.7;
-    if(this.mode==="orbit"){if(fx||sx){if(Math.abs(fx)>.3||Math.abs(sx)>.3){this.focus(false);this.cb.onMode&&this.cb.onMode("walk");}}return;}
-    const sp=(k.shift?3.6:2.3)*dt,c=Math.cos(this.P.yaw),s=Math.sin(this.P.yaw);
-    this.tryMove((-s*fx+c*sx)*sp,(-c*fx-s*sx)*sp);
   }
   resize(){const w=this.host.clientWidth,h=this.host.clientHeight;if(!w||!h)return;this.r.setSize(w,h,false);const asp=w/h;this.cam.aspect=asp;
     // tik ekranda gorizontal ko'rish burchagi juda tor bo'lmasligi uchun
@@ -540,19 +675,20 @@ class Lab3D{
     this.cam.updateProjectionMatrix();this.w=w;this.h=h;}
   setSheet(px,right){this.sheet=px||0;this.sideOff=right||0;}
   render(dt){
-    const cam=this.cam;
-    if(this.mode==="orbit"){const o=this.orb,t=this.target;const p=new THREE.Vector3(t.x+Math.sin(o.yaw)*Math.cos(o.pitch)*o.dist,t.y+Math.sin(o.pitch)*o.dist,t.z+Math.cos(o.yaw)*Math.cos(o.pitch)*o.dist);
-      this.goal={p,look:t};}
-    else{const P=this.P;this.goal={p:new THREE.Vector3(P.x,1.6,P.z),yaw:P.yaw,pitch:P.pitch};}
-    const g=this.goal;let q;
-    if(g.look){const m=new THREE.Matrix4().lookAt(g.p,g.look,new THREE.Vector3(0,1,0));q=new THREE.Quaternion().setFromRotationMatrix(m);}
-    else q=new THREE.Quaternion().setFromEuler(new THREE.Euler(g.pitch,g.yaw,0,"YXZ"));
-    if(this.camFrom){const f=this.camFrom;f.t+=dt/.7;const k=ease(Math.min(1,f.t));cam.position.lerpVectors(f.p,g.p,k);cam.quaternion.slerpQuaternions(f.q,q,k);if(f.t>=1)this.camFrom=null;}
-    else{cam.position.copy(g.p);cam.quaternion.copy(q);}
+    const cam=this.cam,pl=this.pl;let pos,look;
+    if(this.mode==="orbit"){const o=this.orb,t=this.target;pos=new THREE.Vector3(t.x+Math.sin(o.yaw)*Math.cos(o.pitch)*o.dist,t.y+Math.sin(o.pitch)*o.dist,t.z+Math.cos(o.yaw)*Math.cos(o.pitch)*o.dist);look=t.clone();}
+    // stol oldida: yelka ortidan yaqin kadr — idish markazda va yirik, o'quvchining boshi va qo'li chap chetda
+    else if(this.mode==="bench"){const tall=this.w/this.h<.8,fx=Math.sin(pl.rot),fz=Math.cos(pl.rot),sd=tall?.46:.64,bk=tall?.92:.8;
+      pos=new THREE.Vector3(pl.x-fz*sd-fx*bk,tall?2.08:2,pl.z+fx*sd-fz*bk);look=new THREE.Vector3(VX+.02,BASE[this.type]+this.H*.42,VZ-.12);}
+    else{const o=this.camO,t=new THREE.Vector3(pl.x,1.45,pl.z);
+      pos=new THREE.Vector3(t.x+Math.sin(o.yaw)*Math.cos(o.pitch)*o.dist,t.y+Math.sin(o.pitch)*o.dist,t.z+Math.cos(o.yaw)*Math.cos(o.pitch)*o.dist);
+      pos.x=Math.max(-7.75,Math.min(7.75,pos.x));pos.z=Math.max(-5.75,Math.min(5.75,pos.z));pos.y=Math.max(.45,Math.min(3.4,pos.y));look=t;}
+    const k=this.camSnap?1:1-Math.exp(-dt*(this.mode==="orbit"?10:7));this.camSnap=false;
+    this.cpos.lerp(pos,k);this.clook.lerp(look,k);cam.position.copy(this.cpos);
+    const sh=this.efx.shake;if(sh)cam.position.add(new THREE.Vector3((Math.random()-.5)*sh*.14,(Math.random()-.5)*sh*.14,(Math.random()-.5)*sh*.14));
+    cam.lookAt(this.clook);
     // panel ochiq bo'lsa, idish panel ortida qolmasligi uchun tasvirni bo'sh tomonga suramiz
     if(this.mode==="orbit"&&(this.sheet>0||this.sideOff>0))cam.setViewOffset(this.w,this.h,this.sideOff*.5,this.sheet*.42,this.w,this.h);else cam.clearViewOffset();
-    // o'qituvchi
-    if(this.teacher){const tp=this.teacher.position,a=Math.atan2(cam.position.x-tp.x,cam.position.z-tp.z);this.teacher.rotation.y+=(Math.max(-1,Math.min(1,a))-this.teacher.rotation.y)*Math.min(1,dt*2);this.tHead.position.y=1.78+Math.sin(this.time*1.6)*.006;}
     if(!this.ct||this.time-this.ct>1){this.ct=this.time;redraw(this.clockT,(c,w,h)=>this.drawClock(c,w,h));}
     this.ft=(this.ft||0)+dt;this.fn=(this.fn||0)+1;
     if(this.fn>=90){const avg=this.ft/this.fn;this.ft=0;this.fn=0;if(avg>1/26&&this.dpr>1){this.dpr=Math.max(1,this.dpr-.25);this.r.setPixelRatio(this.dpr);this.resize();}}

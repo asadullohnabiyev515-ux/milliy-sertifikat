@@ -11,10 +11,11 @@ KL.tabs.lessons={
     el.innerHTML=`<div class="head"><h2>📚 Darslar</h2><p class="sub">Qisqa nazariya va tekshiruv savollari. Barcha savollarga to'g'ri javob bersangiz, dars tugaydi (+20 XP).</p></div>
     <div class="prog big"><i style="width:${n/KL.LESSONS.length*100}%"></i></div><p class="mut">${n} / ${KL.LESSONS.length} dars tugatildi</p><div id="ls" class="acc"></div>`;
     $("#ls").innerHTML=KL.LESSONS.map((l,i)=>`<details class="item" data-l="${l.id}"><summary><span class="num">${i+1}</span><b>${l.t}</b>${S().lessons[l.id]?'<span class="done">✔</span>':""}</summary>
-      <div class="body">${l.h}${l.pr?`<p><button class="btn pri sm" data-pr="${l.pr}">🥼 Laboratoriyada sinab ko'rish</button></p>`:""}<h4>Tekshiruv savollari</h4>
+      <div class="body">${l.h}${l.pr?`<p><button class="btn pri sm" data-pr="${l.pr}">🥼 Laboratoriyada sinab ko'rish</button></p>`:""}${l.drill?`<p><button class="btn pri sm" data-drill>🚨 Favqulodda holat mashqi</button></p>`:""}<h4>Tekshiruv savollari</h4>
       ${l.q.map((q,qi)=>`<div class="qq"><p><b>${qi+1}.</b> ${q[0]}</p><div class="opts">${KL.shuffle([q[1],...q[2]]).map(o=>`<button class="opt" data-q="${qi}" data-o="${KL.esc(o)}">${o}</button>`).join("")}</div></div>`).join("")}</div></details>`).join("");
     $("#ls").onclick=e=>{
       const p=e.target.closest("[data-pr]");if(p){KL.go("lab",{practical:p.dataset.pr});return;}
+      if(e.target.closest("[data-drill]")){KL.go("lab");setTimeout(()=>KL.safety&&KL.safety.drill(),900);return;}
       const b=e.target.closest(".opt");if(!b)return;const d=b.closest("[data-l]"),L=KL.LESSONS.find(x=>x.id===d.dataset.l),qi=+b.dataset.q,q=L.q[qi];
       if(b.closest(".opts").dataset.done)return;
       if(b.dataset.o===q[1]){b.classList.add("ok");b.closest(".opts").dataset.done=1;KL.sfx.ding();(this.ok[L.id]=this.ok[L.id]||new Set).add(qi);KL.addXP(3);
