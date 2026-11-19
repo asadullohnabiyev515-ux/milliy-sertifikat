@@ -3,7 +3,7 @@
 Virtual kimyo laboratoriyasi (statik sayt, yig'ishsiz ishlaydi). GitHub Pages orqali `/kimyolab/` manzilida ochiladi.
 
 ## Bo'limlar
-- **Laboratoriya** — 3D xona: yurish, reaktivlar shkafi (58 reaktiv), himoya kiyimlari, stoldagi jonli idish (probirka / stakan / kolba), spirtovka, elektroliz, UV lampa, kuzatuvlar jurnali va «Ustoz» yordamchisi.
+- **Laboratoriya** — 3D xona: yurish, tajriba stoli ustidagi 4 pog'onali reaktivlar polkasi (58 reaktiv), himoya kiyimlari, stoldagi jonli idish (probirka / stakan / kolba), spirtovka, elektroliz, UV lampa, kuzatuvlar jurnali va «Ustoz» yordamchisi.
 - **Amaliyot** — darslik bo'yicha 14 ta amaliy ish; har bir qadam laboratoriyada avtomatik tekshiriladi.
 - **Davriy jadval** — 118 element, 5 xil ranglash rejimi, Bor modeli, elektron formula, oksidlanish darajalari, viktorina.
 - **Molekulalar** — z-matritsa asosida qurilgan 39 ta 3D tuzilma (shar-tayoqcha va fazoviy model).

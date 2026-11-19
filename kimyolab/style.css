@@ -6,7 +6,7 @@
 html,body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
 body{min-height:100vh;overflow-x:hidden}
 button,input,select{font:inherit;color:inherit}
-button{cursor:pointer}
+button{cursor:pointer;touch-action:manipulation}
 button:disabled{opacity:.45;cursor:default}
 a{color:var(--acc)}
 sub,sup{font-size:.68em;line-height:0}
@@ -65,7 +65,7 @@ label{display:inline-flex;align-items:center;gap:5px;color:var(--mut)}label inpu
 .empty{padding:20px;text-align:center;color:var(--mut);background:var(--panel);border-radius:var(--r)}
 .flash{animation:flash 1.2s 2}@keyframes flash{50%{box-shadow:0 0 0 3px var(--gold)}}
 /* laboratoriya sahnasi */
-.scene{position:relative;height:calc(100vh - var(--hdr));height:calc(100dvh - var(--hdr));min-height:440px;overflow:hidden;background:#cfd8e0;touch-action:none;user-select:none;-webkit-user-select:none}
+.scene{-webkit-touch-callout:none;position:relative;height:calc(100vh - var(--hdr));height:calc(100dvh - var(--hdr));min-height:440px;overflow:hidden;background:#cfd8e0;touch-action:none;user-select:none;-webkit-user-select:none}
 .scene canvas.gl{position:absolute;inset:0;width:100%;height:100%;display:block}
 .scene.no3d{background:var(--bg2)}
 .glass{background:rgba(17,26,38,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(120,150,180,.25);border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.25)}
@@ -78,6 +78,7 @@ label{display:inline-flex;align-items:center;gap:5px;color:var(--mut)}label inpu
 #gearBtn span{opacity:.3;filter:grayscale(1);transition:.2s}#gearBtn span.on{opacity:1;filter:none}
 .hud-b{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:8px;z-index:4}
 .hud-b .btn{background:rgba(17,26,38,.86);color:var(--tx);padding:10px 15px;font-weight:600;border-color:rgba(120,150,180,.3)}
+.hud-b .btn i{font-style:normal}.hud-b .m{display:none}
 .hud-b .btn.on{border-color:var(--acc);color:var(--acc)}
 .joy{position:absolute;left:18px;bottom:76px;width:112px;height:112px;border-radius:50%;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);z-index:4;touch-action:none}
 .joy i{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:rgba(255,255,255,.75);box-shadow:0 2px 8px rgba(0,0,0,.25);pointer-events:none}
@@ -93,7 +94,11 @@ label{display:inline-flex;align-items:center;gap:5px;color:var(--mut)}label inpu
 .panel.open{display:block;animation:slide .25s}
 @keyframes slide{from{opacity:0;transform:translateX(16px)}}
 .panel header{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;padding:12px 0 8px;background:rgba(17,26,38,.98);z-index:1}
-.panel header h3{margin:0}.panel .x{border:0;background:var(--panel2);border-radius:9px;width:32px;height:32px;color:var(--mut)}
+.panel header h3{margin:0}.grip{display:none}
+.btn.wide{width:100%;margin:8px 0}
+#rgl .chips,#rgr .chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr))}
+.gf{margin:8px 0 2px}.gf .chip{padding:5px 10px}
+.chip.tap{animation:tap .45s}@keyframes tap{40%{transform:scale(.94);border-color:var(--acc);background:rgba(79,209,197,.18)}}.panel .x{border:0;background:var(--panel2);border-radius:9px;width:32px;height:32px;color:var(--mut)}
 .panel h4{margin:14px 0 6px}
 .chip.rg{flex-direction:column;align-items:flex-start;gap:0;padding:6px 10px;border-radius:12px;position:relative;line-height:1.25}
 .chip.rg b{font-size:14px}.chip.rg small{color:var(--mut);font-size:11.5px}.chip.rg .hz{position:absolute;top:3px;right:6px;font-size:11px}
@@ -191,20 +196,35 @@ details.item .body{padding:4px 18px 16px}.body ul{padding-left:20px}.body li{mar
 @media (max-width:1100px){.tabs em{display:none}.tabs button{padding:8px 10px;font-size:18px}}
 @media (max-width:760px){
   :root{--hdr:52px}
-  .topbar{padding:0 8px;gap:6px}.brand span:last-child{display:none}.player .xpw{display:none}
+  .topbar{padding:0 6px;gap:4px}.brand span:last-child{display:none}.player .xpw,.player>b,.player>small{display:none}.me{gap:4px}.me .hbtn{height:34px;min-width:34px;padding:0 6px}
+  .tabs button{padding:7px 8px}
   .page{padding:14px 12px 50px}
   .scene{min-height:380px}
   .hud-tl{max-width:calc(100% - 150px)}.task{font-size:12.5px;padding:8px 10px}
   .hud-tr .lbl{display:none}.hud-tr .hbtn{height:34px;min-width:34px;font-size:14px;padding:0 7px}
-  .hud-b{left:8px;right:8px;transform:none;justify-content:center;bottom:10px;gap:5px}.hud-b .btn{padding:9px 11px;font-size:13px}.hud-b .btn span{display:none}
-  .joy{bottom:70px;width:100px;height:100px}
-  .pop{top:auto;bottom:66px;width:calc(100% - 20px);min-width:0}
-  .panel{top:auto;bottom:0;left:0;right:0;width:auto;height:56%;border-radius:18px 18px 0 0;border-bottom:0}
+  .hud-b{left:8px;right:8px;transform:none;justify-content:center;bottom:8px;gap:6px}
+  .hud-b .btn{flex-direction:column;gap:1px;min-width:72px;padding:6px 8px 5px;font-size:11px;font-weight:600;border-radius:14px}.hud-b .btn i{font-size:19px;line-height:1.1}.hud-b .l{display:none}.hud-b .m{display:block}
+  .joy{bottom:78px;width:104px;height:104px}
+  .pop{top:auto;bottom:74px;width:calc(100% - 20px);min-width:0}.scene.sheet .pop{top:50px;bottom:auto}
+  .scene.sheet .hud-tl,.scene.sheet .joy,.scene.sheet .rot{display:none}
+  .panel{top:auto;bottom:0;left:0;right:0;width:auto;height:56%;border-radius:18px 18px 0 0;border-bottom:0;transition:height .22s}
+  .panel header{touch-action:none;cursor:grab;padding-top:18px}.grip{display:block;position:absolute;top:7px;left:50%;width:44px;height:5px;margin-left:-22px;border-radius:3px;background:rgba(255,255,255,.32)}
+  input,select{font-size:16px}
+  #rgl .chips,#rgr .chips{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}
+  .tgrid .row input{flex:1 1 90px}#sq,#bq,#oxf,#mf{flex:1 1 100%!important}.tgrid .row select{flex:1 1 auto}
   @keyframes slide{from{opacity:0;transform:translateY(30px)}}
   .molwrap{grid-template-columns:1fr}.mollist{max-height:none;order:2}.mv{height:340px}
   .elbody{grid-template-columns:1fr;justify-items:center}.bohr{width:180px;height:180px}
   .cgrid,.pgrid,.tgrid,.dlist{grid-template-columns:1fr}
   #toasts{left:10px;right:10px;bottom:auto;top:calc(var(--hdr) + 8px);max-width:none}
   h2{font-size:21px}
+}
+@media (max-width:430px){.brand{display:none}.tabs{justify-content:space-between}}
+/* yotiq telefon */
+@media (max-height:500px) and (pointer:coarse){
+  :root{--hdr:44px}.topbar{height:44px}.tabs em{display:none}.brand span:last-child,.player .xpw,.player>b,.player>small{display:none}
+  .scene{min-height:0}.hud-b{bottom:6px}.hud-b .btn{padding:7px 12px}.joy{bottom:12px;left:12px;width:96px;height:96px}
+  .panel{top:50px;bottom:8px;right:8px;left:auto;width:min(400px,48%);height:auto!important;border-radius:16px;border-bottom:1px solid var(--line)}
+  .panel header{padding-top:12px;cursor:default}.grip{display:none!important}.pop{top:8px;bottom:auto;width:min(420px,calc(100% - 420px))}.rot{display:none}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

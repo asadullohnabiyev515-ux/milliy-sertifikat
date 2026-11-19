@@ -1,5 +1,5 @@
 // KimyoLab — offline ishlash (stale-while-revalidate)
-const V="kimyolab-v2";
+const V="kimyolab-v3";
 const CORE=["./","index.html","style.css","manifest.webmanifest","icon.svg","icon-192.png","icon-512.png","vendor/three.min.js",
   ...["elements","chem","species","rules","engine","content","ui","lab3d","lab","table","molecules","learn","tools","main"].map(f=>`js/${f}.js`)];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()));});
